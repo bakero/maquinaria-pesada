@@ -1,0 +1,190 @@
+# EP001 — MaquinarIa Pesada
+# Guión con etiquetas para generación automática
+# Formato: PRESENTADOR: [etiqueta] texto
+# IAGO = Tony (851ejYcv2BoNPjrkw93G)
+# MARÍA = Sheila (h3l1RP4XfcWsPwoRp9G6)
+# Líneas que empiezan con # son comentarios y se ignoran
+# Líneas vacías se ignoran
+
+# ============================================================
+# HOOK
+# ============================================================
+
+IAGO: [serio] Te voy a contar algo que nadie te dice cuando empiezas con inteligencia artificial.
+IAGO: [pausado] Los modelos no piensan. No razonan. No entienden. Solo hacen matemáticas.
+IAGO: [directo] Álgebra lineal, derivadas, probabilidad, entropía. Eso es todo.
+IAGO: [tenso] Y cuanto más ignoras esa realidad… más fácil es que te vendan humo.
+IAGO: [firme] Que un proveedor te diga que su modelo es el mejor, y tú no tengas herramientas para rebatirlo. Que un sistema falle en producción y no sepas por dónde empezar.
+IAGO: [grave] Que firmes una decisión de arquitectura de un millón de euros… basándote en una demo.
+IAGO: [contundente] Hoy cambiamos eso.
+IAGO: [grave] Esto es MaquinarIa Pesada.
+IAGO: [pausado] Arrancamos.
+
+# ============================================================
+# [INSERTAR AQUÍ: intro_maquinas.wav — 8 a 10 segundos]
+# ============================================================
+
+# ============================================================
+# SALUDO Y PRESENTACIÓN
+# ============================================================
+
+IAGO: [conversacional] Buenas. Soy Iago, estoy aquí con María. Este es el primer episodio de MaquinarIa Pesada, el podcast donde la IA crea contenido sobre IA.
+MARÍA: [natural] Y eso tiene una consecuencia directa: este episodio puede contener errores. No porque queramos, sino porque así funciona la generación automática de contenido. Si encuentras algo que no cuadra, tómalo como una invitación a ir más allá.
+IAGO: [directo] Hoy arrancamos con las matemáticas para inteligencia artificial. Puede parecer árido, pero es el tema más importante del máster.
+MARÍA: [conversacional] Y antes de que alguien cierre el episodio: no necesitas ser matemático. Necesitas entender qué pasa dentro de los modelos cuando toman decisiones que afectan a tu empresa.
+IAGO: [firme] Eso sí es tu responsabilidad si lideras proyectos de IA. No vamos a pedirte que calcules una derivada. Pero sí que entiendas por qué el modelo se equivoca, por qué cuesta lo que cuesta. Empezamos.
+
+# ============================================================
+# BLOQUE 1: ÁLGEBRA LINEAL
+# ============================================================
+
+MARÍA: [didáctico] Lo primero: un modelo de inteligencia artificial no ve palabras, ni imágenes, ni clientes. Ve números. Concretamente, ve vectores. Una lista ordenada de números.
+IAGO: [irónico] El modelo no ve "gato". Ve algo como cero punto veintitrés, menos cero punto ochenta y siete, cero punto cuarenta y uno… durante trescientas posiciones.
+MARÍA: [natural] Exacto. Y a partir de ahí todo lo que hace el modelo es operar sobre esas listas. Esa conversión de concepto a lista de números se llama representación vectorial densa, o en inglés embedding. Codificación semántica, en castellano.
+IAGO: [explicativo] Ejemplo concreto: un sistema de recomendación de productos. Cada producto se convierte en un vector. Cuando el modelo quiere saber si dos productos se parecen, compara sus vectores. Calcula si apuntan en la misma dirección.
+MARÍA: [didáctico] Esa medida de similitud se llama producto escalar o distancia coseno. Y tiene implicaciones directas en empresa.
+IAGO: [directo] Cuando construyes búsqueda semántica, recomendaciones o clasificación documental, lo que hay por debajo en todos los casos es álgebra lineal. La búsqueda semántica no busca palabras: busca vectores próximos.
+MARÍA: [contundente] O dicho de otra forma: si la representación vectorial es mala, el sistema falla. Da igual cuánto optimices el resto.
+IAGO: [conversacional] Es el error más común en proyectos que arrancan con buenas intenciones.
+MARÍA: [explicativo] Y luego están las matrices. Una tabla de números que describe una transformación. En una red neuronal, cada capa aplica una multiplicación matricial que transforma la representación anterior.
+IAGO: [directo] El entrenamiento consiste en ajustar los valores de esas matrices para que las transformaciones produzcan salidas correctas. Cuando hablamos de miles de millones de parámetros, hablamos de miles de millones de números en esas matrices.
+MARÍA: [didáctico] Hay un concepto que merece mención especial: los valores propios y vectores propios. Indican qué direcciones del espacio concentran más información.
+IAGO: [curioso] ¿Y para qué sirve eso en la práctica?
+MARÍA: [explicativo] Es la base de la reducción de dimensionalidad. La técnica para comprimir representaciones vectoriales, visualizar agrupaciones o eliminar ruido. Si segmentas clientes o identificas temáticas en documentos, probablemente estás usando esta idea.
+IAGO: [explicativo] Y llegamos al mecanismo de atención, el corazón de los modelos transformer. No es más que multiplicaciones matriciales con una normalización. Pondera qué partes de la entrada son más relevantes para cada elemento de la salida.
+MARÍA: [tenso] Y tiene una consecuencia en coste que hay que tener muy presente.
+IAGO: [contundente] Si duplicas el texto que le das al modelo, el coste no se duplica: se cuadriplica.
+MARÍA: [irónico] Es el detalle que parece técnico… y luego te explota en la factura de infraestructura.
+
+# ============================================================
+# NOTICIA 1 — ELASTIC
+# ============================================================
+
+IAGO: [conversacional] Hay una publicación que ilustra esto perfectamente. Elastic publicó a principios de dos mil veinticinco en su blog técnico que su búsqueda semántica por vectores supera en precisión a la búsqueda clásica por palabras clave en el ochenta por ciento de sus casos de uso internos.
+MARÍA: [directo] Es decir, el álgebra lineal que acabamos de explicar ya está ganando a la búsqueda tradicional en producción real.
+IAGO: [firme] Si tu empresa todavía busca en documentos por palabras exactas, estás usando tecnología de hace veinte años. Y eso nos lleva a algo que queda en el aire: el modelo sabe representar el mundo como vectores. Pero… ¿cómo aprende a hacer esas representaciones correctamente?
+MARÍA: [natural] Ahí entra el cálculo diferencial. Porque aprender, en sentido matemático, es optimizar. Y la herramienta para optimizar son los gradientes.
+
+# ============================================================
+# BLOQUE 2: CÁLCULO DIFERENCIAL
+# ============================================================
+
+IAGO: [didáctico] Un gradiente es la derivada de una función respecto a todos sus parámetros a la vez. Nos dice en qué dirección crece el error del modelo y con qué intensidad.
+MARÍA: [explicativo] Imagina que el modelo está en lo alto de una colina. La altura representa el error. El gradiente te dice en qué dirección sube la colina.
+IAGO: [directo] Y tú das pasos en sentido contrario para bajar. Eso es el descenso de gradiente. En cada paso, el modelo calcula el gradiente y ajusta sus parámetros. Millones de veces.
+MARÍA: [didáctico] El algoritmo que hace posible esto en redes profundas se llama backpropagation, o retropropagación del error. Aplica la regla de la cadena: multiplica gradientes parciales a lo largo de todas las capas.
+IAGO: [irónico] Como si cada capa le dijera a la anterior: oye… parte de este error es culpa tuya.
+MARÍA: [explicativo] Exacto. Y aquí hay un problema que fue un obstáculo enorme durante años. Si esos gradientes son muy pequeños al multiplicarse, el resultado se vuelve casi cero.
+IAGO: [serio] Los parámetros de las primeras capas apenas aprenden nada. Eso se llama el problema de los gradientes que se desvanecen.
+MARÍA: [curioso] ¿Y cómo se resolvió?
+IAGO: [explicativo] Con las conexiones residuales. Atajos en la arquitectura que permiten que el gradiente viaje por un camino alternativo. Fue el avance que desbloqueó la era de las redes profundas que tenemos hoy.
+MARÍA: [directo] Para la empresa, la traducción está en los optimizadores. SGD, Adam, AdaGrad. Algoritmos distintos para descender por ese paisaje de gradientes.
+IAGO: [firme] Elegir mal el optimizador puede hacer que un proceso de ajuste fino diverja completamente. Si has intentado ajustar un modelo y empeoró, probablemente el problema estaba aquí.
+MARÍA: [explicativo] Las técnicas como PEFT y LoRA funcionan porque limitan el camino que recorre el gradiente. Parámetros congelados, menos coste, menos riesgo de sobreajuste.
+IAGO: [reflexivo] Y a partir de aquí conviene preguntarse: el modelo aprende ajustando matrices. Pero… ¿cómo sabe si se está equivocando mucho o poco? ¿Qué mide exactamente ese error?
+MARÍA: [natural] Ahí entra la probabilidad. Porque el modelo no trabaja en blanco y negro. Trabaja con distribuciones de probabilidad.
+
+# ============================================================
+# BLOQUE 3: PROBABILIDAD Y ESTADÍSTICA
+# ============================================================
+
+IAGO: [explicativo] Cuando le preguntas algo a un modelo y te responde, no ha decidido nada. Ha calculado una distribución de probabilidad sobre todas las posibles palabras siguientes… y ha muestreado de esa distribución.
+MARÍA: [pausado] No hay certeza. Hay probabilidades. Y hay un parámetro que controla ese comportamiento directamente: la temperatura.
+IAGO: [directo] Con temperatura baja, el modelo elige casi siempre la opción más probable. Respuestas más predecibles.
+MARÍA: [explicativo] Con temperatura alta, la distribución se aplana. Respuestas más variadas y creativas, pero también más errores. Una de las causas de que un modelo alucine puede ser exactamente esa.
+IAGO: [serio] Y de aquí surge uno de los conceptos más importantes para entornos de alto riesgo: la calibración. Un modelo bien calibrado es aquel cuyas probabilidades reflejan la realidad.
+MARÍA: [didáctico] Si el modelo dice noventa por ciento de probabilidad, debería acertar el noventa por ciento de las veces.
+IAGO: [grave] Si dice noventa… y acierta el sesenta, está generando confianza falsa. En medicina, legal o finanzas, eso puede tener consecuencias graves.
+MARÍA: [directo] Y la calibración se puede medir. Pero para eso hay que saber que existe el problema. Las mismas herramientas estadísticas sirven para comparar dos modelos de forma rigurosa.
+IAGO: [firme] Porque cuando alguien te dice que el modelo A es mejor que el B, la pregunta correcta es: ¿mejor en qué métrica, sobre qué datos, con qué significación estadística?
+MARÍA: [contundente] Sin eso, estás comparando demos, no sistemas.
+IAGO: [explicativo] Hay un fenómeno que todo el mundo menciona pero poca gente entiende: el sobreajuste, overfitting. El modelo memoriza los datos de entrenamiento en lugar de aprender patrones generales.
+MARÍA: [irónico] Es el modelo que funciona perfecto en el piloto… y se rompe cuando llegan datos reales.
+IAGO: [conversacional] La historia de vida de muchos proyectos de IA en empresa. La validación cruzada detecta esto antes de producción. Y la regularización lo evita durante el entrenamiento.
+MARÍA: [didáctico] Y hay tres conceptos estadísticos que aparecen una y otra vez. La inferencia bayesiana: actualizar creencias con nueva evidencia. Las pruebas de hipótesis: saber si una mejora es real o fruto del azar.
+IAGO: [directo] Y las distribuciones paramétricas: gaussiana, binomial, Poisson. Cada tipo de problema tiene una distribución natural que lo describe mejor.
+MARÍA: [firme] La estadística no es solo para científicos de datos. Es para quien toma decisiones basándose en lo que dice un modelo.
+IAGO: [conversacional] Bien dicho.
+
+# ============================================================
+# NOTICIA 2 — BANCA Y CALIBRACIÓN
+# ============================================================
+
+MARÍA: [serio] Y esto no es hipotético. En varios estudios de adopción de IA en banca publicados entre dos mil veintitrés y dos mil veinticuatro, aparece este patrón. Un banco obtiene noventa y dos por ciento de precisión global en su modelo de scoring de crédito.
+IAGO: [escéptico] Suena bien.
+MARÍA: [tenso] Pero cuando miras la calibración, el modelo dice noventa por ciento de confianza donde acierta solo el sesenta. Está seguro de sí mismo cuando no debería estarlo.
+IAGO: [grave] Y en riesgo crediticio, ese es exactamente el tipo de error que puede costarte muy caro.
+MARÍA: [directo] Lo peor es que no lo ves en la métrica de precisión global. Solo lo ves si mides la calibración. Y si hablamos de medir la incertidumbre del modelo… esa medida tiene nombre.
+IAGO: [pausado] Se llama entropía. Y es el núcleo de la teoría de la información.
+
+# ============================================================
+# BLOQUE 4: TEORÍA DE LA INFORMACIÓN
+# ============================================================
+
+MARÍA: [didáctico] La entropía mide la incertidumbre en una distribución de probabilidad. Cuanta más incertidumbre, más entropía. Es una forma de cuantificar lo que le falta al modelo por saber.
+IAGO: [explicativo] En inteligencia artificial, la función de pérdida más habitual en clasificación se llama entropía cruzada. Mide qué tan lejos está la distribución que predice el modelo de la distribución real.
+MARÍA: [contundente] Es decir, toda la energía del entrenamiento existe para reducir esa medida de incertidumbre.
+IAGO: [pausado] Nada más y nada menos. Minimizar la entropía cruzada equivale a hacer que el modelo asigne probabilidades altas a las respuestas correctas. Todo el proceso de retropropagación existe para eso.
+MARÍA: [explicativo] Hay otro concepto que aparece en contextos muy específicos: la divergencia KL, o divergencia de Kullback-Leibler. Mide cuánto difiere una distribución de probabilidad de otra.
+IAGO: [curioso] ¿Y dónde aparece en la práctica?
+MARÍA: [didáctico] En el alineamiento de modelos mediante feedback humano, el RLHF. Se usa la divergencia KL para evitar que el modelo alineado se aleje demasiado del modelo base.
+IAGO: [irónico] O sea, es el freno de mano del alineamiento.
+MARÍA: [natural] Exacto. Evita que el modelo se vaya demasiado lejos en la dirección que le estás indicando… perdiendo por el camino todo lo que ya sabía hacer bien.
+IAGO: [explicativo] Y luego está la información mutua. Mide cuánta información comparten dos variables entre sí. Muy útil para seleccionar variables relevantes en un modelo de predicción.
+MARÍA: [directo] Si tienes un modelo de detección de fraude con cien variables, no todas aportan. La información mutua identifica cuáles son redundantes y cuáles aportan señal independiente.
+IAGO: [didáctico] La teoría de la información también está detrás de la compresión de representaciones vectoriales y de la cuantización de modelos. Técnicas para hacer los modelos más ligeros sin perder demasiada capacidad.
+MARÍA: [reflexivo] Y hablando de cuánto cuestan los modelos, eso nos lleva a algo que en empresa muchas veces se ignora hasta que ya es tarde.
+IAGO: [firme] No basta con que un algoritmo funcione bien. Tiene que ser viable ejecutarlo. Esa es la pregunta que responde la complejidad computacional.
+
+# ============================================================
+# BLOQUE 5: COMPLEJIDAD COMPUTACIONAL
+# ============================================================
+
+MARÍA: [didáctico] La complejidad computacional estudia cómo crece el coste de un algoritmo cuando aumenta el tamaño del problema. En IA esto es crítico porque los modelos operan sobre cantidades masivas de datos.
+IAGO: [explicativo] El ejemplo más importante: el mecanismo de atención en los transformer. Tiene complejidad cuadrática respecto a la longitud de la secuencia. Si duplicas el texto, el coste se cuadruplica.
+MARÍA: [directo] Esto explica toda la investigación en arquitecturas alternativas. Atención dispersa, atención flash, ventanas deslizantes de contexto. Todas intentan resolver el mismo problema.
+IAGO: [serio] Y tiene traducción directa al mundo empresarial. Un proveedor con ventana de contexto de un millón de tokens suena impresionante. Pero si procesas miles de documentos al día, ese coste cuadrático puede hacer el sistema inviable en producción.
+MARÍA: [irónico] La demo siempre funciona. El problema llega cuando escala.
+IAGO: [irónico] Y cuando llega la factura. Conocer la complejidad es lo que te permite estimar el coste antes de comprometerte con una arquitectura.
+MARÍA: [curioso] ¿Y qué hay de los problemas que no tienen solución eficiente?
+IAGO: [explicativo] Los problemas NP-difíciles. Aquellos para los que no existe solución exacta y eficiente. La planificación óptima de un agente con decisiones secuenciales puede caer aquí.
+MARÍA: [didáctico] Por eso los sistemas de IA usan búsqueda heurística y aproximaciones en lugar de garantías de optimalidad.
+IAGO: [reflexivo] Saber cuándo buscar la solución perfecta y cuándo conformarse con una buena solución práctica es una habilidad de ingeniería que empieza exactamente aquí.
+MARÍA: [natural] Y eso nos lleva a la parte que más me gusta: ver todo esto junto, en casos de uso reales.
+
+# ============================================================
+# NOTICIA 3 — SECTOR LEGAL
+# ============================================================
+
+IAGO: [conversacional] Hay una decisión que se tomó de forma masiva durante dos mil veinticuatro y sigue siendo debate abierto en dos mil veinticinco. Varias compañías del sector legal evaluaron si usar modelos con ventanas de contexto largas para procesar contratos completos, o trocear los documentos.
+MARÍA: [serio] La respuesta no era técnica: era económica. Con el coste cuadrático de la atención, procesar un contrato de doscientas páginas puede costar cuarenta veces más que procesarlo en fragmentos.
+IAGO: [firme] En un despacho que tramita miles de contratos al mes, esa diferencia define si el proyecto es viable o no.
+MARÍA: [contundente] Y esa decisión la toma alguien de negocio o de producto, no solo el equipo técnico. Por eso entender la complejidad computacional no es opcional para un líder de proyectos de IA.
+
+# ============================================================
+# BLOQUE 6: CASOS DE USO Y SECTOR
+# ============================================================
+
+IAGO: [explicativo] El primer caso de uso es la predicción tabular de riesgo. Variables estructuradas sobre clientes, transacciones o expedientes para predecir impago, fraude o abandono.
+MARÍA: [directo] Calibración, curvas de rendimiento, comparación estadística de modelos. Todo lo que hemos hablado de probabilidad aparece aquí de forma directa.
+IAGO: [explicativo] El segundo caso es la clasificación documental. Correos, tickets, contratos o facturas asignados a categorías. Introduce representaciones vectoriales, producto escalar para medir similitud y evaluación por clases desbalanceadas.
+MARÍA: [serio] Y eso último es la situación habitual en empresa. Un sistema de detección de fraude tiene muy pocos casos positivos. Si no tienes en cuenta ese desbalance, el modelo puede ser completamente inútil para lo que te importa.
+IAGO: [conversacional] Y sobre lo que está pasando en el sector: los grandes laboratorios están en carrera por ampliar las ventanas de contexto. Los modelos de Google, OpenAI y Anthropic anunciados a lo largo de dos mil veinticuatro y principios de dos mil veinticinco ofrecen contextos de hasta un millón de tokens.
+MARÍA: [reflexivo] La pregunta que hay que hacerse siempre es: ¿cómo han resuelto el problema de la complejidad cuadrática? Si no lo han resuelto, el coste de usar esos contextos es astronómico.
+IAGO: [directo] Las respuestas están en técnicas como la atención flash, que optimiza los cálculos en la memoria de la GPU, y en la atención dispersa. Ahora que entiendes el problema, puedes evaluar esas soluciones con criterio.
+MARÍA: [explicativo] Y hay otra tendencia que conecta con probabilidad y calibración: los modelos de razonamiento. Los de la familia o1 de OpenAI, presentados a finales de dos mil veinticuatro, y los modelos con pensamiento explícito de Anthropic y Google desplegados en dos mil veinticinco, generan tokens de razonamiento internos antes de responder.
+IAGO: [serio] Exploran varias rutas de razonamiento, evalúan su probabilidad de éxito y seleccionan la más prometedora. Y tiene un coste: esos tokens consumen contexto y se facturan.
+MARÍA: [firme] Conocer las matemáticas que hay detrás te permite entender cuándo esa inversión tiene sentido… y cuándo estás pagando por algo que no necesitas para tu caso de uso.
+
+# ============================================================
+# CIERRE — CONCEPTOS CLAVE
+# ============================================================
+
+IAGO: [contundente] No te puedes ir de este episodio sin haber entendido estos cinco conceptos.
+MARÍA: [didáctico] Primero: un embedding, o representación vectorial densa, es una lista de números que describe un concepto en un espacio matemático. La similitud entre conceptos se mide como similitud entre vectores. Todo empieza aquí.
+IAGO: [directo] Segundo: el gradiente es la dirección en la que crece el error del modelo. El entrenamiento consiste en moverse en la dirección contraria. El algoritmo que lo hace posible se llama retropropagación.
+MARÍA: [serio] Tercero: un modelo de lenguaje no produce certezas, produce distribuciones de probabilidad. La calibración mide si esas probabilidades reflejan la realidad. Criterio crítico en decisiones de alto riesgo.
+IAGO: [explicativo] Cuarto: la entropía cruzada es la función que el modelo minimiza durante el entrenamiento. Minimizarla equivale a asignar probabilidades altas a las respuestas correctas. Todo el entrenamiento existe para eso.
+MARÍA: [firme] Y quinto: la atención en los modelos transformer tiene coste cuadrático respecto al contexto. Implicaciones directas en coste de inferencia y decisiones de arquitectura. No lo olvides la próxima vez que evalúes un proveedor.
+IAGO: [reflexivo] Las matemáticas no son el prerequisito difícil para llegar a lo interesante. Las matemáticas son lo interesante. Son las que permiten razonar sobre por qué un modelo funciona, cuándo puede fallar y qué le cuesta.
+MARÍA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIa Pesada. Síguenos para nuevos capítulos donde la IA crea contenido sobre IA.
