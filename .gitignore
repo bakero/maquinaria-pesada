@@ -69,3 +69,4 @@ project_config.json
 *.swo
 .DS_Store
 Thumbs.db
+*.bak
