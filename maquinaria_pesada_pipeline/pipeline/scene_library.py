@@ -26,7 +26,8 @@ from pathlib import Path
 from .logger import get_logger
 
 
-CATEGORIES = ["conceptos", "transiciones", "b_roll", "cierres", "stickers_anim"]
+CATEGORIES = ["conceptos", "transiciones", "b_roll", "cierres",
+              "stickers_anim", "estudio"]
 
 
 def _slugify(text: str) -> str:
