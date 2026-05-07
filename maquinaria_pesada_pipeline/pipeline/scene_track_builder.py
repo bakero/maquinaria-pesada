@@ -3,6 +3,7 @@ Construye la pista visual del videopodcast alternando ESTUDIO y PIZARRA.
 
 ESTUDIO  = clip MP4 generado con Luma (presentadores hablando)
 PIZARRA  = frame PNG generado con Pillow (datos, graficos, conceptos)
+BLANK    = fondo neutro (rejilla industrial) para silencios y rango sintonia
 
 La regla general:
   - El HOOK siempre es ESTUDIO con overlay del dato punzante.
@@ -102,19 +103,8 @@ def build_scene_track(timeline: dict,
                        output_folder: str | Path,
                        force: bool = False) -> list[dict]:
     """
-    Devuelve una lista de "segmentos" que cubren toda la duracion del contenido.
-    Cada segmento dice si es ESTUDIO o PIZARRA y la fuente:
-
-      [
-        {"type": "studio", "start": 1.91, "end": 33.99, "source": "...mp4",
-         "speaker": "MARIA", "section": "HOOK"},
-        {"type": "pizarra", "start": 48.48, "end": 64.46, "source": <SCENE_REF>,
-         "speaker": "IAGO", "section": "SALUDO_Y_PRESENTACION"},
-        ...
-      ]
-
-    Para PIZARRA, source es el ID interno de la escena del timeline (el
-    overlay_renderer las renderiza como hasta ahora).
+    Devuelve lista de "segmentos" que cubren toda la duracion del audio.
+    Cada segmento dice si es ESTUDIO, PIZARRA o BLANK y la fuente.
     """
     log = get_logger("scene_track_builder")
     output_folder = Path(output_folder)
@@ -171,9 +161,7 @@ def build_scene_track(timeline: dict,
 
         track.append(seg)
 
-    # Asegurar cobertura continua [0, audio_duration]: rellenar huecos
-    # con segmentos blank tipo pizarra (un fondo neutro durante silencios y
-    # rango de la sintonia, donde luego el intro_video se overlay-a aparte).
+    # Asegurar cobertura continua [0, audio_duration] con segmentos blank.
     audio_duration = float(audio_structure.get("audio_duration") or
                            (track[-1]["end"] if track else 60.0))
     track.sort(key=lambda s: float(s["start"]))

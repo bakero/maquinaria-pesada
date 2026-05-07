@@ -274,9 +274,10 @@ def main() -> int:
 
         # ─── 7b. Construccion del scene_track (alterna estudio/pizarra) ──
         log.info("[7b] Construccion del scene_track (estudio vs pizarra)...")
-        library_base = config["assets"].get("scene_library_folder") or \
-                       (Path(config["assets"].get("videos_folder", "")) /
-                        "escenas_biblioteca")
+        videos_folder_cfg2 = config["assets"].get("videos_folder")
+        library_base = (Path(videos_folder_cfg2) / "escenas_biblioteca"
+                        if videos_folder_cfg2 else output_folder / "escenas_biblioteca")
+        scene_track = None
         try:
             library = SceneLibrary(library_base)
             scene_track = build_scene_track(
@@ -285,7 +286,6 @@ def main() -> int:
             )
         except Exception as exc:
             log.warning(f"  scene_track no disponible: {exc}. Modo legacy (todo pizarra).")
-            scene_track = None
 
         # ─── 8. Composicion final ─────────────────────────────────
         if args.from_step <= 8:
