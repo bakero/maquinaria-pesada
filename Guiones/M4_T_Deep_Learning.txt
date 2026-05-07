@@ -3,19 +3,32 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-IAGO: [tenso] AlexNet gana ImageNet en 2012 con un margen que nadie esperaba. Doce años después, los modelos que usas a diario para escribir, generar código o resumir documentos son hijos directos de ese momento. Pero nadie te explica qué pasó técnicamente entre los dos puntos.
+MARÍA: [tenso] AlexNet gana ImageNet en 2012 con un margen que nadie esperaba. Doce años después, los modelos que usas a diario para escribir, generar código o resumir documentos son hijos directos de ese momento. Pero nadie te explica qué pasó técnicamente entre los dos puntos.
 
-MARÍA: [curioso] ¿Qué pasó exactamente? Porque la narrativa que circula es que "la IA mejoró mucho", y eso no le dice nada a nadie.
+IAGO: [curioso] ¿Qué pasó exactamente? Porque la narrativa que circula es que "la IA mejoró mucho", y eso no le dice nada a nadie.
 
-IAGO: [serio] Lo que pasó es que las redes neuronales profundas aprendieron a aprender representaciones jerárquicas de los datos sin que nadie les dijera qué buscar. Sin ingeniería de características manual. Sin reglas escritas a mano. Los datos, suficientes datos y suficiente cómputo, hicieron el trabajo.
+MARÍA: [serio] Lo que pasó es que las redes neuronales profundas aprendieron a aprender representaciones jerárquicas de los datos sin que nadie les dijera qué buscar. Sin ingeniería de características manual. Sin reglas escritas a mano. Los datos, suficientes datos y suficiente cómputo, hicieron el trabajo.
 
-MARÍA: [firme] Y entender cómo lo hacen no es opcional si trabajas con IA en la empresa. Porque cuando un modelo falla en producción, la respuesta está en la arquitectura, en el entrenamiento, en las decisiones de diseño que alguien tomó antes de que llegaras tú.
+IAGO: [firme] Y entender cómo lo hacen no es opcional si trabajas con IA en la empresa. Porque cuando un modelo falla en producción, la respuesta está en la arquitectura, en el entrenamiento, en las decisiones de diseño que alguien tomó antes de que llegaras tú.
 
-IAGO: [contundente] Hoy vamos al módulo cuatro del máster: deep learning. CNNs, backpropagation, optimizadores, preentrenamiento, RLHF, LoRA. Todo lo que hace posible que existan los modelos que ya estás usando.
+MARÍA: [contundente] Hoy vamos al módulo cuatro del máster: deep learning. CNNs, backpropagation, optimizadores, preentrenamiento, RLHF, LoRA. Todo lo que hace posible que existan los modelos que ya estás usando.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO — LA PIRÁMIDE DEL DEEP LEARNING
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo cuatro, el deep learning.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] El deep learning no es una tecnología única. Es una jerarquía de arquitecturas que se construyen unas sobre otras. En la base están los perceptrones multicapa: redes que pueden aproximar cualquier función continua con suficientes neuronas. Sobre ellos se construyeron las redes convolucionales. Y sobre ellas, los transformers.
 
@@ -25,7 +38,6 @@ MARÍA: [reflexivo] Y los LLMs son transformers a escala masiva que han mostrado
 
 IAGO: [irónico] Razonamiento en cadena, traducción sin ejemplos previos, resolución de analogías complejas. Nadie las programó. Simplemente aparecieron. Lo que dice algo bastante incómodo sobre cuánto entendemos realmente de lo que estamos construyendo.
 
-# NÚCLEO TEMÁTICO — REDES CONVOLUCIONALES
 
 MARÍA: [didáctico] Las CNNs, las redes neuronales convolucionales, fueron la revolución de la visión por computadora. La operación clave es la convolución: un filtro de pequeño tamaño se desliza sobre la imagen y calcula cuánto se parece cada zona al patrón que busca. El resultado es un mapa de activación.
 
@@ -35,9 +47,9 @@ MARÍA: [conversacional] Y las capas más profundas de la red aprenden cosas má
 
 IAGO: [serio] Exacto. Es una jerarquía de representaciones. AlexNet, VGG, ResNet. Cada arquitectura icónica ha empujado esa jerarquía más lejos. ResNet en concreto introdujo las conexiones residuales, los atajos entre capas, y eso resolvió un problema que tenía bloqueado el campo.
 
-# NÚCLEO TEMÁTICO — BACKPROPAGATION Y EL PROBLEMA DEL GRADIENTE
 
 MARÍA: [didáctico] Backpropagation es el algoritmo que hace posible entrenar una red neuronal profunda. La idea es aplicar la regla de la cadena del cálculo para calcular los gradientes de la función de pérdida con respecto a todos los parámetros del modelo. Forward pass, backward pass, actualización de pesos. Ese ciclo, repetido millones de veces, es el aprendizaje.
+# BLOQUE_2
 
 IAGO: [tenso] Pero hay un problema que durante años hizo inviable entrenar redes profundas. El vanishing gradient, el gradiente que se desvanece. Cuando los gradientes se propagan hacia atrás a través de muchas capas, tienden a disminuir exponencialmente. Las capas más alejadas del output aprenden tan lento que prácticamente no aprenden nada.
 
@@ -47,11 +59,6 @@ IAGO: [explicativo] Con tres palancas. Primero, funciones de activación que no 
 
 MARÍA: [firme] Esas tres soluciones juntas son lo que hizo que escalar las redes de diez capas a cien capas fuera posible. Sin ellas, el deep learning moderno no existe.
 
-# BLOQUE CREATIVO
-
-IAGO: [reflexivo] Imagina que entrenas una red neuronal como escalar una montaña con los ojos vendados. El gradiente es tu único sentido: te dice si el suelo sube o baja bajo tus pies. El descenso del gradiente es el algoritmo que te lleva, paso a paso, hacia el valle donde el modelo se equivoca menos. Nunca llegas al fondo perfecto. Pero te acercas lo suficiente para ser útil. El problema del gradiente que se desvanece es como si, a mitad de la bajada, perdieras toda sensibilidad en los pies. Puedes seguir moviéndote, pero ya no sabes hacia dónde.
-
-# NÚCLEO TEMÁTICO — OPTIMIZADORES
 
 MARÍA: [didáctico] El descenso del gradiente estocástico, el SGD clásico, funciona pero converge lento y puede quedar atrapado en puntos de silla, lugares donde el gradiente es cero pero no es el mínimo real. Los optimizadores modernos añaden dos mejoras críticas: el momento, que acumula velocidad en las direcciones de descenso consistente, y las tasas de aprendizaje adaptativas, que ajustan cuánto mueves cada parámetro individualmente según su historial.
 
@@ -60,10 +67,14 @@ IAGO: [serio] AdamW es el resultado de combinar esas dos ideas más una correcci
 MARÍA: [explicativo] Y el learning rate scheduler es imprescindible. La práctica estándar es el cosine annealing con warmup: la tasa de aprendizaje sube lentamente al principio para estabilizar el entrenamiento, y luego baja siguiendo una curva coseno hasta casi cero. Sin scheduler, el entrenamiento oscila o diverge.
 
 IAGO: [conversacional] ¿Y la regularización? Porque en deep learning hay técnicas específicas que no existen en el machine learning clásico.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [didáctico] Tres son las más importantes. Dropout: durante el entrenamiento, se desactivan aleatoriamente un porcentaje de neuronas en cada forward pass, forzando a la red a aprender representaciones redundantes. Batch Normalization: normaliza las activaciones de cada capa en cada mini-batch, lo que estabiliza el entrenamiento y permite tasas de aprendizaje más altas. Y Layer Normalization, que es la variante usada en los transformers porque funciona mejor con secuencias de longitud variable.
 
-# NÚCLEO TEMÁTICO — PREENTRENAMIENTO Y FINE-TUNING
 
 IAGO: [tenso] Hay un antes y un después en la historia del desarrollo de modelos de IA. El antes: cada tarea requería entrenar un modelo desde cero con datos etiquetados de esa tarea específica. El después: preentrenar una vez un modelo enorme sobre datos masivos no etiquetados, y luego adaptarlo a miles de tareas distintas con muchos menos datos.
 
@@ -78,6 +89,11 @@ IAGO: [didáctico] El proceso tiene tres fases. Primero, fine-tuning supervisado
 MARÍA: [conversacional] Es caro, es lento, y es lo que transforma un predictor de texto en un asistente alineado con las preferencias humanas.
 
 IAGO: [explicativo] DPO, Direct Preference Optimization, la optimización directa de preferencias, simplifica todo ese pipeline. Logra un alineamiento similar sin necesitar entrenar el modelo de recompensa ni usar PPO. Claude y Llama 3 usan variantes de DPO precisamente por eso. La industria se está moviendo hacia métodos más directos porque el pipeline de RLHF completo es muy complejo de gestionar en producción.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 # NÚCLEO TEMÁTICO — LoRA Y QLoRA
 
@@ -93,7 +109,13 @@ MARÍA: [firme] Esto no es un detalle técnico menor. Es lo que democratiza el f
 
 IAGO: [irónico] Dicho de otra forma: si tu empresa quiere adaptar un LLM a su dominio específico, a su jerga, a sus documentos internos, sin pagar a OpenAI por cada inferencia y sin que tus datos salgan de tu perímetro, LoRA y QLoRA son el camino. Y el módulo cuatro te da las bases para entender cómo y cuándo usarlos.
 
-# CIERRE CON CTA
+
+IAGO: [reflexivo] Imagina que entrenas una red neuronal como escalar una montaña con los ojos vendados. El gradiente es tu único sentido: te dice si el suelo sube o baja bajo tus pies. El descenso del gradiente es el algoritmo que te lleva, paso a paso, hacia el valle donde el modelo se equivoca menos. Nunca llegas al fondo perfecto. Pero te acercas lo suficiente para ser útil. El problema del gradiente que se desvanece es como si, a mitad de la bajada, perdieras toda sensibilidad en los pies. Puedes seguir moviéndote, pero ya no sabes hacia dónde.
+
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 MARÍA: [reflexivo] Lo que une todo lo que hemos contado hoy es una sola idea: el deep learning no es magia, es álgebra lineal más funciones de activación no lineales más gradiente descendente aplicado a escala masiva. Entender eso cambia cómo diagnosticas errores, cómo evalúas arquitecturas y cómo tomas decisiones de diseño.
 
@@ -102,7 +124,16 @@ IAGO: [serio] En el módulo cuatro del máster cubrimos todo esto con profundida
 MARÍA: [didáctico] Si ya trabajas con modelos de lenguaje o con sistemas de visión en tu organización, este módulo te da el mapa del motor que tienes bajo el capó. Si estás planificando proyectos de IA, te da el vocabulario técnico para hablar con tu equipo sin depender de que alguien te lo traduzca.
 
 IAGO: [contundente] Y si lo que quieres es hacer fine-tuning de un LLM para tu caso de uso específico, sin infraestructura de hiperescalador y sin que tus datos salgan de tu control, LoRA y QLoRA son las herramientas. Este módulo es donde entiendes por qué funcionan, no solo cómo ejecutarlas.
+# CIERRE_FINAL
 
 MARÍA: [cálido] El máster MaquinarIa Pesada está diseñado para profesionales que quieren entender la IA de verdad, no solo usarla. El módulo cuatro es donde la comprensión profunda empieza. El enlace para saber más está en las notas del episodio. Nos vemos en el próximo.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque la IA que no entiendes te controla. La que entiendes, la usas tú.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

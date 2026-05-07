@@ -3,19 +3,32 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] Un modelo con noventa y ocho por ciento de accuracy en test. Lo despliegas en producción. Falla estrepitosamente desde el primer día. No hay bug en el código, no hay problema de infraestructura. El problema es el modelo. Y para entender por qué, necesitas este módulo.
+IAGO: [tenso] Un modelo con noventa y ocho por ciento de accuracy en test. Lo despliegas en producción. Falla estrepitosamente desde el primer día. No hay bug en el código, no hay problema de infraestructura. El problema es el modelo. Y para entender por qué, necesitas este módulo.
 
-IAGO: [serio] Ese escenario se repite más de lo que nadie reconoce. Y casi siempre tiene la misma causa: alguien construyó el modelo sin dominar validación, overfitting ni evaluación imparcial. Los fundamentos del módulo tres del máster.
+MARÍA: [serio] Ese escenario se repite más de lo que nadie reconoce. Y casi siempre tiene la misma causa: alguien construyó el modelo sin dominar validación, overfitting ni evaluación imparcial. Los fundamentos del módulo tres del máster.
 
-MARÍA: [firme] Hoy vamos al módulo tres: machine learning clásico. Supervisado, no supervisado, árboles, ensambles, XGBoost, validación cruzada, overfitting y SHAP. Y si crees que esto es tecnología del pasado, quédate: esa asunción cuesta proyectos enteros.
+IAGO: [firme] Hoy vamos al módulo tres: machine learning clásico. Supervisado, no supervisado, árboles, ensambles, XGBoost, validación cruzada, overfitting y SHAP. Y si crees que esto es tecnología del pasado, quédate: esa asunción cuesta proyectos enteros.
 
-IAGO: [irónico] El ML clásico no es el pasado. Es lo que sostiene la mitad de los sistemas en producción del mundo mientras los titulares hablan de otra cosa. Bienvenidos a MaquinarIa Pesada.
+MARÍA: [irónico] El ML clásico no es el pasado. Es lo que sostiene la mitad de los sistemas en producción del mundo mientras los titulares hablan de otra cosa. Bienvenidos a MaquinarIa Pesada.
 
-MARÍA: [directo] El argumento central del módulo: el profesional de IA competente en 2025 no elige entre ML clásico y LLMs. Elige la herramienta correcta para cada problema. Y para elegir bien necesitas entender las dos con la misma profundidad.
+IAGO: [directo] El argumento central del módulo: el profesional de IA competente en 2025 no elige entre ML clásico y LLMs. Elige la herramienta correcta para cada problema. Y para elegir bien necesitas entender las dos con la misma profundidad.
+IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo tres, el machine learning clásico.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 IAGO: [didáctico] Empecemos por el criterio de elección. Datos tabulares estructurados, variable objetivo numérica o categórica, volumen moderado: ML clásico. Texto libre, imágenes complejas, tareas de generación: deep learning o LLMs. Esa distinción parece simple y evita errores que cuestan meses de trabajo.
 
@@ -34,6 +47,7 @@ IAGO: [conversacional] El pipeline estándar de un proyecto de ML tiene cuatro e
 MARÍA: [serio] Feature engineering después. Es la etapa de mayor impacto en el rendimiento. Transformar, combinar y crear variables a partir de los datos brutos para que el modelo pueda aprender las relaciones relevantes. Un buen feature engineering con un modelo simple suele superar a un modelo complejo con features brutas.
 
 IAGO: [didáctico] Luego selección del modelo y optimización de hiperparámetros: proceso iterativo de prueba y evaluación de distintas configuraciones. Y por último la evaluación final con datos de test separados del entrenamiento. Esa separación es sagrada. El test set no se toca hasta el final. De eso hablaremos en detalle más adelante.
+# BLOQUE_2
 
 MARÍA: [explicativo] Los modelos base son la regresión lineal y la regresión logística. Lineal modela relaciones continuas como una función lineal: el modelo más simple del ML supervisado y el más valioso como referencia. Si un modelo más complejo no supera la regresión lineal, algo va mal con ese modelo o con los datos.
 
@@ -52,6 +66,11 @@ MARÍA: [conversacional] Y son la primera opción cuando llegas a un problema de
 IAGO: [natural] Un árbol de decisión solo es como un experto que cambia completamente de criterio ante cualquier cambio en el contexto. Un Random Forest es un comité de cien expertos con experiencias distintas que decide por mayoría. Ninguno es perfecto individualmente. Juntos se equivocan mucho menos. Esa es la intuición del ensamble.
 
 MARÍA: [tenso] Ahora llegamos al algoritmo que ha dominado las competiciones de predicción con datos tabulares durante años y sigue siendo el estado del arte en 2025 para la mayoría de los problemas empresariales. Gradient Boosting. Y su implementación más importante: XGBoost.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 IAGO: [explicativo] Gradient Boosting construye el modelo en secuencia. Empieza con un árbol pequeño, calcula los errores residuales, entrena un nuevo árbol para predecir esos errores, lo añade al conjunto y repite. Cada árbol corrige los errores del anterior. Es fundamentalmente distinto a Random Forests, que construye árboles en paralelo e independientes.
 
@@ -68,6 +87,11 @@ MARÍA: [serio] DBSCAN identifica clusters basándose en densidad de puntos y pu
 IAGO: [explicativo] Hierarchical Clustering construye una jerarquía de clusters visualizable como un dendrograma. Te permite explorar la estructura de los datos a distintos niveles de granularidad sin decidir de antemano cuántos clusters quieres. Muy útil en la fase exploratoria cuando todavía no tienes hipótesis sobre la segmentación natural de los datos.
 
 MARÍA: [tenso] Y ahora el bloque donde más proyectos de IA fallan sin que nadie lo vea venir: overfitting, validación cruzada y evaluación imparcial. El overfitting ocurre cuando el modelo aprende los datos de entrenamiento tan bien que no generaliza a datos nuevos. Accuracy perfecta en test. Desastre en producción.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 IAGO: [didáctico] Los síntomas son claros en las curvas de aprendizaje: el error de entrenamiento baja, el error de validación empieza a subir. Esa divergencia es el síntoma del overfitting. Las técnicas de regularización son el antídoto: L1 y L2 penalizan la complejidad, early stopping detiene el entrenamiento antes de que el modelo empiece a memorizar ruido.
 
@@ -85,14 +109,26 @@ IAGO: [conversacional] Y eso tiene implicaciones directas para el cumplimiento d
 
 MARÍA: [serio] SHAP también detecta si el modelo usa variables que no debería usar. Si los valores SHAP revelan que el código postal pesa más que el historial de pagos en decisiones de crédito, tienes un problema de sesgo proxy que hay que investigar antes de desplegar. No después de que el regulador lo encuentre.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 IAGO: [reflexivo] Lo que hace especial a este módulo es que no solo enseña algoritmos. Da el juicio para elegir entre ellos, diagnosticar cuándo fallan y defender esa elección con argumentos sólidos. Ese juicio diferencia a un profesional de IA de alguien que ejecuta pipelines sin entender lo que produce.
 
 MARÍA: [contundente] Los fundamentos de este módulo, overfitting, validación, feature engineering, regularización, no son exclusivos del ML clásico. Son los cimientos de todo el deep learning y todos los LLMs. Sin esta base el resto del máster son recetas. Con ella, son herramientas que puedes adaptar y diagnosticar.
 
 IAGO: [firme] En el máster MaquinarIa Pesada trabajamos los algoritmos con datasets reales. Implementamos XGBoost con validación cruzada real, optimizamos hiperparámetros y analizamos las predicciones con SHAP. El enlace para saber más sobre el máster está en las notas del episodio. Nos escuchamos en el próximo.
+# CIERRE_FINAL
 
 MARÍA: [cálido] Si quieres dar el salto a la IA de forma seria, para construir modelos, liderar proyectos o tomar decisiones informadas sobre sistemas de IA en tu organización, el máster te da la base completa. El enlace en las notas. Nos vemos en el siguiente capítulo.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque la IA que no entiendes te controla. La que entiendes, la usas tú.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

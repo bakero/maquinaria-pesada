@@ -3,19 +3,32 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 48 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-IAGO: [tenso] El 87% de los proyectos de inteligencia artificial nunca llegan a producción. Y el 40% de los que llegan fallan en el primer año. No porque el modelo no funcione. Porque nadie tiene el sistema para mantenerlo vivo cuando la realidad golpea.
+MARÍA: [tenso] El 87% de los proyectos de inteligencia artificial nunca llegan a producción. Y el 40% de los que llegan fallan en el primer año. No porque el modelo no funcione. Porque nadie tiene el sistema para mantenerlo vivo cuando la realidad golpea.
 
-MARÍA: [escéptico] Espera. ¿Estás diciendo que la mayoría de proyectos de IA mueren después de que ya funcionan?
+IAGO: [escéptico] Espera. ¿Estás diciendo que la mayoría de proyectos de IA mueren después de que ya funcionan?
 
-IAGO: [firme] Exactamente eso. El modelo funciona en el notebook del data scientist. Pasa el piloto. Y luego se degrada silenciosamente en producción mientras nadie lo sabe, los costes escalan sin control y el equipo no tiene visibilidad sobre qué está fallando.
+MARÍA: [firme] Exactamente eso. El modelo funciona en el notebook del data scientist. Pasa el piloto. Y luego se degrada silenciosamente en producción mientras nadie lo sabe, los costes escalan sin control y el equipo no tiene visibilidad sobre qué está fallando.
 
-MARÍA: [reflexivo] Y en ese punto ya has gastado meses de trabajo y no tienes forma de saber si el problema es el modelo, el prompt, los datos o simplemente que el proveedor actualizó su API sin avisarte.
+IAGO: [reflexivo] Y en ese punto ya has gastado meses de trabajo y no tienes forma de saber si el problema es el modelo, el prompt, los datos o simplemente que el proveedor actualizó su API sin avisarte.
 
-IAGO: [serio] Eso no es un escenario de manual. Es lo que le ocurre a la mayoría de empresas que despliegan LLMs hoy. El módulo 8 del máster existe precisamente para que no seas tú quien lo descubre por las malas.
+MARÍA: [serio] Eso no es un escenario de manual. Es lo que le ocurre a la mayoría de empresas que despliegan LLMs hoy. El módulo 8 del máster existe precisamente para que no seas tú quien lo descubre por las malas.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo ocho, la ingeniería y operaciones de modelos de lenguaje.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] LLMOps —que en español podríamos llamar operaciones de modelos de lenguaje— es la disciplina que cierra la brecha entre los experimentos de data science y los sistemas en producción que generan valor de forma sostenida. No es una moda. Es lo que separa a los equipos que escalan de los que pilotan eternamente.
 
@@ -32,6 +45,7 @@ IAGO: [irónico] Y cuando usas APIs de terceros —que es la realidad de la mayo
 MARÍA: [reflexivo] La segunda decisión crítica que cubre el módulo es cuándo usar fine-tuning y cuándo quedarte con prompting. Porque hay empresas que saltan al fine-tuning demasiado pronto y gastan tiempo y datos en algo que un buen prompt hubiera resuelto en horas.
 
 IAGO: [explicativo] La regla práctica que establece el módulo es clara: empieza siempre con prompting. El prompting no requiere datos de entrenamiento, los cambios se hacen en minutos y es más económico en el corto plazo. Si después de optimizar el prompt el rendimiento no es suficiente, entonces evalúas el fine-tuning.
+# BLOQUE_2
 
 MARÍA: [serio] Pero el fine-tuning sí tiene sus casos específicos donde es insustituible. Cuando necesitas un formato de output muy concreto que requeriría docenas de ejemplos en el prompt. Cuando el modelo base tiene conocimiento limitado en un dominio muy especializado. O cuando el volumen de inferencia es tan alto que un modelo fine-tuneado con prompts más cortos se vuelve significativamente más económico.
 
@@ -48,6 +62,11 @@ IAGO: [serio] Ahí está uno de los conceptos más potentes del módulo: LLM-as-
 MARÍA: [firme] Y antes de llegar a eso tienes las métricas proxy: tasa de pulgar abajo de los usuarios, tasa de escalada a humanos, tasa de repetición de consultas que sugiere que la respuesta anterior no satisfizo. Esas señales pueden detectar degradación del modelo antes de que se vuelva un problema visible.
 
 IAGO: [didáctico] Para la capa de herramientas, el ecosistema tiene dos actores principales. LangSmith, de LangChain, que se activa con dos variables de entorno y traza automáticamente todas las llamadas a LLMs, todas las recuperaciones RAG y todas las ejecuciones de herramientas. Y Langfuse, la alternativa open source que puedes desplegar en tu propia infraestructura si la privacidad o el cumplimiento regulatorio lo exigen.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [conversacional] Eso es relevante en sectores donde los datos no pueden salir del perímetro de la empresa. Banca, sanidad, gobierno. Langfuse on-premise es la respuesta operacional a ese constraint.
 
@@ -62,6 +81,11 @@ MARÍA: [serio] Y luego el test de calidad del LLM: el golden dataset de casos r
 IAGO: [didáctico] Eso previene las regresiones accidentales de calidad, que son una de las causas más comunes de degradación en producción. No fallos dramáticos. Pequeñas degradaciones que nadie detecta hasta que el producto ya no funciona como se esperaba.
 
 MARÍA: [conversacional] El módulo también cubre el análisis de costes en el pipeline: verificar que un cambio no aumenta el coste de tokens por encima de un umbral antes de que llegue a producción. Porque los costes de inferencia escalan con el volumen, y una regresión de costes en un sistema de alto tráfico puede ser muy cara muy rápido.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 IAGO: [explicativo] Y llegamos al tema que cambia el marco conceptual de cómo piensas en los modelos de lenguaje: el test-time compute. La idea es que puedes mejorar la calidad del modelo invirtiendo más computación durante la inferencia, en el momento de uso, en lugar de solo durante el entrenamiento.
 
@@ -77,7 +101,10 @@ MARÍA: [serio] El módulo cierra con una idea que resume todo lo anterior: el m
 
 IAGO: [explicativo] Una empresa puede pasar todos sus tests de CI/CD con resultados perfectos, desplegar sin incidentes, y ver cómo el sistema se degrada dos semanas después porque el proveedor actualizó el modelo base silenciosamente. Sin observabilidad en producción, esa degradación puede pasar meses sin detectarse.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 MARÍA: [conversacional] ¿Sabes qué es lo que me parece más revelador de este módulo? Que la mayoría de los fallos que describe los hemos visto todos. No en casos de estudio. En proyectos reales. En empresas reales que invirtieron bien y aun así no llegaron a ningún lado.
 
@@ -86,7 +113,16 @@ IAGO: [contundente] Porque sin LLMOps el problema no es si el modelo funciona. E
 MARÍA: [didáctico] Este módulo te da las tres cosas. El sistema de versionado para reproducir cualquier estado del sistema. La observabilidad para ver lo que está pasando en producción. Y el pipeline de CI/CD para evolucionar el sistema con garantías de calidad.
 
 IAGO: [reflexivo] La estadística del 87% de proyectos que nunca llegan a producción no es un problema de talento ni de tecnología. Es un problema de ingeniería operacional. LLMOps es la respuesta a ese problema. Y este módulo es donde la aprendes de forma sistemática.
+# CIERRE_FINAL
 
 MARÍA: [cálido] Si estás construyendo sistemas de IA para tu empresa o para productos reales, si tienes un piloto que funciona pero no sabes cómo convertirlo en algo sostenible en producción, este módulo tiene exactamente lo que necesitas para dar ese paso. El enlace para saber más sobre el máster está en las notas del episodio.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque la IA que no monitorizas te controla. La que instrumentalizas, la gestionas tú.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

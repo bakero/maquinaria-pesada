@@ -3,13 +3,13 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] JPMorgan tiene un sistema que analiza doce mil contratos jurídicos en segundos. Trabajo que antes requería trescientas sesenta mil horas de abogados al año. No lo hizo un programador que escribió reglas para cada cláusula. Lo hizo una IA que entiende el lenguaje y un bot que ejecuta sin descanso.
+IAGO: [tenso] JPMorgan tiene un sistema que analiza doce mil contratos jurídicos en segundos. Trabajo que antes requería trescientas sesenta mil horas de abogados al año. No lo hizo un programador que escribió reglas para cada cláusula. Lo hizo una IA que entiende el lenguaje y un bot que ejecuta sin descanso.
 
-IAGO: [curioso] Eso es automatización inteligente. Y es radicalmente distinta a la automatización que conocemos.
+MARÍA: [curioso] Eso es automatización inteligente. Y es radicalmente distinta a la automatización que conocemos.
 
-MARÍA: [serio] Hoy vamos al módulo once del máster. Hiperautomatización, los tres patrones IA más RPA, workflows inteligentes y autonomía graduada. Si en tu empresa hay procesos que tocan datos no estructurados y siguen siendo manuales, este episodio te va a doler en el buen sentido. Esto es MaquinarIA Pesada. Arrancamos.
+IAGO: [serio] Hoy vamos al módulo once del máster. Hiperautomatización, los tres patrones IA más RPA, workflows inteligentes y autonomía graduada. Si en tu empresa hay procesos que tocan datos no estructurados y siguen siendo manuales, este episodio te va a doler en el buen sentido. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 # [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
@@ -187,5 +187,4 @@ MARÍA: [cálido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada.
 - [x] Episodio par: MARÍA abre el HOOK
 - [x] Nombre hablado "Yago" usado en SALUDO, no "Iago"
 - [x] Alternancia IAGO/MARÍA mantenida en todo el guion
-
 

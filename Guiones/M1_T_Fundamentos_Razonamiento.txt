@@ -5,17 +5,17 @@
 
 # HOOK
 
-MARÍA: [tenso] Hay un abogado en Nueva York que fue sancionado por presentar ante un tribunal seis casos judiciales con sus números de expediente, sus títulos y sus resúmenes completos. Ninguno de esos casos existía. Los había generado ChatGPT. Y el modelo no mintió. Hizo exactamente lo que hace: completar texto de forma plausible.
+IAGO: [tenso] Hay un abogado en Nueva York que fue sancionado por presentar ante un tribunal seis casos judiciales con sus números de expediente, sus títulos y sus resúmenes completos. Ninguno de esos casos existía. Los había generado ChatGPT. Y el modelo no mintió. Hizo exactamente lo que hace: completar texto de forma plausible.
 
-IAGO: [serio] Y eso es lo más perturbador. El modelo no tiene un mecanismo interno que le diga esto es un hecho verificado. Genera lo estadísticamente probable. Y lo estadísticamente probable puede ser completamente falso.
+MARÍA: [serio] Y eso es lo más perturbador. El modelo no tiene un mecanismo interno que le diga esto es un hecho verificado. Genera lo estadísticamente probable. Y lo estadísticamente probable puede ser completamente falso.
 
-MARÍA: [contundente] Esto no es un bug que se pueda corregir. Es una consecuencia estructural de cómo funcionan los modelos de lenguaje. Y si no lo entiendes, construirás sistemas que alucinan con confianza y no sabrás por qué.
+IAGO: [contundente] Esto no es un bug que se pueda corregir. Es una consecuencia estructural de cómo funcionan los modelos de lenguaje. Y si no lo entiendes, construirás sistemas que alucinan con confianza y no sabrás por qué.
 
-IAGO: [firme] El módulo uno del máster empieza exactamente aquí: en la pregunta más incómoda sobre la IA que nadie te hace en los cursos de herramientas. ¿Qué es lo que realmente sabe un modelo de lenguaje? ¿Razona o predice?
+MARÍA: [firme] El módulo uno del máster empieza exactamente aquí: en la pregunta más incómoda sobre la IA que nadie te hace en los cursos de herramientas. ¿Qué es lo que realmente sabe un modelo de lenguaje? ¿Razona o predice?
 
-MARÍA: [grave] Si no tienes respuesta clara a esa pregunta, cada sistema de IA que construyas tiene una bomba de relojería en su núcleo.
+IAGO: [grave] Si no tienes respuesta clara a esa pregunta, cada sistema de IA que construyas tiene una bomba de relojería en su núcleo.
 
-IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -105,6 +105,9 @@ IAGO: [explicativo] La evaluación requiere tres elementos: un golden dataset de
 
 # CIERRE_CONCEPTOS
 
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+
 MARÍA: [grave] No te puedes ir de este capítulo sin haber entendido estos conceptos.
 
 IAGO: [didáctico] Primero: los modelos de lenguaje no tienen conocimiento, tienen compresión estadística de texto. Lo que producen son inferencias plausibles, no hechos verificados. Esa distinción es la raíz de todos los errores de diseño con IA.
@@ -123,6 +126,7 @@ MARÍA: [reflexivo] El módulo uno no te enseña herramientas. Te da el mapa cog
 
 IAGO: [conversacional] Y ese mapa es lo que diferencia a los profesionales que construyen sistemas fiables de los que construyen sistemas que sorprenden en demo y fallan en producción. El abogado que presentó casos ficticios no entendía lo que tenía entre manos.
 
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
 MARÍA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
 
 # VERIFICACIONES
@@ -148,4 +152,3 @@ MARÍA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada
 # No se acumulan más de 2 tecnicismos seguidos sin frase de aterrizaje [OK]
 # Alternancia ligada de voces mantenida [OK]
 # Recuento de palabras estimado (sin cabeceras ni nombres de speaker): ~1.850 palabras [OK — mínimo 1800]
-

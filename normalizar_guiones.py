@@ -54,7 +54,9 @@ FINAL_CLOSING_PHRASE     = ("Y hasta aqui ha llegado nuestro episodio de Maquina
                              "Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.")
 
 SPEAKER_RE = re.compile(r"^(IAGO|MAR[IÍ]A)\s*:", re.IGNORECASE)
-SECTION_RE = re.compile(r"^#\s+([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ0-9_ ]+)\s*$")
+# Captura nombres de seccion: MAYUSCULAS, digitos, guion_bajo, espacio, guion, em-dash, en-dash
+# Excluye lineas de comentario (con minusculas, dos-puntos, barras, tildes, etc.)
+SECTION_RE = re.compile(r"^#\s+([A-Z\xc1\xc9\xcd\xd3\xda\xd1][A-Z\xc1\xc9\xcd\xd3\xda\xd10-9_ \-–—]*)\s*$")
 
 
 # ─── Data structures ──────────────────────────────────────────────────────────
@@ -256,22 +258,22 @@ def split_nucleo_into_bloques(section: Section) -> list[Section]:
         lines[c3:],
     ]
 
-    # Insercion: líneas de datos en el punto de corte entre bloque 2 y 3
-    # (normalmente vacías o comentario). La dejamos como sección vacía de placeholder.
-    insercion = Section(name="INSERCION_1")
-    insercion.lines = [
-        "",
-        "# [INSERCION - dato de actualidad o estadistica relevante]",
-        "",
-    ]
+    def make_insercion(num: int) -> Section:
+        ins = Section(name=f"INSERCION_{num}")
+        ins.lines = ["", f"# [INSERCION {num} - dato de actualidad o estadistica relevante]", ""]
+        return ins
 
+    # La validacion requiere min_insertions = max(1, n_bloques // 2) = max(1, 4//2) = 2
+    # Ponemos INSERCION_1 tras BLOQUE_2 e INSERCION_2 tras BLOQUE_3
     result: list[Section] = []
     for i, seg in enumerate(segs, start=1):
         b = Section(name=f"BLOQUE_{i}")
         b.lines = seg if seg else [""]
         result.append(b)
         if i == 2:
-            result.append(insercion)
+            result.append(make_insercion(1))
+        elif i == 3:
+            result.append(make_insercion(2))
 
     return result
 
@@ -351,29 +353,37 @@ def make_verificaciones() -> Section:
 
 def transform_format_b(sections: list[Section], mod: int) -> tuple[list[Section], list[str]]:
     """
-    Convierte Format B (INTRO / NÚCLEO TEMÁTICO / CIERRE CON CTA) a Format A.
+    Convierte Format B (INTRO / NUCLEO TEMATICO / CIERRE CON CTA) a Format A.
     Devuelve (secciones_nuevas, lista_de_warnings).
+    Soporta multiples secciones NUCLEO TEMATICO (con sub-titulos via em-dash).
     """
     warnings: list[str] = []
-    by_name = {s.name.upper().strip(): s for s in sections}
+    # Indice por nombre (primera ocurrencia) para lookups unicos
+    by_name: dict[str, Section] = {}
+    for s in sections:
+        key = s.name.upper().strip()
+        if key not in by_name:
+            by_name[key] = s
+    # Lista ordenada de todos los nombres (permite multiples con el mismo prefijo)
+    all_names: list[str] = [s.name.upper().strip() for s in sections]
 
-    # Header (líneas antes del primer #)
+    # Header (lineas antes del primer #)
     header_sec = sections[0] if sections and sections[0].name == "" else Section(name="")
 
     # ── HOOK ─────────────────────────────────────────────────────────────────
-    intro_key = next((k for k in by_name if re.match(r"INTRO$", k)), None)
+    intro_key = next((k for k in all_names if re.match(r"INTRO$", k)), None)
     if intro_key is None:
-        warnings.append("No se encontró sección # INTRO en guion B.")
+        warnings.append("No se encontro seccion # INTRO en guion B.")
         hook = Section(name="HOOK", lines=[""])
     else:
-        hook = Section(name="HOOK", lines=by_name[intro_key].lines[:])
+        hook = Section(name="HOOK", lines=by_name.get(intro_key, Section(name="HOOK")).lines[:])
 
     opener = expected_opener(mod)
     hook_first = first_speaker(hook)
     if hook_first and hook_first != opener:
         warnings.append(
-            f"Speaker parity: módulo {mod} necesita {opener} pero abre {hook_first}. "
-            f"Intercambiando IAGO↔MARÍA en la sección HOOK."
+            f"Speaker parity: modulo {mod} necesita {opener} pero abre {hook_first}. "
+            f"Intercambiando IAGO<->MARIA en HOOK."
         )
         swap_speakers_in_section(hook)
 
@@ -385,44 +395,49 @@ def transform_format_b(sections: list[Section], mod: int) -> tuple[list[Section]
     # ── SALUDO_Y_PRESENTACION ─────────────────────────────────────────────────
     saludo = make_saludo(mod)
 
-    # ── NÚCLEO TEMÁTICO → BLOQUE_1…4 + INSERCION_1 ───────────────────────────
-    nucleo_key = next(
-        (k for k in by_name if re.match(r"N[UÚ]CLEO\s+TEM", k, re.IGNORECASE)), None
-    )
+    # ── NUCLEO TEMATICO → BLOQUE_1…4 + INSERCION_1 ───────────────────────────
+    # Consolida multiples secciones NUCLEO TEMATICO (incluyendo las con sub-titulo)
+    nucleo_keys = [k for k in all_names if re.match(r"N[U\xda]CLEO\s+TEM", k, re.IGNORECASE)]
     bloque_creativo_key = next(
-        (k for k in by_name if re.match(r"BLOQUE\s+CREATIVO", k, re.IGNORECASE)), None
+        (k for k in all_names if re.match(r"BLOQUE\s+CREATIVO", k, re.IGNORECASE)), None
     )
 
-    if nucleo_key:
-        nucleo_sec = by_name[nucleo_key]
-        # Si hay BLOQUE CREATIVO, lo añadimos al final del NÚCLEO
-        if bloque_creativo_key:
+    if nucleo_keys:
+        all_nucleo_lines: list[str] = []
+        seen: set[str] = set()
+        for k in nucleo_keys:
+            if k not in seen:
+                seen.add(k)
+                if k in by_name:
+                    all_nucleo_lines.extend(by_name[k].lines)
+        if len(nucleo_keys) > 1:
+            warnings.append(f"Consolidadas {len(nucleo_keys)} secciones NUCLEO TEMATICO.")
+        nucleo_sec = Section(name="NUCLEO_MERGED", lines=all_nucleo_lines)
+        if bloque_creativo_key and bloque_creativo_key in by_name:
             nucleo_sec.lines = nucleo_sec.lines + by_name[bloque_creativo_key].lines
-            warnings.append("BLOQUE CREATIVO fusionado al final de NÚCLEO TEMÁTICO antes de dividir.")
+            warnings.append("BLOQUE CREATIVO fusionado al final del NUCLEO TEMATICO.")
         bloque_sections = split_nucleo_into_bloques(nucleo_sec)
     else:
-        warnings.append("No se encontró # NÚCLEO TEMÁTICO. Se crea BLOQUE_1 vacío.")
+        warnings.append("No se encontro # NUCLEO TEMATICO. Se crea BLOQUE_1 vacio.")
         bloque_sections = [Section(name="BLOQUE_1", lines=[""])]
 
-    # ── INSERCION_X adicionales (si las hay) ─────────────────────────────────
+    # ── INSERCION_X adicionales (las que esten fuera del NUCLEO) ─────────────
     insercion_extras: list[Section] = []
-    for k, sec in by_name.items():
-        if re.match(r"INSERCI[OÓ]N[_ ]?(\d+)", k, re.IGNORECASE):
-            # INSERCION_1 ya la crea split_nucleo_into_bloques
-            idx_m = re.search(r"(\d+)", k)
-            if idx_m and int(idx_m.group(1)) > 1:
-                insercion_extras.append(Section(name=f"INSERCION_{idx_m.group(1)}", lines=sec.lines[:]))
+    for k in all_names:
+        m_ins = re.match(r"INSERCI[OO]N[_ ]?(\d+)", k, re.IGNORECASE)
+        if m_ins and int(m_ins.group(1)) > 1 and k in by_name:
+            insercion_extras.append(Section(name=f"INSERCION_{m_ins.group(1)}", lines=by_name[k].lines[:]))
 
     # ── CIERRE CON CTA → CIERRE_CONCEPTOS + CIERRE_FINAL ────────────────────
-    cierre_key = next((k for k in by_name if re.match(r"CIERRE\s+(CON\s+CTA|FINAL)", k, re.IGNORECASE)), None)
-    if cierre_key:
+    cierre_key = next((k for k in all_names if re.match(r"CIERRE\s+CON\s+CTA", k, re.IGNORECASE)), None)
+    if cierre_key and cierre_key in by_name:
         cierre_sections = split_cierre_cta(by_name[cierre_key])
     else:
-        warnings.append("No se encontró # CIERRE CON CTA. Se crean secciones vacías.")
+        warnings.append("No se encontro # CIERRE CON CTA. Se crean secciones vacias.")
         cc = Section(name="CIERRE_CONCEPTOS")
-        cc.lines = [f"MARÍA: [directo] {CONCEPTS_CLOSING_PHRASE}."]
+        cc.lines = [f"MARIA: [directo] {CONCEPTS_CLOSING_PHRASE}."]
         cf = Section(name="CIERRE_FINAL")
-        cf.lines = [f"MARÍA: [conversacional] {FINAL_CLOSING_PHRASE}",
+        cf.lines = [f"MARIA: [conversacional] {FINAL_CLOSING_PHRASE}",
                     "IAGO: [ironico] Nos escuchamos."]
         cierre_sections = [cc, cf]
 
@@ -495,18 +510,24 @@ def fix_format_a(sections: list[Section], mod: int) -> tuple[list[Section], list
 # ─── Detección de formato ─────────────────────────────────────────────────────
 
 def detect_format(sections: list[Section]) -> str:
-    """Devuelve 'A', 'B' o 'unknown'."""
+    """Devuelve 'A', 'B', 'A_hybrid' o 'unknown'."""
     names = {s.name.upper().strip() for s in sections}
-    # Strip numeric suffixes for detection
-    base_names = {re.sub(r"[_ ]\d+$", "", n).strip() for n in names}
 
     has_hook         = "HOOK" in names
-    has_intro        = "INTRO" in names or any(re.match(r"INTRO$", n) for n in names)
-    has_nucleo       = any(re.match(r"N[UÚ]CLEO\s+TEM", n, re.IGNORECASE) for n in names)
+    has_intro        = any(re.match(r"INTRO$", n) for n in names)
+    has_nucleo       = any(re.match(r"N[U\xda]CLEO\s+TEM", n, re.IGNORECASE) for n in names)
     has_cierre_cta   = any(re.match(r"CIERRE\s+CON\s+CTA", n, re.IGNORECASE) for n in names)
+    has_bloque       = any(re.match(r"BLOQUE_\d", n) for n in names)
+    has_saludo       = "SALUDO_Y_PRESENTACION" in names
+    has_intro_sonido = "INTRO_SONIDO" in names
 
-    if has_hook and not has_nucleo:
+    # Formato A puro: tiene HOOK sin NUCLEO
+    if has_hook:
         return "A"
+    # Formato hibrido A: INTRO como hook pero estructura interna de A
+    if has_intro and (has_intro_sonido or has_bloque or has_saludo) and not has_nucleo:
+        return "A_hybrid"
+    # Formato B: tiene INTRO + NUCLEO o CIERRE CTA
     if has_intro and (has_nucleo or has_cierre_cta):
         return "B"
     return "unknown"
@@ -540,10 +561,19 @@ def normalize_file(path: Path, dry_run: bool = False) -> dict:
 
     if fmt == "B":
         new_sections, warnings = transform_format_b(sections, mod)
-        action = "B→A"
+        action = "B->A"
+    elif fmt == "A_hybrid":
+        # Solo renombra INTRO->HOOK y aplica fix_format_a
+        for sec in sections:
+            if re.match(r"INTRO$", sec.name.upper().strip()):
+                sec.name = "HOOK"
+                break
+        new_sections, warnings = fix_format_a(sections, mod)
+        warnings.insert(0, "Hibrido: INTRO renombrado a HOOK.")
+        action = "hybrid->A"
     else:  # "A"
         new_sections, warnings = fix_format_a(sections, mod)
-        action = "A→fix"
+        action = "A->fix"
 
     new_text = render_sections(new_sections)
 
