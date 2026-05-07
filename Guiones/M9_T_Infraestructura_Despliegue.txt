@@ -3,17 +3,30 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] Un modelo que en tu portátil responde en dos segundos. En producción, con cien usuarios simultáneos, tarda cuarenta. O simplemente se cae. Y nadie sabe por qué porque nadie diseñó la infraestructura. Solo diseñaron el modelo.
+IAGO: [tenso] Un modelo que en tu portátil responde en dos segundos. En producción, con cien usuarios simultáneos, tarda cuarenta. O simplemente se cae. Y nadie sabe por qué porque nadie diseñó la infraestructura. Solo diseñaron el modelo.
 
-IAGO: [serio] Ese gap entre lo que funciona en un notebook y lo que funciona en producción real es donde se pierden la mayoría de proyectos de IA. No por el modelo. Por todo lo que hay alrededor del modelo.
+MARÍA: [serio] Ese gap entre lo que funciona en un notebook y lo que funciona en producción real es donde se pierden la mayoría de proyectos de IA. No por el modelo. Por todo lo que hay alrededor del modelo.
 
-MARÍA: [firme] Cloud contra on-premise. Microservicios contra serverless. vLLM, prompt caching, TCO. Hoy vamos al módulo que nadie enseña en los tutoriales de YouTube y que decide si tu sistema de IA llega a producción o se queda en demo para siempre. Bienvenidos a MaquinarIa Pesada.
+IAGO: [firme] Cloud contra on-premise. Microservicios contra serverless. vLLM, prompt caching, TCO. Hoy vamos al módulo que nadie enseña en los tutoriales de YouTube y que decide si tu sistema de IA llega a producción o se queda en demo para siempre. Bienvenidos a MaquinarIa Pesada.
 
-IAGO: [contundente] Módulo nueve del máster: Infraestructura y Despliegue de Sistemas de IA. Si después de este episodio no ves el stack de otra manera, algo hemos hecho mal.
+MARÍA: [contundente] Módulo nueve del máster: Infraestructura y Despliegue de Sistemas de IA. Si después de este episodio no ves el stack de otra manera, algo hemos hecho mal.
+IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO — CLOUD VS ON-PREMISE
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo nueve, la infraestructura y el despliegue.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] Empecemos por la decisión que lo condiciona todo: dónde despliegas. Cloud público, on-premise, o híbrido. No es una decisión técnica. Es una decisión estratégica con implicaciones en coste, latencia, privacidad y capacidades que se extienden durante años.
 
@@ -29,13 +42,13 @@ IAGO: [reflexivo] ¿Y la estrategia más frecuente en la práctica?
 
 MARÍA: [didáctico] Híbrida. APIs cloud para desarrollo y para los casos de uso de bajo volumen, donde la flexibilidad importa más que el coste marginal. Y modelos propios desplegados on-premise para los casos de uso de alto volumen o con datos sensibles. No es una elección binaria. Es una arquitectura de dos velocidades.
 
-# NÚCLEO TEMÁTICO — PATRONES DE ARQUITECTURA
 
 IAGO: [tenso] Y una vez decides dónde, viene la pregunta de cómo. Porque no hay una arquitectura de referencia para sistemas de IA. Hay cuatro patrones principales, cada uno con sus ventajas y sus límites.
 
 MARÍA: [explicativo] El primero y más frecuente: API Gateway más LLM Backend. Una API REST que recibe la solicitud del usuario, la procesa, llama al modelo, y devuelve la respuesta. Simple, predecible, fácil de operar. Es el punto de partida correcto para el noventa por ciento de los casos.
 
 IAGO: [conversacional] ¿Y cuándo ese patrón simple deja de ser suficiente?
+# BLOQUE_2
 
 MARÍA: [serio] Cuando necesitas escalar componentes de forma independiente. Ahí entra el patrón de microservicios. El servicio de retrieval para RAG, el servicio de inferencia del LLM, el orquestador de herramientas del agente: cada uno como servicio independiente con sus propios recursos, su propio escalado y su propio ciclo de vida.
 
@@ -45,11 +58,6 @@ MARÍA: [reflexivo] Y el cuarto es serverless. Funciones Lambda de AWS o Azure F
 
 IAGO: [firme] Ningún patrón es superior en abstracto. La elección depende del perfil de la carga, de los requisitos de latencia, del presupuesto de operaciones y del tamaño del equipo que va a mantener el sistema. Y en el módulo se trabaja cada uno con casos reales.
 
-# BLOQUE CREATIVO
-
-MARÍA: [natural] Piénsalo así. La infraestructura de IA es como el sistema de tuberías de un edificio. Puedes tener el mejor grifo del mercado, el más eficiente, el más preciso. Si las tuberías no tienen la presión correcta, si hay fugas en los codos, si el diámetro no aguanta el caudal en hora punta, el grifo da igual. Los usuarios no ven el modelo. Sienten la presión del agua. Y si baja, se van.
-
-# NÚCLEO TEMÁTICO — SEGURIDAD
 
 IAGO: [didáctico] Hablemos de seguridad. Porque en sistemas de IA en producción la seguridad tiene dimensiones que no aparecen en los proyectos de software tradicional y que generan vulnerabilidades muy específicas.
 
@@ -60,18 +68,16 @@ IAGO: [serio] La práctica correcta: usar un gestor de secretos. HashiCorp Vault
 MARÍA: [contundente] Ese principio tiene nombre: mínimo privilegio. Y en sistemas de IA tiene implicaciones directas. El agente de atención al cliente no debe tener acceso a las bases de datos financieras internas. El sistema de análisis de contratos no debe tener permisos de escritura en los sistemas de producción. Si un componente es comprometido o sufre un ataque de prompt injection exitoso, el daño potencial queda acotado.
 
 IAGO: [conversacional] ¿Y cómo se protege el sistema contra el abuso externo?
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [explicativo] Rate limiting como primera línea. Límite de solicitudes por usuario y por IP en una ventana de tiempo. Autenticación con JWT o API keys por usuario, que permite no solo control de acceso sino auditoría del uso y revocación granular si una credencial se compromete.
 
 IAGO: [didáctico] Y el circuit breaker, que es crítico para la resiliencia. Cuando un componente externo, una API de LLM, una base de datos, falla o se degrada, el circuit breaker lo desconecta automáticamente del flujo principal. Evita que el fallo en cascada de ese componente tumbe el sistema completo. Es la diferencia entre un incidente localizado y una caída total.
 
-# INSERCION_1
-
-MARÍA: [irónico] Un dato para calibrar la magnitud del problema: los ataques de prompt injection en sistemas de IA expuestos a usuarios externos se han convertido en 2025 en el vector de ataque más frecuente en aplicaciones de IA empresarial, según los reportes de seguridad de OWASP. No es un problema teórico. Es el problema operativo más activo del campo ahora mismo.
-
-IAGO: [firme] Y la combinación de mínimo privilegio más circuit breaker más gestión de secretos es exactamente la arquitectura de defensa que lo contiene. No lo elimina, pero limita el radio de explosión.
-
-# NÚCLEO TEMÁTICO — LATENCIA Y OPTIMIZACIÓN
 
 MARÍA: [serio] Optimización de latencia. Porque en sistemas conversacionales, la percepción del usuario no depende de cuánto tarda el sistema en generar la respuesta completa. Depende de cuánto tarda en darle el primer token.
 
@@ -86,8 +92,12 @@ MARÍA: [explicativo] vLLM es el estado del arte actual para máximo throughput.
 IAGO: [conversacional] Y la selección de la GPU correcta, que es una decisión que la gente subestima.
 
 MARÍA: [serio] Completamente. H100 y A100 para máxima velocidad cuando la latencia es el KPI crítico. L4 y T4 para máximo valor coste-rendimiento cuando el throughput importa más que la latencia individual. No todas las cargas necesitan la GPU más cara del mercado. Sobredimensionar el hardware es dinero quemado. Subdimensionarlo es latencia que destruye experiencia de usuario.
+# INSERCION_2
 
-# NÚCLEO TEMÁTICO — PROMPT CACHING Y TCO
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
+
 
 IAGO: [tenso] Llegamos a la técnica que más impacto tiene sobre el coste operativo de sistemas de IA en producción y que menos se enseña: el prompt caching.
 
@@ -105,13 +115,19 @@ IAGO: [didáctico] La gestión del TCO requiere tres capacidades que el módulo 
 
 MARÍA: [reflexivo] Y tercero, evaluación periódica de si los modelos más nuevos y baratos pueden reemplazar a los más caros sin pérdida de calidad medible. En 2025, los modelos de bajo coste han alcanzado la calidad que hace dos años solo tenían los frontier. El equipo que no revisa esa ecuación cada seis meses está pagando de más por defecto.
 
+
+MARÍA: [natural] Piénsalo así. La infraestructura de IA es como el sistema de tuberías de un edificio. Puedes tener el mejor grifo del mercado, el más eficiente, el más preciso. Si las tuberías no tienen la presión correcta, si hay fugas en los codos, si el diámetro no aguanta el caudal en hora punta, el grifo da igual. Los usuarios no ven el modelo. Sienten la presión del agua. Y si baja, se van.
+
 # INSERCION_2
 
 IAGO: [irónico] Para que el número sea concreto: un asistente empresarial con un system prompt de cuatro mil tokens que gestiona diez mil conversaciones diarias, sin prompt caching paga ese prefijo en cada llamada. Con prompt caching, lo paga una vez y el resto es inferencia incremental. A cien dólares por millón de tokens de input en un modelo frontier, eso son miles de euros al mes de diferencia. Solo por activar una feature de API que muchos equipos ni saben que existe.
 
 MARÍA: [firme] Y ese tipo de diferencia entre equipos que saben operar sistemas de IA en producción y equipos que solo saben construirlos es exactamente lo que separa un proyecto que escala de uno que se congela por presupuesto antes de llegar a la mitad de sus usuarios objetivo.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 IAGO: [reflexivo] Si hay un módulo del máster que te da ventaja diferencial inmediata en el mercado laboral, es este. No porque sea el más espectacular. Sino porque es el que menos gente domina. Cualquier ingeniero sabe hacer un RAG que funciona en local. Muy pocos saben desplegarlo de forma que aguante en producción, sea seguro, escale sin colapsar y no arruine el presupuesto.
 
@@ -120,7 +136,16 @@ MARÍA: [serio] Los profesionales de IA que más se buscan en 2025 y 2026 no son
 IAGO: [didáctico] En el módulo nueve del máster trabajamos cada decisión con criterio real. Cloud versus on-premise con análisis de crossover point. Los cuatro patrones de arquitectura con sus trade-offs. Seguridad con mínimo privilegio, circuit breaker y gestión de secretos. vLLM y TGI para serving de alto throughput. Prompt caching activado y medido. TCO presupuestado componente a componente.
 
 MARÍA: [explicativo] No son slides con diagramas de arquitectura bonitos. Son las decisiones que vas a tomar en tu próximo proyecto de IA, con las consecuencias que va a tener cada una. Y ese conocimiento es inmediatamente transferible. La semana que viene, en tu empresa.
+# CIERRE_FINAL
 
 IAGO: [cálido] Si lo que construyes con IA tiene que funcionar de verdad, y no solo en la demo para el cliente, el máster de MaquinarIa Pesada es donde aprendes a que funcione. El enlace está en la descripción. Nos vemos dentro.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 MARÍA: [grave] MaquinarIa Pesada. Porque la IA que no escala no existe.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

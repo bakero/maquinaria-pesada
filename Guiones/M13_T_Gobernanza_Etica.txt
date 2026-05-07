@@ -3,100 +3,109 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] Desde febrero de 2025 hay cosas que en Europa están prohibidas. No desaconsejadas, no reguladas con advertencias. Prohibidas. Sistemas de IA que puntúan a ciudadanos, que identifican caras en tiempo real en espacios públicos, que manipulan comportamientos de forma subliminal. Y la mayoría de las empresas que usan IA todavía no sabe exactamente qué lado de esa línea están pisando.
+IAGO: [tenso] Desde febrero de 2025 hay cosas que en Europa están prohibidas. No desaconsejadas, no reguladas con advertencias. Prohibidas. Sistemas de IA que puntúan a ciudadanos, que identifican caras en tiempo real en espacios públicos, que manipulan comportamientos de forma subliminal. Y la mayoría de las empresas que usan IA todavía no sabe exactamente qué lado de esa línea están pisando.
 
-IAGO: [serio] Y en agosto de 2026 llega la siguiente oleada. Obligaciones completas para sistemas de alto riesgo: crédito, empleo, salud, educación. Con multas de hasta treinta y cinco millones de euros o el siete por ciento de la facturación global anual.
+MARÍA: [serio] Y en agosto de 2026 llega la siguiente oleada. Obligaciones completas para sistemas de alto riesgo: crédito, empleo, salud, educación. Con multas de hasta treinta y cinco millones de euros o el siete por ciento de la facturación global anual.
 
-MARÍA: [firme] No es una amenaza regulatoria lejana. Es el presente operativo de cualquier organización que desarrolle o despliegue sistemas de IA en Europa. Bienvenidos a MaquinarIa Pesada.
+IAGO: [firme] No es una amenaza regulatoria lejana. Es el presente operativo de cualquier organización que desarrolle o despliegue sistemas de IA en Europa. Bienvenidos a MaquinarIa Pesada.
 
-IAGO: [contundente] Módulo trece del máster: Gobernanza, Ética y Regulación de la IA. Hoy hablamos de lo que muchos equipos técnicos evitan porque creen que es trabajo de los abogados. Y es el error más caro que puedes cometer.
+MARÍA: [contundente] Módulo trece del máster: Gobernanza, Ética y Regulación de la IA. Hoy hablamos de lo que muchos equipos técnicos evitan porque creen que es trabajo de los abogados. Y es el error más caro que puedes cometer.
 
 # NÚCLEO TEMÁTICO — EU AI ACT: EL NUEVO ESTÁNDAR GLOBAL
 
-MARÍA: [didáctico] Empecemos por el EU AI Act, porque es el marco que lo cambia todo. El primero en su clase a nivel global. En vigor desde agosto de 2024. Y tiene una estructura que necesitas conocer aunque no trabajes en Europa: cuatro categorías de riesgo que clasifican absolutamente todos los sistemas de IA.
+IAGO: [didáctico] Empecemos por el EU AI Act, porque es el marco que lo cambia todo. El primero en su clase a nivel global. En vigor desde agosto de 2024. Y tiene una estructura que necesitas conocer aunque no trabajes en Europa: cuatro categorías de riesgo que clasifican absolutamente todos los sistemas de IA.
 
-IAGO: [explicativo] Riesgo inaceptable: prohibido desde febrero de 2025. Sistemas de puntuación social como los que usa China para calificar ciudadanos, identificación biométrica en tiempo real en espacios públicos para aplicación de la ley, sistemas que explotan vulnerabilidades psicológicas para manipular decisiones, predicción de delitos basada en perfilado, inferencia de emociones en el trabajo o en el aula.
+MARÍA: [explicativo] Riesgo inaceptable: prohibido desde febrero de 2025. Sistemas de puntuación social como los que usa China para calificar ciudadanos, identificación biométrica en tiempo real en espacios públicos para aplicación de la ley, sistemas que explotan vulnerabilidades psicológicas para manipular decisiones, predicción de delitos basada en perfilado, inferencia de emociones en el trabajo o en el aula.
 
-MARÍA: [conversacional] ¿Y el riesgo alto?
+IAGO: [conversacional] ¿Y el riesgo alto?
 
-IAGO: [serio] Riesgo alto son los sistemas que toman o influyen en decisiones que impactan derechos fundamentales. Crédito, contratación, diagnóstico médico, admisión educativa, justicia, infraestructuras críticas. Esos sistemas tienen obligaciones completas desde agosto de 2026: gestión de riesgos documentada, gobernanza de datos, logs de auditoría, supervisión humana, y evaluación de conformidad antes de comercializarse.
+MARÍA: [serio] Riesgo alto son los sistemas que toman o influyen en decisiones que impactan derechos fundamentales. Crédito, contratación, diagnóstico médico, admisión educativa, justicia, infraestructuras críticas. Esos sistemas tienen obligaciones completas desde agosto de 2026: gestión de riesgos documentada, gobernanza de datos, logs de auditoría, supervisión humana, y evaluación de conformidad antes de comercializarse.
 
-MARÍA: [reflexivo] Y luego están los sistemas de riesgo limitado, como los chatbots, que solo tienen que informar que son IA. Y el riesgo mínimo, sin obligaciones adicionales. La mayoría de los sistemas empresariales caen en algún punto entre estas categorías. Y ahí es donde muchas organizaciones se equivocan al autoclasificarse.
+IAGO: [reflexivo] Y luego están los sistemas de riesgo limitado, como los chatbots, que solo tienen que informar que son IA. Y el riesgo mínimo, sin obligaciones adicionales. La mayoría de los sistemas empresariales caen en algún punto entre estas categorías. Y ahí es donde muchas organizaciones se equivocan al autoclasificarse.
 
-IAGO: [didáctico] Lo que hace el AI Act especialmente relevante para organizaciones fuera de Europa es el Brussels effect. El mismo fenómeno que ocurrió con el GDPR: las empresas de EE.UU. y Asia que operan globalmente están adoptando el estándar europeo para todas sus operaciones porque es más eficiente que mantener dos marcos distintos. El AI Act se está convirtiendo en el estándar global de facto.
+MARÍA: [didáctico] Lo que hace el AI Act especialmente relevante para organizaciones fuera de Europa es el Brussels effect. El mismo fenómeno que ocurrió con el GDPR: las empresas de EE.UU. y Asia que operan globalmente están adoptando el estándar europeo para todas sus operaciones porque es más eficiente que mantener dos marcos distintos. El AI Act se está convirtiendo en el estándar global de facto.
 
-MARÍA: [tenso] Y hay un dato que lo dice todo sobre el estado actual: solo el catorce por ciento de las organizaciones aplica garantías de IA a nivel empresarial, según ModelOp en 2025. El ochenta y seis por ciento está expuesto. Eso es simultáneamente un riesgo enorme para quien no actúa, y una ventaja competitiva brutal para quien sí lo hace.
+IAGO: [tenso] Y hay un dato que lo dice todo sobre el estado actual: solo el catorce por ciento de las organizaciones aplica garantías de IA a nivel empresarial, según ModelOp en 2025. El ochenta y seis por ciento está expuesto. Eso es simultáneamente un riesgo enorme para quien no actúa, y una ventaja competitiva brutal para quien sí lo hace.
 
 # NÚCLEO TEMÁTICO — NIST AI RMF E ISO 42001: LOS FRAMEWORKS QUE TE CUBREN
 
-IAGO: [didáctico] Más allá de la regulación, hay dos frameworks de gestión que cualquier organización seria debería conocer. El primero es el NIST AI RMF, publicado en enero de 2023 por el Instituto Nacional de Estándares y Tecnología de Estados Unidos. Es el framework de gestión de riesgos de IA más referenciado a nivel global.
+MARÍA: [didáctico] Más allá de la regulación, hay dos frameworks de gestión que cualquier organización seria debería conocer. El primero es el NIST AI RMF, publicado en enero de 2023 por el Instituto Nacional de Estándares y Tecnología de Estados Unidos. Es el framework de gestión de riesgos de IA más referenciado a nivel global.
 
-MARÍA: [explicativo] El NIST AI RMF tiene cuatro funciones. Govern: estructuras organizativas, políticas, responsabilidades, formación. Map: inventario de sistemas de IA, evaluación de impacto, análisis de partes interesadas. Measure: evaluación sistemática con las siete características de IA confiable, que son validez, seguridad, ciberseguridad, privacidad, explicabilidad, equidad, y responsabilidad. Y Manage: priorizar riesgos, implementar mitigaciones, documentar decisiones.
+IAGO: [explicativo] El NIST AI RMF tiene cuatro funciones. Govern: estructuras organizativas, políticas, responsabilidades, formación. Map: inventario de sistemas de IA, evaluación de impacto, análisis de partes interesadas. Measure: evaluación sistemática con las siete características de IA confiable, que son validez, seguridad, ciberseguridad, privacidad, explicabilidad, equidad, y responsabilidad. Y Manage: priorizar riesgos, implementar mitigaciones, documentar decisiones.
 
-IAGO: [serio] En julio de 2024 el NIST publicó además el Generative AI Profile, específicamente para los riesgos de la IA generativa. Doce categorías de riesgo específicas para LLMs y sistemas generativos. Si tu organización trabaja con modelos de lenguaje, ese documento es de lectura obligatoria.
+MARÍA: [serio] En julio de 2024 el NIST publicó además el Generative AI Profile, específicamente para los riesgos de la IA generativa. Doce categorías de riesgo específicas para LLMs y sistemas generativos. Si tu organización trabaja con modelos de lenguaje, ese documento es de lectura obligatoria.
 
-MARÍA: [curioso] ¿Y qué pasa con la certificación? Porque el NIST es voluntario, ¿no?
+IAGO: [curioso] ¿Y qué pasa con la certificación? Porque el NIST es voluntario, ¿no?
 
-IAGO: [explicativo] Exacto, el NIST es voluntario pero muy referenciado en contratos y RFPs. La certificación formal la da ISO 42001, publicada en 2023. Es el equivalente a ISO 27001 para seguridad de la información, pero para sistemas de IA. Basada en el ciclo PDCA: Planificar, Hacer, Verificar, Actuar. Y se está convirtiendo en requisito de precualificación en licitaciones del sector sanitario, financiero y público en Europa.
+MARÍA: [explicativo] Exacto, el NIST es voluntario pero muy referenciado en contratos y RFPs. La certificación formal la da ISO 42001, publicada en 2023. Es el equivalente a ISO 27001 para seguridad de la información, pero para sistemas de IA. Basada en el ciclo PDCA: Planificar, Hacer, Verificar, Actuar. Y se está convirtiendo en requisito de precualificación en licitaciones del sector sanitario, financiero y público en Europa.
 
-MARÍA: [firme] Eso significa que si tu empresa provee soluciones de IA a hospitales, bancos o administraciones públicas europeas, la certificación ISO 42001 va a aparecer en los pliegos de condiciones antes de lo que crees. No es opcional para el futuro inmediato.
+IAGO: [firme] Eso significa que si tu empresa provee soluciones de IA a hospitales, bancos o administraciones públicas europeas, la certificación ISO 42001 va a aparecer en los pliegos de condiciones antes de lo que crees. No es opcional para el futuro inmediato.
+IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# INSERCIÓN — CASO REAL
+# INTRO_SONIDO
 
-IAGO: [conversacional] Hay dos casos de benchmark en este módulo que ilustran mejor que cualquier regulación por qué todo esto importa. El primero: Amazon en 2018. Su sistema de reclutamiento automatizado, entrenado en CVs históricos de la empresa, aprendió a penalizar cualquier CV que contuviera palabras asociadas estadísticamente a mujeres. Palabras como "femenino" o el nombre de universidades femeninas. Amazon lo desactivó. Pero el daño estaba hecho.
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
 
-MARÍA: [tenso] El segundo es todavía más grave porque ocurrió en salud. Obermeyer y colaboradores publicaron en Science en 2019 que un sistema de gestión sanitaria ampliamente usado en Estados Unidos asignaba sistemáticamente menos recursos a pacientes afroamericanos que a pacientes blancos con el mismo nivel de necesidad médica. El sistema no estaba discriminando por raza directamente. Estaba usando el coste médico histórico como proxy de necesidad. Y el coste histórico ya reflejaba la discriminación previa del sistema de salud.
+# SALUDO_Y_PRESENTACION
 
-IAGO: [reflexivo] Eso es el sesgo de proxy en su expresión más peligrosa. El modelo aprende a usar una variable aparentemente neutra, el coste, como sustituto de un atributo protegido, la raza. Y lo hace sin que nadie lo haya programado explícitamente.
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo trece, la gobernanza y la ética en I.A.
 
-MARÍA: [serio] Esos dos casos son reales, documentados, con consecuencias medibles en personas reales. Y son exactamente el tipo de riesgo que el AI Act y los frameworks de gestión buscan prevenir de forma sistemática.
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
 
-# NÚCLEO TEMÁTICO — ÉTICA OPERATIVA: DE LOS PRINCIPIOS A LAS MÉTRICAS
+IAGO: [directo] Vamos allá.
 
-IAGO: [didáctico] Llegamos a la parte del módulo que más distingue a quienes practican la ética de IA de quienes la declaran. La diferencia entre tener principios escritos y tener métricas operativas. Todas las organizaciones tienen documentos que dicen que sus sistemas de IA son equitativos y transparentes. Muy pocas pueden demostrarlo con datos.
-
-MARÍA: [explicativo] Las métricas de equidad técnica cuantifican el nivel de sesgo del modelo. La primera es el Disparate Impact: el ratio entre la tasa de resultados positivos del grupo desfavorecido y la del grupo favorecido. El umbral legal de referencia en jurisprudencia estadounidense es 0.8. Por debajo de ese valor, hay evidencia de discriminación estadística.
-
-IAGO: [conversacional] ¿Y qué hay más allá del Disparate Impact?
-
-MARÍA: [didáctico] Equalized Odds: las tasas de verdaderos positivos y falsos positivos deben ser similares entre grupos. Demographic Parity: la tasa de resultados positivos debe ser similar entre grupos independientemente de la tasa de base. Y Counterfactual Fairness: si el género o la raza de una persona cambiaran, ¿cambiaría la decisión del modelo?
-
-IAGO: [tenso] Y aquí hay algo matemáticamente incómodo que el módulo aborda sin rodeos: la paradoja de equidad. No todas esas definiciones son simultáneamente satisfacibles. Si los grupos tienen tasas de base distintas, cumplir Demographic Parity viola Equalized Odds y viceversa. No es un problema técnico que se pueda resolver con más datos o mejor código.
-
-MARÍA: [firme] Es una decisión de valores. ¿Qué tipo de equidad prioriza tu organización en cada contexto? Esa decisión la tienen que tomar personas con autoridad y responsabilidad, no delegarla al data scientist que entrena el modelo.
-
-IAGO: [reflexivo] Y eso es exactamente lo que diferencia la ética de IA como práctica operativa de la ética de IA como declaración de intenciones. Las organizaciones que lo hacen bien tienen equipos que usan Fairlearn o AIF360 para medir esto en el pipeline de CI/CD, tienen procesos de reclamación para usuarios afectados, y documentan explícitamente qué compromisos éticos se tomaron y por qué.
-
-# BLOQUE CREATIVO
-
-MARÍA: [reflexivo] Imagina dos organizaciones. La primera tiene en su web una página llamada "Compromiso ético con la IA" llena de principios bonitos. La segunda tiene un equipo que ejecuta tests de Disparate Impact en cada merge a producción, que puede demostrar con datos que su modelo de selección de personal cumple el umbral 0.8 en todos los grupos protegidos, y que tiene un proceso documentado para cuando un usuario impugna una decisión automatizada. En 2026, ante un regulador europeo, solo una de esas dos organizaciones tiene algo que mostrar. Y las multas de treinta y cinco millones las paga la otra.
-
-# NÚCLEO TEMÁTICO — AUDITORÍA DE MODELOS Y GOBIERNO DEL DATO
+# BLOQUE_1
 
 IAGO: [didáctico] La auditoría de modelos es el mecanismo que cierra el ciclo. Evalúa sistemáticamente un sistema de IA en cuatro pilares: rendimiento técnico, equidad y sesgo, seguridad y ciberseguridad, y cumplimiento normativo.
 
 MARÍA: [explicativo] El rendimiento técnico no es solo la accuracy global. Es la precisión desagregada por subgrupos demográficos. Un modelo con noventa y cinco por ciento de accuracy global puede tener setenta por ciento de accuracy en un subgrupo minoritario y nadie lo detecta si no desglosás las métricas. Y ese subgrupo es exactamente quien más puede necesitar que el sistema funcione bien.
 
 IAGO: [serio] Para documentar todo esto el estándar son los model cards, propuestos por Gebru y colaboradores en Google en 2019. Un model card documenta para qué fue diseñado el modelo, con qué datos fue entrenado, cuáles son sus limitaciones conocidas, y cómo se desempeña en distintos subgrupos. Sin model card, la auditoría no tiene base de referencia.
+# BLOQUE_2
 
 MARÍA: [conversacional] Y luego está el gobierno del dato, que es la base de todo esto. El AI Act en su Artículo 10 es explícito: los datos de entrenamiento deben ser relevantes, representativos, y libres de sesgos inaceptables. Eso no es una declaración de intenciones. Es un requisito legal verificable.
 
 IAGO: [didáctico] Las herramientas que se trabajan en el módulo para gobierno del dato son Apache Atlas y OpenMetadata para linaje de datos, trazabilidad de dónde viene cada dato y cómo ha sido transformado. Great Expectations para calidad de datos en el pipeline de CI/CD, con tests automáticos que fallan el build si los datos no cumplen las especificaciones. Y Evidently AI para monitorización de dataset drift en producción, que detecta cuándo la distribución real empieza a separarse del entrenamiento.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [tenso] Y ya hay un precedente regulatorio que indica hacia dónde va esto a nivel global. La NYC Local Law 144, en vigor desde julio de 2023, exige auditorías anuales de sesgo para herramientas de contratación con IA en Nueva York, con publicación de resultados. Es la primera ley de este tipo, pero no será la última.
 
 IAGO: [firme] La conclusión es directa: la gobernanza de IA no es un coste de cumplimiento. Es infraestructura estratégica. Las organizaciones que la construyen ahora tienen ventaja competitiva sobre las que llegan tarde forzadas por una multa.
+# INSERCION_2
 
-# CIERRE CON CTA
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
+
+
+MARÍA: [reflexivo] Imagina dos organizaciones. La primera tiene en su web una página llamada "Compromiso ético con la IA" llena de principios bonitos. La segunda tiene un equipo que ejecuta tests de Disparate Impact en cada merge a producción, que puede demostrar con datos que su modelo de selección de personal cumple el umbral 0.8 en todos los grupos protegidos, y que tiene un proceso documentado para cuando un usuario impugna una decisión automatizada. En 2026, ante un regulador europeo, solo una de esas dos organizaciones tiene algo que mostrar. Y las multas de treinta y cinco millones las paga la otra.
+
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 MARÍA: [serio] Hay una razón por la que este módulo está en el máster y no es optativo. Porque cualquier profesional que trabaje en proyectos de IA en empresa, ya sea como data scientist, como product manager, como director técnico o como responsable de negocio, va a enfrentarse a estas preguntas. Y enfrentárselas sin preparación es enfrentarse a multas, a escándalos reputacionales, y a sistemas que causan daño real.
 
 IAGO: [explicativo] En el Módulo 13 del máster MaquinarIa Pesada trabajamos todo el marco regulatorio del EU AI Act con los plazos y sanciones reales, los frameworks NIST AI RMF e ISO 42001 con su aplicación práctica, las métricas de equidad con código real usando Fairlearn y AIF360, los orígenes de los sesgos en datos y modelos, la auditoría en los cuatro pilares, y el gobierno del dato con las herramientas del estado del arte.
 
 MARÍA: [didáctico] No es teoría de cumplimiento. Es la capacidad de entrar en una reunión con dirección, con legal, con reguladores, y poder hablar con precisión de qué riesgos tiene tu sistema de IA, cómo los estás midiendo, y qué controles tienes en marcha. Eso tiene valor directo en cualquier organización que tome la IA en serio.
+# CIERRE_FINAL
 
 IAGO: [grave] Si tu empresa ya despliega IA o va a hacerlo en los próximos meses, este módulo no puede esperar. Las obligaciones del AI Act no esperan. El enlace para conocer el máster está en la descripción del episodio.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 MARÍA: [cálido] Nos vemos en el próximo episodio. Hasta entonces, construye con criterio.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

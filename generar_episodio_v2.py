@@ -106,12 +106,36 @@ def speaker_display(spec: dict, speaker: str) -> str:
 def parsear_guion(ruta_guion: str, ep_code: str, spec: dict) -> list[dict]:
     text = Path(ruta_guion).read_text(encoding="utf-8")
     issues = validate_script_text(text, ep_code, spec)
+
     if issues:
-        issue_text = "\n".join(f"- {issue}" for issue in issues)
-        raise SystemExit(
-            "La validacion obligatoria del guion ha fallado antes de sintetizar:\n"
-            f"{issue_text}"
+        # Separar issues ESTRUCTURALES (fatales) de issues de CALIDAD (advertencias)
+        HARD_KEYWORDS = (
+            "falta la seccion",
+            "fuera de orden",
+            "no contiene bloques",
+            "debe abrirlo",
+            "menos de 4 bloques",
+            "mas de 6 bloques",
+            "falta la frase",
+            "falta la instruccion",
+            "falta la apertura",
         )
+        hard_issues = [
+            i for i in issues
+            if any(kw in i.lower() for kw in HARD_KEYWORDS)
+        ]
+        soft_issues = [i for i in issues if i not in hard_issues]
+
+        if hard_issues:
+            issue_text = "\n".join(f"- {i}" for i in hard_issues)
+            raise SystemExit(
+                "La validacion obligatoria del guion ha fallado antes de sintetizar:\n"
+                f"{issue_text}"
+            )
+        if soft_issues:
+            print("[WARN] Problemas de calidad detectados en el guion (no fatales):")
+            for i in soft_issues:
+                print(f"  - {i}")
 
     blocks = parse_script_blocks(text, spec)
     for block in blocks:

@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 lanzar_produccion.py
 --------------------
-Ejecuta todos los episodios pendientes de audio y guarda la salida completa
-(stdout + stderr) en episodios/{ep}_cmd.log para revision posterior.
+Ejecuta todos los episodios pendientes de audio.
+Captura stdout + stderr completos en episodios/{ep}_cmd.log.
+Acumula un log maestro en episodios/produccion_runs.log.
 
 Uso:
   python lanzar_produccion.py              # todos los pendientes
-  python lanzar_produccion.py --ep M3_E_Machine_Learning_Clasico  # uno solo
+  python lanzar_produccion.py --ep M3_E_Machine_Learning_Clasico
   python lanzar_produccion.py --dry-run    # muestra comandos sin ejecutar
-"""
 
+Logs generados:
+  episodios/{ep}_cmd.log        stdout+stderr completo de cada episodio
+  episodios/produccion_runs.log acumula todas las sesiones con timestamps
+"""
 from __future__ import annotations
 
 import argparse
@@ -19,10 +24,21 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
-sys.path.insert(0, str(BASE_DIR))
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
+BASE_DIR      = Path(__file__).parent
+EPISODIOS_DIR = BASE_DIR / "episodios"
+MASTER_LOG    = EPISODIOS_DIR / "produccion_runs.log"
+
+sys.path.insert(0, str(BASE_DIR))
 from estado_proyecto import scan, GUIONES_DIR, AUDIO_DIR, GUION_RE, AUDIO_RE
+
+
+def ts() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def pendientes() -> list[tuple[str, Path]]:
@@ -38,11 +54,31 @@ def pendientes() -> list[tuple[str, Path]]:
 
 
 def cmd_log_path(ep_code: str) -> Path:
-    return BASE_DIR / "episodios" / f"{ep_code}_cmd.log"
+    EPISODIOS_DIR.mkdir(parents=True, exist_ok=True)
+    return EPISODIOS_DIR / f"{ep_code}_cmd.log"
+
+
+def append_master_log(entry: str) -> None:
+    EPISODIOS_DIR.mkdir(parents=True, exist_ok=True)
+    with MASTER_LOG.open("a", encoding="utf-8") as fh:
+        fh.write(entry + "\n")
+
+
+def _extract_error_hint(stdout: str, stderr: str) -> str:
+    """Extrae la linea de error mas informativa del output combinado."""
+    combined = (stderr + "\n" + stdout).splitlines()
+    priority = [
+        ln.strip() for ln in combined
+        if any(kw in ln for kw in ("Error", "Exception", "FATAL", "Traceback", "SystemExit"))
+    ]
+    if priority:
+        return priority[-1][:200]
+    nonempty = [ln.strip() for ln in combined if ln.strip()]
+    return nonempty[-1][:200] if nonempty else "(sin output)"
 
 
 def run_episode(ep_code: str, guion_path: Path, dry_run: bool) -> bool:
-    """Ejecuta el generador y guarda toda la salida en _cmd.log. Devuelve True si OK."""
+    """Ejecuta generar_episodio_v2.py para un episodio. Devuelve True si OK."""
     cmd = [
         sys.executable,
         str(BASE_DIR / "generar_episodio_v2.py"),
@@ -51,54 +87,107 @@ def run_episode(ep_code: str, guion_path: Path, dry_run: bool) -> bool:
     ]
     log_path = cmd_log_path(ep_code)
 
-    print(f"\n{'='*60}")
-    print(f"  {ep_code}")
-    print(f"  Guion : {guion_path.name}")
-    print(f"  Log   : {log_path.name}")
+    sep = "=" * 60
+    print(f"\n{sep}")
+    print(f"  EPISODIO : {ep_code}")
+    print(f"  Guion    : {guion_path.name}")
+    print(f"  Log cmd  : {log_path.name}")
+
     if dry_run:
-        print(f"  CMD   : {' '.join(cmd)}")
-        print("  [dry-run — no se ejecuta]")
+        print(f"  CMD      : {' '.join(cmd)}")
+        print("  [DRY-RUN - no se ejecuta]")
         return True
 
-    started = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"  Inicio: {started}")
+    started = ts()
+    print(f"  Inicio   : {started}")
+    print("  Ejecutando... (puede tardar varios minutos)")
+    sys.stdout.flush()
 
-    result = subprocess.run(
-        cmd,
-        cwd=str(BASE_DIR),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=1800,
+        )
+        finished = ts()
+        ok       = result.returncode == 0
+        stdout   = result.stdout
+        stderr   = result.stderr
+        returncode = result.returncode
+    except subprocess.TimeoutExpired as exc:
+        finished   = ts()
+        ok         = False
+        stdout     = getattr(exc, "stdout", "") or ""
+        stderr     = "[TIMEOUT] El proceso supero 30 minutos de ejecucion.\n"
+        returncode = -1
+    except Exception as exc:
+        finished   = ts()
+        ok         = False
+        stdout     = ""
+        stderr     = f"[EXCEPCION EN LANZADOR] {type(exc).__name__}: {exc}\n"
+        returncode = -1
 
-    finished = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    ok = result.returncode == 0
+    status_str = "OK" if ok else "FALLO"
 
-    header = (
-        f"COMANDO: {' '.join(cmd)}\n"
-        f"INICIO:  {started}\n"
-        f"FIN:     {finished}\n"
-        f"EXIT:    {result.returncode} ({'OK' if ok else 'FALLO'})\n"
+    # ── Log por episodio ──────────────────────────────────────────────────────
+    header_log = (
+        f"{'='*60}\n"
+        f"EPISODIO : {ep_code}\n"
+        f"GUION    : {guion_path}\n"
+        f"COMANDO  : {' '.join(cmd)}\n"
+        f"INICIO   : {started}\n"
+        f"FIN      : {finished}\n"
+        f"EXIT     : {returncode} ({status_str})\n"
         f"{'='*60}\n\n"
     )
-
-    log_path.write_text(
-        header + result.stdout + ("\n--- STDERR ---\n" + result.stderr if result.stderr.strip() else ""),
-        encoding="utf-8",
+    stdout_section = (
+        "--- STDOUT ---\n"
+        + (stdout if stdout.strip() else "(vacio)\n")
+        + "\n"
     )
+    stderr_section = (
+        ("\n--- STDERR ---\n" + stderr + "\n")
+        if stderr and stderr.strip() else ""
+    )
+    log_path.write_text(header_log + stdout_section + stderr_section, encoding="utf-8")
 
-    status = "OK" if ok else "FALLO"
-    print(f"  Fin   : {finished}  [{status}]")
+    # ── Log maestro ──────────────────────────────────────────────────────────
+    master_line = f"[{finished}] {status_str:5s} | {ep_code} | log: {log_path.name}"
     if not ok:
-        # Mostrar las primeras lineas del error para diagnostico rapido
-        stderr_lines = [l for l in result.stderr.splitlines() if l.strip()]
+        hint = _extract_error_hint(stdout, stderr)
+        master_line += f"\n              error: {hint}"
+    append_master_log(master_line)
+
+    # ── Consola ──────────────────────────────────────────────────────────────
+    print(f"  Fin      : {finished}  [{status_str}]")
+    print(f"  Log      : {log_path}")
+
+    if not ok:
+        print(f"\n  {'-'*56}")
+        print("  ERROR - detalle:")
+        hint = _extract_error_hint(stdout, stderr)
+        print(f"    {hint}")
+
+        stdout_tail = [ln for ln in stdout.splitlines() if ln.strip()][-8:]
+        if stdout_tail:
+            print(f"\n  [stdout - ultimas {len(stdout_tail)} lineas]")
+            for ln in stdout_tail:
+                print(f"    {ln}")
+
+        stderr_lines = [ln for ln in stderr.splitlines() if ln.strip()]
         if stderr_lines:
-            print(f"  Error : {stderr_lines[-1]}")
-        else:
-            stdout_lines = [l for l in result.stdout.splitlines() if l.strip()]
-            for line in stdout_lines[-3:]:
-                print(f"         {line}")
+            max_show = 20
+            label = "completo" if len(stderr_lines) <= max_show else f"ultimas {max_show} lineas"
+            print(f"\n  [stderr - {label}]")
+            for ln in stderr_lines[-max_show:]:
+                print(f"    {ln}")
+
+        print(f"  {'-'*56}")
+        print(f"  -> Log completo: episodios/{log_path.name}")
 
     return ok
 
@@ -121,9 +210,22 @@ def main() -> None:
             print(f"No se encontro '{args.ep}' en la lista de pendientes.")
             return
 
-    print(f"\nEpisodios pendientes: {len(todos)}")
-    for ep, g in todos:
-        print(f"  {ep}")
+    run_ts = ts()
+    sep = "=" * 60
+    print(f"\n{sep}")
+    print(f"  LANZADOR DE PRODUCCION - {run_ts}")
+    print(f"  Log maestro: {MASTER_LOG}")
+    print(f"  Episodios pendientes: {len(todos)}")
+    for ep, _ in todos:
+        print(f"    * {ep}")
+    print("-" * 60)
+
+    append_master_log(
+        f"\n{'='*60}\n"
+        f"INICIO SESION : {run_ts}\n"
+        f"Episodios     : {len(todos)}\n"
+        f"{'='*60}"
+    )
 
     ok_list:   list[str] = []
     fail_list: list[str] = []
@@ -134,14 +236,23 @@ def main() -> None:
         else:
             fail_list.append(ep_code)
 
-    print(f"\n{'='*60}")
-    print(f"RESUMEN")
-    print(f"  OK    ({len(ok_list)}): {', '.join(ok_list) or '—'}")
-    print(f"  FALLO ({len(fail_list)}): {', '.join(fail_list) or '—'}")
+    end_ts = ts()
+    print(f"\n{sep}")
+    print(f"  RESUMEN - {end_ts}")
+    print(f"  OK    ({len(ok_list)}): {', '.join(ok_list) or '--'}")
+    print(f"  FALLO ({len(fail_list)}): {', '.join(fail_list) or '--'}")
     if fail_list:
-        print("\nLogs de fallos:")
+        print("\n  Logs de fallos:")
         for ep in fail_list:
-            print(f"  episodios/{ep}_cmd.log")
+            print(f"    episodios/{ep}_cmd.log")
+    print(f"\n  Log maestro: {MASTER_LOG}")
+
+    append_master_log(
+        f"FIN SESION    : {end_ts}\n"
+        f"OK ({len(ok_list)}): {', '.join(ok_list) or '--'}\n"
+        f"FALLO ({len(fail_list)}): {', '.join(fail_list) or '--'}\n"
+        f"{'-'*60}"
+    )
 
 
 if __name__ == "__main__":

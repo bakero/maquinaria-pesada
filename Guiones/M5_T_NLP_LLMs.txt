@@ -3,17 +3,30 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] Hay un momento exacto en que una máquina deja de manipular símbolos y empieza a entender el lenguaje. O al menos eso parece. Y la pregunta que nadie responde bien es: ¿qué está pasando realmente ahí dentro?
+IAGO: [tenso] Hay un momento exacto en que una máquina deja de manipular símbolos y empieza a entender el lenguaje. O al menos eso parece. Y la pregunta que nadie responde bien es: ¿qué está pasando realmente ahí dentro?
 
-IAGO: [curioso] Llevas semanas con esa pregunta. Y yo también. Porque cuando usas un LLM todos los días y no entiendes cómo funciona, estás pilotando un avión con los ojos vendados.
+MARÍA: [curioso] Llevas semanas con esa pregunta. Y yo también. Porque cuando usas un LLM todos los días y no entiendes cómo funciona, estás pilotando un avión con los ojos vendados.
 
-MARÍA: [serio] Hoy vamos al núcleo. Tokenización, embeddings, arquitectura transformer, mecanismo de atención. Todo lo que hace que GPT-4, Claude o Gemini sean lo que son. Bienvenidos a MaquinarIa Pesada.
+IAGO: [serio] Hoy vamos al núcleo. Tokenización, embeddings, arquitectura transformer, mecanismo de atención. Todo lo que hace que GPT-4, Claude o Gemini sean lo que son. Bienvenidos a MaquinarIa Pesada.
 
-IAGO: [firme] Módulo cinco del máster: NLP y Large Language Models. Si después de este episodio no ves los LLMs de otra manera, algo hemos hecho mal.
+MARÍA: [firme] Módulo cinco del máster: NLP y Large Language Models. Si después de este episodio no ves los LLMs de otra manera, algo hemos hecho mal.
+IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO — TOKENIZACIÓN
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo cinco, el procesamiento del lenguaje natural y los grandes modelos.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] Empecemos por donde todo empieza: el token. Antes de que un modelo procese una sola palabra, la trocea. No en letras, no en palabras enteras. En tokens. Fragmentos de texto que pueden ser una sílaba, una palabra o incluso un signo de puntuación.
 
@@ -25,7 +38,6 @@ IAGO: [serio] El tokenizador más usado hoy es BPE: Byte Pair Encoding. Parte de
 
 MARÍA: [reflexivo] ¿Y qué pasa cuando el modelo ve una palabra que nunca ha visto? Ahí es donde BPE brilla. La descompone en subtokens conocidos. "Tokenización" puede ser "token", "iza", "ción". El modelo siempre tiene algo con qué trabajar.
 
-# NÚCLEO TEMÁTICO — EMBEDDINGS
 
 IAGO: [didáctico] Bien, tenemos tokens. Pero un modelo no puede operar sobre texto directamente. Necesita números. Y aquí entra uno de los conceptos más poderosos de todo el campo: los embeddings.
 
@@ -34,12 +46,12 @@ MARÍA: [curioso] Explícamelo como si yo no supiera nada. Porque creo que mucha
 IAGO: [explicativo] Un embedding es una representación vectorial de un token. Un vector de, pongamos, mil quinientas dimensiones. Y la magia es que ese vector captura significado. "Rey" menos "hombre" más "mujer" da algo muy cercano a "reina". No es metáfora, es álgebra lineal real sobre vectores de significado.
 
 MARÍA: [contundente] Eso es lo que me sigue impresionando después de años en esto. Que el significado lingüístico emerge de operaciones matemáticas sobre vectores. Nadie programó que "rey" y "reina" tuvieran esa relación. El modelo la descubrió solo.
+# BLOQUE_2
 
 IAGO: [serio] Y los embeddings no son solo para palabras. Hoy tenemos embeddings de frases, de párrafos, de documentos enteros. Son la base de los sistemas de búsqueda semántica, de los RAG, de la detección de similitud. Sin embeddings, la IA moderna no existe.
 
 MARÍA: [irónico] O sea que cuando alguien dice que un LLM "entiende" el texto, en realidad está diciendo que mapea ese texto a un espacio vectorial de altísima dimensión y opera sobre él. Romántico, ¿verdad?
 
-# NÚCLEO TEMÁTICO — TRANSFORMER
 
 IAGO: [tenso] Llegamos al corazón del asunto. 2017. Un paper de Google con un título que parecía modesto: "Attention Is All You Need". Ocho autores. Un modelo. El transformer. Y nada volvió a ser igual.
 
@@ -52,10 +64,23 @@ MARÍA: [reflexivo] Y la pieza que hace posible eso, que un decoder pueda mirar 
 IAGO: [didáctico] Atención, en su versión más simple, responde a una pregunta: para generar este token de salida, ¿qué partes de la entrada son más relevantes? Para cada par posible de tokens, calcula un peso de atención. Un número que dice cuánto debe influir ese token en el procesamiento del otro.
 
 MARÍA: [serio] Y la versión que usan los transformers modernos es multi-head attention. No una sola cabeza de atención, sino varias en paralelo. Cada cabeza aprende a atender a tipos distintos de relaciones: sintácticas, semánticas, de largo alcance. Es como tener varios lectores leyendo el mismo texto con distintos criterios.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 IAGO: [conversacional] Lo que me parece brillante es que todo esto —la atención, los pesos, las relaciones— emerge del entrenamiento. Nadie define explícitamente qué debe atender cada cabeza. El modelo aprende qué es relevante a partir de millones de ejemplos.
 
-# BLOQUE CREATIVO
+
+MARÍA: [reflexivo] Hay algo que todavía genera debate activo en la comunidad: las capacidades emergentes. Comportamientos que el modelo no mostraba en ninguna escala pequeña y que aparecen de repente al superar ciertos umbrales de parámetros. Como si algo cambiara cualitativamente, no solo cuantitativamente.
+
+IAGO: [irónico] Razonamiento aritmético de varios pasos, traducción en cero ejemplos, resolución de analogías complejas. Nadie las programó. Simplemente aparecieron cuando el modelo fue suficientemente grande. Lo que dice algo bastante incómodo sobre cuánto entendemos realmente de por qué funcionan.
+
+MARÍA: [firme] Y también hay límites claros. Los LLMs alucinan. Generan texto plausible pero falso con la misma fluidez que texto verdadero. No tienen memoria persistente entre sesiones. No actualizan su conocimiento en tiempo real. Y su razonamiento, aunque impresionante en superficie, puede fallar en problemas que cualquier niño de diez años resolvería.
+
+IAGO: [conversacional] Entender esos límites no es pesimismo, es ingeniería. Cuando sabes dónde falla un LLM, puedes diseñar sistemas que lo rodeen: verificación externa, RAG para conocimiento actualizado, cadenas de razonamiento estructurado. El módulo cinco te da el mapa del territorio completo.
+
 
 MARÍA: [reflexivo] Imagina que el lenguaje es una ciudad y cada palabra es un edificio. Las redes recurrentes la recorrían a pie, calle por calle, y cuando llegaban al final ya no recordaban el principio. El transformer, en cambio, la ve desde el aire. Todos los edificios al mismo tiempo, todas las distancias medidas en paralelo, todos los vecindarios visibles de golpe. Eso no es solo eficiencia. Es una forma completamente distinta de entender qué significa "entender".
 
@@ -64,6 +89,11 @@ MARÍA: [reflexivo] Imagina que el lenguaje es una ciudad y cada palabra es un e
 IAGO: [didáctico] Con todo esto sobre la mesa, ¿cómo funciona un LLM moderno de principio a fin? El proceso tiene tres grandes fases. Primero, preentrenamiento. Se le dan al modelo cantidades astronómicas de texto —billones de tokens— y aprende a predecir el siguiente token. Solo eso. Una tarea aparentemente simple que fuerza al modelo a aprender gramática, hechos, razonamiento y coherencia.
 
 MARÍA: [escéptico] Pero solo con predecir el siguiente token no basta para tener un asistente útil. Ahí entra el fine-tuning, ¿no?
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 IAGO: [firme] Exacto. La segunda fase es el ajuste fino con instrucciones, el famoso instruction tuning. Se le muestran al modelo ejemplos de instrucción y respuesta correcta, y aprende a seguir instrucciones en lugar de solo completar texto. Es lo que transforma un predictor de texto en un chatbot.
 
@@ -79,24 +109,26 @@ MARÍA: [tenso] Pero más contexto no significa mejor comprensión. Hay un probl
 
 IAGO: [serio] Y eso tiene implicaciones prácticas enormes. Si le das a un modelo un documento de cien páginas y la información clave está en la página cincuenta, puede fallar aunque técnicamente quepa en la ventana. Diseñar bien el prompt y la estructura de la información es tan importante como el modelo que usas.
 
-# NÚCLEO TEMÁTICO — CAPACIDADES EMERGENTES Y LÍMITES
+# CIERRE_CONCEPTOS
 
-MARÍA: [reflexivo] Hay algo que todavía genera debate activo en la comunidad: las capacidades emergentes. Comportamientos que el modelo no mostraba en ninguna escala pequeña y que aparecen de repente al superar ciertos umbrales de parámetros. Como si algo cambiara cualitativamente, no solo cuantitativamente.
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
 
-IAGO: [irónico] Razonamiento aritmético de varios pasos, traducción en cero ejemplos, resolución de analogías complejas. Nadie las programó. Simplemente aparecieron cuando el modelo fue suficientemente grande. Lo que dice algo bastante incómodo sobre cuánto entendemos realmente de por qué funcionan.
-
-MARÍA: [firme] Y también hay límites claros. Los LLMs alucinan. Generan texto plausible pero falso con la misma fluidez que texto verdadero. No tienen memoria persistente entre sesiones. No actualizan su conocimiento en tiempo real. Y su razonamiento, aunque impresionante en superficie, puede fallar en problemas que cualquier niño de diez años resolvería.
-
-IAGO: [conversacional] Entender esos límites no es pesimismo, es ingeniería. Cuando sabes dónde falla un LLM, puedes diseñar sistemas que lo rodeen: verificación externa, RAG para conocimiento actualizado, cadenas de razonamiento estructurado. El módulo cinco te da el mapa del territorio completo.
-
-# CIERRE CON CTA
 
 MARÍA: [serio] Y esto es exactamente la diferencia entre usar LLMs y entender LLMs. Quien entiende la arquitectura, el proceso de entrenamiento y los límites, puede construir aplicaciones robustas. Quien no, construye sobre suposiciones que el primer fallo en producción derrumba.
 
 IAGO: [firme] En el módulo cinco del máster no nos quedamos en la superficie. Trabajamos la tokenización con código real, construimos intuición sobre los embeddings, diseccionamos la atención y analizamos cómo escalan los modelos modernos. No es teoría. Es la base técnica que necesitas para todo lo que viene después.
 
 MARÍA: [explicativo] RAG, agentes, fine-tuning, evaluación de modelos: todo depende de lo que aprendes en este módulo. Si no tienes claro cómo funciona un transformer, cómo se entrena un LLM o qué significa realmente la temperatura o el top-p, las piezas siguientes del máster tendrán fisuras. Este módulo cierra esas fisuras.
+# CIERRE_FINAL
 
 IAGO: [cálido] Si esto te ha generado más preguntas que respuestas, es buena señal. Significa que estás en el umbral justo. El máster está diseñado para llevarte desde ahí hasta poder construir, evaluar y desplegar sistemas de IA reales. Nos vemos dentro.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 MARÍA: [grave] MaquinarIa Pesada. Porque la IA no se entiende de lejos.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

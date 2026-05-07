@@ -3,17 +3,30 @@
 # Hook: MARÍA (episodio par)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-MARÍA: [tenso] Tu empresa lleva meses pagando por el mejor modelo de lenguaje del mercado. Y sigue alucinando respuestas sobre tus propios productos, tus propios procedimientos internos, tus propias regulaciones. El modelo no es el problema. Es que nadie le ha dado acceso a lo que sabe tu empresa.
+IAGO: [tenso] Tu empresa lleva meses pagando por el mejor modelo de lenguaje del mercado. Y sigue alucinando respuestas sobre tus propios productos, tus propios procedimientos internos, tus propias regulaciones. El modelo no es el problema. Es que nadie le ha dado acceso a lo que sabe tu empresa.
 
-IAGO: [curioso] Y la solución no es reentrenar el modelo. Porque eso costaría millones, llevaría meses, y al día siguiente tus documentos habrían cambiado de nuevo.
+MARÍA: [curioso] Y la solución no es reentrenar el modelo. Porque eso costaría millones, llevaría meses, y al día siguiente tus documentos habrían cambiado de nuevo.
 
-MARÍA: [serio] La solución se llama RAG. Retrieval-Augmented Generation. Y es el patrón arquitectónico que separa a los sistemas de IA que funcionan en producción de los que solo funcionan en demos. Hoy vamos al módulo siete del máster.
+IAGO: [serio] La solución se llama RAG. Retrieval-Augmented Generation. Y es el patrón arquitectónico que separa a los sistemas de IA que funcionan en producción de los que solo funcionan en demos. Hoy vamos al módulo siete del máster.
 
-IAGO: [firme] Arquitectura RAG, chunking, búsqueda híbrida, re-ranking, HyDE, GraphRAG y evaluación con RAGAS. Todo lo que necesitas para construir un sistema de IA que sepa lo que sabe tu empresa.
+MARÍA: [firme] Arquitectura RAG, chunking, búsqueda híbrida, re-ranking, HyDE, GraphRAG y evaluación con RAGAS. Todo lo que necesitas para construir un sistema de IA que sepa lo que sabe tu empresa.
+IAGO: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO — EL PROBLEMA
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo siete, los sistemas RAG.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] Empecemos por el problema real. Los modelos de lenguaje tienen una limitación estructural: su conocimiento está congelado en el momento del entrenamiento. No saben lo que pasó la semana pasada. No saben lo que dice tu manual interno. Y lo que no saben, lo inventan con una fluidez inquietante.
 
@@ -25,7 +38,6 @@ IAGO: [contundente] RAG resuelve exactamente eso. En lugar de depender del conoc
 
 MARÍA: [reflexivo] Y la elegancia del enfoque está en que la base de conocimiento se puede actualizar en cualquier momento, sin tocar el modelo. Subes un nuevo documento, se indexa, y el sistema lo tiene disponible en segundos. No en semanas.
 
-# NÚCLEO TEMÁTICO — ARQUITECTURA BÁSICA
 
 IAGO: [didáctico] La arquitectura de un sistema RAG básico tiene dos fases. La fase de indexación, que es offline: los documentos se procesan, se dividen en fragmentos manejables llamados chunks, se convierten en embeddings vectoriales, y se almacenan en una base de datos vectorial con sus metadatos.
 
@@ -34,8 +46,8 @@ MARÍA: [explicativo] Y la fase de recuperación y generación, que es online: c
 IAGO: [serio] Lo que hace poderoso a este sistema es que combina dos capacidades que antes estaban separadas. La precisión de los sistemas de búsqueda, que pueden indexar millones de documentos actualizados, con la capacidad de síntesis y razonamiento de los LLMs, que pueden generar respuestas en lenguaje natural a partir de múltiples fuentes.
 
 MARÍA: [irónico] Y puede citar las fuentes. Lo que en un contexto legal o regulatorio no es un lujo, es un requisito mínimo.
+# BLOQUE_2
 
-# NÚCLEO TEMÁTICO — CHUNKING
 
 IAGO: [didáctico] Pero el sistema básico tiene sus límites. Y uno de los más importantes está en una decisión que parece técnica pero tiene consecuencias enormes: cómo fragmentas los documentos. El chunking.
 
@@ -49,19 +61,22 @@ IAGO: [didáctico] El parent-child chunking mantiene chunks pequeños para la re
 
 MARÍA: [conversacional] Que es exactamente el tipo de trade-off que nadie te enseña en un tutorial de YouTube.
 
-# NÚCLEO TEMÁTICO — BÚSQUEDA HÍBRIDA Y RE-RANKING
 
 IAGO: [tenso] Hay un fallo clásico en los sistemas RAG puramente vectoriales. La búsqueda semántica es potente, pero falla cuando la consulta contiene términos técnicos específicos, acrónimos o nombres propios que el embedding no captura bien. Buscar "GDPR artículo 17" en una base vectorial puede darte resultados sobre privacidad en general, no sobre el artículo específico.
 
 MARÍA: [explicativo] Ahí entra la búsqueda híbrida. Combina la búsqueda vectorial, para similitud semántica, con la búsqueda por keywords usando BM25, el algoritmo estándar de los motores de búsqueda, para coincidencia exacta de términos. Los resultados de ambas se combinan mediante Reciprocal Rank Fusion o un cross-encoder.
 
 IAGO: [firme] Y los datos son contundentes: la búsqueda híbrida produce consistentemente mejores resultados que cualquiera de los dos enfoques por separado. Especialmente en documentos técnicos y dominios especializados, que es exactamente donde más se necesita que el sistema funcione bien.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [didáctico] Después de recuperar los candidatos viene el re-ranking. La idea es usar un modelo más preciso, pero también más lento y costoso, para reordenar un conjunto inicial de resultados. La pipeline es: recuperar los veinte o cincuenta más relevantes con búsqueda eficiente, y luego usar un cross-encoder para seleccionar los tres o cinco mejores que van al modelo.
 
 IAGO: [reflexivo] Los cross-encoders son significativamente más precisos que los bi-encoders estándar porque analizan el par consulta-documento conjuntamente en lugar de por separado. Pero son demasiado lentos para buscar sobre millones de documentos directamente. La pipeline retrieve-then-rerank te da la precisión del cross-encoder al coste de la búsqueda eficiente.
 
-# NÚCLEO TEMÁTICO — HYDE Y GRAPHRAG
 
 MARÍA: [didáctico] Hay un problema más sutil que la búsqueda híbrida no resuelve completamente: el desajuste semántico entre la consulta del usuario y los documentos relevantes. El usuario pregunta de una forma, el documento responde de otra. Los embeddings de ambos no se parecen aunque la información esté ahí.
 
@@ -73,9 +88,13 @@ IAGO: [serio] Y para estructuras de conocimiento más complejas, donde la inform
 
 MARÍA: [conversacional] Casos de uso donde esto brilla: análisis de contratos que referencian otros contratos, bases de conocimiento donde los conceptos se definen en términos de otros conceptos, compliance donde una regulación afecta a múltiples procedimientos relacionados.
 
-# NÚCLEO TEMÁTICO — EVALUACIÓN CON RAGAS
 
 IAGO: [tenso] Y llegamos a la parte que más se descuida y que más proyectos de RAG destruye en producción: la evaluación. ¿Cómo sabes si tu sistema RAG funciona bien? ¿Por intuición? ¿Por que las demos quedan bonitas?
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 MARÍA: [firme] Para eso existe RAGAS. Retrieval-Augmented Generation Assessment. Es el framework estándar de evaluación de sistemas RAG y define cuatro métricas fundamentales.
 
@@ -89,13 +108,15 @@ MARÍA: [reflexivo] Hay algo que me parece fundamental en este enfoque. RAG no e
 
 IAGO: [irónico] Y quien no entiende esa arquitectura en tres capas acaba comprando licencias de IA carísimas para hacer preguntas sobre sus documentos y obtener respuestas fabricadas con datos de entrenamiento de hace dos años.
 
-# BLOQUE CREATIVO
 
 MARÍA: [pausado] Imagina una biblioteca con millones de libros. Un modelo de lenguaje es un lector que se ha leído todos esos libros pero hace tres años, y que además tiende a recordar algunos párrafos de forma imprecisa. RAG añade a esa biblioteca un sistema de búsqueda en tiempo real: antes de responder, el lector va a los estantes, recupera los libros más relevantes, los abre sobre la mesa, y responde mirando directamente las páginas. No de memoria. Con las fuentes delante.
 
 IAGO: [natural] Y la diferencia entre los dos sistemas no es solo de precisión. Es de confianza. Un sistema que cita fuentes auditables, cuyas respuestas puedes rastrear hasta los documentos originales, es un sistema que puedes desplegar en contextos donde las equivocaciones tienen consecuencias reales.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 MARÍA: [serio] Los casos de uso donde RAG marca la diferencia son exactamente los casos de uso que más impacto tienen en la empresa. Asistentes de documentación técnica, bases de conocimiento internas, análisis de contratos, compliance con regulaciones. Todos ellos requieren precisión factual, fuentes auditables y actualización continua.
 
@@ -104,7 +125,16 @@ IAGO: [didáctico] En el módulo siete del máster construimos sistemas RAG de p
 MARÍA: [explicativo] Y también abordamos GraphRAG para estructuras de conocimiento complejas. Porque los documentos empresariales reales no son fragmentos de texto independientes. Son redes de referencias, procedimientos que se citan entre sí, regulaciones que se aplican a múltiples procesos. La gestión del conocimiento en la empresa real requiere un enfoque que va más allá del índice vectorial plano.
 
 IAGO: [firme] Si tu empresa tiene documentación interna y quiere un sistema de IA que la use de forma fiable, este módulo es el mapa. Si estás construyendo productos de IA para clientes que necesitan respuestas precisas sobre sus propios datos, este módulo es la base técnica que necesitas.
+# CIERRE_FINAL
 
 MARÍA: [cálido] El conocimiento de tu empresa ya existe. Lo que falta es el sistema que lo hace accesible a la IA de forma que funcione en producción. El módulo siete del máster te enseña exactamente cómo construirlo. El enlace está en las notas del episodio.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque un modelo que no accede a tu conocimiento no trabaja para ti. Solo alucina sobre ti.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas
