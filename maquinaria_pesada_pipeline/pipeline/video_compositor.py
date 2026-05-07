@@ -74,7 +74,8 @@ def compose_video(config: dict,
                   output_folder: str | Path,
                   episode_id: str,
                   preview: bool = False,
-                  audio_structure: dict | None = None) -> str:
+                  audio_structure: dict | None = None,
+                  scene_track: list[dict] | None = None) -> str:
     """
     Devuelve la ruta del MP4 final.
 
@@ -108,24 +109,32 @@ def compose_video(config: dict,
 
     workdir = output_folder / "_compose_tmp"
     workdir.mkdir(parents=True, exist_ok=True)
-    concat_list = workdir / "frames_concat.txt"
-    _build_concat_list(frames, concat_list)
-
     body_video = workdir / f"body{suffix}.mp4"
 
-    # 1) Video de frames a la duracion del audio del episodio.
-    cmd_body = [
-        "ffmpeg", "-y",
-        "-f", "concat", "-safe", "0",
-        "-i", str(concat_list),
-        "-vf", f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30",
-        "-c:v", "libx264", "-preset", "veryfast" if preview else "slow",
-        "-crf", "23" if preview else "18",
-        "-pix_fmt", "yuv420p",
-        "-r", "30",
-        str(body_video),
-    ]
-    _run(cmd_body, log)
+    # 1) Construir el body alternando PIZARRA (frames PNG) y ESTUDIO (clips MP4)
+    #    si tenemos scene_track. Si no hay scene_track, fallback al modo
+    #    antiguo (todo pizarra).
+    if scene_track:
+        _build_body_from_track(
+            scene_track, frames, workdir, body_video, w, h,
+            preview=preview, log=log,
+        )
+    else:
+        # Modo legacy: solo pizarra (todos los frames concatenados)
+        concat_list = workdir / "frames_concat.txt"
+        _build_concat_list(frames, concat_list)
+        cmd_body = [
+            "ffmpeg", "-y",
+            "-f", "concat", "-safe", "0",
+            "-i", str(concat_list),
+            "-vf", f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30",
+            "-c:v", "libx264", "-preset", "veryfast" if preview else "slow",
+            "-crf", "23" if preview else "18",
+            "-pix_fmt", "yuv420p",
+            "-r", "30",
+            str(body_video),
+        ]
+        _run(cmd_body, log)
 
     # 2) Si tenemos audio_structure con sintonia detectada y un intro_video,
     #    creamos un video de sintonia normalizado y lo overlay-amos sobre body
@@ -215,6 +224,150 @@ def compose_video(config: dict,
     if sintonia_start is not None:
         log.info(f"  intro_video overlay aplicado en [{sintonia_start:.2f}s, {sintonia_end:.2f}s]")
     return str(final_path)
+
+
+def _build_body_from_track(scene_track: list[dict],
+                            pizarra_frames: list[dict],
+                            workdir: Path,
+                            body_out: Path,
+                            w: int, h: int,
+                            preview: bool = False,
+                            log=None) -> None:
+    """
+    Construye el body_video alternando segmentos de pizarra y estudio.
+
+    Estrategia:
+      - Cada segmento del scene_track se materializa como un clip MP4
+        normalizado a (w, h, 30fps).
+      - Para PIZARRA: cojo los frames PNG del frames_index que solapan
+        [seg.start, seg.end] y los concateno con sus duraciones (cada PNG
+        durante su intervalo). Si la suma no llega a la duracion del
+        segmento, alargo el ultimo frame.
+      - Para ESTUDIO: tomo el clip MP4, lo loop-eo si es mas corto y lo
+        recorto a la duracion exacta del segmento.
+      - Concateno todos los clips temporales con concat demuxer.
+
+    Asi obtenemos un body_video con timing exacto sincronizado con el audio.
+    """
+    log = log or get_logger("06_video_compositor")
+    workdir.mkdir(parents=True, exist_ok=True)
+    seg_clips = []
+
+    for i, seg in enumerate(scene_track):
+        seg_dur = max(0.05, float(seg.get("end", 0)) - float(seg.get("start", 0)))
+        seg_clip = workdir / f"seg_{i:03d}_{seg['type']}.mp4"
+
+        if seg["type"] == "blank":
+            # Frame neutro (negro con rejilla industrial) para silencios y la
+            # zona de sintonia (donde el intro_video se overlay-a aparte).
+            blank = workdir / f"seg_{i:03d}_blank.png"
+            try:
+                import sys as _sys
+                _templates = Path(__file__).parent.parent / "templates"
+                if str(_templates.parent) not in _sys.path:
+                    _sys.path.insert(0, str(_templates.parent))
+                from templates.background_generators import get_background  # type: ignore
+                bg = get_background("industrial_grid", w, h)
+                bg.save(blank, "PNG")
+            except Exception:
+                from PIL import Image as _Image
+                _Image.new("RGB", (w, h), (13, 13, 13)).save(blank, "PNG")
+            cmd = [
+                "ffmpeg", "-y",
+                "-loop", "1", "-t", f"{seg_dur:.3f}", "-i", str(blank),
+                "-vf", f"scale={w}:{h}:format=yuv420p,fps=30",
+                "-c:v", "libx264", "-preset", "veryfast",
+                "-crf", "23", "-pix_fmt", "yuv420p", "-r", "30",
+                "-an", str(seg_clip),
+            ]
+            _run(cmd, log)
+        elif seg["type"] == "estudio" and seg.get("source"):
+            # Loop + cut para llenar la duracion del segmento
+            src_dur = _intro_dur(seg["source"]) or seg_dur
+            loops = max(0, int(seg_dur // max(src_dur, 0.1)))  # repeticiones extra
+            cmd = [
+                "ffmpeg", "-y",
+                "-stream_loop", str(loops), "-i", str(seg["source"]),
+                "-t", f"{seg_dur:.3f}",
+                "-an",
+                "-vf", f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30",
+                "-c:v", "libx264", "-preset", "veryfast" if preview else "medium",
+                "-crf", "23" if preview else "20",
+                "-pix_fmt", "yuv420p",
+                "-r", "30",
+                str(seg_clip),
+            ]
+            _run(cmd, log)
+        else:
+            # PIZARRA: localizar frames que solapan el segmento
+            local_frames = [
+                f for f in pizarra_frames
+                if f["end"] > seg["start"] and f["start"] < seg["end"]
+            ]
+            if not local_frames:
+                # No hay frames -> fondo negro con name_tag minimo no, mejor caer a estudio
+                log.warning(f"  Segmento pizarra sin frames asociados: {seg['start']}-{seg['end']}. "
+                            f"Generando frame negro placeholder.")
+                # Crear un frame negro temporal
+                blank = workdir / f"seg_{i:03d}_blank.png"
+                from PIL import Image as _Image
+                _Image.new("RGB", (w, h), (13, 13, 13)).save(blank, "PNG")
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-loop", "1", "-t", f"{seg_dur:.3f}", "-i", str(blank),
+                    "-vf", f"scale={w}:{h}:format=yuv420p,fps=30",
+                    "-c:v", "libx264", "-preset", "veryfast",
+                    "-crf", "23", "-pix_fmt", "yuv420p", "-r", "30",
+                    "-an", str(seg_clip),
+                ]
+                _run(cmd, log)
+            else:
+                # Lista concat para las imagenes del segmento, ajustando duraciones
+                concat = workdir / f"seg_{i:03d}_pizarra_concat.txt"
+                lines = []
+                cursor = float(seg["start"])
+                for j, f in enumerate(local_frames):
+                    f_start = max(float(f["start"]), float(seg["start"]))
+                    f_end = min(float(f["end"]), float(seg["end"]))
+                    f_dur = max(0.05, f_end - f_start)
+                    p = Path(f["path"]).resolve().as_posix()
+                    lines.append(f"file '{p}'")
+                    lines.append(f"duration {f_dur:.3f}")
+                    cursor = f_end
+                # ffmpeg concat exige duplicar el ultimo file sin duration
+                last = Path(local_frames[-1]["path"]).resolve().as_posix()
+                lines.append(f"file '{last}'")
+                concat.write_text("\n".join(lines), encoding="utf-8")
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-f", "concat", "-safe", "0",
+                    "-i", str(concat),
+                    "-t", f"{seg_dur:.3f}",
+                    "-vf", f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30",
+                    "-c:v", "libx264", "-preset", "veryfast" if preview else "medium",
+                    "-crf", "23" if preview else "20",
+                    "-pix_fmt", "yuv420p",
+                    "-r", "30",
+                    "-an", str(seg_clip),
+                ]
+                _run(cmd, log)
+        seg_clips.append(seg_clip)
+
+    # Concatenar todos los clips (todos al mismo formato/fps/res)
+    final_concat = workdir / "body_concat.txt"
+    final_concat.write_text(
+        "\n".join(f"file '{p.resolve().as_posix()}'" for p in seg_clips),
+        encoding="utf-8",
+    )
+    cmd = [
+        "ffmpeg", "-y",
+        "-f", "concat", "-safe", "0",
+        "-i", str(final_concat),
+        "-c", "copy",
+        str(body_out),
+    ]
+    _run(cmd, log)
+    log.info(f"  body_video construido desde track: {len(seg_clips)} segmentos")
 
 
 def _intro_dur(path: str | Path) -> float:

@@ -60,6 +60,8 @@ from pipeline.subtitle_generator import (
 )
 from pipeline.video_compositor import compose_video, derive_video_basename
 from pipeline.metadata_generator import generate_metadata
+from pipeline.scene_track_builder import build_scene_track
+from pipeline.scene_library import SceneLibrary
 
 
 def _load_or_compute(path: Path, compute, *args, **kwargs):
@@ -270,6 +272,21 @@ def main() -> int:
             srt_dir = Path(videos_folder_cfg) if videos_folder_cfg else output_folder
             srt_path = str(srt_dir / f"{base_name}.srt")
 
+        # ─── 7b. Construccion del scene_track (alterna estudio/pizarra) ──
+        log.info("[7b] Construccion del scene_track (estudio vs pizarra)...")
+        library_base = config["assets"].get("scene_library_folder") or \
+                       (Path(config["assets"].get("videos_folder", "")) /
+                        "escenas_biblioteca")
+        try:
+            library = SceneLibrary(library_base)
+            scene_track = build_scene_track(
+                timeline, audio_structure, library, output_folder,
+                force=args.force,
+            )
+        except Exception as exc:
+            log.warning(f"  scene_track no disponible: {exc}. Modo legacy (todo pizarra).")
+            scene_track = None
+
         # ─── 8. Composicion final ─────────────────────────────────
         if args.from_step <= 8:
             log.info("[8/9] Composicion final con ffmpeg...")
@@ -278,6 +295,7 @@ def main() -> int:
                 config["assets"]["episode_audio"], srt_path,
                 output_folder, episode_id, preview=args.preview,
                 audio_structure=audio_structure,
+                scene_track=scene_track,
             )
 
         # ─── 9. Metadata ──────────────────────────────────────────
