@@ -187,13 +187,14 @@ def compose_video(config: dict,
         esc = _escape_srt_for_ffmpeg(Path(srt_path))
         # Subtitulos a la franja inferior de la pantalla:
         # MarginV en pixeles desde abajo. ~30 los pega bien al borde.
-        # Fontsize 24 a 1080p (mas legible, menos invasivo).
-        font_size = 24 if h >= 1080 else 18
+        # Subtitulos pequenos y discretos. Fontsize 18 a 1080p (~1.7%
+        # de altura) cabe sin invadir, queda profesional y legible.
+        font_size = 18 if h >= 1080 else 14
         srt_chain = (
             f"subtitles='{esc}':force_style="
             f"'FontName=Arial,Fontsize={font_size},PrimaryColour=&H00E8E8E8,"
-            f"OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,"
-            f"MarginV=30,Alignment=2'"
+            f"OutlineColour=&H80000000,BorderStyle=1,Outline=2,Shadow=0,"
+            f"MarginV=40,Alignment=2'"
         )
         filter_parts.append(f"{v_in}{srt_chain}[v]")
     else:
