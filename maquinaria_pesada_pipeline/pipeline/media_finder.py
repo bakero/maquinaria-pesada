@@ -31,6 +31,40 @@ def _slugify(s: str) -> str:
     return s.strip("_")[:60]
 
 
+_STOPWORDS = {
+    "the", "of", "in", "on", "and", "or", "a", "an", "to", "for",
+    "with", "by", "from", "as", "is", "are", "be", "this", "that",
+    "el", "la", "los", "las", "de", "del", "y", "o", "un", "una",
+    "en", "para", "por", "con", "se", "que", "es", "ser", "al",
+    "ai", "ia",
+}
+
+
+def _meaningful_words(term: str) -> set[str]:
+    """Tokens significativos del termino (sin stopwords)."""
+    norm = "".join(c for c in unicodedata.normalize("NFD", term.lower())
+                    if unicodedata.category(c) != "Mn")
+    tokens = re.findall(r"[a-z0-9]{3,}", norm)
+    return {t for t in tokens if t not in _STOPWORDS}
+
+
+def _title_matches_term(title: str, term: str, min_overlap: int = 1) -> bool:
+    """¿El titulo del articulo tiene relacion con el termino buscado?
+
+    Para descartar resultados Wikipedia irrelevantes (ej. busqueda
+    'Golden dataset' devolviendo 'Staphylococcus aureus' por la palabra
+    'dataset' en el cuerpo del articulo).
+    """
+    term_words = _meaningful_words(term)
+    if not term_words:
+        return True
+    title_words = _meaningful_words(title)
+    if not title_words:
+        return False
+    overlap = term_words & title_words
+    return len(overlap) >= min_overlap
+
+
 class MediaFinder:
     """
     Busca y descarga medios para conceptos del master.
@@ -128,9 +162,14 @@ class MediaFinder:
             pages = data.get("query", {}).get("pages", {})
             results = []
             for _, page in pages.items():
+                title = page.get("title", page_title)
+                # Filtrar resultados claramente irrelevantes
+                if not _title_matches_term(title, term):
+                    self.log.debug(f"  wikipedia({lang}) descartado por irrelevante: '{title}' vs '{term}'")
+                    continue
                 if "thumbnail" in page and page["thumbnail"].get("source"):
                     results.append({
-                        "title":     page.get("title", page_title),
+                        "title":     title,
                         "url":       page["thumbnail"]["source"],
                         "page_url":  page.get("fullurl"),
                         "source":    f"wikipedia.{lang}",
@@ -162,10 +201,13 @@ class MediaFinder:
             pages = r.json().get("query", {}).get("pages", {})
             out = []
             for _, p in pages.items():
+                title = p.get("title", "")
+                if not _title_matches_term(title, term):
+                    continue
                 ii = (p.get("imageinfo") or [{}])[0]
                 if ii.get("thumburl") or ii.get("url"):
                     out.append({
-                        "title":  p.get("title"),
+                        "title":  title,
                         "url":    ii.get("thumburl") or ii.get("url"),
                         "page_url": ii.get("descriptionurl"),
                         "source": "wikimedia.commons",
@@ -253,9 +295,10 @@ class MediaFinder:
         all_candidates: list[dict] = []
 
         for term in terms:
-            all_candidates.extend(self._wikipedia_search(term, "es", max_per_source))
+            # Wikipedia EN primero (mas cobertura para terminos tecnicos)
+            all_candidates.extend(self._wikipedia_search(term, "en", max_per_source))
             if len(all_candidates) < max_per_source:
-                all_candidates.extend(self._wikipedia_search(term, "en", max_per_source))
+                all_candidates.extend(self._wikipedia_search(term, "es", max_per_source))
             all_candidates.extend(self._wikimedia_commons_search(term, max_per_source))
             if want_gif:
                 all_candidates.extend(self._tenor_search(term, max_per_source))
