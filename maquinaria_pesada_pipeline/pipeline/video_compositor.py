@@ -272,7 +272,7 @@ def _build_body_from_track(scene_track: list[dict],
                 "-an", str(seg_clip),
             ]
             _run(cmd, log)
-        elif seg["type"] == "estudio" and seg.get("source"):
+        elif seg["type"] in ("estudio", "studio") and seg.get("source"):
             src_dur = _intro_dur(seg["source"]) or seg_dur
             loops = max(0, int(seg_dur // max(src_dur, 0.1)))
             cmd = [
