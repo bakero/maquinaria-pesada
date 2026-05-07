@@ -43,9 +43,18 @@
 
 | Módulo | PDF | Guión | Audio | Video |
 |--------|-----|-------|-------|-------|
-| M0–M14 (todos) | ✓ | ✓ | ✗ | ✗ |
+| M0 | ✓ | ✓ | ✓ | ✓ | COMPLETO |
+| M1, M2 | ✓ | ✓ | ✓ | ✗ | falta video |
+| M3–M14 | ✓ | ✓ | ✗ | ✗ | falta audio |
 
-**Todos los guiones normalizados a Formato A.** Pendiente: generar 15 audios.
+**Todos los guiones normalizados a Formato A.**
+
+> ⚠️ Los scripts de producción (`lanzar_produccion.py`, `estado_proyecto.py`)
+> deben ejecutarse desde el **main path** `C:\Users\Asus\maquinaria_pesada`,
+> NO desde este worktree. El worktree no tiene `episodios/` ni `.env`.
+
+> ⚠️ Si se obtiene WinError 10061 al llamar a ElevenLabs, verificar primero
+> que la API key en `.env` es válida: `ELEVENLABS_API_KEY=sk_...`
 
 ---
 
@@ -97,8 +106,13 @@ f45696c feat: add normalizar_guiones.py (formato B legacy -> A converter)
 
 ## Comandos útiles
 
+**IMPORTANTE: los comandos de producción se ejecutan desde el main path,
+no desde este worktree.**
+
 ```bash
-# Ver pendientes de audio
+# --- Desde C:\Users\Asus\maquinaria_pesada (main path) ---
+
+# Ver estado de producción
 python estado_proyecto.py
 
 # Lanzar producción (todos los pendientes)
@@ -107,11 +121,13 @@ python lanzar_produccion.py
 # Lanzar un episodio concreto
 python lanzar_produccion.py --ep M3_E_Machine_Learning_Clasico
 
-# Normalizar guiones (dry-run)
-python normalizar_guiones.py --dry-run
-
 # Validar episodio generado
 python validar_episodio.py --ep M0_E_Introduccion_Estrategica --guion Guiones/M0_T_Introduccion_Estrategica.txt
+
+# --- Desde este worktree (desarrollo de código) ---
+
+# Normalizar guiones (dry-run)
+python normalizar_guiones.py --dry-run
 
 # Push de cambios
 git add -p && git commit -m "..." && git push origin feature/genepisodios
