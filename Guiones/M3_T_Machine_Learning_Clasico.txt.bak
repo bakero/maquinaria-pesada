@@ -1,0 +1,98 @@
+# EP004 — M03: Machine Learning Clásico
+# MaquinarIa Pesada — Episodio promocional
+# Hook: MARÍA (episodio par)
+# Bloques: 46 | Media objetivo: ~200 chars/bloque
+
+# INTRO
+
+MARÍA: [tenso] Un modelo con noventa y ocho por ciento de accuracy en test. Lo despliegas en producción. Falla estrepitosamente desde el primer día. No hay bug en el código, no hay problema de infraestructura. El problema es el modelo. Y para entender por qué, necesitas este módulo.
+
+IAGO: [serio] Ese escenario se repite más de lo que nadie reconoce. Y casi siempre tiene la misma causa: alguien construyó el modelo sin dominar validación, overfitting ni evaluación imparcial. Los fundamentos del módulo tres del máster.
+
+MARÍA: [firme] Hoy vamos al módulo tres: machine learning clásico. Supervisado, no supervisado, árboles, ensambles, XGBoost, validación cruzada, overfitting y SHAP. Y si crees que esto es tecnología del pasado, quédate: esa asunción cuesta proyectos enteros.
+
+IAGO: [irónico] El ML clásico no es el pasado. Es lo que sostiene la mitad de los sistemas en producción del mundo mientras los titulares hablan de otra cosa. Bienvenidos a MaquinarIa Pesada.
+
+MARÍA: [directo] El argumento central del módulo: el profesional de IA competente en 2025 no elige entre ML clásico y LLMs. Elige la herramienta correcta para cada problema. Y para elegir bien necesitas entender las dos con la misma profundidad.
+
+# NÚCLEO TEMÁTICO
+
+IAGO: [didáctico] Empecemos por el criterio de elección. Datos tabulares estructurados, variable objetivo numérica o categórica, volumen moderado: ML clásico. Texto libre, imágenes complejas, tareas de generación: deep learning o LLMs. Esa distinción parece simple y evita errores que cuestan meses de trabajo.
+
+MARÍA: [explicativo] Predecir churn de clientes con historial de comportamiento. Estimar el precio de una vivienda por superficie, zona y antigüedad. Detectar fraude bancario en tiempo real. Para todos esos problemas un XGBoost bien optimizado supera frecuentemente a un LLM en precisión, velocidad y coste a la vez.
+
+IAGO: [serio] Y hay un factor regulatorio que pesa cada vez más. El EU AI Act exige explicabilidad para sistemas de alto riesgo. Un modelo de ML clásico puede auditarse y documentarse. Un LLM con cien mil millones de parámetros, no. Eso ya está cambiando decisiones de arquitectura en banca, seguros y sanidad.
+
+MARÍA: [didáctico] El módulo estructura el campo en tres paradigmas. Supervisado: el modelo aprende de pares input y output correcto etiquetados por humanos. Clasificación y regresión. Es el paradigma más común en aplicaciones empresariales y el que cubre la mayor parte del módulo.
+
+IAGO: [explicativo] No supervisado: el modelo busca estructura en los datos sin etiquetas. Segmentación de clientes con clustering, reducción de dimensionalidad con PCA, detección de anomalías sin ejemplos previos de lo que es una anomalía. Muy útil cuando el fraude o la anomalía evoluciona y no tienes ejemplos históricos etiquetados.
+
+MARÍA: [reflexivo] Y el aprendizaje por refuerzo, donde el modelo aprende interactuando con un entorno y recibiendo recompensas o penalizaciones. Es el paradigma base del RLHF, el mecanismo que alinea los LLMs modernos con preferencias humanas. Los paradigmas del ML clásico no son mundos separados de los LLMs.
+
+IAGO: [conversacional] El pipeline estándar de un proyecto de ML tiene cuatro etapas. EDA primero: entender la distribución de los datos, identificar valores faltantes y outliers. Es la etapa que más se salta y la que más problemas genera después. Sin EDA es imposible diseñar un modelo adecuado.
+
+MARÍA: [serio] Feature engineering después. Es la etapa de mayor impacto en el rendimiento. Transformar, combinar y crear variables a partir de los datos brutos para que el modelo pueda aprender las relaciones relevantes. Un buen feature engineering con un modelo simple suele superar a un modelo complejo con features brutas.
+
+IAGO: [didáctico] Luego selección del modelo y optimización de hiperparámetros: proceso iterativo de prueba y evaluación de distintas configuraciones. Y por último la evaluación final con datos de test separados del entrenamiento. Esa separación es sagrada. El test set no se toca hasta el final. De eso hablaremos en detalle más adelante.
+
+MARÍA: [explicativo] Los modelos base son la regresión lineal y la regresión logística. Lineal modela relaciones continuas como una función lineal: el modelo más simple del ML supervisado y el más valioso como referencia. Si un modelo más complejo no supera la regresión lineal, algo va mal con ese modelo o con los datos.
+
+IAGO: [natural] La regresión logística, a pesar del nombre, es clasificación. Usa la función sigmoide para mapear valores a probabilidades entre cero y uno. Es interpretable, rápida, y el baseline obligado de cualquier clasificación binaria. L1 fuerza a cero los pesos de variables irrelevantes: selección automática de features. L2 distribuye la penalización de forma más suave.
+
+MARÍA: [didáctico] Los árboles de decisión dividen el espacio de features mediante condiciones binarias sucesivas. Cada nodo es una pregunta, cada rama una respuesta, cada hoja una predicción. Puedes trazar el camino de cualquier predicción desde la raíz hasta la hoja y saber exactamente qué condiciones se aplicaron. Es interpretabilidad nativa.
+
+IAGO: [firme] Esa trazabilidad no es un detalle menor. Un banco que deniega un crédito puede señalar el nodo exacto que tomó esa decisión. Un sistema de contratación puede mostrar qué variables llevaron al rechazo. El EU AI Act llama a esto explicabilidad y es un requisito legal, no una opción, para sistemas de alto riesgo.
+
+MARÍA: [serio] El problema de los árboles individuales es su alta varianza. Pequeños cambios en los datos de entrenamiento producen árboles completamente distintos. Un árbol demasiado profundo memoriza el ruido de los datos. Eso es overfitting: el modelo funciona perfectamente en entrenamiento y falla en producción.
+
+IAGO: [didáctico] Los Random Forests resuelven la varianza promediando cientos de árboles. Cada árbol se entrena sobre una muestra aleatoria de datos y de features. El promedio de predicciones de muchos árboles con errores distintos produce un modelo con varianza drásticamente menor y una generalización excelente en datos nuevos.
+
+MARÍA: [conversacional] Y son la primera opción cuando llegas a un problema de datos tabulares sin contexto de dominio. No requieren feature engineering extenso, no son sensibles a outliers, dan rendimiento sólido de base. El algoritmo de "ponlo y funciona" del ML clásico antes de invertir en optimización.
+
+IAGO: [natural] Un árbol de decisión solo es como un experto que cambia completamente de criterio ante cualquier cambio en el contexto. Un Random Forest es un comité de cien expertos con experiencias distintas que decide por mayoría. Ninguno es perfecto individualmente. Juntos se equivocan mucho menos. Esa es la intuición del ensamble.
+
+MARÍA: [tenso] Ahora llegamos al algoritmo que ha dominado las competiciones de predicción con datos tabulares durante años y sigue siendo el estado del arte en 2025 para la mayoría de los problemas empresariales. Gradient Boosting. Y su implementación más importante: XGBoost.
+
+IAGO: [explicativo] Gradient Boosting construye el modelo en secuencia. Empieza con un árbol pequeño, calcula los errores residuales, entrena un nuevo árbol para predecir esos errores, lo añade al conjunto y repite. Cada árbol corrige los errores del anterior. Es fundamentalmente distinto a Random Forests, que construye árboles en paralelo e independientes.
+
+MARÍA: [didáctico] XGBoost, LightGBM y CatBoost son implementaciones optimizadas de esa idea. Añaden regularización nativa, manejo de valores faltantes, soporte para variables categóricas y paralelización. Para la mayoría de problemas tabulares de tamaño moderado superan frecuentemente a redes neuronales profundas en velocidad, interpretabilidad y rendimiento.
+
+IAGO: [serio] Las SVMs buscan el hiperplano de máximo margen que separa las clases. Son especialmente efectivas en espacios de alta dimensión con datos limitados. Por eso dominan en bioinformática y análisis de texto con features TF-IDF. El kernel trick les permite modelar fronteras no lineales sin calcular explícitamente la proyección al espacio de mayor dimensión.
+
+MARÍA: [explicativo] k-NN clasifica un punto nuevo mirando los k puntos más cercanos en el entrenamiento y asignando la clase mayoritaria. Es el algoritmo más interpretable del toolkit: cualquiera entiende la lógica en treinta segundos. Su problema es que no escala. En inferencia necesita comparar con todos los ejemplos de entrenamiento.
+
+IAGO: [didáctico] En clustering, el módulo cubre k-Means, DBSCAN y Hierarchical Clustering. k-Means divide los datos en k grupos minimizando la varianza intracluster. Funciona bien con clusters esféricos y de tamaño similar. Es el primer algoritmo de segmentación que se prueba: simple, rápido y fácil de interpretar para negocio.
+
+MARÍA: [serio] DBSCAN identifica clusters basándose en densidad de puntos y puede encontrar grupos de forma arbitraria. Marca automáticamente como ruido los puntos que no pertenecen a ningún cluster. Para datos con formas irregulares o cuando quieres detectar outliers de forma natural, DBSCAN supera claramente a k-Means.
+
+IAGO: [explicativo] Hierarchical Clustering construye una jerarquía de clusters visualizable como un dendrograma. Te permite explorar la estructura de los datos a distintos niveles de granularidad sin decidir de antemano cuántos clusters quieres. Muy útil en la fase exploratoria cuando todavía no tienes hipótesis sobre la segmentación natural de los datos.
+
+MARÍA: [tenso] Y ahora el bloque donde más proyectos de IA fallan sin que nadie lo vea venir: overfitting, validación cruzada y evaluación imparcial. El overfitting ocurre cuando el modelo aprende los datos de entrenamiento tan bien que no generaliza a datos nuevos. Accuracy perfecta en test. Desastre en producción.
+
+IAGO: [didáctico] Los síntomas son claros en las curvas de aprendizaje: el error de entrenamiento baja, el error de validación empieza a subir. Esa divergencia es el síntoma del overfitting. Las técnicas de regularización son el antídoto: L1 y L2 penalizan la complejidad, early stopping detiene el entrenamiento antes de que el modelo empiece a memorizar ruido.
+
+MARÍA: [explicativo] La validación cruzada k-fold divide el dataset en k partes iguales y entrena k veces, usando k-1 partes como entrenamiento y una como validación. El rendimiento promedio sobre los k folds es mucho más robusto que una sola división aleatoria. La validación estratificada garantiza que cada fold mantiene la misma proporción de clases.
+
+IAGO: [grave] El error más devastador y frecuente: el test set contaminado. Si cualquier información del test set filtra al proceso de entrenamiento, aunque sea a través del feature engineering o la normalización, los resultados sobreestiman el rendimiento real. El modelo ha hecho trampa. No lo sabes hasta que falla en producción.
+
+MARÍA: [firme] La regla de oro: el test set no se toca hasta el momento final de evaluación. Nunca se usa para tomar decisiones de diseño. Cualquier decisión que tomas mirando el test set lo contamina. Tu evaluación se convierte en una ilusión con cifras bonitas que no dicen nada sobre el rendimiento real.
+
+IAGO: [didáctico] El módulo cierra con SHAP. SHapley Additive exPlanations: la herramienta de interpretabilidad más importante del ML clásico moderno. Proporciona interpretabilidad global, qué variables importan en general, e interpretabilidad local, por qué el modelo hizo esa predicción concreta para ese ejemplo específico. Las dos a la vez.
+
+MARÍA: [explicativo] SHAP se basa en la teoría de juegos cooperativos. Los valores de Shapley distribuyen el crédito de una predicción entre las features con garantías matemáticas de consistencia. La suma de todos los valores SHAP más el valor base del modelo da exactamente la predicción. No es una heurística. Es matemáticamente correcto por construcción.
+
+IAGO: [conversacional] Y eso tiene implicaciones directas para el cumplimiento del AI Act. SHAP te permite explicar exactamente cuánto contribuyó cada variable a la decisión del modelo para ese cliente concreto. No el modelo en general: esa decisión específica. Eso es lo que los auditores piden para sistemas de alto riesgo.
+
+MARÍA: [serio] SHAP también detecta si el modelo usa variables que no debería usar. Si los valores SHAP revelan que el código postal pesa más que el historial de pagos en decisiones de crédito, tienes un problema de sesgo proxy que hay que investigar antes de desplegar. No después de que el regulador lo encuentre.
+
+# CIERRE CON CTA
+
+IAGO: [reflexivo] Lo que hace especial a este módulo es que no solo enseña algoritmos. Da el juicio para elegir entre ellos, diagnosticar cuándo fallan y defender esa elección con argumentos sólidos. Ese juicio diferencia a un profesional de IA de alguien que ejecuta pipelines sin entender lo que produce.
+
+MARÍA: [contundente] Los fundamentos de este módulo, overfitting, validación, feature engineering, regularización, no son exclusivos del ML clásico. Son los cimientos de todo el deep learning y todos los LLMs. Sin esta base el resto del máster son recetas. Con ella, son herramientas que puedes adaptar y diagnosticar.
+
+IAGO: [firme] En el máster MaquinarIa Pesada trabajamos los algoritmos con datasets reales. Implementamos XGBoost con validación cruzada real, optimizamos hiperparámetros y analizamos las predicciones con SHAP. El enlace para saber más sobre el máster está en las notas del episodio. Nos escuchamos en el próximo.
+
+MARÍA: [cálido] Si quieres dar el salto a la IA de forma seria, para construir modelos, liderar proyectos o tomar decisiones informadas sobre sistemas de IA en tu organización, el máster te da la base completa. El enlace en las notas. Nos vemos en el siguiente capítulo.
+
+IAGO: [grave] MaquinarIa Pesada. Porque la IA que no entiendes te controla. La que entiendes, la usas tú.

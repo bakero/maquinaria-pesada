@@ -1,0 +1,109 @@
+# EP011 — M10: Agentes IA
+# MaquinarIa Pesada — Episodio promocional
+# Hook: IAGO (episodio impar)
+# Bloques: 46 | Media objetivo: ~200 chars/bloque
+
+# INTRO
+IAGO: [tenso] Imagina que llegas a trabajar mañana y descubres que la mitad de tu flujo de trabajo, el análisis de datos, las búsquedas, los reportes, lo ha ejecutado un sistema de IA mientras dormías. Sin que nadie lo programara paso a paso. Solo le diste un objetivo.
+
+MARÍA: [curioso] ¿Estás hablando de automatización avanzada?
+
+IAGO: [contundente] Estoy hablando de agentes. Y hay una diferencia enorme entre los dos. La automatización ejecuta instrucciones fijas. Un agente decide cómo llegar a un objetivo que nadie le detalló.
+
+MARÍA: [serio] Y eso cambia absolutamente todo en cómo se construyen y despliegan sistemas de IA en la empresa.
+
+# NÚCLEO TEMÁTICO
+
+IAGO: [didáctico] Para entender los agentes de IA, necesitas entender primero qué tienen que los LLMs normales no tienen. Un modelo de lenguaje responde preguntas. Un agente usa ese modelo como motor cognitivo, pero añade algo crítico: la capacidad de actuar.
+
+MARÍA: [explicativo] Actuar significa varias cosas. Puede llamar a una API externa, ejecutar código, buscar en internet, escribir en una base de datos, o incluso lanzar otro agente. El modelo razona, pero el agente razona y hace.
+
+IAGO: [reflexivo] Y ahí es donde aparece el concepto que define cómo funciona todo esto internamente. ¿Has oído hablar de la arquitectura ReAct?
+
+MARÍA: [curioso] ReAct como en "reacción" o es un acrónimo raro de esos que tanto nos gustan en IA.
+
+IAGO: [irónico] Como siempre en este campo, es un acrónimo. ReAct son las siglas de Reasoning and Acting. Razonamiento y Acción. Y el ciclo es elegante en su simplicidad: el agente Razona sobre lo que sabe, decide qué Acción tomar, observa el resultado, y vuelve a Razonar.
+
+MARÍA: [didáctico] Ese bucle, Razonar, Actuar, Observar, se repite hasta que el agente alcanza el objetivo o decide que no puede y pide ayuda. Es básicamente cómo funciona un buen analista humano cuando resuelve un problema complejo.
+
+IAGO: [serio] Y lo que hace que ReAct sea tan poderoso es que el razonamiento ocurre en lenguaje natural, en el espacio del propio modelo. No hay reglas hardcodeadas. El agente no sabe de antemano qué pasos va a dar. Los infiere.
+
+MARÍA: [conversacional] Eso también significa que puede equivocarse, ¿no? Que el razonamiento intermedio puede ser incorrecto.
+
+IAGO: [firme] Exacto. Y es uno de los grandes retos de los sistemas agentivos. Hablaremos de eso. Pero primero hay que entender qué herramientas tiene a su disposición, porque ahí está la otra mitad del puzzle.
+
+# BLOQUE CREATIVO
+MARÍA: [natural] Piénsalo así. Un agente de IA sin herramientas es como un genio encerrado en una habitación sin ventanas. Puede razonar sobre el mundo con una precisión asombrosa, pero no puede tocar nada, verificar nada, cambiar nada. Las herramientas son las ventanas, y cada una abre una vista diferente hacia la realidad.
+
+IAGO: [explicativo] Tool use, el uso de herramientas, es el mecanismo que convierte un modelo de lenguaje en un agente con impacto real. Técnicamente, es la capacidad del modelo de generar llamadas estructuradas a funciones externas: buscadores web, calculadoras, intérpretes de código, bases de datos, APIs de terceros.
+
+MARÍA: [didáctico] Y esto no es ciencia ficción. Anthropic, OpenAI, Google, todos los proveedores principales exponen ya interfaces nativas de tool use en sus APIs. Le dices al modelo qué herramientas tiene disponibles, en qué formato llamarlas, y él decide cuándo y cómo usarlas.
+
+IAGO: [serio] Lo que cambia con tool use es el tipo de tareas que puedes resolver. Antes, un LLM podía decirte cómo buscar información. Ahora puede buscarla él mismo, leerla, contrastarla con otra fuente, y darte una respuesta verificada.
+
+MARÍA: [conversacional] Que sigue siendo probabilística, ojo. El modelo puede alucinar incluso con herramientas. Pero la tasa de error baja dramáticamente cuando el agente puede comprobar sus propias afirmaciones contra fuentes externas.
+
+IAGO: [reflexivo] Ahora bien, un agente solo, por muy bien equipado que esté, tiene límites. ¿Qué pasa cuando el problema es demasiado grande para un solo agente?
+
+MARÍA: [curioso] Entran los sistemas multi-agente, supongo.
+
+IAGO: [didáctico] Exactamente. Un sistema multi-agente es una arquitectura donde varios agentes de IA colaboran, se delegan tareas, se pasan contexto, o compiten entre sí para llegar a una solución mejor que cualquiera de ellos solo.
+
+MARÍA: [explicativo] Los patrones de colaboración son fascinantes. Puedes tener una arquitectura jerárquica donde un agente orquestador descompone el problema y lo reparte entre agentes especializados. O una arquitectura peer-to-peer donde los agentes se consultan entre sí como iguales.
+
+IAGO: [serio] Y también puedes tener patrones de validación cruzada donde un agente crítico revisa el trabajo de otro antes de que el resultado llegue al usuario. Esto reduce alucinaciones de forma muy significativa.
+
+MARÍA: [tenso] Pero también multiplica la complejidad. Coordinar varios agentes, manejar errores en cadena, gestionar el contexto compartido... no es trivial. Y ahí es donde los frameworks se vuelven imprescindibles.
+
+IAGO: [didáctico] Hay dos que definen el estado del arte ahora mismo. LangGraph, desarrollado por LangChain, y AutoGen, de Microsoft Research. Son muy distintos en filosofía pero los dos abordan el mismo problema central: cómo estructurar el flujo de control en sistemas multi-agente complejos.
+
+MARÍA: [explicativo] LangGraph modela los flujos agentivos como grafos de estado. Tienes nodos que son agentes o funciones, aristas que son transiciones condicionales, y un estado compartido que evoluciona a medida que el grafo se ejecuta. Es muy expresivo para flujos no lineales.
+
+IAGO: [conversacional] ¿Y AutoGen?
+
+MARÍA: [didáctico] AutoGen tiene un enfoque más centrado en la conversación entre agentes. Defines agentes con roles y capacidades, y los dejas conversar para resolver el problema. Hay un UserProxyAgent que puede ejecutar código, un AssistantAgent que razona, y puedes combinarlos en patrones muy distintos.
+
+IAGO: [reflexivo] Lo interesante es que ninguno de los dos es claramente superior. Depende mucho del tipo de problema. LangGraph brilla en flujos muy estructurados con condiciones complejas. AutoGen es más fluido para problemas abiertos donde la colaboración emergente es un activo.
+
+MARÍA: [serio] En el módulo del máster exploramos los dos con profundidad. No para que elijas uno, sino para que entiendas cuándo usar cada uno. Esa es la diferencia entre un arquitecto de IA y alguien que usa templates de GitHub.
+
+IAGO: [tenso] Y luego está el elefante en la sala de los sistemas agentivos que nadie quiere mencionar en los tutoriales de YouTube: la evaluación y el control.
+
+MARÍA: [escéptico] Claro, porque es la parte difícil.
+
+IAGO: [firme] Un agente que funciona en demos y falla en producción no vale nada. Y el salto entre los dos entornos es brutal. En demo, el problema es acotado, los datos son limpios, y nadie mira si el agente tomó un camino raro para llegar al resultado correcto. En producción, todo eso importa.
+
+MARÍA: [explicativo] Hay tres capas de evaluación que son críticas en sistemas agentivos. Primero, la evaluación de cada herramienta individualmente: ¿la llamada se hace bien, el resultado se parsea correctamente? Segundo, la evaluación del razonamiento: ¿el agente está tomando decisiones coherentes en cada paso del ciclo ReAct? Y tercero, la evaluación del sistema completo: ¿el objetivo se alcanza, y al coste esperado?
+
+IAGO: [didáctico] Y el coste no es solo dinero. Es latencia, es número de llamadas al modelo, es consumo de tokens de contexto. Un agente ineficiente puede costar diez veces más que uno bien diseñado para hacer exactamente lo mismo.
+
+MARÍA: [conversacional] Que es precisamente la razón por la que el perfil de "ingeniero de agentes de IA" es uno de los más buscados ahora mismo, y de los peor comprendidos.
+
+IAGO: [irónico] Sí, hay mucha gente que pone "AI agent developer" en LinkedIn después de seguir un tutorial de LangChain de dos horas. Y luego en la entrevista no saben qué es un estado de ejecución o cómo depurar un grafo que entra en bucle.
+
+MARÍA: [serio] Porque la diferencia entre un sistema agentivo de juguete y uno que resiste producción está en los detalles que nadie enseña en los tutoriales. Manejo de errores, timeouts, reintentos con backoff, persistencia de estado, trazabilidad de decisiones.
+
+IAGO: [didáctico] Y luego los casos de uso empresariales reales, que son muy distintos a los ejemplos académicos. No es "el agente busca en internet y resume". Es: el agente analiza cien contratos, extrae cláusulas de riesgo, las cruza contra la política legal interna, y genera un informe que va directo al equipo jurídico.
+
+MARÍA: [explicativo] O es: el agente de soporte técnico diagnostica el problema del cliente mirando logs, abre un ticket en Jira, encuentra la solución en la base de conocimiento interna, redacta la respuesta, y solo escala al humano si la confianza está por debajo de un umbral. Todo eso sin intervención manual.
+
+IAGO: [contundente] Eso ya existe. No es proyección. Empresas en España y en todo el mundo lo están desplegando ahora mismo. Y la diferencia entre las que lo hacen bien y las que queman dinero está exactamente en lo que enseñamos en este módulo.
+
+MARÍA: [reflexivo] Hay un matiz importante que quiero añadir antes de seguir. Todo esto, la arquitectura ReAct, el tool use, los sistemas multi-agente, son herramientas. Y como toda herramienta, pueden usarse bien o mal.
+
+IAGO: [serio] Muy bien dicho. Un agente de IA que actúa en el mundo real tiene consecuencias reales. Si el agente tiene permiso para enviar emails en tu nombre, o para modificar registros en una base de datos de producción, o para ejecutar código en un servidor... los errores no son solo errores. Son incidentes.
+
+MARÍA: [tenso] Por eso el diseño de sistemas agentivos seguros, con límites claros, con human-in-the-loop en las decisiones de alto impacto, con auditoría de acciones, es tan importante como el diseño técnico del grafo.
+
+IAGO: [firme] En el máster no enseñamos solo a construir agentes. Enseñamos a construirlos de forma que no te exploten en producción. Y esa distinción marca la diferencia entre un prototipo y un sistema empresarial real.
+
+# CIERRE CON CTA
+MARÍA: [conversacional] Si llevas tiempo siguiendo el mundo de los LLMs y sientes que los agentes son el siguiente nivel, tienes razón. Pero también es donde la curva de aprendizaje se empina de verdad.
+
+IAGO: [didáctico] En el Módulo 10 del máster lo abordamos en toda su complejidad. Arquitectura ReAct desde cero, tool use con las APIs de los principales proveedores, diseño de sistemas multi-agente con LangGraph y AutoGen, patrones de evaluación, y casos de uso empresariales reales con código funcional.
+
+MARÍA: [serio] No son slides con diagramas bonitos. Son implementaciones reales que puedes llevar a tu empresa la semana que viene. Y eso vale mucho más que saber nombrar las tecnologías.
+
+IAGO: [grave] Si quieres ser la persona que en tu equipo sabe construir agentes que funcionan en producción, y no solo en demos, el máster de MaquinarIa Pesada es donde se aprende. El enlace está en la descripción. No lo dejes para mañana.
+
+MARÍA: [cálido] Nos vemos en el próximo episodio. Hasta entonces, sigue construyendo.

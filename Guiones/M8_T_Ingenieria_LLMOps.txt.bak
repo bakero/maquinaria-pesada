@@ -1,0 +1,92 @@
+# EP009 — M08: Ingeniería de Modelos y LLMOps
+# MaquinarIa Pesada — Episodio promocional
+# Hook: IAGO (episodio impar)
+# Bloques: 48 | Media objetivo: ~200 chars/bloque
+
+# INTRO
+
+IAGO: [tenso] El 87% de los proyectos de inteligencia artificial nunca llegan a producción. Y el 40% de los que llegan fallan en el primer año. No porque el modelo no funcione. Porque nadie tiene el sistema para mantenerlo vivo cuando la realidad golpea.
+
+MARÍA: [escéptico] Espera. ¿Estás diciendo que la mayoría de proyectos de IA mueren después de que ya funcionan?
+
+IAGO: [firme] Exactamente eso. El modelo funciona en el notebook del data scientist. Pasa el piloto. Y luego se degrada silenciosamente en producción mientras nadie lo sabe, los costes escalan sin control y el equipo no tiene visibilidad sobre qué está fallando.
+
+MARÍA: [reflexivo] Y en ese punto ya has gastado meses de trabajo y no tienes forma de saber si el problema es el modelo, el prompt, los datos o simplemente que el proveedor actualizó su API sin avisarte.
+
+IAGO: [serio] Eso no es un escenario de manual. Es lo que le ocurre a la mayoría de empresas que despliegan LLMs hoy. El módulo 8 del máster existe precisamente para que no seas tú quien lo descubre por las malas.
+
+# NÚCLEO TEMÁTICO
+
+MARÍA: [didáctico] LLMOps —que en español podríamos llamar operaciones de modelos de lenguaje— es la disciplina que cierra la brecha entre los experimentos de data science y los sistemas en producción que generan valor de forma sostenida. No es una moda. Es lo que separa a los equipos que escalan de los que pilotan eternamente.
+
+IAGO: [conversacional] Y aquí viene lo que la mayoría de cursos no te dice: en sistemas basados en LLMs, los problemas operacionales son distintos a los del machine learning clásico. El modelo que usas hoy puede cambiar de comportamiento mañana porque el proveedor actualizó su versión. Y tú no lo sabrás hasta que los usuarios empiecen a quejarse.
+
+MARÍA: [explicativo] Por eso el primer pilar del módulo es el versionado. No solo del código, sino de los prompts, los datos y la configuración completa del sistema. Los prompts en un sistema LLM son tan importantes como el código. Deben tener control de versiones con git, revisión de cambios como si fuera código de producción, y tests antes de cualquier despliegue.
+
+IAGO: [contundente] Sin versionado es imposible saber qué produjo un cambio de comportamiento en producción. Imposible reproducir el estado del sistema en un momento anterior. Imposible deshacer un cambio que degrada el rendimiento.
+
+MARÍA: [didáctico] El estándar para datasets y modelos es DVC, que son las siglas de Data Version Control: permite hacer commit de referencias a archivos grandes en git mientras los archivos reales viven en almacenamiento externo. Y para los modelos, herramientas como MLflow Registry o Weights and Biases almacenan cada versión entrenada con sus métricas, hiperparámetros y el dataset exacto que se usó.
+
+IAGO: [irónico] Y cuando usas APIs de terceros —que es la realidad de la mayoría de empresas— también tienes que versionar el ID exacto del modelo, incluyendo la fecha de la versión, porque gpt-4o de agosto y gpt-4o de noviembre no son el mismo modelo. Aprenderlo tarde puede costarte mucho.
+
+MARÍA: [reflexivo] La segunda decisión crítica que cubre el módulo es cuándo usar fine-tuning y cuándo quedarte con prompting. Porque hay empresas que saltan al fine-tuning demasiado pronto y gastan tiempo y datos en algo que un buen prompt hubiera resuelto en horas.
+
+IAGO: [explicativo] La regla práctica que establece el módulo es clara: empieza siempre con prompting. El prompting no requiere datos de entrenamiento, los cambios se hacen en minutos y es más económico en el corto plazo. Si después de optimizar el prompt el rendimiento no es suficiente, entonces evalúas el fine-tuning.
+
+MARÍA: [serio] Pero el fine-tuning sí tiene sus casos específicos donde es insustituible. Cuando necesitas un formato de output muy concreto que requeriría docenas de ejemplos en el prompt. Cuando el modelo base tiene conocimiento limitado en un dominio muy especializado. O cuando el volumen de inferencia es tan alto que un modelo fine-tuneado con prompts más cortos se vuelve significativamente más económico.
+
+IAGO: [conversacional] Pasemos al bloque que más me parece el más infravalorado de todo el módulo: la observabilidad. Porque operar un sistema LLM sin observabilidad es como conducir sin instrumentos. Puedes ir hacia adelante, pero no sabes si vas en la dirección correcta, a qué velocidad, o cuándo te quedas sin combustible.
+
+MARÍA: [didáctico] La observabilidad en sistemas LLM tiene tres dimensiones. Los logs: registro de todas las interacciones, prompts, respuestas y metadatos de cada llamada. Las trazas: seguimiento del flujo completo de cada solicitud a través de todos los componentes, desde el RAG hasta la llamada al LLM y la ejecución de herramientas. Y las métricas: agregaciones de todo lo anterior en el tiempo.
+
+IAGO: [explicativo] Latencia promedio, coste por solicitud, tasas de error, métricas de calidad del modelo. Sin esas tres dimensiones eres ciego. Puedes tener el modelo más potente del mercado y no saberlo si está degradándose.
+
+MARÍA: [curioso] ¿Y cómo mides la calidad del texto generado de forma automática? Porque no puedes tener un humano evaluando cada respuesta en producción.
+
+IAGO: [serio] Ahí está uno de los conceptos más potentes del módulo: LLM-as-judge. Usas un segundo modelo de lenguaje para evaluar la calidad de las respuestas de tu sistema, sobre una muestra del 5 al 10% del tráfico real. Proporciona evaluaciones de calidad automáticas con mayor correlación con el juicio humano que cualquier métrica proxy.
+
+MARÍA: [firme] Y antes de llegar a eso tienes las métricas proxy: tasa de pulgar abajo de los usuarios, tasa de escalada a humanos, tasa de repetición de consultas que sugiere que la respuesta anterior no satisfizo. Esas señales pueden detectar degradación del modelo antes de que se vuelva un problema visible.
+
+IAGO: [didáctico] Para la capa de herramientas, el ecosistema tiene dos actores principales. LangSmith, de LangChain, que se activa con dos variables de entorno y traza automáticamente todas las llamadas a LLMs, todas las recuperaciones RAG y todas las ejecuciones de herramientas. Y Langfuse, la alternativa open source que puedes desplegar en tu propia infraestructura si la privacidad o el cumplimiento regulatorio lo exigen.
+
+MARÍA: [conversacional] Eso es relevante en sectores donde los datos no pueden salir del perímetro de la empresa. Banca, sanidad, gobierno. Langfuse on-premise es la respuesta operacional a ese constraint.
+
+IAGO: [reflexivo] El tercer bloque del módulo cubre algo que define cómo va a funcionar la producción de IA en los próximos años: CI/CD para sistemas de lenguaje. El pipeline de integración continua para LLMs no es el mismo que para software estándar. Tiene capas adicionales que no existen en el mundo del código convencional.
+
+MARÍA: [explicativo] Cuando alguien hace un pull request en un sistema LLM, el pipeline de verificación incluye tests unitarios del código Python, tests de integración de las herramientas del agente para verificar que manejan correctamente los casos límite, y algo que no tiene equivalente en software tradicional: tests de seguridad del prompt.
+
+IAGO: [tenso] El golden dataset adversarial: un conjunto de prompts maliciosos diseñados para que el sistema falle, revele información que no debería o ejecute acciones no autorizadas. Ese conjunto tiene que estar definido antes de que ocurra el primer incidente, no después.
+
+MARÍA: [serio] Y luego el test de calidad del LLM: el golden dataset de casos representativos, entre 50 y 200, con outputs de referencia. El sistema tiene que mantener o mejorar su rendimiento anterior en cada cambio. Si el rendimiento cae más de un umbral predefinido, el pipeline falla y el cambio no puede fusionarse.
+
+IAGO: [didáctico] Eso previene las regresiones accidentales de calidad, que son una de las causas más comunes de degradación en producción. No fallos dramáticos. Pequeñas degradaciones que nadie detecta hasta que el producto ya no funciona como se esperaba.
+
+MARÍA: [conversacional] El módulo también cubre el análisis de costes en el pipeline: verificar que un cambio no aumenta el coste de tokens por encima de un umbral antes de que llegue a producción. Porque los costes de inferencia escalan con el volumen, y una regresión de costes en un sistema de alto tráfico puede ser muy cara muy rápido.
+
+IAGO: [explicativo] Y llegamos al tema que cambia el marco conceptual de cómo piensas en los modelos de lenguaje: el test-time compute. La idea es que puedes mejorar la calidad del modelo invirtiendo más computación durante la inferencia, en el momento de uso, en lugar de solo durante el entrenamiento.
+
+MARÍA: [curioso] ¿Qué significa eso en la práctica?
+
+IAGO: [didáctico] Los modelos de razonamiento como o3 de OpenAI o Claude con extended thinking aplican exactamente este paradigma. En lugar de generar la respuesta directamente, el modelo genera primero un scratchpad de razonamiento interno, que puede ser muy extenso, y produce la respuesta final después de ese proceso. Ese razonamiento adicional produce mejoras significativas en matemáticas, código y razonamiento lógico complejo.
+
+MARÍA: [reflexivo] Y la implicación para LLMOps es que ahora tienes un trade-off explícito que puedes ajustar en tiempo de ejecución. Para preguntas sencillas usas el modelo estándar: rápido y económico. Para preguntas que requieren razonamiento complejo, usas el modelo de razonamiento: más lento y caro, pero significativamente más preciso.
+
+IAGO: [firme] Eso es gestión de recursos de inferencia en tiempo real. Es una palanca que antes no existía y que ahora define la arquitectura de costes de los sistemas LLM modernos.
+
+MARÍA: [serio] El módulo cierra con una idea que resume todo lo anterior: el monitoring en producción es tan importante como el testing previo al despliegue. Los sistemas LLM se degradan por cambios en la distribución de los inputs, por actualizaciones del modelo del proveedor que nadie anuncia, y por cambios en los datos del corpus RAG que alteran el comportamiento sin que el código haya cambiado nada.
+
+IAGO: [explicativo] Una empresa puede pasar todos sus tests de CI/CD con resultados perfectos, desplegar sin incidentes, y ver cómo el sistema se degrada dos semanas después porque el proveedor actualizó el modelo base silenciosamente. Sin observabilidad en producción, esa degradación puede pasar meses sin detectarse.
+
+# CIERRE CON CTA
+
+MARÍA: [conversacional] ¿Sabes qué es lo que me parece más revelador de este módulo? Que la mayoría de los fallos que describe los hemos visto todos. No en casos de estudio. En proyectos reales. En empresas reales que invirtieron bien y aun así no llegaron a ningún lado.
+
+IAGO: [contundente] Porque sin LLMOps el problema no es si el modelo funciona. El problema es que no tienes forma de saberlo cuando deja de funcionar, no tienes forma de saber cuánto te está costando en tiempo real, y no tienes forma de mejorarlo de forma controlada sin introducir nuevos fallos.
+
+MARÍA: [didáctico] Este módulo te da las tres cosas. El sistema de versionado para reproducir cualquier estado del sistema. La observabilidad para ver lo que está pasando en producción. Y el pipeline de CI/CD para evolucionar el sistema con garantías de calidad.
+
+IAGO: [reflexivo] La estadística del 87% de proyectos que nunca llegan a producción no es un problema de talento ni de tecnología. Es un problema de ingeniería operacional. LLMOps es la respuesta a ese problema. Y este módulo es donde la aprendes de forma sistemática.
+
+MARÍA: [cálido] Si estás construyendo sistemas de IA para tu empresa o para productos reales, si tienes un piloto que funciona pero no sabes cómo convertirlo en algo sostenible en producción, este módulo tiene exactamente lo que necesitas para dar ese paso. El enlace para saber más sobre el máster está en las notas del episodio.
+
+IAGO: [grave] MaquinarIa Pesada. Porque la IA que no monitorizas te controla. La que instrumentalizas, la gestionas tú.

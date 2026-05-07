@@ -1,0 +1,104 @@
+# EP003 — M02: Matemáticas para IA
+# MaquinarIa Pesada — Episodio promocional
+# Hook: IAGO (episodio impar)
+# Bloques: 46 | Media objetivo: ~200 chars/bloque
+
+# INTRO
+
+IAGO: [tenso] Una red neuronal que clasifica tumores mejor que un oncólogo. Un modelo que predice quiebras bancarias con semanas de antelación. ¿Sabes qué tienen en común? Que en el fondo son multiplicaciones de matrices y derivadas parciales. Matemáticas de bachillerato llevadas al extremo.
+
+MARÍA: [escéptico] Eso suena a que me estás diciendo que si hubiera prestado más atención en selectividad ahora sería ingeniera de modelos.
+
+IAGO: [irónico] Más o menos. Pero aquí viene el matiz: no necesitas ser matemático para trabajar con IA. Sí necesitas entender qué está pasando por debajo. Y hay una diferencia enorme entre las dos cosas.
+
+MARÍA: [curioso] ¿Cuál es esa diferencia exactamente?
+
+IAGO: [serio] La diferencia es si puedes diagnosticar por qué tu modelo falla. Si no tienes el mapa matemático aunque sea conceptual, cuando algo sale mal — y siempre sale algo mal — estás completamente a ciegas. Hoy vamos al módulo dos del máster: las matemáticas que realmente importan para la IA.
+
+# NÚCLEO TEMÁTICO
+
+MARÍA: [didáctico] El módulo cubre cuatro pilares. Álgebra lineal, cálculo diferencial, probabilidad y estadística. No como materias separadas de carrera, sino como un lenguaje unificado para entender cómo aprenden las máquinas.
+
+IAGO: [conversacional] Y ya sé lo que estás pensando: que esto es la parte aburrida del máster. La parte que hay que tragarse antes de llegar a lo bueno.
+
+MARÍA: [firme] Pues es exactamente al revés. Este módulo es donde muchos alumnos tienen el momento eureka. El momento en que el machine learning deja de ser magia y se convierte en algo que puedes razonar.
+
+IAGO: [didáctico] Empecemos por el álgebra lineal. Cuando alimentas un modelo de lenguaje con texto, ese texto no entra como letras. Entra como vectores: listas de números que representan significado en un espacio de miles de dimensiones. La palabra rey es un vector. La palabra reina es otro vector. Y la distancia entre ellos tiene sentido geométrico real.
+
+MARÍA: [explicativo] Más que eso: la operación rey menos hombre más mujer te da un vector muy cercano a reina. Eso no es magia. Es álgebra lineal aplicada a representaciones semánticas. Y esa misma lógica vectorial está en la base de cómo los modelos procesan imágenes, audio y cualquier tipo de dato estructurado.
+
+IAGO: [conversacional] Cuando yo lo vi por primera vez pensé que era un truco de demostración. Pero no. Es el mecanismo real.
+
+MARÍA: [serio] Las multiplicaciones de matrices que mencionabas al inicio son el núcleo computacional de cada capa de una red neuronal. Una red con cien capas está haciendo cien multiplicaciones de matrices encadenadas. Si no entiendes qué hace una multiplicación de matrices conceptualmente, no puedes entender por qué las capas transforman la información como lo hacen.
+
+IAGO: [reflexivo] ¿Y qué hay del cálculo diferencial? Porque esa es la parte que más gente recuerda con cierto pánico de la carrera.
+
+MARÍA: [didáctico] El cálculo diferencial en IA tiene un único objetivo práctico: encontrar el mínimo de la función de pérdida. Esa función mide qué tan equivocado está el modelo. El gradiente te dice en qué dirección tienes que mover los parámetros para que el modelo se equivoque menos. Y el descenso por gradiente es el algoritmo que lo hace de forma iterativa.
+
+IAGO: [contundente] Eso es el aprendizaje. Todo el aprendizaje automático moderno cabe en esa frase.
+
+MARÍA: [explicativo] Exacto. Cada vez que un modelo de lenguaje mejora en una tarea, cada vez que una red neuronal aprende a reconocer un objeto en una imagen, lo que está ocurriendo es descenso por gradiente sobre millones o miles de millones de parámetros. El cálculo diferencial es el motor que hace girar todo lo demás.
+
+IAGO: [curioso] ¿Y la probabilidad? Porque ahí me parece que hay mucha gente que cree que los modelos de IA dan respuestas deterministas, como si fueran buscadores con más vocabulario.
+
+MARÍA: [irónico] Sí, esa confusión genera problemas reales en producción.
+
+IAGO: [explicativo] Los modelos de lenguaje son distribuciones de probabilidad sobre palabras. Cuando GPT genera la siguiente palabra, está calculando la probabilidad de cada posible token dado el contexto anterior. No hay una respuesta correcta almacenada en algún sitio. Hay un proceso estadístico que elige entre opciones ponderadas. Por eso el mismo prompt puede dar respuestas distintas. Por eso existe la temperatura como parámetro.
+
+MARÍA: [didáctico] Y esto tiene implicaciones directas para cómo usas y evalúas modelos. Si no tienes el concepto probabilístico, tratarás los errores del modelo como bugs a corregir cuando en realidad son propiedades estadísticas a gestionar. Son cosas completamente distintas desde el punto de vista de producto.
+
+IAGO: [conversacional] Hay algo que me parece fundamental en este módulo y que no encuentras en libros de texto clásicos: la conexión entre los cuatro pilares. No son matemáticas separadas. Son la misma historia contada desde cuatro ángulos.
+
+MARÍA: [reflexivo] ¿Qué quieres decir con eso?
+
+IAGO: [explicativo] Los datos entran como vectores: álgebra lineal. El modelo ajusta sus parámetros usando gradientes: cálculo diferencial. Evalúas si el modelo generaliza o memoriza usando métricas de probabilidad: probabilidad y estadística. Y cuando decides si tu modelo es lo suficientemente bueno para producción, estás haciendo inferencia estadística. Todo conectado. Todo el tiempo.
+
+MARÍA: [serio] Y en el módulo del máster esto se trabaja exactamente así: como un sistema coherente, no como cuatro asignaturas apiladas.
+
+IAGO: [didáctico] La estadística merece un momento propio. Porque es donde la mayoría de los proyectos de IA en empresa se rompen sin que nadie lo vea venir. Tienes un modelo con noventa y ocho por ciento de accuracy en test. Lo despliegas. Falla estrepitosamente en producción. ¿Qué pasó?
+
+MARÍA: [tenso] Data leakage, distribución de entrenamiento que no refleja producción, métricas mal elegidas para el problema real...
+
+IAGO: [firme] Todo eso son problemas estadísticos. No de código, no de arquitectura, no de hiperparámetros. Estadísticos. Y si no tienes esa base, no los verás hasta que sea tarde.
+
+MARÍA: [explicativo] En el módulo se trabaja específicamente con distribuciones de datos, overfitting y underfitting desde el análisis de varianza y sesgo, métricas apropiadas para distintos tipos de problema, y cómo diseñar experimentos de evaluación que realmente midan lo que quieres medir en producción.
+
+IAGO: [conversacional] ¿Sabes lo que más me gusta de cómo está planteado este módulo? Que no te piden que derives ni que resuelvas ecuaciones a mano.
+
+MARÍA: [curioso] ¿No?
+
+IAGO: [didáctico] El enfoque es conceptual y aplicado. Entiendes qué significa el gradiente sin necesidad de calcularlo a mano. Entiendes por qué el producto escalar mide similitud semántica sin memorizar la fórmula. La intuición primero, la formalización después si la necesitas. Y en la práctica del máster, siempre la necesitas con contexto real.
+
+MARÍA: [irónico] Que es como debería haberse enseñado en la universidad, francamente.
+
+IAGO: [reflexivo] Hay un momento en este módulo que cambia cómo ves todos los demás. Es cuando entiendes la función de pérdida como un paisaje montañoso en un espacio de alta dimensión, y el entrenamiento como una caída controlada hacia los valles de ese paisaje.
+
+MARÍA: [pausado] Un paisaje. De mil millones de dimensiones.
+
+IAGO: [natural] Y el gradiente es la brújula que te dice cuesta abajo. Cada paso del entrenamiento, el modelo baja un poco más hacia donde se equivoca menos. Nunca llega al fondo perfecto. Pero se acerca suficiente para ser útil.
+
+MARÍA: [serio] Esa imagen no es metafórica. Es la descripción matemática literal de lo que ocurre cuando entrenas cualquier red neuronal moderna. Y cuando la entiendes, el resto del máster encaja de forma distinta. Ves los problemas de entrenamiento con otros ojos.
+
+IAGO: [explicativo] El módulo también cubre tensores, que son la generalización de los vectores y matrices a más dimensiones. Una imagen en color es un tensor de tres dimensiones: alto, ancho y canal de color. Un batch de imágenes para entrenamiento es un tensor de cuatro dimensiones. Los frameworks de deep learning como PyTorch o TensorFlow operan sobre tensores de forma nativa. Si sabes qué son conceptualmente, el código tiene lógica inmediata.
+
+MARÍA: [conversacional] Y si no sabes qué son, estás copiando código de tutoriales sin entender por qué funciona ni qué cambiar cuando no funciona.
+
+IAGO: [firme] Exactamente la diferencia entre un profesional de IA y alguien que usa IA.
+
+MARÍA: [didáctico] Otro tema central del módulo: la descomposición en valores singulares, o SVD. Suena técnico pero está en el fondo de algo que usas todos los días si trabajas con datos: reducción de dimensionalidad. PCA, que es análisis de componentes principales, es SVD. Los sistemas de recomendación clásicos son SVD. Y la compresión de modelos modernos usa variantes de SVD.
+
+IAGO: [conversacional] ¿Cuánto tiempo lleva este módulo en el máster?
+
+MARÍA: [natural] Está diseñado para trabajarse en tres semanas con dedicación parcial. Pero el objetivo no es dominarlo todo de una vez. Es construir la intuición suficiente para que cuando llegues a los módulos de deep learning y NLP, las matemáticas no sean el obstáculo sino la explicación.
+
+# CIERRE CON CTA
+
+IAGO: [reflexivo] Si hay una inversión de tiempo en este máster que multiplica el retorno de todo lo demás, es este módulo. No porque sea difícil. Sino porque sin él, el resto del máster es una caja negra.
+
+MARÍA: [serio] Los profesionales de IA que más rápido progresan en sus carreras no son necesariamente los que más saben de Python ni los que conocen más frameworks. Son los que entienden qué está pasando por debajo. Los que pueden razonar sobre por qué un modelo falla y cómo arreglarlo. Eso viene de aquí.
+
+IAGO: [firme] En el máster MaquinarIa Pesada este módulo no es opcional ni introductorio. Es la base estructural sobre la que construyes todo lo que viene después: los modelos clásicos, el deep learning, los LLMs, los agentes. Sin esta base, esos módulos son recetas. Con ella, son herramientas que entiendes.
+
+MARÍA: [cálido] Si estás pensando en hacer el salto a la IA de forma seria, ya sea para liderar proyectos, para construir productos o para entender realmente lo que tu equipo técnico está haciendo, tienes todo lo que necesitas para empezar. El enlace para saber más sobre el máster está en las notas del episodio. Nos escuchamos en el próximo.
+
+IAGO: [grave] MaquinarIa Pesada. Porque la IA que no entiendes te controla. La que entiendes, la usas tú.
