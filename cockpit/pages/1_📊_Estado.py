@@ -54,6 +54,14 @@ def _show_summary(module: str, category: str) -> None:
     badge = {"ok": "🟢 OK", "fail": "🔴 con errores", "no-data": "⚪ sin datos"}[summary.status]
     cols[2].markdown(f"**Estado**\n\n{badge}")
 
+    source_label = {"jsonl": "📦 estructurado (runlog)", "text": "📄 texto (regex)", "none": "—"}
+    st.caption(f"Fuente: {source_label.get(summary.source, summary.source)}")
+
+    if summary.phase_counts:
+        with st.expander(f"📊 Conteo por fase ({sum(summary.phase_counts.values())} eventos)"):
+            for ph, n in sorted(summary.phase_counts.items(), key=lambda x: -x[1]):
+                st.write(f"- `{ph}`: **{n}**")
+
     if summary.first_ts or summary.last_ts:
         st.caption(f"Run: {summary.first_ts or '—'}  →  {summary.last_ts or '—'}")
 
