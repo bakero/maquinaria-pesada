@@ -16,12 +16,15 @@ import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402,F401  (auto-registers all)
 from cockpit.core import paths  # noqa: E402
+from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(
     page_title="MaquinarIA Pesada — Cockpit",
     page_icon="🎙️",
     layout="wide",
 )
+
+render_status_sidebar()
 
 st.title("🎙️ MaquinarIA Pesada — Cockpit")
 st.caption("Centraliza estado, fuentes, conectores y prompts para Codex.")

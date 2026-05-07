@@ -10,8 +10,10 @@ if str(_ROOT) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from cockpit.core import log_parser, state  # noqa: E402
+from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Estado", page_icon="📊", layout="wide")
+render_status_sidebar()
 st.title("📊 Estado de producción")
 st.caption("Pulsa cualquier ✅/❌ para ver el resumen de validaciones de la última ejecución.")
 

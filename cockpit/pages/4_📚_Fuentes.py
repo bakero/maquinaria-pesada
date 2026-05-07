@@ -11,8 +11,10 @@ import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import SourceConnector  # noqa: E402
+from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Fuentes", page_icon="📚", layout="wide")
+render_status_sidebar()
 st.title("📚 Fuentes de contenido")
 
 sources = [c for c in connectors.by_category("source") if isinstance(c, SourceConnector)]
