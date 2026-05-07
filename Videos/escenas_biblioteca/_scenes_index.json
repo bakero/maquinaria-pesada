@@ -16,6 +16,116 @@
       "modulo": null,
       "source": "luma",
       "created": "2026-05-07 13:46:39"
+    },
+    "studio_establishing_general": {
+      "slug": "studio_establishing_general",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_establishing_general.mp4",
+      "duration": 9.041667,
+      "prompt": "Cinematic slow dolly-in shot of an industrial podcast studio. Two presenters seated face-to-face across a weathered matte CAT-yellow steel table: a Mediterranean woman with shoulder-length dark brown hair in a black mock-neck sweater on the left, and a Mediterranean man with short light brown hair, three-day stubble and a black zipped technical hoodie on the right. Both wearing matte black studio headphones, hands resting on the table. Black matte podcast microphones with blue windscreens on boom arms. Behind them, a large welded steel sign 'MaquinarIA Pesada' on a concrete wall, illuminated by warm cenital spotlights. Natural micro-expressions, slight body sway, subtle blink. Camera moves forward and slightly down very smoothly. Photorealistic, anamorphic 35mm, warm 3200K lighting, deep shadows.",
+      "description": "Plano amplio del estudio, ambos en posicion, ligero dolly-in",
+      "tags": [
+        "establishing",
+        "two_shot",
+        "intro"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:08:58"
+    },
+    "studio_maria_speaking_close": {
+      "slug": "studio_maria_speaking_close",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_speaking_close.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic medium close-up of the same Mediterranean woman, 33, dark brown shoulder-length hair half pulled back, black mock-neck sweater. She is calmly speaking into a black matte podcast microphone with blue windscreen, looking slightly off-camera, natural lip movement, occasional small hand gestures, intelligent direct expression. Industrial podcast studio background heavily blurred: matte yellow steel table, warm spotlight, 'MaquinarIA Pesada' sign barely visible. Subtle yellow rim light on her hair. Camera locked, very slight shoulder movement. Photorealistic, anamorphic 35mm, shallow depth of field, fine grain.",
+      "description": "Maria en primer plano hablando con calma",
+      "tags": [
+        "close_up",
+        "maria",
+        "speaking"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:10:33"
+    },
+    "studio_maria_speaks_yago_listens": {
+      "slug": "studio_maria_speaks_yago_listens",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_speaks_yago_listens.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic two-shot of the same industrial podcast studio. On the LEFT, the Mediterranean woman (33, dark brown hair, black mock-neck sweater) is speaking calmly into her microphone, hands gesturing slightly. On the RIGHT, the Mediterranean man (38, stubble, dark hoodie) is listening attentively, occasionally nodding or making small notes in a black notebook. Matte CAT-yellow steel table between them with two black microphones with blue windscreens. Background: 'MaquinarIA Pesada' welded steel sign, warm cenital spotlights, deep shadows. Natural body language, micro-blinks, subtle breathing. Camera locked at medium distance. Photorealistic, anamorphic 35mm, warm color grade, fine grain.",
+      "description": "Plano dos personas, Maria habla, Yago escucha y asiente",
+      "tags": [
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:12:06"
+    },
+    "studio_yago_speaks_maria_listens": {
+      "slug": "studio_yago_speaks_maria_listens",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_speaks_maria_listens.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic two-shot of the same industrial podcast studio. On the LEFT, the Mediterranean woman (33, dark brown hair, black mock-neck sweater) is listening with composed attention, occasionally tilting her head slightly. On the RIGHT, the Mediterranean man (38, stubble, dark hoodie) is speaking into his microphone with focused energy, hands gesturing to emphasize a point. Matte CAT-yellow steel table between them with two black microphones with blue windscreens. Background: 'MaquinarIA Pesada' welded steel sign, warm cenital spotlights, deep shadows. Natural body language, micro-blinks. Camera locked at medium distance. Photorealistic, anamorphic 35mm, warm color grade, fine grain.",
+      "description": "Plano dos personas, Yago habla, Maria escucha",
+      "tags": [
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:13:41"
+    },
+    "studio_both_complicit": {
+      "slug": "studio_both_complicit",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_both_complicit.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic two-shot of the same industrial podcast studio. Both presenters share a brief moment of complicity: the Mediterranean woman on the left smiles knowingly while the Mediterranean man on the right shakes his head softly with a small ironic smirk. Both at the matte CAT-yellow steel table with black microphones. Background: 'MaquinarIA Pesada' sign, warm spotlights, deep shadows. Natural micro-expressions, brief eye contact between them. Photorealistic, anamorphic 35mm, fine grain.",
+      "description": "Ambos sonriendo / asintiendo en complicidad",
+      "tags": [
+        "two_shot",
+        "humor",
+        "complicity"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:15:59"
+    },
+    "studio_detail_microphone": {
+      "slug": "studio_detail_microphone",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_detail_microphone.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic close-up detail shot in the same industrial podcast studio. A black matte broadcast microphone with blue windscreen in sharp focus, on a metal boom arm. In soft background: a hand resting on the worn matte yellow steel table next to a small black notebook, fingers slowly tapping. Warm cenital spotlight creates rim light on the microphone mesh. Subtle steam-like dust motes drifting through the warm light. Background out of focus: weathered yellow steel surface, hint of the 'MaquinarIA Pesada' sign in the deep blur. Photorealistic, anamorphic 35mm, very shallow depth of field, fine grain.",
+      "description": "Detail shot: micrófono, mano sobre la mesa amarilla",
+      "tags": [
+        "detail",
+        "broll",
+        "transition"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:17:34"
+    },
+    "studio_outro_closing": {
+      "slug": "studio_outro_closing",
+      "category": "cierres",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\cierres\\studio_outro_closing.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic two-shot of the same industrial podcast studio at the end of the recording. The Mediterranean woman on the left and the Mediterranean man on the right both slowly lift their hands to remove their black studio headphones, sharing a brief glance. The warm spotlights begin to dim subtly. Background: matte CAT-yellow steel table, 'MaquinarIA Pesada' welded steel sign, deep shadows. Natural unhurried movement, soft breathing visible. Camera locked at medium distance, slight pull-back at the end. Photorealistic, anamorphic 35mm, warm color grade, fine grain.",
+      "description": "Cierre: ambos quitandose los auriculares lentamente",
+      "tags": [
+        "outro",
+        "two_shot",
+        "closing"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 14:20:35"
     }
   }
 }
