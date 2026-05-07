@@ -249,6 +249,7 @@ def extract_content(script_path: str | Path,
         "speakers":   speakers,
         "tone_map":   tone_map,
         "pdf_pages":  len(pdf_data.get("pages", [])),
+        "pdf_text":   pdf_data.get("text", ""),
     }
 
     cache.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")

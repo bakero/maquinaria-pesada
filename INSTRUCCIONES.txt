@@ -1,154 +1,42 @@
 # INSTRUCCIONES DE USO
-# MaquinarIa Pesada — Sistema de generación automática
-# =====================================================
+# MaquinarIA Pesada - flujo maestro largo
+# =======================================
 
-## ARCHIVOS DEL SISTEMA
+Archivo maestro del sistema:
+    PODCAST_MASTER_SPEC.md
 
-EP001_guion_etiquetas.txt   → Guión con etiquetas de dirección de voz
-generar_episodio.py         → Script de generación automática
-INSTRUCCIONES.txt           → Este archivo
+Scripts principales:
+    generar_guion.py
+    generar_episodio_v2.py
+    producir_episodio.py
 
-## REQUISITOS PREVIOS
+Entradas del generador de guion:
+1. PDF del tema
+2. PDF maestro completo con referencias
+3. Contexto adicional opcional
 
-### 1. Python 3.10 o superior
-Comprueba tu versión:
-    python --version
+Variables de entorno necesarias:
+    OPENAI_API_KEY
+    ELEVENLABS_API_KEY
 
-### 2. Instalar dependencias
-    pip install elevenlabs pydub
+Dependencias:
+    pip install openai elevenlabs pydub httpx python-dotenv pdfplumber
 
-### 3. ffmpeg (necesario para pydub)
-En Mac:
-    brew install ffmpeg
+Comandos principales:
 
-En Windows:
-    Descarga desde https://ffmpeg.org/download.html
-    y añádelo al PATH del sistema
+1. Generar solo el guion:
+    python generar_guion.py --ep EP001 --pdf "ruta\tema.pdf" --master-pdf "ruta\document_pdf (3).pdf"
 
-En Linux:
-    sudo apt install ffmpeg
+2. Generar solo el audio desde un guion validado:
+    python generar_episodio_v2.py --guion Guiones\EP001_guion_etiquetas_v1.txt --ep EP001
 
-### 4. Tu API Key de ElevenLabs
-Ve a: elevenlabs.io → Settings → API Keys → copia tu key activa
+3. Ejecutar el pipeline completo:
+    python producir_episodio.py --ep EP001 --pdf "ruta\tema.pdf" --master-pdf "ruta\document_pdf (3).pdf" --generar-musica
 
-## CONFIGURACIÓN
-
-Abre generar_episodio.py y en la línea:
-    API_KEY = os.environ.get("ELEVENLABS_API_KEY", "TU_API_KEY_AQUI")
-
-Opción A — Variable de entorno (recomendado):
-    Mac/Linux:  export ELEVENLABS_API_KEY=tu_key_aqui
-    Windows:    set ELEVENLABS_API_KEY=tu_key_aqui
-
-Opción B — Directamente en el script:
-    Sustituye "TU_API_KEY_AQUI" por tu key real
-    (no compartas este archivo si haces esto)
-
-## CÓMO GENERAR UN EPISODIO
-
-### Generar el episodio completo:
-    python generar_episodio.py --guion EP001_guion_etiquetas.txt --ep EP001
-
-### Probar solo un bloque (para validar antes de gastar créditos):
-    python generar_episodio.py --guion EP001_guion_etiquetas.txt --ep EP001 --solo-bloque 1
-
-El bloque 1 es el primer bloque del hook (IAGO).
-Úsalo para validar que la voz, las etiquetas y la API funcionan
-antes de lanzar la generación completa.
-
-## ARCHIVOS QUE GENERA EL SCRIPT
-
-output/
-├── EP001_MaquinarIaPesada_final.mp3   → Episodio completo montado
-├── EP001_produccion.log               → Log con estadísticas de producción
-└── temp/
-    ├── EP001_001_IAGO.mp3             → Bloque 1 (hook)
-    ├── EP001_002_IAGO.mp3             → Bloque 2
-    ├── EP001_003_MARÍA.mp3            → Bloque 3
-    └── ...                            → Un archivo por bloque
-
-Los archivos temp se conservan para poder regenerar
-bloques individuales sin rehacer el episodio completo.
-
-## REGENERAR UN BLOQUE ESPECÍFICO
-
-Si un bloque no suena bien, puedes regenerarlo solo:
-    python generar_episodio.py --guion EP001_guion_etiquetas.txt --ep EP001 --solo-bloque 15
-
-Luego monta manualmente el nuevo bloque sobre el audio final
-usando Audacity o cualquier editor de audio.
-
-## ESTIMACIÓN DE CRÉDITOS
-
-ElevenLabs cobra 1 crédito por carácter de texto.
-El episodio 1 tiene aproximadamente 6.000-7.000 caracteres.
-Estimación: 6.000-7.000 créditos por episodio completo.
-
-Con el plan Starter (30.000 créditos/mes): ~4 episodios/mes
-Con el plan Creator (100.000 créditos/mes): ~14 episodios/mes
-
-El log de producción muestra los créditos exactos consumidos
-en cada generación.
-
-## ESTRUCTURA DEL GUIÓN CON ETIQUETAS
-
-El archivo de guión sigue este formato:
-
-    # Esto es un comentario, se ignora
-    IAGO: [etiqueta] texto del bloque
-    MARÍA: [etiqueta] texto del bloque
-
-Etiquetas validadas para este podcast:
-    [serio]         Afirmaciones con peso
-    [pausado]       Frases cortas que necesitan espacio
-    [directo]       Listas de conceptos técnicos
-    [firme]         Convicción sin gritar
-    [contundente]   Golpes dramáticos
-    [grave]         Cierres, momentos de máximo peso
-    [conversacional] Diálogo natural entre presentadores
-    [reflexivo]     Preguntas retóricas, transiciones
-    [didáctico]     Explicaciones técnicas
-    [explicativo]   Desarrollo de conceptos
-    [irónico]       Comentarios con distancia
-    [curioso]       Preguntas genuinas
-    [tenso]         Momentos de urgencia o riesgo
-    [natural]       Intervenciones sin carga emocional especial
-    [cálido]        Cierres y despedidas
-    [escéptico]     Reacciones de duda
-
-## PRODUCCIÓN DE NUEVOS EPISODIOS
-
-Para cada nuevo episodio del máster:
-
-1. Generar el guión con Claude usando el Constructor v1.0
-2. Guardar como EPxxx_guion_etiquetas.txt siguiendo el mismo formato
-3. Ejecutar:
-       python generar_episodio.py --guion EPxxx_guion_etiquetas.txt --ep EPxxx
-4. Escuchar EP_final.mp3 y validar
-5. Si hay bloques que mejorar: regenerar solo esos bloques con --solo-bloque
-
-## SOLUCIÓN DE ERRORES FRECUENTES
-
-ERROR: Too many concurrent requests
-→ Espera 30 segundos y vuelve a intentarlo.
-   Si persiste, cierra otras pestañas de ElevenLabs.
-
-ERROR: Invalid API key
-→ Comprueba que la key está bien copiada sin espacios extra.
-
-ERROR: Voice not found
-→ Comprueba que los Voice IDs de Tony y Sheila son correctos
-   en la sección VOCES del script.
-
-ERROR: ffmpeg not found
-→ Instala ffmpeg según las instrucciones de tu sistema operativo.
-
-ERROR: ModuleNotFoundError
-→ Ejecuta: pip install elevenlabs pydub
-
-## VOCES CONFIGURADAS
-
-IAGO  → Tony    (ID: 851ejYcv2BoNPjrkw93G)
-MARÍA → Sheila  (ID: h3l1RP4XfcWsPwoRp9G6)
-Modelo: eleven_v3
-Config: Stability 0.50 (Iago) / 0.55 (María) · Similarity 0.65 · Style 0
+Reglas clave del flujo:
+- El guion debe superar 1800 palabras reales sin cabeceras ni nombres de speaker.
+- El guion debe incluir hook, intro de sonido, saludo con advertencia IA, 4-6 bloques, inserciones, cierre de conceptos y cierre final.
+- El guion debe terminar con verificaciones generadas por el propio script.
+- El episodio final debe durar aproximadamente 14-17 minutos.
+- El guion sale en `Guiones`.
+- El audio final y los logs salen en `episodios`.

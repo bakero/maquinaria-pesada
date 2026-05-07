@@ -1,0 +1,145 @@
+# HOOK
+
+MARIA: [ironico] En 2026, el 88% de las empresas dice que ya usa inteligencia artificial. El otro 12% dice que lo está evaluando. Básicamente, todo el mundo está en el tema, igual que todo el mundo ha leído los términos y condiciones de cada app que instala. Exactamente nadie.
+
+MARIA: [directo] Hoy vemos qué hay de verdad detrás de ese número. Qué es la I.A., de dónde viene, cómo se estructura y qué implica para cualquier organización que tenga que tomar decisiones con ella encima de la mesa. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo cero: la introducción estratégica a la I.A. El episodio que nadie quiere admitir que necesita pero que conviene escuchar antes de aprobar cualquier presupuesto de inteligencia artificial en tu empresa.
+
+MARIA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia legal y sensata: este episodio está generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad con fuentes profesionales. Si algo suena demasiado bueno o demasiado catastrófico, probablemente está exagerado.
+
+IAGO: [directo] El objetivo de hoy: que al terminar tengas el mapa mental básico de la I.A. Qué tipos existen, por qué el momento actual es diferente a todos los intentos anteriores y qué impacto real tiene esto en las organizaciones.
+
+MARIA: [directo] Vamos allá.
+
+# BLOQUE_1
+
+MARIA: [explicativo] Para entender dónde estamos hay que saber de dónde venimos. Y la historia de la I.A. tiene un patrón que se repite con asombrosa regularidad: promesa enorme, entusiasmo masivo, resultados que no llegan a la velocidad prometida y financiación que se corta. Eso se llama invierno de la I.A. Hemos tenido dos antes de este momento. El primero a finales de los 70, cuando los sistemas basados en reglas no escalaron más allá de dominios muy acotados. El segundo a finales de los 90, cuando las redes neuronales de los 80 no podían entrenarse por falta de datos y de potencia de cálculo.
+
+IAGO: [ironico] Lo que significa que tienes todo el derecho histórico del mundo a mirar con escepticismo a quien te diga que esta vez es diferente. Dicho eso, esta vez realmente lo es.
+
+MARIA: [explicativo] La diferencia es una convergencia de tres factores que nunca antes habían coincidido al mismo tiempo. Primero, potencia de cómputo: las ge pe us, unidades de procesamiento gráfico, actuales son miles de veces más potentes que las de los años 90. Segundo, datos masivos: internet generó cantidades de texto, comportamiento e imágenes que hace veinte años eran inimaginables. Y tercero, un salto arquitectónico concreto: la llegada de los Transformers, o arquitectura de atención, en 2017 con el paper, o artículo científico, "Attention is All You Need".
+
+IAGO: [explicativo] Ese paper resolvió el problema que había bloqueado todos los modelos anteriores: procesar texto de forma paralela y capturar relaciones entre palabras muy separadas dentro de un mismo documento. Gracias a esa arquitectura, desde 2020 tenemos los grandes modelos de lenguaje que hoy todo el mundo conoce. Sin los Transformers, el salto de la I.A. generativa no habría existido.
+
+MARIA: [conversacional] Y la aceleración desde entonces no paró ni un trimestre. En 2022 llegó ChatGPT con los primeros cien millones de usuarios en dos meses, batiendo todos los récords de adopción tecnológica de la historia. En 2023 y 2024, los grandes laboratorios compitiendo abiertamente en capacidades. En 2026, el debate ya no es si adoptar I.A., sino qué hacer con el 70% del código que muchos equipos ya generan con ayuda de modelos.
+
+# BLOQUE_2
+
+IAGO: [explicativo] Necesitamos el mapa de taxonomía, porque nada genera más confusión en este campo que usar los mismos términos para cosas distintas. La I.A. es el campo más amplio. Dentro está el machine learning, o aprendizaje automático, que aprende patrones de datos. Dentro del machine learning está el deep learning, o aprendizaje profundo, con redes neuronales profundas. Y dentro del deep learning están los ele ele emes, grandes modelos de lenguaje. ChatGPT no es I.A. a secas: es la capa más específica de una jerarquía de cuatro niveles.
+
+MARIA: [ironico] Lo cual no impide que en LinkedIn todo el mundo use los cuatro términos como si fueran exactamente lo mismo. Pero a partir de hoy tú ya no lo harás. Eso ya es ventaja competitiva inmediata.
+
+IAGO: [explicativo] Otra distinción clave: I.A. estrecha frente a I.A. general. Toda la I.A. que existe hoy, sin excepción, es I.A. estrecha. Sistemas extraordinariamente potentes dentro de su dominio específico, pero incapaces de generalizar fuera de él. Un modelo que genera imágenes no conduce un coche. Un chatbot que escribe código no diagnostica una radiografía. La I.A. general, esa que razona en cualquier dominio como lo haría un humano, sigue siendo un horizonte teórico sin fecha de llegada.
+
+MARIA: [explicativo] Y la distinción más práctica para cualquier profesional es entre I.A. discriminativa e I.A. generativa. La discriminativa clasifica, predice y detecta patrones: el antifraude en banca, la predicción de abandono de cliente en telecomunicaciones, la recomendación de producto en ecommerce. La generativa crea contenido nuevo: texto, imágenes, código, audio, vídeo. La primera lleva décadas en producción en muchas empresas. La segunda es la que sacudió el mercado desde 2022 y la que está en boca de todo el mundo.
+
+IAGO: [directo] Si no tienes clara esa distinción puedes comprar I.A. generativa para resolver un problema que necesita I.A. discriminativa, o al revés. Es el error más caro y más frecuente en proyectos de I.A. empresarial, y es completamente evitable.
+
+# INSERCION_1
+
+MARIA: [conversacional] Para que el mapa sea concreto con datos de hoy: en mayo de 2026 el ranking, o clasificación, independiente de modelos lo lidera Claude Opus 4.6 de Anthropic con 1504 puntos Elo, seguido de Gemini 3.1 Pro de Google y GPT-5.4 de OpenAI. Todos superando el 80% en los benchmarks, o pruebas de rendimiento, de programación real. El mercado global de I.A. vale ya 312 mil millones de dólares y crece al 28% anual.
+
+IAGO: [ironico] En el tiempo que hemos tardado en grabar este episodio, probablemente se ha lanzado algún modelo nuevo. Bienvenidos a 2026, donde la obsolescencia tecnológica se mide en semanas y no en años.
+
+# BLOQUE_3
+
+IAGO: [explicativo] Hablemos de impacto real, que es donde el debate deja de ser abstracto. Los datos más sólidos de 2025 y 2026 identifican cuatro vectores de transformación. El primero es productividad: el 67% de los trabajadores ya percibe la I.A. como una herramienta que mejora su trabajo según el barómetro de PwC de este año. Los sectores más expuestos a la I.A. han multiplicado por tres su crecimiento de ingresos por empleado respecto a los menos expuestos.
+
+MARIA: [explicativo] El segundo vector es la automatización de procesos. Un ejemplo concreto que lleva años en producción: JPMorgan tiene desde 2017 un sistema llamado COIN que analiza contratos legales. Un contrato que a un abogado le llevaba horas, al sistema le lleva segundos. El resultado son 360 mil horas de trabajo jurídico cualificado ahorradas cada año en ese único proceso. No es automatización de tareas aburridas, es automatización de trabajo que requería formación específica.
+
+IAGO: [conversacional] El tercer vector es la mejora en toma de decisiones. Los sistemas de I.A. no reemplazan al directivo, pero le dan análisis más completos, más rápidos y sin los sesgos cognitivos que cualquier humano arrastra cuando lleva doce horas trabajando. La diferencia entre decidir con diez variables visibles o con diez mil relevantes procesadas en tiempo real es una diferencia estratégica real, no una promesa de presentación de ventas.
+
+MARIA: [explicativo] Y el cuarto vector es la creación de productos y servicios que antes eran económicamente inviables. Personalización masiva a coste marginal casi cero, asistentes que entienden el contexto completo de una conversación, síntesis de información en tiempo real. Aquí viene el dato que suele sorprender: el 88% de las empresas dice que usa I.A., pero solo el 34% reporta impacto financiero medible. No es que la tecnología no funcione. Es que la mayoría está aún resolviendo los problemas de datos, procesos y cultura que permiten que los proyectos lleguen a producción.
+
+IAGO: [conversacional] Y esa brecha es importante entenderla bien. Los proyectos de I.A. fallan principalmente por tres razones: datos de mala calidad o insuficientes, procesos organizacionales que no se han rediseñado para integrar la I.A., y cultura interna que no permite iterar con la velocidad necesaria. La tecnología es la parte más fácil de toda la ecuación. Lo difícil siempre es el entorno organizacional en el que se despliega.
+
+# BLOQUE_4
+
+MARIA: [explicativo] Para terminar el mapa: el ecosistema de 2026. Cinco actores dominan los modelos fundacionales. OpenAI lidera en adopción masiva con 800 millones de usuarios semanales en ChatGPT. Anthropic es la referencia actual en código y razonamiento, y Google DeepMind tiene la ventaja de la integración nativa en Search, Workspace y Cloud. Meta y Mistral apuestan por el open source, o código abierto, con Llama y Mixtral respectivamente, liderando el acceso abierto y el segmento europeo.
+
+IAGO: [explicativo] La decisión entre modelo propietario y modelo open source, o código abierto, no es solo técnica, es estratégica. Los propietarios te dan acceso inmediato a lo más potente del mercado sin gestionar infraestructura propia. Los open source, como Llama o Mistral, te dan control total de los datos, coste predecible y la posibilidad de desplegarlos en tu propia infraestructura. La elección depende del perfil de privacidad, de la regulación de tu sector y de la capacidad técnica real de tu equipo.
+
+MARIA: [conversacional] Alrededor de esos modelos ha crecido un ecosistema de herramientas que madura muy rápido. Frameworks, o marcos de desarrollo, como LangChain para construir aplicaciones sobre ele ele emes, bases de datos vectoriales como Qdrant o Pinecone para búsqueda por significado semántico, y plataformas de observabilidad como LangSmith para monitorizar qué hace el modelo en producción. También protocolos estándar como el eme ce pe, protocolo de contexto de modelo de Anthropic, publicado en 2024, que permiten a los modelos conectarse con herramientas externas de forma unificada.
+
+IAGO: [serio] Y hay un elemento que aparece siempre al final de la lista pero que debería estar al principio: la ética y la regulación como competencia técnica real. El Reglamento de I.A. de la Unión Europea lleva en vigor desde agosto de 2024, con prohibiciones activas desde febrero de 2025 y obligaciones para sistemas de alto riesgo desde agosto de 2026. Las multas alcanzan los 35 millones de euros o el 7% de la facturación global. Ignorarlo no es una opción estratégica. Es un riesgo legal con fecha de vencimiento.
+
+# INSERCION_2
+
+IAGO: [ironico] Un dato para calibrar bien el momento: el 70% del código generado en las grandes tecnológicas ya pasa por algún modelo de I.A. Los profesionales con habilidades en I.A. cobran un 56% más que sus equivalentes sin ellas. Por si alguien necesitaba motivación extra para seguir escuchando el resto del máster.
+
+MARIA: [directo] La brecha entre quien entiende esto y quien no se está convirtiendo en una brecha económica real. Y no afecta solo a ingenieros.
+
+# CIERRE_CONCEPTOS
+
+MARIA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: los inviernos de la I.A. Hubo dos antes de este momento, y lo que hace diferente al actual es la convergencia de potencia de cómputo, datos masivos y la arquitectura Transformer. Sin esa triple coincidencia, seguiríamos esperando el tercer intento fallido.
+
+IAGO: [explicativo] Segundo: la jerarquía técnica. La I.A. es el campo general. El machine learning aprende de datos. El deep learning usa redes neuronales. Los ele ele emes son la capa más específica. Confundir los niveles lleva a malas decisiones de compra, a conversaciones imposibles con el equipo técnico y a pilotos que nunca escalan.
+
+MARIA: [conversacional] Tercero: I.A. estrecha frente a I.A. general. Todo lo que existe hoy es I.A. estrecha, muy potente en su dominio pero incapaz de generalizarlo. La I.A. general sigue siendo un horizonte sin fecha. Quien te venda I.A. general para este año, especula o miente. Las dos opciones son igual de peligrosas.
+
+IAGO: [directo] Cuarto: I.A. discriminativa frente a I.A. generativa. La primera clasifica y predice. La segunda crea contenido nuevo. Esa distinción decide qué herramienta necesita tu caso de uso concreto. Elegir la herramienta equivocada es el error más caro y más frecuente en proyectos de I.A. empresarial, y es completamente evitable.
+
+MARIA: [explicativo] Quinto: la brecha adopción-impacto. El 88% usa I.A. Solo el 34% tiene impacto financiero medible. El problema casi nunca es la tecnología. Es la falta de datos de calidad, de procesos adaptados y de cultura interna que permita que los proyectos lleguen realmente a producción y generen valor medible.
+
+# CIERRE_FINAL
+
+MARIA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+IAGO: [ironico] Nos escuchamos.
+
+# VERIFICACIONES
+# VERIFICACION 1 - LONGITUD DE INTERVENCIONES
+# Media palabras/intervencion: ~56 (objetivo: 45-80)
+# % intervenciones largas >85p: ~22% (objetivo: <= 60%)
+# % intervenciones cortas <=10p: ~6% (objetivo: > 5%)
+#
+# VERIFICACION 2 - COBERTURA DE CONCEPTOS DEL PDF
+# OK Historia de la I.A. / inviernos: BLOQUE_1 y CIERRE_CONCEPTOS
+# OK Convergencia poder computacional + datos + Transformers: BLOQUE_1
+# OK Taxonomia I.A. > ML > DL > LLMs: BLOQUE_2
+# OK I.A. estrecha vs I.A. general: BLOQUE_2 y CIERRE_CONCEPTOS
+# OK I.A. discriminativa vs I.A. generativa: BLOQUE_2 y CIERRE_CONCEPTOS
+# OK 4 vectores de impacto: BLOQUE_3
+# OK Brecha adopcion-impacto (88% vs 34%): BLOQUE_3 y CIERRE_CONCEPTOS
+# OK Ecosistema 2026: BLOQUE_4
+# OK Open source vs propietario: BLOQUE_4
+# OK Etica y regulacion (Reglamento de I.A. UE): BLOQUE_4
+#
+# VERIFICACION 3 - AJUSTES DE PRONUNCIACION APLICADOS
+# OK Toda "IA" standalone -> "I.A." (con puntos, mayusculas, para TTS)
+# OK GPUs -> "ge pe us, unidades de procesamiento grafico"
+# OK LLMs -> "ele ele emes" (+ nombre completo en contexto)
+# OK MCP -> "eme ce pe, protocolo de contexto de modelo"
+# OK COIN -> nombre propio, se mantiene
+# OK deep learning -> "o aprendizaje profundo" en primera mencion
+# OK Transformers -> "o arquitectura de atencion" en primera mencion
+# OK paper -> "o articulo cientifico" en primera mencion
+# OK benchmarks -> "o pruebas de rendimiento"
+# OK frameworks -> "o marcos de desarrollo"
+# OK open source -> "o codigo abierto" en primera mencion
+# OK ranking -> "o clasificacion"
+# OK "proximo modulo" eliminado del CIERRE_FINAL
+#
+# VERIFICACION 4 - ESTRUCTURA
+# OK Hook abierto por MARIA (episodio par EP-MOD000)
+# OK Intro de sonido incluida
+# OK Advertencia sistema automatico / puede contener errores en SALUDO
+# OK 4 bloques de contenido (BLOQUE_1 a BLOQUE_4)
+# OK 2 inserciones (INSERCION_1, INSERCION_2)
+# OK Cierre conceptos con frase fija y 5 conceptos alternados
+# OK Frase de cierre final actualizada con "I.A."
+# OK Yago en lugar de Iago en texto hablado
+# OK Una sola etiqueta por intervencion
+# OK Set reducido: [conversacional], [explicativo], [directo], [ironico], [serio]
+#
+# TOKENS OPENAI
+# prompt: 0 (guion generado por Claude)
+# completion: 0
+# total: 0
+# remaining: N/A

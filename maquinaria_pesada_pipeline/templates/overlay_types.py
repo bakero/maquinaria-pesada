@@ -217,19 +217,56 @@ def regulation_alert(data: dict) -> Image.Image:
 
 
 def highlight_quote(data: dict) -> Image.Image:
-    text = data.get("text", "...")
+    text = (data.get("text", "...") or "...").strip()
     author = data.get("author", "")
     f_q = _get_font(28, bold=True)
-    f_a = _get_font(18)
-    w = 660
-    h = 180
-    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    f_a = _get_font(20)
+
+    # Layout: max width 1100px, padding 30px, line height ~38px
+    max_text_w = 1040
+    padding = 30
+    line_h = 38
+
+    # Word-wrap manual usando textbbox para medir cada linea
+    img_tmp = Image.new("RGBA", (10, 10))
+    d_tmp = ImageDraw.Draw(img_tmp)
+
+    def _wrap(quoted: str) -> list[str]:
+        words = quoted.split()
+        lines, current = [], ""
+        for w in words:
+            tentative = (current + " " + w).strip()
+            bbox = d_tmp.textbbox((0, 0), tentative, font=f_q)
+            if bbox[2] - bbox[0] <= max_text_w:
+                current = tentative
+            else:
+                if current:
+                    lines.append(current)
+                current = w
+        if current:
+            lines.append(current)
+        return lines
+
+    quoted = f"“{text}”"
+    lines = _wrap(quoted)
+
+    text_h = len(lines) * line_h
+    author_h = (line_h + 8) if author else 0
+    box_h = padding + text_h + author_h + padding
+    box_w = max_text_w + 2 * padding
+
+    img = Image.new("RGBA", (box_w, box_h), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    _draw_rounded(d, (0, 0, w - 1, h - 1), 12, fill=(13, 13, 13, 235),
-                  outline=YELLOW, width=2)
-    d.text((24, 24), f"“{text}”", font=f_q, fill=WHITE)
+    _draw_rounded(d, (0, 0, box_w - 1, box_h - 1), 14,
+                  fill=(13, 13, 13, 235), outline=YELLOW, width=2)
+
+    y = padding
+    for ln in lines:
+        d.text((padding, y), ln, font=f_q, fill=WHITE)
+        y += line_h
     if author:
-        d.text((24, h - 36), f"— {author}", font=f_a, fill=YELLOW)
+        d.text((padding, box_h - padding - line_h), f"— {author}",
+               font=f_a, fill=YELLOW)
     return img
 
 

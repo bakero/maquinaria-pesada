@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "description": "Imagenes de referencia para Luma image-to-video. Se mantiene la consistencia de personajes y estudio entre tomas usando estas imagenes como frame0.",
+  "refs": {
+    "studio": {
+      "local":   "Videos/escenas_biblioteca/refs/studio.png",
+      "url":     "https://files.catbox.moe/ce4oou.png",
+      "description": "Estudio vacio (set canonico). Para tomas sin presentadores."
+    },
+    "maria": {
+      "local":   "Videos/escenas_biblioteca/refs/Maria.png",
+      "url":     "https://files.catbox.moe/40t5vq.png",
+      "description": "Maria en su sitio, primer plano. Para tomas individuales de Maria."
+    },
+    "yago": {
+      "local":   "Videos/escenas_biblioteca/refs/Yago.png",
+      "url":     "https://files.catbox.moe/gkpo84.png",
+      "description": "Yago en su sitio, primer plano. Para tomas individuales de Yago."
+    },
+    "establishing": {
+      "local":   "Videos/escenas_biblioteca/refs/establishing.png",
+      "url":     "https://files.catbox.moe/u1phad.png",
+      "description": "Plano amplio frontal con ambos. Para apertura, transiciones, two-shots."
+    }
+  }
+}

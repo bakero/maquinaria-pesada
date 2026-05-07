@@ -93,10 +93,14 @@ def _make_thumbnail(out_path: Path, episode_id: str, title: str,
 
 def generate_metadata(config: dict, content: dict, transcription: dict,
                       output_folder: str | Path, episode_id: str,
-                      intro_duration: float = 0.0) -> dict:
+                      intro_duration: float = 0.0, **kwargs) -> dict:
     log = get_logger("07_metadata_generator")
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
+    # Thumbnail y metadata van junto al video final, en videos_folder si esta definido.
+    videos_folder_cfg = config.get("assets", {}).get("videos_folder")
+    artifacts_dir = Path(videos_folder_cfg) if videos_folder_cfg else output_folder
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     title = (
         f"MaquinarIA Pesada · {episode_id} · "
@@ -138,11 +142,12 @@ def generate_metadata(config: dict, content: dict, transcription: dict,
         "tags":        tags,
     }
 
-    metadata_path = output_folder / f"{episode_id}_youtube_metadata.json"
+    base_name = kwargs.get("base_name") or f"{episode_id}_MaquinarIaPesada_videopodcast"
+    metadata_path = artifacts_dir / f"{base_name}_youtube_metadata.json"
     metadata_path.write_text(json.dumps(metadata, indent=2, ensure_ascii=False),
                              encoding="utf-8")
 
-    thumb_path = output_folder / f"{episode_id}_thumbnail.jpg"
+    thumb_path = artifacts_dir / f"{base_name}_thumbnail.jpg"
     _make_thumbnail(thumb_path, episode_id,
                     title.split("·")[-1].strip() or "Episodio",
                     (1920, 1080))

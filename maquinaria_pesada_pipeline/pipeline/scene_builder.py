@@ -61,139 +61,240 @@ def _section_to_words(transcription: dict, search_text: str,
     return (0.0, 0.0)
 
 
-def _build_heuristic_timeline(content: dict, transcription: dict) -> dict:
+def _build_heuristic_timeline(content: dict, transcription: dict,
+                               audio_structure: dict | None = None,
+                               aligned_interventions: list[dict] | None = None) -> dict:
     """
-    Construye scene_timeline.json sin LLM, asignando overlays segun heuristicas:
-      - name_tag siempre presente para el speaker activo.
-      - stat_card para cada estadistica detectada en orden de aparicion.
-      - sticker cuando un trigger aparece en la intervencion.
+    Builder heuristico V2 - usa el guion ALINEADO con timestamps del audio
+    para colocar overlays relevantes al contenido de cada intervencion.
+
+    Reglas (ordenadas por prioridad):
+      1. name_tag SIEMPRE en TOP_RIGHT con color del speaker activo.
+      2. section_indicator en TOP_LEFT durante 4s en el cambio de seccion.
+      3. Si la intervencion contiene una cifra concreta -> stat_card MID_LEFT.
+      4. Si menciona IA/ML/DL/LLM en la misma frase -> hierarchy_diagram MID_RIGHT.
+      5. Si menciona comparacion (vs, frente a, sistema 1/2) -> two_column_compare BOTTOM_FULL_WIDTH.
+      6. Si menciona anio/historia/inviernos -> timeline_visual BOTTOM_FULL_WIDTH.
+      7. Si menciona regulacion/EU AI Act/multa -> regulation_alert MID_CENTER.
+      8. CIERRE_CONCEPTOS -> recap_grid con conceptos clave del episodio.
+      9. Sticker segun trigger del texto (max 1 por intervencion).
     """
     log = get_logger("03_scene_builder")
-    sections = content.get("sections", [])
     duration = transcription.get("duration_seconds", 0.0) or 0.0
-    words = transcription.get("words", [])
-    total_words = len(words)
 
-    if total_words == 0 or duration <= 0:
-        log.warning("Sin transcripcion utilizable, generando timeline minimo.")
-        return {
-            "background": "industrial_grid",
-            "scenes": [{
-                "start": 0.0, "end": max(duration, 60.0), "section": "EPISODIO",
-                "speaker": "MARIA", "background": "industrial_grid",
-                "overlays": [], "stickers": [],
-            }],
-        }
+    # Si tenemos aligned_interventions con timestamps reales, usarlos.
+    if aligned_interventions:
+        ivs = aligned_interventions
+    else:
+        # Fallback: distribuir proporcionalmente
+        ivs = []
+        for sec in content.get("sections", []):
+            for iv in sec.get("interventions", []):
+                ivs.append({
+                    "section": sec["name"], "speaker": iv["speaker"],
+                    "tones": iv.get("tones", []), "text": iv.get("text", ""),
+                })
+        total_words = sum(max(len(i["text"].split()), 1) for i in ivs) or 1
+        cursor = 0.0
+        for iv in ivs:
+            share = max(len(iv["text"].split()), 1) / total_words
+            iv_dur = duration * share
+            iv["start"] = round(cursor, 3)
+            iv["end"] = round(cursor + iv_dur, 3)
+            cursor = iv["end"]
 
-    # Mapear cada interview a un rango temporal aproximado.
-    flat_interventions = []
-    for sec in sections:
-        for iv in sec.get("interventions", []):
-            flat_interventions.append({
-                "section": sec["name"],
-                "speaker": iv["speaker"],
-                "tones":   iv["tones"],
-                "text":    iv["text"],
-            })
+    if not ivs:
+        return {"background": "industrial_grid",
+                "scenes": [{"start": 0.0, "end": max(duration, 60.0),
+                            "section": "EPISODIO", "speaker": "MARIA",
+                            "background": "industrial_grid",
+                            "overlays": [], "stickers": []}]}
 
-    if not flat_interventions:
-        flat_interventions = [{
-            "section": "EPISODIO", "speaker": "MARIA",
-            "tones": [], "text": transcription.get("full_text", ""),
-        }]
+    keywords = content.get("keywords", [])
+    concepts = content.get("concepts", [])
 
-    # Asignar tiempos proporcionalmente al numero de palabras de cada intervencion.
-    total_text_words = sum(max(len(iv["text"].split()), 1)
-                           for iv in flat_interventions)
-
-    cursor = 0.0
-    for iv in flat_interventions:
-        share = max(len(iv["text"].split()), 1) / total_text_words
-        iv_dur = duration * share
-        iv["start"] = round(cursor, 3)
-        iv["end"] = round(min(cursor + iv_dur, duration), 3)
-        cursor = iv["end"]
-
-    stats = list(content.get("statistics", []))
-    stat_idx = 0
     scenes = []
-
-    for idx, iv in enumerate(flat_interventions):
+    for idx, iv in enumerate(ivs):
         speaker = iv["speaker"].upper()
         speaker_color = "#F5C400" if speaker == "MARIA" else "#4DB8FF"
+        text = iv["text"]
+        text_norm = _normalize(text)
+        section = iv.get("section", "")
 
+        # name_tag SIEMPRE
         overlays = [{
-            "type":     "name_tag",
-            "position": "TOP_RIGHT",
-            "data":     {"name": speaker, "color": speaker_color},
-            "start":    iv["start"],
-            "end":      iv["end"],
+            "type": "name_tag", "position": "TOP_RIGHT",
+            "data": {"name": speaker, "color": speaker_color},
+            "start": iv["start"], "end": iv["end"],
         }]
 
-        # Indicador de seccion en TOP_LEFT al cambiar de seccion
-        if idx == 0 or flat_interventions[idx - 1]["section"] != iv["section"]:
+        # section_indicator al cambiar
+        prev_section = ivs[idx - 1].get("section") if idx > 0 else None
+        if section and section != prev_section:
             overlays.append({
-                "type":     "section_indicator",
-                "position": "TOP_LEFT",
-                "data":     {"label": iv["section"].replace("_", " ").title()},
-                "start":    iv["start"],
-                "end":      min(iv["start"] + 4.0, iv["end"]),
+                "type": "section_indicator", "position": "TOP_LEFT",
+                "data": {"label": section.replace("_", " ").title()},
+                "start": iv["start"],
+                "end": round(min(iv["start"] + 4.0, iv["end"]), 3),
             })
 
-        # Repartir hasta 2 stat_cards de la lista global de stats
-        chunk_stats = stats[stat_idx:stat_idx + 2]
-        for j, st in enumerate(chunk_stats):
-            pos = POSITIONS_RING[(idx + j) % len(POSITIONS_RING)]
-            if pos == "BOTTOM_RIGHT_SAFE":
-                pos = "MID_LEFT"
+        # 1) Cifra concreta -> stat_card
+        m_pct = re.search(r"\b(\d{1,3}(?:[.,]\d+)?\s*%)", text)
+        m_money = re.search(
+            r"(\$|€|EUR|USD)?\s*\d{1,3}(?:[.,]\d{1,3})*\s*(B|M|K|millones|billones|mil)\b",
+            text, re.IGNORECASE)
+        m_users = re.search(
+            r"\b\d{1,3}(?:[.,]\d+)?\s*(M|millones|mil|billones)\s*(usuarios?|empresas?|users?)\b",
+            text, re.IGNORECASE)
+        m_year = re.search(r"\b(19[7-9]\d|20[0-3]\d)\b", text)
+
+        if m_pct:
+            label = "DATO"
+            sub = ""
+            if "empresa" in text_norm: sub = "empresas"
+            elif "usuario" in text_norm: sub = "usuarios"
+            elif "adopcion" in text_norm: label = "ADOPCION"
             overlays.append({
-                "type":     "stat_card",
-                "position": pos,
-                "data":     {
-                    "label":    st.get("type", "dato").upper(),
-                    "value":    st.get("value", ""),
-                    "subtitle": "",
+                "type": "stat_card", "position": "MID_LEFT",
+                "data": {"label": label, "value": m_pct.group(1).strip(),
+                         "subtitle": sub, "color": speaker_color},
+                "start": round(iv["start"] + 0.6, 3),
+                "end": round(min(iv["start"] + 5.5, iv["end"]), 3),
+            })
+        elif m_money:
+            overlays.append({
+                "type": "stat_card", "position": "MID_LEFT",
+                "data": {"label": "VOLUMEN", "value": m_money.group(0).strip(),
+                         "subtitle": "", "color": speaker_color},
+                "start": round(iv["start"] + 0.6, 3),
+                "end": round(min(iv["start"] + 5.5, iv["end"]), 3),
+            })
+        elif m_users:
+            overlays.append({
+                "type": "stat_card", "position": "MID_LEFT",
+                "data": {"label": "ESCALA", "value": m_users.group(0).strip(),
+                         "subtitle": "", "color": speaker_color},
+                "start": round(iv["start"] + 0.6, 3),
+                "end": round(min(iv["start"] + 5.5, iv["end"]), 3),
+            })
+
+        # 2) Conceptos jerarquicos: IA / ML / DL / LLM
+        if re.search(r"\b(I\.?A\.?|inteligencia artificial)\b.*\b(machine learning|ML|deep learning|DL|LLM)\b",
+                     text, re.IGNORECASE | re.DOTALL):
+            items = []
+            for label, pat in [("IA", r"inteligencia artificial|I\.?A\.?"),
+                               ("ML", r"machine learning|ML"),
+                               ("DL", r"deep learning|DL"),
+                               ("LLMs", r"LLM")]:
+                if re.search(pat, text, re.IGNORECASE):
+                    items.append(label)
+            if len(items) >= 2:
+                overlays.append({
+                    "type": "hierarchy_diagram", "position": "MID_RIGHT",
+                    "data": {"title": "Taxonomia IA", "items": items},
+                    "start": round(iv["start"] + 1.0, 3),
+                    "end": round(min(iv["start"] + 7.0, iv["end"]), 3),
+                })
+
+        # 3) Inviernos / cronologia
+        if "invierno" in text_norm and ("70" in text or "90" in text or "80" in text):
+            overlays.append({
+                "type": "timeline_visual", "position": "BOTTOM_FULL_WIDTH",
+                "data": {"items": [
+                    {"year": "1970s", "label": "1er invierno"},
+                    {"year": "1990s", "label": "2do invierno"},
+                    {"year": "2017",  "label": "Transformers"},
+                    {"year": "2026",  "label": "Hoy"},
+                ]},
+                "start": round(iv["start"] + 1.0, 3),
+                "end": round(min(iv["start"] + 8.0, iv["end"]), 3),
+            })
+
+        # 4) Regulacion / EU AI Act / multas
+        if any(k in text_norm for k in ["eu ai act", "regulacion", "multa", "abogado",
+                                          "compliance", "rgpd", "gdpr"]):
+            overlays.append({
+                "type": "regulation_alert", "position": "MID_CENTER",
+                "data": {"title": "EU AI ACT",
+                         "text": "Riesgo · Compliance · Multas"},
+                "start": round(iv["start"] + 0.8, 3),
+                "end": round(min(iv["start"] + 5.5, iv["end"]), 3),
+            })
+
+        # 5) Comparaciones / dualidades
+        if (" vs " in text_norm or "frente a" in text_norm
+                or "sistema 1" in text_norm or "simbolica" in text_norm):
+            # Fallback genérico
+            overlays.append({
+                "type": "two_column_compare", "position": "BOTTOM_FULL_WIDTH",
+                "data": {
+                    "left_title":  "ANTES" if "antes" in text_norm else "OPCION A",
+                    "right_title": "AHORA" if "ahora" in text_norm else "OPCION B",
+                    "left_items":  [],
+                    "right_items": [],
                 },
-                "start": round(min(iv["start"] + 1.0 + j * 1.5, iv["end"] - 0.5), 3),
-                "end":   round(min(iv["start"] + 5.0 + j * 1.5, iv["end"]), 3),
+                "start": round(iv["start"] + 1.0, 3),
+                "end": round(min(iv["start"] + 6.0, iv["end"]), 3),
             })
-        stat_idx += len(chunk_stats)
 
-        # Stickers segun triggers
+        # 6) CIERRE_CONCEPTOS -> recap_grid
+        if section in ("CIERRE_CONCEPTOS", "CIERRE_FINAL"):
+            top_concepts = [c for c in concepts if len(c) > 2][:8] or keywords[:8]
+            overlays.append({
+                "type": "recap_grid", "position": "MID_CENTER",
+                "data": {"items": top_concepts},
+                "start": iv["start"], "end": iv["end"],
+            })
+
+        # 7) Cita destacable: si la intervencion es corta y punzante (<= 25 palabras)
+        #    y tiene tono [serio]/[firme]/[directo], muestra como highlight_quote
+        n_words = len(text.split())
+        tones = iv.get("tones", []) or []
+        if n_words <= 28 and any(t in tones for t in ["serio", "firme", "directo", "tenso", "grave"]):
+            quote = text.strip().rstrip(".")[:120]
+            overlays.append({
+                "type": "highlight_quote", "position": "MID_CENTER",
+                "data": {"text": quote, "author": speaker},
+                "start": round(iv["start"] + 0.5, 3),
+                "end": round(min(iv["start"] + 6.0, iv["end"]), 3),
+            })
+
+        # Sticker (max 1)
         stickers = []
-        text_norm = _normalize(iv["text"])
         for stk, triggers in STICKER_TRIGGERS.items():
             if any(t in text_norm for t in triggers):
                 stickers.append({
-                    "name":     stk,
+                    "name": stk,
                     "position": "BOTTOM_LEFT" if speaker == "MARIA" else "BOTTOM_CENTER",
-                    "start":    round(min(iv["start"] + 1.5, iv["end"] - 0.3), 3),
-                    "end":      round(min(iv["start"] + 4.0, iv["end"]), 3),
+                    "start": round(iv["start"] + 1.5, 3),
+                    "end": round(min(iv["start"] + 4.5, iv["end"]), 3),
                 })
-                break  # un sticker max por intervencion
+                break
 
+        # Background segun seccion / contenido
         bg = "industrial_grid"
-        if "regulacion" in iv["section"].lower() or "alerta" in text_norm:
+        if "regulacion" in section.lower() or "lawyer" in str(stickers):
             bg = "circuit_board"
-        elif iv["section"].startswith("CIERRE") or iv["section"].startswith("DESPEDIDA"):
+        elif section.startswith("CIERRE") or section.startswith("DESPEDIDA"):
             bg = "data_diagonal"
 
         scenes.append({
-            "start":      iv["start"],
-            "end":        iv["end"],
-            "section":    iv["section"],
-            "speaker":    speaker,
-            "background": bg,
-            "overlays":   overlays,
-            "stickers":   stickers,
+            "start": iv["start"], "end": iv["end"], "section": section,
+            "speaker": speaker, "background": bg,
+            "overlays": overlays, "stickers": stickers,
         })
 
+    log.info(f"Builder heuristico V2: {len(scenes)} escenas, "
+             f"{sum(len(s['overlays']) for s in scenes)} overlays totales.")
     return {"background": "industrial_grid", "scenes": scenes}
 
 
 def _try_anthropic_timeline(content: dict, transcription: dict,
-                             prompt_path: Path) -> dict | None:
-    """Intenta usar Claude para generar el timeline. None si no hay API key."""
+                             prompt_path: Path,
+                             audio_structure: dict | None = None,
+                             pdf_text: str | None = None,
+                             aligned_interventions: list[dict] | None = None) -> dict | None:
+    """Intenta usar Claude para generar el timeline. None si no hay API key/saldo."""
     log = get_logger("03_scene_builder")
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
@@ -208,26 +309,46 @@ def _try_anthropic_timeline(content: dict, transcription: dict,
 
     system_prompt = prompt_path.read_text(encoding="utf-8")
 
+    # Si tenemos intervenciones ya alineadas con timestamps, las pasamos completas.
+    if aligned_interventions:
+        intervenciones = [{
+            "section":     iv.get("section"),
+            "speaker":     iv.get("speaker"),
+            "tones":       iv.get("tones", []),
+            "text":        iv.get("text", "")[:600],
+            "start_audio": iv.get("start"),
+            "end_audio":   iv.get("end"),
+        } for iv in aligned_interventions]
+    else:
+        intervenciones = []
+        for s in content.get("sections", []):
+            for iv in s.get("interventions", []):
+                intervenciones.append({
+                    "section": s["name"],
+                    "speaker": iv["speaker"],
+                    "tones":   iv.get("tones", []),
+                    "text":    iv.get("text", "")[:600],
+                })
+
     payload = {
-        "duration_seconds": transcription.get("duration_seconds", 0),
-        "sections":         [{
-            "name": s["name"],
-            "speakers": [iv["speaker"] for iv in s["interventions"]],
-            "tones":    list({t for iv in s["interventions"] for t in iv["tones"]}),
-            "text":     " ".join(iv["text"] for iv in s["interventions"])[:1500],
-        } for s in content.get("sections", [])],
-        "statistics": content.get("statistics", [])[:60],
-        "concepts":   content.get("concepts", [])[:30],
-        "speakers":   content.get("speakers", []),
+        "audio_structure":  {k: v for k, v in (audio_structure or {}).items()
+                              if k != "silences"},
+        "speakers":         content.get("speakers", []),
+        "statistics":       content.get("statistics", [])[:80],
+        "concepts":         content.get("concepts", [])[:30],
+        "keywords":         content.get("keywords", [])[:50],
+        "pdf_summary":      (pdf_text or "")[:6000],
+        "interventions":    intervenciones,
     }
 
     client = anthropic.Anthropic(api_key=api_key)
-    log.info("Solicitando scene_timeline a Claude...")
+    model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    log.info(f"Solicitando scene_timeline a Claude ({model})...")
 
     try:
         msg = client.messages.create(
-            model="claude-opus-4-7",
-            max_tokens=8000,
+            model=model,
+            max_tokens=12000,
             system=system_prompt,
             messages=[{
                 "role": "user",
@@ -270,7 +391,10 @@ def build_scene_timeline(content: dict, transcription: dict,
                          output_folder: str | Path,
                          prompt_path: str | Path | None = None,
                          force: bool = False,
-                         use_llm: bool = True) -> dict:
+                         use_llm: bool = True,
+                         audio_structure: dict | None = None,
+                         pdf_text: str | None = None,
+                         aligned_interventions: list[dict] | None = None) -> dict:
     """
     Genera scene_timeline.json combinando datos del guion + transcripcion.
     """
@@ -289,11 +413,20 @@ def build_scene_timeline(content: dict, transcription: dict,
 
     timeline = None
     if use_llm and prompt_path.exists():
-        timeline = _try_anthropic_timeline(content, transcription, prompt_path)
+        timeline = _try_anthropic_timeline(
+            content, transcription, prompt_path,
+            audio_structure=audio_structure,
+            pdf_text=pdf_text,
+            aligned_interventions=aligned_interventions,
+        )
 
     if timeline is None:
-        log.info("Generando timeline heuristico.")
-        timeline = _build_heuristic_timeline(content, transcription)
+        log.info("Generando timeline heuristico V2 (con guion alineado).")
+        timeline = _build_heuristic_timeline(
+            content, transcription,
+            audio_structure=audio_structure,
+            aligned_interventions=aligned_interventions,
+        )
 
     cache.write_text(json.dumps(timeline, indent=2, ensure_ascii=False), encoding="utf-8")
     log.info(f"scene_timeline guardado: {len(timeline.get('scenes', []))} escenas.")

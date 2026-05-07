@@ -10,6 +10,7 @@ Concatenamos ambos en MP4 final con libx264 + aac.
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -17,6 +18,22 @@ from pathlib import Path
 
 from .logger import get_logger
 from .brand import RESOLUTIONS
+
+
+def derive_video_basename(audio_path: str | Path | None,
+                          episode_id: str) -> str:
+    """
+    Deduce el nombre base del video siguiendo la nomenclatura del proyecto.
+
+    Si el audio se llama  MX_E_<Tema>.mp3  -> devuelve  MX_V_<Tema>
+    En cualquier otro caso devuelve  <episode_id>_MaquinarIaPesada_videopodcast
+    """
+    if audio_path:
+        stem = Path(audio_path).stem  # sin extension
+        m = re.match(r"^(M\d+)_E_(.+)$", stem)
+        if m:
+            return f"{m.group(1)}_V_{m.group(2)}"
+    return f"{episode_id}_MaquinarIaPesada_videopodcast"
 
 
 def _run(cmd: list[str], log) -> None:
@@ -56,26 +73,36 @@ def compose_video(config: dict,
                   srt_path: str | Path,
                   output_folder: str | Path,
                   episode_id: str,
-                  preview: bool = False) -> str:
-    """Devuelve la ruta del MP4 final."""
+                  preview: bool = False,
+                  audio_structure: dict | None = None) -> str:
+    """
+    Devuelve la ruta del MP4 final.
+
+    Estructura del video resultante (sincronizado con el audio del episodio,
+    que YA contiene hook + sintonia + contenido):
+       [0 ─── lead silence ─── HOOK ─── sintonia (intro_video overlay) ─── CONTENIDO ──]
+    Los frames generados (con overlays/stickers) se muestran encima del
+    cuerpo, pero durante la sintonia se muestra el intro_video.
+    """
     log = get_logger("06_video_compositor")
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
+    videos_folder_cfg = config.get("assets", {}).get("videos_folder")
+    final_dir = Path(videos_folder_cfg) if videos_folder_cfg else output_folder
+    final_dir.mkdir(parents=True, exist_ok=True)
     suffix = "_preview" if preview else ""
-    final_path = output_folder / f"{episode_id}{suffix}_videopodcast.mp4"
+    base_name = derive_video_basename(audio_path, episode_id)
+    final_path = final_dir / f"{base_name}{suffix}.mp4"
 
     if shutil.which("ffmpeg") is None:
-        raise RuntimeError("ffmpeg no esta en el PATH. Instalalo antes de continuar.")
+        raise RuntimeError("ffmpeg no esta en el PATH.")
 
+    # La resolucion del config manda; el modo preview ya no la baja a 720p.
     res_str = config.get("episode_defaults", {}).get("resolution", "1920x1080")
-    if preview:
-        res_str = "1280x720"
     w, h = RESOLUTIONS.get(res_str, (1920, 1080))
 
     intro_video = config["assets"].get("intro_video")
-    logo = config["assets"].get("logo_watermark")
     frames = frames_index.get("frames", [])
-
     if not frames:
         raise RuntimeError("No hay frames en frames_index.")
 
@@ -85,9 +112,8 @@ def compose_video(config: dict,
     _build_concat_list(frames, concat_list)
 
     body_video = workdir / f"body{suffix}.mp4"
-    body_with_audio = workdir / f"body_audio{suffix}.mp4"
 
-    # 1) Crear video de frames con duraciones (sin audio).
+    # 1) Video de frames a la duracion del audio del episodio.
     cmd_body = [
         "ffmpeg", "-y",
         "-f", "concat", "-safe", "0",
@@ -101,78 +127,105 @@ def compose_video(config: dict,
     ]
     _run(cmd_body, log)
 
-    # 2) Mezclar con audio + subtitulos quemados.
-    duration_audio = float(frames_index.get("duration", 0)) or sum(f["duration"] for f in frames)
+    # 2) Si tenemos audio_structure con sintonia detectada y un intro_video,
+    #    creamos un video de sintonia normalizado y lo overlay-amos sobre body
+    #    en ese rango exacto.
+    sintonia_start = (audio_structure or {}).get("sintonia_start")
+    sintonia_end = (audio_structure or {}).get("sintonia_end")
+    sintonia_dur = None
+    if sintonia_start is not None and sintonia_end is not None:
+        sintonia_dur = max(0.0, float(sintonia_end) - float(sintonia_start))
 
-    srt_filter = ""
-    if srt_path and Path(srt_path).exists():
-        esc = _escape_srt_for_ffmpeg(Path(srt_path))
-        srt_filter = (
-            f",subtitles='{esc}':force_style="
-            f"'FontName=Arial,Fontsize=22,PrimaryColour=&H00E8E8E8,"
-            f"OutlineColour=&H00000000,BorderStyle=1,Outline=2,"
-            f"Shadow=0,MarginV=60,Alignment=2'"
-        )
-
-    cmd_mix = [
-        "ffmpeg", "-y",
-        "-i", str(body_video),
-        "-i", str(audio_path),
-        "-filter_complex",
-        f"[0:v]format=yuv420p{srt_filter}[v]",
-        "-map", "[v]", "-map", "1:a",
-        "-c:v", "libx264", "-preset", "veryfast" if preview else "slow",
-        "-crf", "23" if preview else "18",
-        "-c:a", "aac", "-b:a", "192k",
-        "-shortest",
-        "-pix_fmt", "yuv420p",
-        "-movflags", "+faststart",
-        str(body_with_audio),
-    ]
-    _run(cmd_mix, log)
-
-    # 3) Concatenar intro + cuerpo si hay intro
-    if intro_video and Path(intro_video).exists():
-        intro_norm = workdir / "intro_norm.mp4"
+    intro_overlay_video = None
+    if (intro_video and Path(intro_video).exists()
+            and sintonia_dur and sintonia_dur > 0.5):
+        intro_overlay_video = workdir / "intro_overlay.mp4"
+        # Recortar/extender intro_video a la duracion exacta de la sintonia
+        # (sin audio: el audio del episodio ya lo lleva)
         cmd_intro = [
             "ffmpeg", "-y",
             "-i", str(intro_video),
-            "-vf", f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30",
+            "-an",
+            "-vf",
+            f"scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30,"
+            f"tpad=stop_mode=clone:stop_duration={max(0, sintonia_dur - _intro_dur(intro_video)):.3f}",
+            "-t", f"{sintonia_dur:.3f}",
             "-c:v", "libx264", "-preset", "veryfast",
             "-crf", "20", "-pix_fmt", "yuv420p", "-r", "30",
-            "-c:a", "aac", "-b:a", "192k",
-            "-ar", "48000", "-ac", "2",
-            str(intro_norm),
+            str(intro_overlay_video),
         ]
         _run(cmd_intro, log)
 
-        # Asegurar que body_with_audio tambien usa 48k stereo
-        body_norm = workdir / f"body_norm{suffix}.mp4"
-        cmd_norm = [
-            "ffmpeg", "-y",
-            "-i", str(body_with_audio),
-            "-c:v", "copy",
-            "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2",
-            str(body_norm),
-        ]
-        _run(cmd_norm, log)
+    # 3) Filter complex final: body + audio + intro overlay sobre sintonia + subs.
+    inputs = ["-i", str(body_video), "-i", str(audio_path)]
+    filter_parts = []
 
-        concat_final = workdir / "concat_final.txt"
-        concat_final.write_text(
-            f"file '{intro_norm.resolve().as_posix()}'\n"
-            f"file '{body_norm.resolve().as_posix()}'\n",
-            encoding="utf-8",
+    if intro_overlay_video:
+        inputs += ["-i", str(intro_overlay_video)]
+        # Hacemos que el intro_overlay aparezca solo entre sintonia_start y sintonia_end.
+        # 1) Retrasar el intro_overlay con setpts para que su t=0 coincida con sintonia_start.
+        # 2) Componer encima del body con enable.
+        filter_parts.append(
+            f"[2:v]setpts=PTS+{float(sintonia_start):.3f}/TB[introv]"
         )
-        cmd_final = [
-            "ffmpeg", "-y",
-            "-f", "concat", "-safe", "0",
-            "-i", str(concat_final),
-            "-c", "copy", "-movflags", "+faststart",
-            str(final_path),
-        ]
-        _run(cmd_final, log)
+        filter_parts.append(
+            f"[0:v][introv]overlay=x=0:y=0:enable='between(t,{float(sintonia_start):.3f},{float(sintonia_end):.3f})'[v0]"
+        )
+        v_in = "[v0]"
     else:
-        shutil.copyfile(body_with_audio, final_path)
+        v_in = "[0:v]"
+
+    # Subtitulos quemados al final del filtro de video
+    if srt_path and Path(srt_path).exists():
+        esc = _escape_srt_for_ffmpeg(Path(srt_path))
+        # Subtitulos a la franja inferior de la pantalla:
+        # MarginV en pixeles desde abajo. ~30 los pega bien al borde.
+        # Fontsize 32 a 1080p (escala desde el ratio del video).
+        font_size = 32 if h >= 1080 else 22
+        srt_chain = (
+            f"subtitles='{esc}':force_style="
+            f"'FontName=Arial,Fontsize={font_size},PrimaryColour=&H00E8E8E8,"
+            f"OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,"
+            f"MarginV=30,Alignment=2'"
+        )
+        filter_parts.append(f"{v_in}{srt_chain}[v]")
+    else:
+        filter_parts.append(f"{v_in}null[v]")
+
+    filter_complex = ";".join(filter_parts)
+
+    cmd_final = [
+        "ffmpeg", "-y",
+        *inputs,
+        "-filter_complex", filter_complex,
+        "-map", "[v]", "-map", "1:a",
+        "-c:v", "libx264",
+        "-preset", "veryfast" if preview else "slow",
+        "-crf", "23" if preview else "18",
+        "-c:a", "aac", "-b:a", "192k",
+        "-pix_fmt", "yuv420p",
+        "-r", "30",
+        "-shortest",
+        "-movflags", "+faststart",
+        str(final_path),
+    ]
+    _run(cmd_final, log)
 
     log.info(f"Video final generado: {final_path}")
+    if sintonia_start is not None:
+        log.info(f"  intro_video overlay aplicado en [{sintonia_start:.2f}s, {sintonia_end:.2f}s]")
     return str(final_path)
+
+
+def _intro_dur(path: str | Path) -> float:
+    """Duracion del intro_video.mp4 (para tpad)."""
+    if shutil.which("ffprobe") is None:
+        return 0.0
+    try:
+        out = subprocess.check_output([
+            "ffprobe", "-v", "error", "-show_entries", "format=duration",
+            "-of", "default=noprint_wrappers=1:nokey=1", str(path),
+        ], text=True).strip()
+        return float(out)
+    except Exception:
+        return 0.0

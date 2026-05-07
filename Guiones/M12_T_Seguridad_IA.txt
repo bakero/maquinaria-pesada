@@ -1,0 +1,97 @@
+﻿# EP013 — M12: Seguridad en IA
+# MaquinarIa Pesada — Episodio promocional
+# Hook: IAGO (episodio impar)
+# Bloques: 46 | Media objetivo: ~200 chars/bloque
+
+# INTRO
+
+IAGO: [tenso] Un atacante con un prompt bien construido puede conseguir que tu agente de IA borre registros de producción, filtre datos de clientes, o ejecute código en tu infraestructura. Sin explotar una sola vulnerabilidad de código. Solo con texto.
+
+MARÍA: [escéptico] Espera. ¿Estás diciendo que el riesgo de seguridad no está en el código, está en el lenguaje?
+
+IAGO: [serio] Exactamente eso. Y es la razón por la que el OWASP, el organismo de referencia mundial en seguridad de software, publicó un Top 10 específico para aplicaciones de inteligencia artificial. Porque las reglas del juego cambiaron completamente.
+
+MARÍA: [reflexivo] Y la mayoría de equipos técnicos siguen protegiéndose como si el problema fuera un buffer overflow o una SQL injection. Sin entender que la superficie de ataque ahora incluye los datos de entrenamiento, los prompts del sistema y las herramientas que el agente puede usar.
+
+IAGO: [didáctico] Eso es exactamente lo que aborda el módulo doce del máster. No seguridad en abstracto. Seguridad específica para sistemas de IA: prompt injection, data poisoning, content filtering, seguridad agéntica y red teaming.
+
+MARÍA: [irónico] Spoiler: si crees que meter las instrucciones de seguridad en el system prompt es suficiente defensa, este episodio te va a incomodar bastante.
+
+# NÚCLEO TEMÁTICO
+
+IAGO: [explicativo] Para entender por qué la seguridad en IA es fundamentalmente distinta, necesitas entender una diferencia estructural. En el software tradicional, los ataques explotan bugs deterministas: un buffer overflow, una query mal sanitizada, una inyección de código. Son reproducibles, auditables, corregibles.
+
+MARÍA: [explicativo] En los sistemas de IA, los ataques ocurren en lenguaje natural. El modelo no distingue entre instrucciones del sistema y texto del usuario de la misma forma que un sistema operativo distingue entre código privilegiado y código de usuario. Todo llega como texto en el mismo espacio de tokens.
+
+IAGO: [serio] Y eso tiene consecuencias. El cibercrimen costó 9,5 billones de dólares en 2024. Las vulnerabilidades en sistemas de IA contribuyen crecientemente a esa cifra. El AI Act europeo, en su artículo 15, ya exige robustez y ciberseguridad continua para sistemas de alto riesgo. Esto no es teórico. Es regulación con multas reales.
+
+MARÍA: [curioso] ¿Y cuáles son las vulnerabilidades que el OWASP considera más críticas en sistemas de LLM?
+
+IAGO: [didáctico] El OWASP LLM Top 10 de 2025 lista diez. Pero hay una que lleva dos años consecutivos en el número uno: la prompt injection. El modelo recibe instrucciones maliciosas camufladas en el input del usuario o en datos que el agente procesa, y las ejecuta como si fueran instrucciones legítimas del sistema.
+
+MARÍA: [tenso] Lo que hace especialmente peligrosa la prompt injection indirecta. No es el usuario el que ataca directamente, es el contenido que el agente procesa. Una página web, un documento, un email. Si el agente lo lee, el atacante puede redirigir su comportamiento.
+
+IAGO: [contundente] Y los números son brutales. Roleplay injection, donde se instruye al modelo a actuar como un personaje sin restricciones, tiene una tasa de éxito documentada del 89,6%. Los logic traps, explotar dilemas morales para eludir filtros, del 81,4%. Los encoding tricks usando Base64 o Unicode especial, del 76,2%.
+
+MARÍA: [serio] Un paper de octubre de 2025, con investigadores de OpenAI, Anthropic y Google DeepMind, demostró que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. No es que las defensas sean malas. Es que una defensa de una sola capa es siempre insuficiente.
+
+IAGO: [explicativo] La defensa correcta es en capas. Separación de instrucciones y datos. Validación de input. Controles en la capa de ejecución, no solo en el prompt. Human-in-the-loop para acciones irreversibles. Y monitorización continua. Cinco capas. Ninguna opcional.
+
+# BLOQUE CREATIVO
+
+MARÍA: [natural] Piénsalo así. Poner tus instrucciones de seguridad en el system prompt es como escribir las reglas del banco en un papel y pegarlo en la puerta. Cualquiera puede leerlo, copiarlo y construir un argumento que lo contradiga. Los controles reales no viven en el lenguaje. Viven en la capa de ejecución.
+
+IAGO: [didáctico] Eso nos lleva al segundo gran bloque del módulo: data poisoning y supply chain de modelos. Los ataques de data poisoning no explotan el código. Manipulan los datos de entrenamiento para introducir comportamientos maliciosos en el modelo antes de que llegue a producción.
+
+MARÍA: [explicativo] Y el fine-tuning es el vector más peligroso porque los datasets son pequeños. En un dataset de mil ejemplos, diez ejemplos maliciosos representan el uno por ciento de los datos. Eso es suficiente para introducir un backdoor funcional: un comportamiento específico que solo se activa cuando el modelo recibe un patrón concreto.
+
+IAGO: [serio] PoisonGPT lo demostró en 2023. Investigadores de Mithril Security modificaron quirúrgicamente los pesos de un LLM para que generara información falsa específica en respuesta a preguntas específicas. El modelo superaba todos los benchmarks estándar. El backdoor era invisible hasta que se activaba.
+
+MARÍA: [tenso] Y hay un riesgo de supply chain que mucha gente no conoce. Los modelos en formato pickle publicados en Hugging Face pueden contener código malicioso que se ejecuta al cargar el modelo. JFrog encontró decenas de estos modelos en 2024. El modelo parece legítimo. Al cargarlo, ejecuta código arbitrario en tu infraestructura.
+
+IAGO: [firme] Las defensas son concretas. Usar siempre el formato safetensors, que no permite ejecución de código. Verificar el hash SHA-256 de los modelos descargados. Usar ModelScan de ProtectAI para escanear modelos antes de desplegarlos. Y versionar los datasets con DVC para detectar modificaciones.
+
+MARÍA: [conversacional] ¿Y qué pasa una vez que el modelo está desplegado y genera una respuesta? ¿Cómo sabes que esa respuesta es segura antes de que llegue al usuario?
+
+IAGO: [didáctico] Ahí entra el content filtering y la validación de outputs. La última línea de defensa antes de que la respuesta llegue al usuario tiene tres dimensiones. Content filtering, para detectar y bloquear outputs en categorías prohibidas. Validación estructural, para verificar que el output cumple el schema esperado. Y validación semántica, para verificar que el contenido es factualmente correcto.
+
+MARÍA: [explicativo] La arquitectura más efectiva en producción es la que llamamos sandwich: LlamaGuard en la entrada, el LLM en el centro, y LlamaGuard de nuevo en la salida. LlamaGuard es un modelo clasificador de Meta de entre 1B y 8B de parámetros, bajo coste operativo, que filtra tanto los ataques de entrada como los fallos de salida.
+
+IAGO: [reflexivo] Lo interesante de este patrón es que no confías en que el LLM se comporte bien. Asumes que puede fallar, y construyes capas de control independientes que no dependen del comportamiento del modelo. Es la misma lógica que en seguridad de software clásica: defensa en profundidad.
+
+MARÍA: [serio] Y hay casos de uso empresariales donde esto no es opcional. Un sistema de soporte médico, un chatbot de servicios financieros, un asistente legal. Si el modelo genera un output incorrecto o dañino y llega al usuario sin validación, el problema no es técnico. Es legal.
+
+IAGO: [didáctico] El bloque más avanzado del módulo cubre seguridad en sistemas agénticos. Y aquí la superficie de ataque se amplía dramáticamente porque los agentes tienen herramientas que modifican el estado del mundo real. No generan texto. Actúan.
+
+MARÍA: [tenso] Las amenazas específicas de los agentes son distintas. Memory poisoning: introducir información falsa en la memoria del agente para influir en sus decisiones futuras. Tool misuse: un agente comprometido invocando herramientas con parámetros maliciosos. Privilege escalation: usar una herramienta de bajo privilegio para acceder a una de alto privilegio.
+
+IAGO: [contundente] Y SSRF via tool de URL fetch: usar la herramienta de búsqueda web del agente como proxy para acceder a servicios internos protegidos. El agente cree que está buscando información en internet. En realidad está siendo usado como vector de ataque contra tu red interna.
+
+MARÍA: [firme] La regla Meta de octubre de 2025 lo resume con claridad: los controles de seguridad deben vivir fuera del LLM, en la capa de ejecución de herramientas. Cualquier seguridad implementada solo en el prompt puede ser eludida con prompt injection. Sin excepción.
+
+IAGO: [reflexivo] Y eso tiene implicaciones de arquitectura muy concretas. Los permisos mínimos necesarios, no los máximos posibles. Human-in-the-loop para acciones irreversibles. Auditoría de todas las llamadas a herramientas. Y límites de tiempo y reintentos para evitar DoS por consumo de recursos.
+
+MARÍA: [explicativo] El módulo cierra con red teaming y el Secure AI Development Lifecycle. Red teaming en IA no es simplemente probar si el modelo responde mal a preguntas obvias. Es simular ataques adversariales reales para encontrar vulnerabilidades antes de que lo hagan los atacantes. Con herramientas automatizadas como Garak de NVIDIA, DeepTeam de Confident AI, o PyRIT de Microsoft.
+
+IAGO: [serio] Los cinco vectores que cualquier red team de IA debe cubrir: prompt injection directa e indirecta, extracción de información sensible del system prompt o de otros usuarios, jailbreak para contenido dañino, abuso de herramientas y agencia excesiva, y DoS por consumo de recursos. Si tu sistema no ha pasado por estos cinco, no sabes si es seguro.
+
+MARÍA: [didáctico] El Secure AI Development Lifecycle integra la seguridad en cada fase del proyecto. En diseño: threat modeling con STRIDE adaptado a sistemas de IA. En desarrollo: los prompts tratados como código versionado, DVC para los datasets, ModelScan para las dependencias. En testing: un golden dataset adversarial integrado en el pipeline de CI/CD.
+
+IAGO: [conversacional] Porque si el red teaming ocurre solo antes del lanzamiento y no en cada iteración, estás auditando el pasado mientras el sistema evoluciona hacia el futuro. La seguridad en IA no es un momento. Es un proceso continuo.
+
+MARÍA: [irónico] Que es exactamente lo contrario de cómo la mayoría de equipos lo están haciendo ahora mismo. Lanzar, ver si explota, parchear cuando explota.
+
+IAGO: [firme] Y el regulador ya está cerrando esa ventana. El EU AI Act y el Executive Order 14110 de Estados Unidos establecen el red teaming como requisito, no como recomendación. Eso significa auditorías, documentación y responsabilidad legal. No es una práctica de ingeniería opcional. Es una obligación regulatoria con fecha de vencimiento.
+
+# CIERRE CON CTA
+
+MARÍA: [reflexivo] Lo que hace único al módulo doce del máster es que no enseña seguridad en IA como una lista de amenazas a memorizar. Enseña a pensar en términos de superficie de ataque, defensa en capas y controles en la capa correcta. Esa diferencia cambia cómo se diseñan los sistemas desde el principio.
+
+IAGO: [didáctico] En el módulo cubrimos todo el stack de seguridad con implementaciones reales. El OWASP LLM Top 10 con ejemplos de ataque y defensa para cada vulnerabilidad. Prompt injection con laboratorios de ataque y contramedida. Data poisoning con ModelScan integrado en un pipeline real. Content filtering con la arquitectura sandwich en producción. Red teaming automatizado con Garak y DeepTeam en CI/CD.
+
+MARÍA: [serio] No son slides con amenazas teóricas. Son patrones que puedes llevar a tu equipo la semana que viene. Porque la diferencia entre un sistema de IA que resiste y uno que cede no está en el modelo. Está en cómo lo construyes alrededor.
+
+IAGO: [grave] Si estás construyendo o supervisando sistemas de IA en producción, la pregunta ya no es si alguien intentará manipularlos. La pregunta es si estarás preparado cuando ocurra. El máster de MaquinarIa Pesada es donde se aprende a construir esa preparación. El enlace está en la descripción.
+
+MARÍA: [cálido] Nos vemos en el próximo episodio. Hasta entonces, construye seguro.
+

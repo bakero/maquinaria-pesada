@@ -1,19 +1,37 @@
 """
-Paso 05 - Generacion de subtitulos SRT con keywords resaltados.
+Paso 05 - Generacion de subtitulos SRT.
 
-Whisper devuelve segments con texto y timestamps. Convertimos a SRT
-agrupando palabras en bloques de ~7 palabras / 3 segundos.
-Las keywords definidas en content_data se envuelven en <font color>.
+NUEVO COMPORTAMIENTO (v2):
+- Texto: tomado DEL GUION (limpio: sin SPEAKER:, sin [tono], sin <silence>).
+  El guion es la verdad; Whisper se usa solo como fuente de timing.
+- Timing: alineamos cada intervencion del guion con los segments de Whisper
+  por matching de primeras palabras, y subdividimos cada intervencion en
+  bloques de ~7 palabras con timing proporcional.
+- Resaltado: keywords y cifras en amarillo CAT.
+- El subtitulo NO aparece durante hook/sintonia (lead + sintonia silenciados
+  segun audio_structure si esta disponible).
 """
 
 import json
 import re
+import unicodedata
 from pathlib import Path
 
 from .logger import get_logger
 
+# ─── Helpers de texto/normalizacion ───────────────────────────────────────
+
+
+def _normalize(s: str) -> str:
+    s = s.lower()
+    s = "".join(c for c in unicodedata.normalize("NFD", s)
+                if unicodedata.category(c) != "Mn")
+    s = re.sub(r"[^\w\s]", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
 
 def _format_timestamp(seconds: float) -> str:
+    seconds = max(0.0, float(seconds))
     h = int(seconds // 3600)
     m = int((seconds % 3600) // 60)
     s = int(seconds % 60)
@@ -25,7 +43,6 @@ def _format_timestamp(seconds: float) -> str:
 
 
 def _highlight(text: str, keywords: list[str], color: str = "#F5C400") -> str:
-    """Envuelve cada keyword en <font color="..."> ... </font>."""
     if not keywords:
         return text
     out = text
@@ -37,68 +54,247 @@ def _highlight(text: str, keywords: list[str], color: str = "#F5C400") -> str:
     return out
 
 
+# ─── Alineacion guion <-> Whisper ─────────────────────────────────────────
+
+
+def _flatten_interventions(content: dict) -> list[dict]:
+    """De content_data extrae lista plana de intervenciones limpias."""
+    flat = []
+    for sec in content.get("sections", []):
+        for iv in sec.get("interventions", []):
+            text = (iv.get("text") or "").strip()
+            if not text:
+                continue
+            flat.append({
+                "section": sec["name"],
+                "speaker": iv.get("speaker", ""),
+                "text":    text,
+            })
+    return flat
+
+
+def _distribute_proportional(interventions: list[dict],
+                              t_start: float, t_end: float) -> None:
+    """Reparte intervenciones en [t_start, t_end] proporcional al numero de palabras."""
+    if t_end <= t_start or not interventions:
+        return
+    total_words = sum(max(len((iv.get("text") or "").split()), 1)
+                      for iv in interventions) or 1
+    cursor = float(t_start)
+    span = float(t_end - t_start)
+    for iv in interventions:
+        share = max(len((iv.get("text") or "").split()), 1) / total_words
+        dur = span * share
+        iv["start"] = round(cursor, 3)
+        iv["end"] = round(min(cursor + dur, t_end), 3)
+        cursor += dur
+
+
+def _refine_with_whisper(interventions: list[dict],
+                         whisper_words: list[dict],
+                         t_start: float, t_end: float) -> int:
+    """
+    Para cada intervencion intenta afinar `start` buscando sus primeras 4-6
+    palabras en Whisper dentro de su ventana asignada (con margen ±15s).
+    Si encuentra match, ajusta `start` (y desplaza `end` proporcionalmente).
+    Devuelve cuantos matches consiguio.
+    """
+    matches = 0
+    if not whisper_words:
+        return 0
+    win_words = [(i, w) for i, w in enumerate(whisper_words)
+                 if t_start - 5 <= w["start"] <= t_end + 5]
+    if not win_words:
+        return 0
+    norm = [_normalize(w["word"]) for _, w in win_words]
+    joined = " ".join(norm)
+
+    for iv in interventions:
+        text_norm = _normalize(iv.get("text", ""))
+        first_words = text_norm.split()[:6]
+        if not first_words:
+            continue
+        match_pos_word = None
+        for n_try in (6, 5, 4, 3):
+            needle = " ".join(first_words[:n_try])
+            if not needle:
+                continue
+            # Buscar match cerca del start asignado por proporcionalidad
+            pos = joined.find(needle)
+            if pos != -1:
+                match_pos_word = joined[:pos].count(" ")
+                break
+        if match_pos_word is None:
+            continue
+        try:
+            new_start = win_words[match_pos_word][1]["start"]
+        except IndexError:
+            continue
+        # Solo aceptar si esta dentro de la ventana razonable (no muy lejos del proporcional)
+        if abs(new_start - iv.get("start", 0)) <= 30:
+            old_dur = iv["end"] - iv["start"]
+            iv["start"] = round(float(new_start), 3)
+            iv["end"] = round(float(new_start + old_dur), 3)
+            matches += 1
+    return matches
+
+
+def _align_interventions_with_whisper(interventions: list[dict],
+                                       whisper_words: list[dict],
+                                       content_start: float = 0.0,
+                                       content_end: float | None = None,
+                                       audio_structure: dict | None = None) -> list[dict]:
+    """
+    Estrategia v2:
+      1. Separar intervenciones por seccion (HOOK vs CONTENIDO).
+      2. Distribuir proporcionalmente cada grupo en su rango temporal:
+         - HOOK: [hook_start, hook_end]
+         - CONTENIDO: [content_start, content_end]
+      3. Refinar con matching de palabras Whisper cuando se pueda.
+
+    Asi siempre hay timing aceptable, incluso si Whisper-tiny falla.
+    """
+    log = get_logger("05_subtitle_generator")
+    if not interventions:
+        return []
+
+    audio_structure = audio_structure or {}
+    hook_start = audio_structure.get("hook_start") or 0.0
+    hook_end = audio_structure.get("hook_end")
+    if hook_end is None and audio_structure.get("sintonia_start") is not None:
+        hook_end = audio_structure["sintonia_start"]
+    if hook_end is None:
+        hook_end = max(hook_start, 30.0)
+
+    if content_end is None:
+        content_end = whisper_words[-1]["end"] if whisper_words else 0.0
+    if content_start <= 0:
+        content_start = audio_structure.get("content_start") or 0.0
+
+    # Particionar
+    SKIP_SECTIONS = {"INTRO_SONIDO", "SINTONIA", "VERIFICACIONES"}
+    hook_ivs = []
+    content_ivs = []
+    for iv in interventions:
+        sec = (iv.get("section") or "").upper()
+        if sec in SKIP_SECTIONS:
+            continue
+        if sec == "HOOK":
+            hook_ivs.append(dict(iv))
+        else:
+            content_ivs.append(dict(iv))
+
+    # Distribuir proporcionalmente cada grupo en su rango.
+    _distribute_proportional(hook_ivs, hook_start, hook_end)
+    _distribute_proportional(content_ivs, content_start, content_end)
+
+    # Refinar con Whisper donde se pueda.
+    n1 = _refine_with_whisper(hook_ivs, whisper_words, hook_start, hook_end)
+    n2 = _refine_with_whisper(content_ivs, whisper_words, content_start, content_end)
+    aligned = hook_ivs + content_ivs
+
+    # Reasegurar orden temporal
+    aligned.sort(key=lambda x: x.get("start", 0))
+    log.info(f"  Alineamiento: hook={len(hook_ivs)} content={len(content_ivs)} "
+             f"matches_whisper={n1+n2}/{len(aligned)}")
+    return aligned
+
+
+def _split_intervention_into_chunks(text: str, start: float, end: float,
+                                     max_words: int = 7,
+                                     max_dur: float = 3.0) -> list[dict]:
+    """Subdivide la intervencion en chunks de subtitulos (~7 palabras / 3s)."""
+    words = text.split()
+    if not words:
+        return []
+    total_words = len(words)
+    duration = max(end - start, 0.1)
+    sec_per_word = duration / total_words
+
+    chunks = []
+    cursor_word = 0
+    cursor_t = start
+    while cursor_word < total_words:
+        # tomar hasta max_words o hasta encontrar puntuacion final
+        take = 0
+        while (take < max_words
+               and cursor_word + take < total_words
+               and (cursor_word + take + 1) * sec_per_word - cursor_word * sec_per_word < max_dur):
+            take += 1
+            w = words[cursor_word + take - 1]
+            if w.endswith((".", "?", "!", ";")):
+                break
+        if take == 0:
+            take = 1
+        chunk_words = words[cursor_word:cursor_word + take]
+        chunk_text = " ".join(chunk_words)
+        chunk_start = cursor_t
+        chunk_end = min(cursor_t + take * sec_per_word, end)
+        chunks.append({"text": chunk_text, "start": chunk_start, "end": chunk_end})
+        cursor_word += take
+        cursor_t = chunk_end
+    return chunks
+
+
+# ─── Funcion publica ──────────────────────────────────────────────────────
+
+
 def generate_srt(transcription: dict, content: dict,
                  output_folder: str | Path,
                  episode_id: str,
                  max_words: int = 7,
                  max_duration: float = 3.0,
-                 force: bool = False) -> str:
-    """Genera EP-MODXXX_subtitulos.srt y devuelve la ruta."""
+                 force: bool = False,
+                 videos_folder: str | Path | None = None,
+                 base_name: str | None = None,
+                 audio_structure: dict | None = None) -> str:
+    """
+    Genera el SRT a partir del GUION LIMPIO (no de Whisper).
+    Whisper aporta solo los timestamps.
+    """
     log = get_logger("05_subtitle_generator")
     output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
-    srt_path = output_folder / f"{episode_id}_subtitulos.srt"
+    srt_dir = Path(videos_folder) if videos_folder else output_folder
+    srt_dir.mkdir(parents=True, exist_ok=True)
+    name = base_name or f"{episode_id}_MaquinarIaPesada_videopodcast"
+    srt_path = srt_dir / f"{name}.srt"
 
     if srt_path.exists() and not force:
         log.info(f"SRT cacheado: {srt_path.name}")
         return str(srt_path)
 
     keywords = content.get("keywords", [])
-    words = transcription.get("words", [])
-
-    if not words:
-        # Fallback: usar segments
-        segments = transcription.get("segments", [])
-        lines = []
-        for i, seg in enumerate(segments, start=1):
-            lines.append(str(i))
-            lines.append(f"{_format_timestamp(seg['start'])} --> {_format_timestamp(seg['end'])}")
-            lines.append(_highlight(seg.get("text", "").strip(), keywords))
-            lines.append("")
-        srt_path.write_text("\n".join(lines), encoding="utf-8")
-        log.info(f"SRT (segments) generado: {srt_path.name}")
+    interventions = _flatten_interventions(content)
+    if not interventions:
+        log.warning("Sin intervenciones en el guion; SRT vacio.")
+        srt_path.write_text("", encoding="utf-8")
         return str(srt_path)
 
-    chunks = []
-    current = []
-    current_start = None
-    for w in words:
-        if current_start is None:
-            current_start = w["start"]
-        current.append(w)
-        chunk_dur = w["end"] - current_start
-        end_punct = w["word"].rstrip().endswith((".", "?", "!"))
-        if (len(current) >= max_words or chunk_dur >= max_duration or end_punct) and current:
-            chunks.append({
-                "start": current_start,
-                "end":   w["end"],
-                "text":  " ".join(c["word"] for c in current).strip(),
-            })
-            current = []
-            current_start = None
-    if current:
-        chunks.append({
-            "start": current_start,
-            "end":   current[-1]["end"],
-            "text":  " ".join(c["word"] for c in current).strip(),
-        })
+    content_start = (audio_structure or {}).get("content_start") or 0.0
+    content_end = (audio_structure or {}).get("content_end")
 
+    aligned = _align_interventions_with_whisper(
+        interventions, transcription.get("words", []),
+        content_start=content_start, content_end=content_end,
+        audio_structure=audio_structure,
+    )
+
+    # Generar chunks SRT
     lines = []
-    for i, ck in enumerate(chunks, start=1):
-        lines.append(str(i))
-        lines.append(f"{_format_timestamp(ck['start'])} --> {_format_timestamp(ck['end'])}")
-        lines.append(_highlight(ck["text"], keywords))
-        lines.append("")
+    idx = 1
+    for iv in aligned:
+        chunks = _split_intervention_into_chunks(
+            iv["text"], iv["start"], iv["end"],
+            max_words=max_words, max_dur=max_duration,
+        )
+        for ck in chunks:
+            lines.append(str(idx))
+            lines.append(f"{_format_timestamp(ck['start'])} --> {_format_timestamp(ck['end'])}")
+            lines.append(_highlight(ck["text"], keywords))
+            lines.append("")
+            idx += 1
+
     srt_path.write_text("\n".join(lines), encoding="utf-8")
-    log.info(f"SRT generado: {len(chunks)} bloques en {srt_path.name}")
+    log.info(f"SRT generado: {idx - 1} bloques desde {len(aligned)} intervenciones del guion -> {srt_path.name}")
     return str(srt_path)

@@ -67,6 +67,39 @@ def _collect_keyframes(timeline: dict, total_duration: float) -> list[float]:
     return sorted(t for t in times if 0 <= t <= total_duration)
 
 
+def _extend_overlays_to_scene_end(timeline: dict, min_overlay_dur: float = 4.0) -> None:
+    """
+    Asegura que cada escena tenga overlays visibles durante toda su duracion.
+
+    Reglas:
+      - Los overlays "fondo" (name_tag, section_indicator, warning_badge)
+        ya cubren la escena completa, no se tocan.
+      - El RESTO de overlays: si su `end` es < scene.end - 0.5s, se extiende
+        para que cubra hasta el final de la escena. Asi la pizarra no queda
+        vacia entre puntos puntuales.
+      - Si en una escena solo hay name_tag (sin nada en el centro), se anyade
+        un highlight_quote con la cita de la propia intervencion como fallback.
+    """
+    PERSISTENT_TYPES = {"name_tag", "section_indicator", "warning_badge"}
+    for scene in timeline.get("scenes", []):
+        sc_start = float(scene.get("start", 0.0))
+        sc_end = float(scene.get("end", sc_start))
+        overlays = scene.get("overlays", [])
+        non_persistent = [ov for ov in overlays if ov.get("type") not in PERSISTENT_TYPES]
+
+        # Extender overlays no-persistentes para que cubran hasta sc_end
+        for ov in non_persistent:
+            ov_start = float(ov.get("start", sc_start))
+            ov_end = float(ov.get("end", sc_end))
+            if ov_end < sc_end - 0.5 and (sc_end - ov_start) > 1.0:
+                ov["end"] = round(sc_end, 3)
+
+        # NO fallback con texto del guion: el usuario quiere material visual
+        # (datos, graficos, conceptos). Si el LLM no genero overlay relevante,
+        # aqui se queda vacio y el run_pipeline tiene la responsabilidad de
+        # haber forzado al LLM a cubrir todo (o de inyectar concept_card).
+
+
 def _active_at(scene: dict, t: float) -> tuple[list, list]:
     overlays = [
         ov for ov in scene.get("overlays", [])
@@ -125,6 +158,9 @@ def render_frames(timeline: dict, transcription: dict, config: dict,
     if index_path.exists() and not force:
         log.info(f"frames_index cacheado: {index_path.name}")
         return json.loads(index_path.read_text(encoding="utf-8"))
+
+    # Asegurar cobertura visual continua (la pizarra no debe quedar vacia)
+    _extend_overlays_to_scene_end(timeline)
 
     res_str = config.get("episode_defaults", {}).get("resolution", "1920x1080")
     w, h = RESOLUTIONS.get(res_str, (1920, 1080))

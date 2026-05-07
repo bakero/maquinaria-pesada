@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
 """
-MaquinarIA Pesada - Orquestador principal del pipeline.
+MaquinarIA Pesada - Orquestador principal del pipeline (v2.1).
 
-Uso:
-    python run_pipeline.py                  # render completo a la resolucion configurada
-    python run_pipeline.py --preview        # primer minuto a 720p, render rapido
-    python run_pipeline.py --from-step 4    # reanudar desde el paso 4
-    python run_pipeline.py --force          # ignorar caches y rehacer todos los pasos
-    python run_pipeline.py --no-llm         # forzar el builder heuristico (sin Anthropic)
+Orden de pasos:
+  1. Whisper -> transcription_raw.json
+  2. Content extractor (guion + PDF) -> content_data.json
+  3. Audio analyzer (silencios, hook, sintonia) -> audio_structure.json
+  4. Align interventions (guion <-> Whisper) -> aligned_interventions.json
+  5. Scene builder (LLM o heuristico) -> scene_timeline.json
+  6. Overlay renderer -> frames PNG
+  7. Subtitle generator (desde guion) -> *.srt
+  8. Video compositor (intro_video como overlay sobre sintonia) -> *.mp4
+  9. Metadata (chapters + thumbnail) -> *.json + *.jpg
 
-Cada paso guarda un checkpoint en outputs/. Si un paso ya tiene su
-output cacheado, se omite (salvo --force).
+CLI:
+  python run_pipeline.py                  # render completo
+  python run_pipeline.py --preview        # primer minuto a 720p
+  python run_pipeline.py --from-step 5    # reanudar desde paso 5
+  python run_pipeline.py --force          # ignorar caches
+  python run_pipeline.py --no-llm         # forzar heuristico (sin Anthropic)
 """
 
 import argparse
@@ -23,13 +31,18 @@ from pathlib import Path
 ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(ROOT))
 
-# Cargar .env (busca en pipeline_dir, padre y abuelos)
+# Cargar .env. Buscamos en orden de prioridad:
+#   1) raiz REAL del proyecto C:\Users\Asus\maquinaria_pesada\.env
+#   2) cualquier .env en ROOT o ancestros
 try:
-    from dotenv import load_dotenv
-    for candidate in [ROOT / ".env", ROOT.parent / ".env", ROOT.parent.parent / ".env"]:
-        if candidate.exists():
-            load_dotenv(candidate)
-            break
+    from dotenv import load_dotenv, find_dotenv
+    PROJECT_ROOT_ENV = Path(r"C:\Users\Asus\maquinaria_pesada\.env")
+    if PROJECT_ROOT_ENV.exists():
+        load_dotenv(str(PROJECT_ROOT_ENV), override=True)
+    else:
+        found = find_dotenv(filename=".env", usecwd=True)
+        if found:
+            load_dotenv(found, override=True)
 except ImportError:
     pass
 
@@ -37,40 +50,109 @@ from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
 from pipeline.transcriber import transcribe_episode
 from pipeline.content_extractor import extract_content
+from pipeline.audio_analyzer import analyze_episode_audio
 from pipeline.scene_builder import build_scene_timeline
 from pipeline.overlay_renderer import render_frames
-from pipeline.subtitle_generator import generate_srt
-from pipeline.video_compositor import compose_video
+from pipeline.subtitle_generator import (
+    generate_srt,
+    _flatten_interventions,
+    _align_interventions_with_whisper,
+)
+from pipeline.video_compositor import compose_video, derive_video_basename
 from pipeline.metadata_generator import generate_metadata
 
 
-def _intro_duration(intro_path: str | None) -> float:
-    if not intro_path or not Path(intro_path).exists():
-        return 0.0
-    if shutil.which("ffprobe") is None:
-        return 0.0
-    try:
-        out = subprocess.check_output([
-            "ffprobe", "-v", "error", "-show_entries",
-            "format=duration", "-of",
-            "default=noprint_wrappers=1:nokey=1", intro_path,
-        ], text=True).strip()
-        return float(out)
-    except Exception:
-        return 0.0
+def _load_or_compute(path: Path, compute, *args, **kwargs):
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    return compute(*args, **kwargs)
+
+
+def _enrich_timeline_with_interventions(timeline: dict,
+                                         aligned: list[dict],
+                                         audio_structure: dict | None = None) -> dict:
+    """
+    Anyade el campo `text` a cada escena del timeline buscando la intervencion
+    cuyo rango temporal contiene el centro de la escena.
+
+    Tambien GARANTIZA que existen escenas para las intervenciones del HOOK
+    (que el LLM puede haber saltado).
+    """
+    scenes = timeline.get("scenes", [])
+    audio_structure = audio_structure or {}
+
+    # Mapear cada escena con su intervencion correspondiente (por overlap temporal)
+    for sc in scenes:
+        sc_mid = (float(sc.get("start", 0)) + float(sc.get("end", 0))) / 2
+        best = None
+        best_overlap = 0.0
+        for iv in aligned:
+            iv_s, iv_e = float(iv.get("start", 0)), float(iv.get("end", 0))
+            if iv_s <= sc_mid <= iv_e:
+                best = iv
+                break
+            # Si no contiene el centro, calcular overlap maximo
+            ov = max(0, min(iv_e, float(sc["end"])) - max(iv_s, float(sc["start"])))
+            if ov > best_overlap:
+                best_overlap = ov
+                best = iv
+        if best:
+            sc["text"] = best.get("text", "")
+            if not sc.get("speaker"):
+                sc["speaker"] = best.get("speaker", "")
+            if not sc.get("section"):
+                sc["section"] = best.get("section", "")
+
+    # Anyadir escenas faltantes para HOOK + cualquier intervencion no cubierta
+    covered_ranges = [(float(sc["start"]), float(sc["end"])) for sc in scenes]
+
+    def _is_covered(start: float, end: float) -> bool:
+        mid = (start + end) / 2
+        return any(s <= mid <= e for s, e in covered_ranges)
+
+    for iv in aligned:
+        iv_s, iv_e = float(iv.get("start", 0)), float(iv.get("end", 0))
+        if iv_e <= iv_s:
+            continue
+        if _is_covered(iv_s, iv_e):
+            continue
+        speaker = iv.get("speaker", "")
+        speaker_color = "#F5C400" if speaker.upper() == "MARIA" else "#4DB8FF"
+        new_scene = {
+            "start":      round(iv_s, 3),
+            "end":        round(iv_e, 3),
+            "section":    iv.get("section", ""),
+            "speaker":    speaker.upper(),
+            "background": "industrial_grid",
+            "text":       iv.get("text", ""),
+            "overlays": [{
+                "type":     "name_tag",
+                "position": "TOP_RIGHT",
+                "data":     {"name": speaker.upper(), "color": speaker_color},
+                "start":    round(iv_s, 3),
+                "end":      round(iv_e, 3),
+            }],
+            "stickers":   [],
+            "_added_by":  "enrich",
+        }
+        scenes.append(new_scene)
+
+    scenes.sort(key=lambda x: float(x.get("start", 0)))
+    timeline["scenes"] = scenes
+    return timeline
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="MaquinarIA Pesada - Pipeline de videopodcast")
+    parser = argparse.ArgumentParser(description="MaquinarIA Pesada - Pipeline videopodcast")
     parser.add_argument("--preview", action="store_true",
-                        help="Render rapido del primer minuto a 720p")
+                        help="Render rapido a 720p (primer minuto por defecto)")
     parser.add_argument("--preview-seconds", type=float, default=60.0)
     parser.add_argument("--from-step", type=int, default=1,
-                        help="Reanudar desde un paso (1..7)")
+                        help="Reanudar desde un paso (1..9)")
     parser.add_argument("--force", action="store_true",
                         help="Ignorar caches en TODOS los pasos")
     parser.add_argument("--no-llm", action="store_true",
-                        help="No usar LLM (heuristico) en el paso 3")
+                        help="No usar LLM en el paso 5 (heuristico)")
     parser.add_argument("--whisper-model", default="large-v3",
                         choices=["tiny", "base", "small", "medium", "large-v3"])
     parser.add_argument("--config", default="project_config.json")
@@ -83,33 +165,29 @@ def main() -> int:
     log = get_logger("run_pipeline", log_file=log_path)
 
     log.info("=" * 60)
-    log.info(f"  MAQUINARIA PESADA - PIPELINE START · {episode_id}")
-    log.info(f"  preview={args.preview} · from-step={args.from_step} · force={args.force}")
+    log.info(f"  MAQUINARIA PESADA - PIPELINE v2.1 - {episode_id}")
+    log.info(f"  preview={args.preview} from-step={args.from_step} force={args.force}")
     log.info("=" * 60)
 
-    transcription = None
-    content = None
-    timeline = None
-    frames_index = None
-    srt_path = None
-    final_video = None
+    transcription = content = audio_structure = aligned = None
+    timeline = frames_index = srt_path = final_video = None
 
     try:
-        # PASO 1 - Transcripcion
+        # ─── 1. Whisper ────────────────────────────────────────────
         if args.from_step <= 1:
-            log.info("[1/7] Transcripcion con Whisper...")
+            log.info("[1/9] Transcripcion con Whisper...")
             transcription = transcribe_episode(
                 config["assets"]["episode_audio"],
                 output_folder,
-                model_size="tiny" if args.preview else args.whisper_model,
+                model_size="medium" if args.preview else args.whisper_model,
                 force=args.force,
             )
         else:
             transcription = json.loads((output_folder / "transcription_raw.json").read_text(encoding="utf-8"))
 
-        # PASO 2 - Extraccion de contenido
+        # ─── 2. Content extractor ──────────────────────────────────
         if args.from_step <= 2:
-            log.info("[2/7] Extraccion de contenido del guion + PDF...")
+            log.info("[2/9] Extraccion de contenido (guion + PDF)...")
             content = extract_content(
                 config["assets"]["episode_script"],
                 config["assets"].get("episode_pdf"),
@@ -119,57 +197,101 @@ def main() -> int:
         else:
             content = json.loads((output_folder / "content_data.json").read_text(encoding="utf-8"))
 
-        # PASO 3 - Scene timeline
+        # ─── 3. Audio analyzer ─────────────────────────────────────
         if args.from_step <= 3:
-            log.info("[3/7] Construccion de scene_timeline...")
+            log.info("[3/9] Analisis estructural del audio...")
+            audio_structure = analyze_episode_audio(
+                config["assets"]["episode_audio"],
+                config["assets"].get("intro_video"),
+                output_folder,
+                force=args.force,
+            )
+        else:
+            audio_structure = json.loads((output_folder / "audio_structure.json").read_text(encoding="utf-8"))
+
+        # ─── 4. Alineamiento guion ↔ Whisper ──────────────────────
+        aligned_path = output_folder / "aligned_interventions.json"
+        if args.from_step <= 4 or not aligned_path.exists():
+            log.info("[4/9] Alineamiento guion <-> Whisper...")
+            interventions_clean = _flatten_interventions(content)
+            aligned = _align_interventions_with_whisper(
+                interventions_clean,
+                transcription.get("words", []),
+                content_start=audio_structure.get("content_start") or 0.0,
+                content_end=audio_structure.get("content_end"),
+                audio_structure=audio_structure,
+            )
+            aligned_path.write_text(json.dumps(aligned, indent=2, ensure_ascii=False),
+                                    encoding="utf-8")
+        else:
+            aligned = json.loads(aligned_path.read_text(encoding="utf-8"))
+
+        # ─── 5. Scene timeline ─────────────────────────────────────
+        if args.from_step <= 5:
+            log.info("[5/9] Construccion de scene_timeline (con LLM si hay saldo)...")
             timeline = build_scene_timeline(
                 content, transcription, output_folder,
                 force=args.force, use_llm=not args.no_llm,
+                audio_structure=audio_structure,
+                pdf_text=content.get("pdf_text", ""),
+                aligned_interventions=aligned,
             )
         else:
             timeline = json.loads((output_folder / "scene_timeline.json").read_text(encoding="utf-8"))
 
-        # PASO 4 - Render de overlays
-        if args.from_step <= 4:
-            log.info("[4/7] Render de overlays a frames PNG...")
+        # ─── 5b. Enriquecer timeline con textos + escenas HOOK ────
+        log.info("[5b] Enriqueciendo timeline con texto de intervenciones...")
+        timeline = _enrich_timeline_with_interventions(timeline, aligned, audio_structure)
+
+        # ─── 6. Render de overlays ────────────────────────────────
+        if args.from_step <= 6:
+            log.info("[6/9] Render de overlays a frames PNG...")
+            preview_secs = args.preview_seconds if args.preview else None
             frames_index = render_frames(
                 timeline, transcription, config, output_folder,
-                preview_seconds=args.preview_seconds if args.preview else None,
-                force=args.force,
+                preview_seconds=preview_secs, force=args.force,
             )
         else:
             frames_index = json.loads((output_folder / "frames_index.json").read_text(encoding="utf-8"))
 
-        # PASO 5 - Subtitulos
-        if args.from_step <= 5:
-            log.info("[5/7] Generacion de subtitulos SRT...")
+        # ─── 7. Subtitulos ────────────────────────────────────────
+        videos_folder_cfg = config["assets"].get("videos_folder")
+        base_name = derive_video_basename(
+            config["assets"].get("episode_audio"), episode_id,
+        )
+        if args.from_step <= 7:
+            log.info("[7/9] Generacion de SRT desde guion limpio...")
             srt_path = generate_srt(
-                transcription, content, output_folder, episode_id, force=args.force,
+                transcription, content, output_folder, episode_id,
+                force=args.force, videos_folder=videos_folder_cfg,
+                base_name=base_name, audio_structure=audio_structure,
             )
         else:
-            srt_path = str(output_folder / f"{episode_id}_subtitulos.srt")
+            srt_dir = Path(videos_folder_cfg) if videos_folder_cfg else output_folder
+            srt_path = str(srt_dir / f"{base_name}.srt")
 
-        # PASO 6 - Composicion FFMPEG
-        if args.from_step <= 6:
-            log.info("[6/7] Composicion final con ffmpeg...")
+        # ─── 8. Composicion final ─────────────────────────────────
+        if args.from_step <= 8:
+            log.info("[8/9] Composicion final con ffmpeg...")
             final_video = compose_video(
                 config, frames_index,
                 config["assets"]["episode_audio"], srt_path,
                 output_folder, episode_id, preview=args.preview,
+                audio_structure=audio_structure,
             )
 
-        # PASO 7 - Metadata
-        if args.from_step <= 7 and not args.preview:
-            log.info("[7/7] Metadata YouTube + thumbnail...")
+        # ─── 9. Metadata ──────────────────────────────────────────
+        if args.from_step <= 9 and not args.preview:
+            log.info("[9/9] Metadata YouTube + thumbnail...")
             generate_metadata(
                 config, content, transcription, output_folder, episode_id,
-                intro_duration=_intro_duration(config["assets"].get("intro_video")),
+                intro_duration=audio_structure.get("sintonia_end", 0) or 0,
+                base_name=base_name,
             )
 
         log.info("=" * 60)
-        log.info("  PIPELINE COMPLETADO CORRECTAMENTE")
+        log.info("  PIPELINE COMPLETADO")
         log.info(f"  Video: {final_video}")
-        log.info(f"  Logs:  {log_path}")
         log.info("=" * 60)
         return 0
 
