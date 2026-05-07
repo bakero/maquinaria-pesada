@@ -3,21 +3,34 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-IAGO: [tenso] Un atacante con un prompt bien construido puede conseguir que tu agente de IA borre registros de producción, filtre datos de clientes, o ejecute código en tu infraestructura. Sin explotar una sola vulnerabilidad de código. Solo con texto.
+MARÍA: [tenso] Un atacante con un prompt bien construido puede conseguir que tu agente de IA borre registros de producción, filtre datos de clientes, o ejecute código en tu infraestructura. Sin explotar una sola vulnerabilidad de código. Solo con texto.
 
-MARÍA: [escéptico] Espera. ¿Estás diciendo que el riesgo de seguridad no está en el código, está en el lenguaje?
+IAGO: [escéptico] Espera. ¿Estás diciendo que el riesgo de seguridad no está en el código, está en el lenguaje?
 
-IAGO: [serio] Exactamente eso. Y es la razón por la que el OWASP, el organismo de referencia mundial en seguridad de software, publicó un Top 10 específico para aplicaciones de inteligencia artificial. Porque las reglas del juego cambiaron completamente.
+MARÍA: [serio] Exactamente eso. Y es la razón por la que el OWASP, el organismo de referencia mundial en seguridad de software, publicó un Top 10 específico para aplicaciones de inteligencia artificial. Porque las reglas del juego cambiaron completamente.
 
-MARÍA: [reflexivo] Y la mayoría de equipos técnicos siguen protegiéndose como si el problema fuera un buffer overflow o una SQL injection. Sin entender que la superficie de ataque ahora incluye los datos de entrenamiento, los prompts del sistema y las herramientas que el agente puede usar.
+IAGO: [reflexivo] Y la mayoría de equipos técnicos siguen protegiéndose como si el problema fuera un buffer overflow o una SQL injection. Sin entender que la superficie de ataque ahora incluye los datos de entrenamiento, los prompts del sistema y las herramientas que el agente puede usar.
 
-IAGO: [didáctico] Eso es exactamente lo que aborda el módulo doce del máster. No seguridad en abstracto. Seguridad específica para sistemas de IA: prompt injection, data poisoning, content filtering, seguridad agéntica y red teaming.
+MARÍA: [didáctico] Eso es exactamente lo que aborda el módulo doce del máster. No seguridad en abstracto. Seguridad específica para sistemas de IA: prompt injection, data poisoning, content filtering, seguridad agéntica y red teaming.
 
-MARÍA: [irónico] Spoiler: si crees que meter las instrucciones de seguridad en el system prompt es suficiente defensa, este episodio te va a incomodar bastante.
+IAGO: [irónico] Spoiler: si crees que meter las instrucciones de seguridad en el system prompt es suficiente defensa, este episodio te va a incomodar bastante.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo doce, la seguridad en I.A.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 IAGO: [explicativo] Para entender por qué la seguridad en IA es fundamentalmente distinta, necesitas entender una diferencia estructural. En el software tradicional, los ataques explotan bugs deterministas: un buffer overflow, una query mal sanitizada, una inyección de código. Son reproducibles, auditables, corregibles.
 
@@ -34,10 +47,10 @@ MARÍA: [tenso] Lo que hace especialmente peligrosa la prompt injection indirect
 IAGO: [contundente] Y los números son brutales. Roleplay injection, donde se instruye al modelo a actuar como un personaje sin restricciones, tiene una tasa de éxito documentada del 89,6%. Los logic traps, explotar dilemas morales para eludir filtros, del 81,4%. Los encoding tricks usando Base64 o Unicode especial, del 76,2%.
 
 MARÍA: [serio] Un paper de octubre de 2025, con investigadores de OpenAI, Anthropic y Google DeepMind, demostró que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. No es que las defensas sean malas. Es que una defensa de una sola capa es siempre insuficiente.
+# BLOQUE_2
 
 IAGO: [explicativo] La defensa correcta es en capas. Separación de instrucciones y datos. Validación de input. Controles en la capa de ejecución, no solo en el prompt. Human-in-the-loop para acciones irreversibles. Y monitorización continua. Cinco capas. Ninguna opcional.
 
-# BLOQUE CREATIVO
 
 MARÍA: [natural] Piénsalo así. Poner tus instrucciones de seguridad en el system prompt es como escribir las reglas del banco en un papel y pegarlo en la puerta. Cualquiera puede leerlo, copiarlo y construir un argumento que lo contradiga. Los controles reales no viven en el lenguaje. Viven en la capa de ejecución.
 
@@ -52,6 +65,11 @@ MARÍA: [tenso] Y hay un riesgo de supply chain que mucha gente no conoce. Los m
 IAGO: [firme] Las defensas son concretas. Usar siempre el formato safetensors, que no permite ejecución de código. Verificar el hash SHA-256 de los modelos descargados. Usar ModelScan de ProtectAI para escanear modelos antes de desplegarlos. Y versionar los datasets con DVC para detectar modificaciones.
 
 MARÍA: [conversacional] ¿Y qué pasa una vez que el modelo está desplegado y genera una respuesta? ¿Cómo sabes que esa respuesta es segura antes de que llegue al usuario?
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 IAGO: [didáctico] Ahí entra el content filtering y la validación de outputs. La última línea de defensa antes de que la respuesta llegue al usuario tiene tres dimensiones. Content filtering, para detectar y bloquear outputs en categorías prohibidas. Validación estructural, para verificar que el output cumple el schema esperado. Y validación semántica, para verificar que el contenido es factualmente correcto.
 
@@ -68,6 +86,11 @@ MARÍA: [tenso] Las amenazas específicas de los agentes son distintas. Memory p
 IAGO: [contundente] Y SSRF via tool de URL fetch: usar la herramienta de búsqueda web del agente como proxy para acceder a servicios internos protegidos. El agente cree que está buscando información en internet. En realidad está siendo usado como vector de ataque contra tu red interna.
 
 MARÍA: [firme] La regla Meta de octubre de 2025 lo resume con claridad: los controles de seguridad deben vivir fuera del LLM, en la capa de ejecución de herramientas. Cualquier seguridad implementada solo en el prompt puede ser eludida con prompt injection. Sin excepción.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 IAGO: [reflexivo] Y eso tiene implicaciones de arquitectura muy concretas. Los permisos mínimos necesarios, no los máximos posibles. Human-in-the-loop para acciones irreversibles. Auditoría de todas las llamadas a herramientas. Y límites de tiempo y reintentos para evitar DoS por consumo de recursos.
 
@@ -83,15 +106,27 @@ MARÍA: [irónico] Que es exactamente lo contrario de cómo la mayoría de equip
 
 IAGO: [firme] Y el regulador ya está cerrando esa ventana. El EU AI Act y el Executive Order 14110 de Estados Unidos establecen el red teaming como requisito, no como recomendación. Eso significa auditorías, documentación y responsabilidad legal. No es una práctica de ingeniería opcional. Es una obligación regulatoria con fecha de vencimiento.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 MARÍA: [reflexivo] Lo que hace único al módulo doce del máster es que no enseña seguridad en IA como una lista de amenazas a memorizar. Enseña a pensar en términos de superficie de ataque, defensa en capas y controles en la capa correcta. Esa diferencia cambia cómo se diseñan los sistemas desde el principio.
 
 IAGO: [didáctico] En el módulo cubrimos todo el stack de seguridad con implementaciones reales. El OWASP LLM Top 10 con ejemplos de ataque y defensa para cada vulnerabilidad. Prompt injection con laboratorios de ataque y contramedida. Data poisoning con ModelScan integrado en un pipeline real. Content filtering con la arquitectura sandwich en producción. Red teaming automatizado con Garak y DeepTeam en CI/CD.
 
 MARÍA: [serio] No son slides con amenazas teóricas. Son patrones que puedes llevar a tu equipo la semana que viene. Porque la diferencia entre un sistema de IA que resiste y uno que cede no está en el modelo. Está en cómo lo construyes alrededor.
+# CIERRE_FINAL
 
 IAGO: [grave] Si estás construyendo o supervisando sistemas de IA en producción, la pregunta ya no es si alguien intentará manipularlos. La pregunta es si estarás preparado cuando ocurra. El máster de MaquinarIa Pesada es donde se aprende a construir esa preparación. El enlace está en la descripción.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 MARÍA: [cálido] Nos vemos en el próximo episodio. Hasta entonces, construye seguro.
 
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

@@ -3,19 +3,32 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-IAGO: [tenso] Una red neuronal que clasifica tumores mejor que un oncólogo. Un modelo que predice quiebras bancarias con semanas de antelación. ¿Sabes qué tienen en común? Que en el fondo son multiplicaciones de matrices y derivadas parciales. Matemáticas de bachillerato llevadas al extremo.
+MARÍA: [tenso] Una red neuronal que clasifica tumores mejor que un oncólogo. Un modelo que predice quiebras bancarias con semanas de antelación. ¿Sabes qué tienen en común? Que en el fondo son multiplicaciones de matrices y derivadas parciales. Matemáticas de bachillerato llevadas al extremo.
 
-MARÍA: [escéptico] Eso suena a que me estás diciendo que si hubiera prestado más atención en selectividad ahora sería ingeniera de modelos.
+IAGO: [escéptico] Eso suena a que me estás diciendo que si hubiera prestado más atención en selectividad ahora sería ingeniera de modelos.
 
-IAGO: [irónico] Más o menos. Pero aquí viene el matiz: no necesitas ser matemático para trabajar con IA. Sí necesitas entender qué está pasando por debajo. Y hay una diferencia enorme entre las dos cosas.
+MARÍA: [irónico] Más o menos. Pero aquí viene el matiz: no necesitas ser matemático para trabajar con IA. Sí necesitas entender qué está pasando por debajo. Y hay una diferencia enorme entre las dos cosas.
 
-MARÍA: [curioso] ¿Cuál es esa diferencia exactamente?
+IAGO: [curioso] ¿Cuál es esa diferencia exactamente?
 
-IAGO: [serio] La diferencia es si puedes diagnosticar por qué tu modelo falla. Si no tienes el mapa matemático aunque sea conceptual, cuando algo sale mal — y siempre sale algo mal — estás completamente a ciegas. Hoy vamos al módulo dos del máster: las matemáticas que realmente importan para la IA.
+MARÍA: [serio] La diferencia es si puedes diagnosticar por qué tu modelo falla. Si no tienes el mapa matemático aunque sea conceptual, cuando algo sale mal — y siempre sale algo mal — estás completamente a ciegas. Hoy vamos al módulo dos del máster: las matemáticas que realmente importan para la IA.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo dos, las matemáticas que necesitas para la I.A.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 MARÍA: [didáctico] El módulo cubre cuatro pilares. Álgebra lineal, cálculo diferencial, probabilidad y estadística. No como materias separadas de carrera, sino como un lenguaje unificado para entender cómo aprenden las máquinas.
 
@@ -36,6 +49,7 @@ IAGO: [reflexivo] ¿Y qué hay del cálculo diferencial? Porque esa es la parte 
 MARÍA: [didáctico] El cálculo diferencial en IA tiene un único objetivo práctico: encontrar el mínimo de la función de pérdida. Esa función mide qué tan equivocado está el modelo. El gradiente te dice en qué dirección tienes que mover los parámetros para que el modelo se equivoque menos. Y el descenso por gradiente es el algoritmo que lo hace de forma iterativa.
 
 IAGO: [contundente] Eso es el aprendizaje. Todo el aprendizaje automático moderno cabe en esa frase.
+# BLOQUE_2
 
 MARÍA: [explicativo] Exacto. Cada vez que un modelo de lenguaje mejora en una tarea, cada vez que una red neuronal aprende a reconocer un objeto en una imagen, lo que está ocurriendo es descenso por gradiente sobre millones o miles de millones de parámetros. El cálculo diferencial es el motor que hace girar todo lo demás.
 
@@ -54,6 +68,11 @@ MARÍA: [reflexivo] ¿Qué quieres decir con eso?
 IAGO: [explicativo] Los datos entran como vectores: álgebra lineal. El modelo ajusta sus parámetros usando gradientes: cálculo diferencial. Evalúas si el modelo generaliza o memoriza usando métricas de probabilidad: probabilidad y estadística. Y cuando decides si tu modelo es lo suficientemente bueno para producción, estás haciendo inferencia estadística. Todo conectado. Todo el tiempo.
 
 MARÍA: [serio] Y en el módulo del máster esto se trabaja exactamente así: como un sistema coherente, no como cuatro asignaturas apiladas.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 IAGO: [didáctico] La estadística merece un momento propio. Porque es donde la mayoría de los proyectos de IA en empresa se rompen sin que nadie lo vea venir. Tienes un modelo con noventa y ocho por ciento de accuracy en test. Lo despliegas. Falla estrepitosamente en producción. ¿Qué pasó?
 
@@ -72,6 +91,11 @@ IAGO: [didáctico] El enfoque es conceptual y aplicado. Entiendes qué significa
 MARÍA: [irónico] Que es como debería haberse enseñado en la universidad, francamente.
 
 IAGO: [reflexivo] Hay un momento en este módulo que cambia cómo ves todos los demás. Es cuando entiendes la función de pérdida como un paisaje montañoso en un espacio de alta dimensión, y el entrenamiento como una caída controlada hacia los valles de ese paisaje.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 MARÍA: [pausado] Un paisaje. De mil millones de dimensiones.
 
@@ -91,14 +115,26 @@ IAGO: [conversacional] ¿Cuánto tiempo lleva este módulo en el máster?
 
 MARÍA: [natural] Está diseñado para trabajarse en tres semanas con dedicación parcial. Pero el objetivo no es dominarlo todo de una vez. Es construir la intuición suficiente para que cuando llegues a los módulos de deep learning y NLP, las matemáticas no sean el obstáculo sino la explicación.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 
 IAGO: [reflexivo] Si hay una inversión de tiempo en este máster que multiplica el retorno de todo lo demás, es este módulo. No porque sea difícil. Sino porque sin él, el resto del máster es una caja negra.
 
 MARÍA: [serio] Los profesionales de IA que más rápido progresan en sus carreras no son necesariamente los que más saben de Python ni los que conocen más frameworks. Son los que entienden qué está pasando por debajo. Los que pueden razonar sobre por qué un modelo falla y cómo arreglarlo. Eso viene de aquí.
 
 IAGO: [firme] En el máster MaquinarIa Pesada este módulo no es opcional ni introductorio. Es la base estructural sobre la que construyes todo lo que viene después: los modelos clásicos, el deep learning, los LLMs, los agentes. Sin esta base, esos módulos son recetas. Con ella, son herramientas que entiendes.
+# CIERRE_FINAL
 
 MARÍA: [cálido] Si estás pensando en hacer el salto a la IA de forma seria, ya sea para liderar proyectos, para construir productos o para entender realmente lo que tu equipo técnico está haciendo, tienes todo lo que necesitas para empezar. El enlace para saber más sobre el máster está en las notas del episodio. Nos escuchamos en el próximo.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque la IA que no entiendes te controla. La que entiendes, la usas tú.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

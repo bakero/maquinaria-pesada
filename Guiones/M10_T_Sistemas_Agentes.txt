@@ -3,16 +3,29 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
-IAGO: [tenso] Imagina que llegas a trabajar mañana y descubres que la mitad de tu flujo de trabajo, el análisis de datos, las búsquedas, los reportes, lo ha ejecutado un sistema de IA mientras dormías. Sin que nadie lo programara paso a paso. Solo le diste un objetivo.
+# HOOK
+MARÍA: [tenso] Imagina que llegas a trabajar mañana y descubres que la mitad de tu flujo de trabajo, el análisis de datos, las búsquedas, los reportes, lo ha ejecutado un sistema de IA mientras dormías. Sin que nadie lo programara paso a paso. Solo le diste un objetivo.
 
-MARÍA: [curioso] ¿Estás hablando de automatización avanzada?
+IAGO: [curioso] ¿Estás hablando de automatización avanzada?
 
-IAGO: [contundente] Estoy hablando de agentes. Y hay una diferencia enorme entre los dos. La automatización ejecuta instrucciones fijas. Un agente decide cómo llegar a un objetivo que nadie le detalló.
+MARÍA: [contundente] Estoy hablando de agentes. Y hay una diferencia enorme entre los dos. La automatización ejecuta instrucciones fijas. Un agente decide cómo llegar a un objetivo que nadie le detalló.
 
-MARÍA: [serio] Y eso cambia absolutamente todo en cómo se construyen y despliegan sistemas de IA en la empresa.
+IAGO: [serio] Y eso cambia absolutamente todo en cómo se construyen y despliegan sistemas de IA en la empresa.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo diez, los sistemas multi-agente.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 IAGO: [didáctico] Para entender los agentes de IA, necesitas entender primero qué tienen que los LLMs normales no tienen. Un modelo de lenguaje responde preguntas. Un agente usa ese modelo como motor cognitivo, pero añade algo crítico: la capacidad de actuar.
 
@@ -32,10 +45,10 @@ MARÍA: [conversacional] Eso también significa que puede equivocarse, ¿no? Que
 
 IAGO: [firme] Exacto. Y es uno de los grandes retos de los sistemas agentivos. Hablaremos de eso. Pero primero hay que entender qué herramientas tiene a su disposición, porque ahí está la otra mitad del puzzle.
 
-# BLOQUE CREATIVO
 MARÍA: [natural] Piénsalo así. Un agente de IA sin herramientas es como un genio encerrado en una habitación sin ventanas. Puede razonar sobre el mundo con una precisión asombrosa, pero no puede tocar nada, verificar nada, cambiar nada. Las herramientas son las ventanas, y cada una abre una vista diferente hacia la realidad.
 
 IAGO: [explicativo] Tool use, el uso de herramientas, es el mecanismo que convierte un modelo de lenguaje en un agente con impacto real. Técnicamente, es la capacidad del modelo de generar llamadas estructuradas a funciones externas: buscadores web, calculadoras, intérpretes de código, bases de datos, APIs de terceros.
+# BLOQUE_2
 
 MARÍA: [didáctico] Y esto no es ciencia ficción. Anthropic, OpenAI, Google, todos los proveedores principales exponen ya interfaces nativas de tool use en sus APIs. Le dices al modelo qué herramientas tiene disponibles, en qué formato llamarlas, y él decide cuándo y cómo usarlas.
 
@@ -56,6 +69,11 @@ IAGO: [serio] Y también puedes tener patrones de validación cruzada donde un a
 MARÍA: [tenso] Pero también multiplica la complejidad. Coordinar varios agentes, manejar errores en cadena, gestionar el contexto compartido... no es trivial. Y ahí es donde los frameworks se vuelven imprescindibles.
 
 IAGO: [didáctico] Hay dos que definen el estado del arte ahora mismo. LangGraph, desarrollado por LangChain, y AutoGen, de Microsoft Research. Son muy distintos en filosofía pero los dos abordan el mismo problema central: cómo estructurar el flujo de control en sistemas multi-agente complejos.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [explicativo] LangGraph modela los flujos agentivos como grafos de estado. Tienes nodos que son agentes o funciones, aristas que son transiciones condicionales, y un estado compartido que evoluciona a medida que el grafo se ejecuta. Es muy expresivo para flujos no lineales.
 
@@ -76,6 +94,11 @@ IAGO: [firme] Un agente que funciona en demos y falla en producción no vale nad
 MARÍA: [explicativo] Hay tres capas de evaluación que son críticas en sistemas agentivos. Primero, la evaluación de cada herramienta individualmente: ¿la llamada se hace bien, el resultado se parsea correctamente? Segundo, la evaluación del razonamiento: ¿el agente está tomando decisiones coherentes en cada paso del ciclo ReAct? Y tercero, la evaluación del sistema completo: ¿el objetivo se alcanza, y al coste esperado?
 
 IAGO: [didáctico] Y el coste no es solo dinero. Es latencia, es número de llamadas al modelo, es consumo de tokens de contexto. Un agente ineficiente puede costar diez veces más que uno bien diseñado para hacer exactamente lo mismo.
+# INSERCION_2
+
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
 
 MARÍA: [conversacional] Que es precisamente la razón por la que el perfil de "ingeniero de agentes de IA" es uno de los más buscados ahora mismo, y de los peor comprendidos.
 
@@ -97,13 +120,25 @@ MARÍA: [tenso] Por eso el diseño de sistemas agentivos seguros, con límites c
 
 IAGO: [firme] En el máster no enseñamos solo a construir agentes. Enseñamos a construirlos de forma que no te exploten en producción. Y esa distinción marca la diferencia entre un prototipo y un sistema empresarial real.
 
-# CIERRE CON CTA
+# CIERRE_CONCEPTOS
+
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
+
 MARÍA: [conversacional] Si llevas tiempo siguiendo el mundo de los LLMs y sientes que los agentes son el siguiente nivel, tienes razón. Pero también es donde la curva de aprendizaje se empina de verdad.
 
 IAGO: [didáctico] En el Módulo 10 del máster lo abordamos en toda su complejidad. Arquitectura ReAct desde cero, tool use con las APIs de los principales proveedores, diseño de sistemas multi-agente con LangGraph y AutoGen, patrones de evaluación, y casos de uso empresariales reales con código funcional.
 
 MARÍA: [serio] No son slides con diagramas bonitos. Son implementaciones reales que puedes llevar a tu empresa la semana que viene. Y eso vale mucho más que saber nombrar las tecnologías.
+# CIERRE_FINAL
 
 IAGO: [grave] Si quieres ser la persona que en tu equipo sabe construir agentes que funcionan en producción, y no solo en demos, el máster de MaquinarIa Pesada es donde se aprende. El enlace está en la descripción. No lo dejes para mañana.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 MARÍA: [cálido] Nos vemos en el próximo episodio. Hasta entonces, sigue construyendo.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas

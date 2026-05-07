@@ -3,17 +3,30 @@
 # Hook: IAGO (episodio impar)
 # Bloques: 46 | Media objetivo: ~200 chars/bloque
 
-# INTRO
+# HOOK
 
-IAGO: [tenso] El 88% de las empresas dice que usa inteligencia artificial. Solo el 33% la ha escalado de verdad. Y solo el 34% reporta impacto financiero medible. Lo que significa que hay muchísimas organizaciones gastando dinero en IA y sin poder demostrar que ha valido la pena.
+MARÍA: [tenso] El 88% de las empresas dice que usa inteligencia artificial. Solo el 33% la ha escalado de verdad. Y solo el 34% reporta impacto financiero medible. Lo que significa que hay muchísimas organizaciones gastando dinero en IA y sin poder demostrar que ha valido la pena.
 
-MARÍA: [curioso] ¿Y cuál es la diferencia entre las que consiguen resultados y las que no?
+IAGO: [curioso] ¿Y cuál es la diferencia entre las que consiguen resultados y las que no?
 
-IAGO: [contundente] No es la tecnología. La tecnología es casi universal. La diferencia es la estrategia, la ejecución y la gobernanza. Y eso es exactamente lo que cubre el módulo catorce del máster. Bienvenidos a MaquinarIa Pesada.
+MARÍA: [contundente] No es la tecnología. La tecnología es casi universal. La diferencia es la estrategia, la ejecución y la gobernanza. Y eso es exactamente lo que cubre el módulo catorce del máster. Bienvenidos a MaquinarIa Pesada.
 
-MARÍA: [serio] Estrategia de I.A. en empresa. El módulo que cierra el máster y que da sentido a todo lo que vino antes.
+IAGO: [serio] Estrategia de I.A. en empresa. El módulo que cierra el máster y que da sentido a todo lo que vino antes.
+MARÍA: [directo] Esto es MaquinarIA Pesada. Arrancamos.
 
-# NÚCLEO TEMÁTICO
+# INTRO_SONIDO
+
+# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada. Soy Yago, y esto es el módulo catorce, la estrategia empresarial con I.A.
+
+MARÍA: [conversacional] Y yo soy María. Antes de arrancar, la advertencia de siempre: este episodio ha sido generado por un sistema automático de inteligencia artificial y puede contener errores. Contrastad siempre con fuentes especializadas.
+
+IAGO: [directo] Vamos allá.
+
+# BLOQUE_1
 
 IAGO: [didáctico] Empecemos por la decisión más importante de cualquier estrategia de I.A.: elegir los casos de uso correctos. Y cuando digo correctos, no me refiero a los más tecnológicamente interesantes. Me refiero a los que generan más valor con mayor probabilidad de éxito.
 
@@ -29,19 +42,13 @@ MARÍA: [reflexivo] Y hay otro obstáculo que aparece antes incluso de diseñar 
 
 IAGO: [explicativo] Lo que significa que antes de priorizar cualquier oportunidad, hay que verificar la disponibilidad y la calidad de los datos que la sostienen. No hay roadmap de I.A. que sobreviva a datos que no existen o que son un desastre.
 
-# BLOQUE CREATIVO
-
-MARÍA: [natural] Imagina que tienes una habitación llena de palancas. Algunas mueven paredes. Otras encienden una luz. Pero nadie te dice cuáles son cuáles. El AI Opportunity Workshop es el proceso de etiquetar cada palanca antes de tirar de ella. Un taller estructurado de uno o dos días con líderes de cada área funcional que mapea los procesos de mayor coste, mayor tiempo de ciclo y mayor tasa de error. No para hablar de tecnología, sino para descubrir dónde están las palancas que mueven paredes.
-
-IAGO: [serio] Y ese mapa es el input del business case. Porque una vez tienes identificadas las oportunidades correctas, necesitas saber cuánto valen y cuánto cuestan. Y hacerlo con un rigor que convenza a la dirección.
-
-# NÚCLEO TEMÁTICO — BUSINESS CASE Y ROADMAP
 
 MARÍA: [didáctico] El 49% de los líderes de I.A. reconoce que sus organizaciones tienen dificultades para estimar y demostrar el valor de la I.A. No porque la I.A. no genere valor, sino porque no saben construir el argumento financiero de forma creíble.
 
 IAGO: [explicativo] Un business case de I.A. convincente tiene cinco secciones. Primero, contexto y problema con métricas del baseline. Segundo, solución propuesta con descripción técnica de alto nivel y evidencia de viabilidad. Tercero, análisis financiero completo. Cuarto, plan de implementación con fases, equipo y timeline. Y quinto, riesgos con plan de mitigación.
 
 MARÍA: [conversacional] ¿Y cuál de esas cinco secciones es la más importante para convencer a un comité directivo?
+# BLOQUE_2
 
 IAGO: [contundente] El análisis de sensibilidad. Un business case que es rentable incluso si los beneficios son un 30% menores de lo esperado es infinitamente más convincente que uno que solo funciona en el escenario optimista. La dirección no quiere ver el mejor escenario. Quiere ver que el peor escenario sigue siendo aceptable.
 
@@ -55,13 +62,17 @@ IAGO: [reflexivo] Y horizonte tres, de veinticuatro a treinta y seis meses: inic
 
 MARÍA: [conversacional] Pero el roadmap no es solo iniciativas de negocio con retorno directo. También incluye iniciativas de habilitación: datos, plataforma de machine learning, talento y gobernanza. Que son los prerrequisitos que nadie quiere financiar y sin los que todo lo demás falla.
 
-# NÚCLEO TEMÁTICO — CAMBIO ORGANIZATIVO Y TALENTO
 
 IAGO: [tenso] Y aquí llegamos al tema que más se subestima en toda la estrategia de I.A. Según McKinsey, la I.A. es 20% algoritmos y 80% reorganización. El mayor riesgo de cualquier iniciativa de I.A. no es técnico. Es humano.
 
 MARÍA: [serio] El 75% de los trabajadores tiene preocupaciones sobre el impacto de la I.A. en su empleo. Y si no gestionas eso activamente, la resistencia organizativa puede frenar proyectos técnicamente impecables.
 
 IAGO: [explicativo] Los tres ejes del cambio son: primero, AI literacy para toda la organización. El AI Act, el reglamento europeo de I.A., la exige legalmente en su artículo cuatro. No es opcional ni es solo cultura. Es un requisito legal. Segundo, rediseño de roles y workflows. Sin rediseño de workflows, la adopción de I.A. se queda en el 20 o el 30%. La I.A. integrada como parte del trabajo, no como herramienta opcional.
+# INSERCION_1
+
+# [INSERCION 1 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_3
 
 MARÍA: [didáctico] Y el tercer eje es la comunicación y la gestión del miedo. La transparencia sobre el plan y los apoyos disponibles reduce la resistencia. El silencio la amplifica.
 
@@ -73,7 +84,6 @@ IAGO: [serio] Y el modelo de talento que funciona en las organizaciones que lo h
 
 MARÍA: [irónico] Y los roles que más demanda generan en 2025 no son los de siempre. El Agent Operations Engineer gestiona agentes en producción. El AI Safety Engineer diseña las defensas de seguridad. Y el Prompt Operations Manager administra el portfolio de prompts de la organización. Títulos que hace tres años no existían en ningún organigrama.
 
-# NÚCLEO TEMÁTICO — GOBERNANZA
 
 IAGO: [tenso] Solo el 14% de las organizaciones aplica gobernanza de I.A. a nivel empresarial. Y eso no es solo un problema de buenas prácticas. Es un problema regulatorio con multas de hasta 35 millones de euros o el 7% de la facturación global bajo el AI Act europeo.
 
@@ -82,8 +92,12 @@ MARÍA: [didáctico] La gobernanza mínima que cualquier organización debe impl
 IAGO: [explicativo] Un proceso de intake para nuevos sistemas con un checklist de clasificación y aprobación. Y un proceso de gestión de incidentes con un runbook de severidades y escalados. Sin ese runbook, cuando algo falla, la organización improvisa. Y en I.A., improvisar en una crisis es muy caro.
 
 MARÍA: [reflexivo] Y lo que me parece importante subrayar es que la gobernanza no es el enemigo de la velocidad. Una política de I.A. clara reduce la incertidumbre y acelera la adopción. Un AI Registry permite supervisar el portfolio y gestionar riesgos de forma proactiva. La gobernanza bien diseñada es un habilitador, no un freno.
+# INSERCION_2
 
-# NÚCLEO TEMÁTICO — LOS CINCO PRINCIPIOS
+# [INSERCION 2 - dato de actualidad o estadistica relevante]
+
+# BLOQUE_4
+
 
 IAGO: [didáctico] El módulo catorce cierra el máster sintetizando cinco principios de transformación sostenible con I.A. Son la destilación de lo que separa a las organizaciones que transforman su negocio de las que acumulan proyectos piloto sin impacto.
 
@@ -97,28 +111,31 @@ IAGO: [firme] Principio cuatro: las personas en el centro. La I.A. es 20% tecnol
 
 MARÍA: [serio] Y principio cinco: iterar y mejorar continuamente. Los sistemas de I.A. y las estrategias de I.A. no se despliegan una vez y se olvidan. Se diseñan y mejoran en ciclos continuos. Las organizaciones con procesos de mejora continua obtienen retornos significativamente mayores que las que hacen despliegues únicos y los abandonan.
 
-# BLOQUE DATOS Y MADUREZ
 
-IAGO: [didáctico] Hay un modelo de madurez de I.A. empresarial con cinco niveles que el módulo trabaja en detalle. Exploración, donde se hacen experimentos ad-hoc sin gobernanza. Adopción inicial, con primeros proyectos en producción y gobernanza básica. Escalado, con un portfolio de sistemas en producción, impacto medible y equipo maduro. Transformación, con I.A. integrada en los procesos core del negocio como ventaja competitiva. Y Reinvención, donde la I.A. es parte central de la propuesta de valor y habilita nuevos modelos de negocio.
+MARÍA: [natural] Imagina que tienes una habitación llena de palancas. Algunas mueven paredes. Otras encienden una luz. Pero nadie te dice cuáles son cuáles. El AI Opportunity Workshop es el proceso de etiquetar cada palanca antes de tirar de ella. Un taller estructurado de uno o dos días con líderes de cada área funcional que mapea los procesos de mayor coste, mayor tiempo de ciclo y mayor tasa de error. No para hablar de tecnología, sino para descubrir dónde están las palancas que mueven paredes.
 
-MARÍA: [explicativo] Y el portfolio óptimo de I.A. equilibra tres tipos de inversión. El 70% en explotación: retornos predecibles de las iniciativas actuales. El 20% en transformación: rediseño de procesos core con I.A. Y el 10% en exploración: experimentación con capacidades emergentes como agentes, modelos multimodales y nuevos proveedores.
+IAGO: [serio] Y ese mapa es el input del business case. Porque una vez tienes identificadas las oportunidades correctas, necesitas saber cuánto valen y cuánto cuestan. Y hacerlo con un rigor que convenza a la dirección.
 
-IAGO: [conversacional] Ese equilibrio 70-20-10 garantiza retornos constantes en el presente mientras construyes las capacidades del futuro. Sin él, o te quedas atrapado en lo que ya funciona o apuestas todo a tecnologías que todavía no están listas.
+# CIERRE_CONCEPTOS
 
-MARÍA: [reflexivo] Y hay un predictor de éxito que aparece en todos los estudios. Más que la tecnología, más que el presupuesto, más que el talento técnico. El patrocinio ejecutivo. Según McKinsey, es el factor más fuerte de éxito de las iniciativas de I.A.
+MARÍA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Repasa los puntos clave de este episodio.
 
-IAGO: [serio] Los C-level que entienden las capacidades y los límites reales de la I.A., que asignan los recursos necesarios y que modelan el comportamiento de uso de la I.A. en su propia forma de trabajar, aceleran la transformación de sus organizaciones más que cualquier inversión tecnológica. JP Morgan tiene más de seiscientas aplicaciones de I.A. en producción. Zara tiene la I.A. en el núcleo de su ventaja competitiva en fast fashion. Los dos tienen algo en común antes que cualquier infraestructura técnica.
-
-MARÍA: [firme] Y los casos de fracaso más instructivos también son claros. IBM Watson Health fue abandonado en 2022 tras años de inversión sin resultados clínicos. La tecnología no era el problema. La estrategia, la gobernanza y la ejecución eran el problema.
-
-# CIERRE CON CTA
 
 IAGO: [reflexivo] Si has llegado hasta el módulo catorce del máster, o si estás escuchando esto pensando en si el máster tiene sentido para ti, esta es la perspectiva que importa. La I.A. técnica sin estrategia es un coste. La estrategia de I.A. sin base técnica es un PowerPoint. El máster de MaquinarIa Pesada está diseñado para que tengas las dos cosas.
 
 MARÍA: [serio] El módulo catorce no es el final del aprendizaje. Es el marco que da sentido a los trece módulos anteriores. La capa estratégica sobre el álgebra lineal, los transformers, los agentes, el fine-tuning, la evaluación y la seguridad. El lugar donde todo encaja.
 
 IAGO: [didáctico] En este módulo construyes la matriz de oportunidades para tu organización, diseñas un business case con análisis de sensibilidad real, trazas un roadmap de tres horizontes, defines el modelo de gobernanza mínimo y aprendes a gestionar el cambio organizativo que ningún tutorial de YouTube enseña. No con teoría. Con casos reales, con datos reales, con las decisiones que toman hoy los equipos que lo están haciendo bien.
+# CIERRE_FINAL
 
 MARÍA: [cálido] Si tienes la base técnica y te falta el mapa estratégico para convertirla en impacto real en tu organización, este es el módulo que conecta los puntos. El enlace para saber más está en las notas del episodio. Nos vemos dentro.
 
+
+MARÍA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
 IAGO: [grave] MaquinarIa Pesada. Porque entender la I.A. sin saber desplegarla en la empresa es como tener un motor sin carrocería.
+# VERIFICACIONES
+
+# VERIFICACION 1 - ESTRUCTURA
+# OK Normalizado por normalizar_guiones.py
+# Pendiente: revisar manualmente el contenido de bloques y frases fijas
