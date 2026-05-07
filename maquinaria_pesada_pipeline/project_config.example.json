@@ -1,0 +1,23 @@
+{
+  "version": "2.0",
+  "_comment": "Este archivo es un EJEMPLO. Ejecuta 'python setup_project.py' para generar tu propio project_config.json (que va en .gitignore).",
+  "assets": {
+    "logo_watermark":   "C:/ruta/a/logo_sin_fondo.png",
+    "logos_folder":     null,
+    "intro_video":      "C:/ruta/a/intro_maquinaria_pesada.mp4",
+    "sintonia_audio":   "C:/ruta/a/Sintonia_Maquinaria_pesada.mp3",
+    "background_music": "C:/ruta/a/base_podcast.mp3",
+    "music_folder":     null,
+    "videos_folder":    null,
+    "stickers_folder":  null,
+    "episode_script":   "C:/ruta/a/episodios/EP-MOD000_guion_etiquetas.txt",
+    "episode_audio":    "C:/ruta/a/episodios/EP-MOD000_MaquinarIaPesada_final.mp3",
+    "episode_pdf":      "C:/ruta/a/PDFs/RESUMEN_M0_Introduccion.pdf",
+    "episode_log":      null,
+    "output_folder":    "./outputs"
+  },
+  "episode_defaults": {
+    "episode_id": "EP-MOD000",
+    "resolution": "1920x1080"
+  }
+}
