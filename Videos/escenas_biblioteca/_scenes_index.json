@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "scenes": {
+    "studio_yago_speaking_close": {
+      "slug": "studio_yago_speaking_close",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_speaking_close.mp4",
+      "duration": 5.208333,
+      "prompt": "Cinematic medium close-up of the same Mediterranean man, 38, short light brown hair, three-day stubble, black technical t-shirt under open dark zipped hoodie, matte black studio headphones around his neck. He is speaking into a black matte podcast microphone with blue windscreen, looking slightly off-camera with focused analytical expression and the occasional knowing half-smile. Natural lip movement, hands occasionally lifting from the table for emphasis. Industrial podcast studio background blurred: matte yellow steel table, warm spotlight, 'MaquinarIA Pesada' sign behind. Subtle electric blue rim light on his hair edge. Camera locked, slight lean forward when emphasizing. Photorealistic, anamorphic 35mm, shallow depth of field, fine grain.",
+      "description": "Yago en primer plano hablando con energia contenida",
+      "tags": [
+        "close_up",
+        "yago",
+        "speaking"
+      ],
+      "modulo": null,
+      "source": "luma",
+      "created": "2026-05-07 13:46:39"
+    }
+  }
+}
