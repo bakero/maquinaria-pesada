@@ -178,26 +178,10 @@ def analyze_episode_audio(audio_path: str | Path,
         structure["sintonia_end"] = round(sintonia_start + intro_dur, 3) if intro_dur else None
         structure["content_start"] = round(structure["sintonia_end"] or sintonia_start, 3)
 
-    # Si conocemos la duracion del intro_video, garantizamos que la sintonia
-    # cubre AL MENOS esa duracion (puede solapar con el silencio post, mejor
-    # que cortar el video de la sintonia).
-    if intro_dur > 0 and structure.get("sintonia_start") is not None:
-        min_sintonia_end = structure["sintonia_start"] + intro_dur
-        if structure.get("sintonia_end", 0) < min_sintonia_end:
-            log.info(f"  Extiendo sintonia_end a {min_sintonia_end:.2f}s "
-                     f"para cubrir el intro_video completo ({intro_dur:.1f}s)")
-            structure["sintonia_end"] = round(min_sintonia_end, 3)
-            # content_start se desplaza si el silencio post-sintonia queda solapado
-            if structure.get("content_start", 0) < structure["sintonia_end"]:
-                # Si hay silencio detectado tras min_sintonia_end, usarlo
-                next_silence = next(
-                    (s for s in silences if s["start"] >= structure["sintonia_end"]),
-                    None,
-                )
-                if next_silence:
-                    structure["content_start"] = round(next_silence["end"], 3)
-                else:
-                    structure["content_start"] = round(structure["sintonia_end"] + 0.5, 3)
+    # NO extendemos sintonia_end mas alla del rango detectado en el audio:
+    # si lo extendieramos, el intro_video se mostraria mientras el audio ya
+    # esta en silencio (desfase visual/audio). El compositor recortara el
+    # intro_video al sintonia_dur real con `-t`.
 
     # 4) Content end: si hay silencio final largo (>2s), excluirlo
     if silences and silences[-1]["end"] >= duration - 0.5 and silences[-1]["duration"] >= 2.0:
