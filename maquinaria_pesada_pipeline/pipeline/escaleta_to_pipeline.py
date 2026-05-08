@@ -178,16 +178,49 @@ def _build_overlay_data(elem_type: str, raw: str, label: str,
     """Construye el dict 'data' del overlay segun el tipo."""
     speaker_color = color or "#F5C400"
     if elem_type == "stat_card":
-        # Buscar valor (numero/%) y subtitulo
-        m_val = re.search(r"(\d{1,3}(?:[.,]\d+)?\s*(?:%|M|K|B)?|€\d+M?|\$\d+M?)",
-                           raw)
-        value = m_val.group(0) if m_val else label.split()[0] if label else ""
-        # Label = primera parte; subtitulo = resto
+        # Estrategia: el "valor" es la cifra mas representativa del texto.
+        # Prioridades:
+        #   1. Cualquier cifra con sufijo % / M / K / B / €$  -> es el valor.
+        #   2. Si hay varias cifras, la del subtitulo (despues del " · ")
+        #      gana sobre el label (el "ADOPCION 2026" del label es contexto;
+        #      el "88%" del subtitulo es el dato).
+        #   3. Fallback: primera cifra con sufijo, despues primera palabra.
         parts = re.split(r"·|\|", label, maxsplit=1)
+        label_part = parts[0].strip() if parts else ""
+        subtitle_part = parts[1].strip() if len(parts) > 1 else ""
+
+        # Patron robusto: numero opcionalmente con coma/punto + sufijo
+        # obligatorio (% M K B) o moneda. Asi 2026 (anyo) NO matchea, pero
+        # 88% si.
+        # Boundary tras el sufijo: espacio, fin, puntuacion (no usamos \b
+        # porque % no es word-char y \b fallaria).
+        VALUE_RE = re.compile(
+            r"(?:€|\$)?\s*\d{1,4}(?:[.,]\d+)?\s*"
+            r"(?:%|MM?|K|B|bn|mn|€|\$)(?=\s|$|[.,·|]|[A-Z])",
+            re.IGNORECASE,
+        )
+        # Buscar primero en subtitulo, despues en label, despues en raw.
+        value = ""
+        for src in (subtitle_part, label_part, raw):
+            m = VALUE_RE.search(src)
+            if m:
+                value = m.group(0).strip()
+                break
+        # Fallback final: si no hay sufijo claro, el primer numero "limpio"
+        # (no anyo) -> rango 1-99 sin contexto de anyo
+        if not value:
+            for src in (subtitle_part, label_part):
+                m = re.search(r"\b(\d{1,3}(?:[.,]\d+)?)\b", src)
+                if m and not re.match(r"20[0-9][0-9]", m.group(1)):
+                    value = m.group(1)
+                    break
+        if not value:
+            value = (label.split()[0] if label else "")[:8]
+
         return {
-            "label":    (parts[0].strip().upper() if parts else "DATO")[:32],
-            "value":    value or label[:8],
-            "subtitle": (parts[1].strip() if len(parts) > 1 else "")[:48],
+            "label":    label_part.upper()[:32] or "DATO",
+            "value":    value or "—",
+            "subtitle": subtitle_part[:48],
             "color":    speaker_color,
         }
     if elem_type == "name_tag":
