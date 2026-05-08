@@ -256,11 +256,14 @@ def main():
             c["force"] = True
 
     gen = KlingGenerator(library)
-    log.info(f"Generando {len(target)} clip(s) con Kling 1.6 Pro...")
-    # 20s = base 10s + 2 extends de ~5s. Coste: ~$0.70 base + 2*$0.35 extend
+    log.info(f"Generando {len(target)} clip(s) con Kling 1.6 Pro (PARALELO)...")
     log.info(f"Coste estimado: ~${len(target) * 1.40:.2f} (10s base + 2 extends)")
+    log.info(f"Tiempo estimado paralelo: ~30-40 min (vs ~7-8h secuencial)")
     t0 = time.time()
-    res = gen.generate_batch(target, delay_seconds=3.0)
+    # NOTA: Kling tiene rate limit muy agresivo (~1-2 submits/min como max).
+    # El parallel hace 429 en cascada. El secuencial sirve los 14 en ~6h
+    # pero sin perder ningun clip.
+    res = gen.generate_batch(target, delay_seconds=5.0)
     dt = time.time() - t0
     log.info(f"Tiempo total: {dt/60:.1f}min")
     log.info(f"  generated: {len(res['generated'])} -> {res['generated']}")

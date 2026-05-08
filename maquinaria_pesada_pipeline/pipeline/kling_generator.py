@@ -117,7 +117,7 @@ class KlingGenerator:
                 aspect_ratio: str | None = None,
                 negative_prompt: str | None = None,
                 cfg_scale: float = 0.5) -> str:
-        """POST image2video. Devuelve task_id."""
+        """POST image2video. Devuelve task_id. Retry exponencial en 429."""
         if duration not in (5, 10):
             self.log.warning(f"  duration={duration} no soportado; uso 10s")
             duration = 10
@@ -132,18 +132,28 @@ class KlingGenerator:
             "aspect_ratio":    aspect_ratio or self.default_aspect,
         }
         url = KLING_BASE + KLING_IMG2VIDEO_PATH
-        r = self.http.post(url, json=payload,
-                           headers=self._auth_headers(), timeout=60)
-        if r.status_code >= 400:
-            self.log.error(f"  Kling submit {r.status_code}: {r.text[:500]}")
-        r.raise_for_status()
-        body = r.json()
-        if body.get("code") != 0:
-            raise RuntimeError(f"Kling submit error: {body}")
-        task_id = body.get("data", {}).get("task_id")
-        if not task_id:
-            raise RuntimeError(f"Submit sin task_id: {body}")
-        return task_id
+        # Retry con backoff exponencial para 429 (rate limit Kling)
+        import time as _t
+        for attempt in range(6):
+            r = self.http.post(url, json=payload,
+                               headers=self._auth_headers(), timeout=60)
+            if r.status_code == 429:
+                wait = min(120, 10 * (2 ** attempt))
+                self.log.warning(f"  Kling 429 rate limit, esperando {wait}s "
+                                 f"(intento {attempt+1}/6)")
+                _t.sleep(wait)
+                continue
+            if r.status_code >= 400:
+                self.log.error(f"  Kling submit {r.status_code}: {r.text[:500]}")
+            r.raise_for_status()
+            body = r.json()
+            if body.get("code") != 0:
+                raise RuntimeError(f"Kling submit error: {body}")
+            task_id = body.get("data", {}).get("task_id")
+            if not task_id:
+                raise RuntimeError(f"Submit sin task_id: {body}")
+            return task_id
+        raise RuntimeError("Kling rate limit persistente tras 6 reintentos")
 
     def _poll(self, task_id: str, path: str = KLING_IMG2VIDEO_PATH,
               max_seconds: int = 1800,
@@ -181,7 +191,7 @@ class KlingGenerator:
     def _extend(self, video_id: str, prompt: str | None = None,
                 negative_prompt: str | None = None,
                 cfg_scale: float = 0.5) -> str:
-        """POST video-extend: continua la escena +5s desde el ultimo frame."""
+        """POST video-extend: continua la escena +5s. Retry en 429."""
         payload = {
             "video_id":        video_id,
             "prompt":          prompt or "continue scene naturally, same setting and characters, subtle natural motion",
@@ -189,18 +199,26 @@ class KlingGenerator:
             "cfg_scale":       cfg_scale,
         }
         url = KLING_BASE + KLING_EXTEND_PATH
-        r = self.http.post(url, json=payload,
-                           headers=self._auth_headers(), timeout=60)
-        if r.status_code >= 400:
-            self.log.error(f"  Kling extend {r.status_code}: {r.text[:500]}")
-        r.raise_for_status()
-        body = r.json()
-        if body.get("code") != 0:
-            raise RuntimeError(f"Kling extend error: {body}")
-        task_id = body.get("data", {}).get("task_id")
-        if not task_id:
-            raise RuntimeError(f"Extend sin task_id: {body}")
-        return task_id
+        import time as _t
+        for attempt in range(6):
+            r = self.http.post(url, json=payload,
+                               headers=self._auth_headers(), timeout=60)
+            if r.status_code == 429:
+                wait = min(120, 10 * (2 ** attempt))
+                self.log.warning(f"  Kling extend 429, esperando {wait}s")
+                _t.sleep(wait)
+                continue
+            if r.status_code >= 400:
+                self.log.error(f"  Kling extend {r.status_code}: {r.text[:500]}")
+            r.raise_for_status()
+            body = r.json()
+            if body.get("code") != 0:
+                raise RuntimeError(f"Kling extend error: {body}")
+            task_id = body.get("data", {}).get("task_id")
+            if not task_id:
+                raise RuntimeError(f"Extend sin task_id: {body}")
+            return task_id
+        raise RuntimeError("Kling extend rate limit persistente")
 
     def _download_video(self, url: str, dest: Path,
                         max_retries: int = 4) -> Path:
@@ -325,6 +343,192 @@ class KlingGenerator:
             source=f"kling-1.6-{self.mode}-{target}s",
         )
         return scene
+
+    # ── Batch paralelo (oleadas) ────────────────────────────────────
+
+    def generate_batch_parallel(self, items: list[dict],
+                                 submit_spacing: float = 1.5,
+                                 poll_interval: int = 15,
+                                 max_phase_seconds: int = 1800) -> dict:
+        """Submitea TODAS las tareas en paralelo y espera a que cada fase
+        complete antes de la siguiente (base -> extend1 -> extend2 -> download).
+        Mucho mas rapido que sequential: 18 clips ~30 min vs ~8h.
+
+        Args:
+            items: [{slug, prompt, image_url, target_duration, ...}]
+            submit_spacing: pausa (s) entre submissions para evitar rate limit
+            poll_interval: cada cuanto pollear el estado en cada fase
+            max_phase_seconds: timeout por fase
+        """
+        import time
+        import requests
+
+        EXTEND_INCREMENT = 5
+        results = {"generated": [], "errors": [], "skipped": []}
+
+        # 0) Filtrar items: skipear los ya cacheados
+        active = []
+        for it in items:
+            slug = _slugify(it.get("slug") or "")
+            if not slug or not it.get("prompt") or not it.get("image_url"):
+                results["errors"].append({"slug": slug, "error": "faltan campos"})
+                continue
+            existing = self.library.find(slug)
+            if existing and not it.get("force"):
+                # Verificar fisico
+                from pathlib import Path as _P
+                if _P(existing.get("path", "")).exists():
+                    results["skipped"].append(slug)
+                    continue
+            it["slug"] = slug
+            active.append(it)
+
+        if not active:
+            self.log.info("  Nada que generar (todo cacheado)")
+            return results
+
+        n_extends_per = max(0, (
+            (active[0].get("target_duration", active[0].get("duration", 10))
+             - active[0].get("duration", 10)
+             + EXTEND_INCREMENT - 1)
+            // EXTEND_INCREMENT
+        ))
+        self.log.info(f"  Batch paralelo: {len(active)} clips · "
+                      f"base + {n_extends_per} extends c/u")
+
+        # ── Fase 1: submit todas las bases ──
+        self.log.info("  [Fase 1/3] Submitting bases en paralelo...")
+        for it in active:
+            try:
+                tid = self._submit(
+                    prompt=it["prompt"],
+                    image_url=it["image_url"],
+                    duration=it.get("duration", 10),
+                    aspect_ratio=it.get("aspect_ratio"),
+                    negative_prompt=it.get("negative_prompt"),
+                )
+                it["_base_task"] = tid
+                self.log.info(f"    {it['slug']}: base task={tid}")
+            except Exception as exc:
+                self.log.error(f"    {it['slug']}: submit fallo: {exc}")
+                it["_error"] = str(exc)
+            time.sleep(submit_spacing)
+
+        # ── Fase 2: poll bases ──
+        self.log.info("  [Fase 1/3] Polling bases...")
+        self._wait_phase(active, "_base_task", "_base_video_id",
+                         "_base_video_url", KLING_IMG2VIDEO_PATH,
+                         poll_interval, max_phase_seconds)
+
+        # ── Fase 3+: extends ──
+        for ext_idx in range(n_extends_per):
+            phase_label = f"extend {ext_idx+1}/{n_extends_per}"
+            prev_id_key = "_base_video_id" if ext_idx == 0 else f"_ext{ext_idx-1}_video_id"
+            ext_task_key = f"_ext{ext_idx}_task"
+            ext_id_key = f"_ext{ext_idx}_video_id"
+            ext_url_key = f"_ext{ext_idx}_video_url"
+
+            self.log.info(f"  [Fase {ext_idx+2}] Submitting {phase_label}...")
+            for it in active:
+                if it.get("_error"):
+                    continue
+                prev_video_id = it.get(prev_id_key)
+                if not prev_video_id:
+                    it["_error"] = f"sin {prev_id_key}, salto extend"
+                    continue
+                try:
+                    tid = self._extend(
+                        video_id=prev_video_id,
+                        prompt=it.get("extend_prompt"),
+                        negative_prompt=it.get("negative_prompt"),
+                    )
+                    it[ext_task_key] = tid
+                    self.log.info(f"    {it['slug']}: {phase_label} task={tid}")
+                except Exception as exc:
+                    self.log.error(f"    {it['slug']}: {phase_label} fallo: {exc}")
+                    it["_error"] = str(exc)
+                time.sleep(submit_spacing)
+
+            self.log.info(f"  [Fase {ext_idx+2}] Polling {phase_label}...")
+            self._wait_phase(active, ext_task_key, ext_id_key, ext_url_key,
+                             KLING_EXTEND_PATH, poll_interval, max_phase_seconds)
+
+        # ── Fase final: descargar y registrar ──
+        self.log.info("  [Fase final] Descargando + registrando...")
+        last_url_key = (f"_ext{n_extends_per-1}_video_url"
+                         if n_extends_per > 0 else "_base_video_url")
+        for it in active:
+            if it.get("_error"):
+                results["errors"].append({"slug": it["slug"], "error": it["_error"]})
+                continue
+            url = it.get(last_url_key)
+            if not url:
+                results["errors"].append({"slug": it["slug"], "error": "sin URL final"})
+                continue
+            try:
+                cat = it.get("category", "estudio")
+                dest = self.library.base / cat / f"{it['slug']}.mp4"
+                self._download_video(url, dest)
+                self.library.register(
+                    slug=it["slug"], path=dest,
+                    category=cat, prompt=it["prompt"],
+                    description=it.get("description") or "",
+                    tags=it.get("tags") or [], modulo=it.get("modulo"),
+                    source=f"kling-1.6-{self.mode}-parallel",
+                )
+                results["generated"].append(it["slug"])
+                self.log.info(f"    {it['slug']}: descargado + registrado")
+            except Exception as exc:
+                results["errors"].append({"slug": it["slug"], "error": str(exc)})
+                self.log.error(f"    {it['slug']}: download fallo: {exc}")
+
+        return results
+
+    def _wait_phase(self, items: list[dict], task_key: str,
+                    out_id_key: str, out_url_key: str,
+                    path: str, poll_interval: int, max_seconds: int):
+        """Pollea TODAS las tareas en una fase hasta completar (o fallar).
+        Modifica items in-place anyadiendo out_id_key / out_url_key."""
+        import time
+        pending = {it["slug"]: it for it in items
+                   if it.get(task_key) and not it.get("_error")}
+        elapsed = 0
+        while pending and elapsed < max_seconds:
+            done_now = []
+            for slug, it in pending.items():
+                tid = it[task_key]
+                try:
+                    url = KLING_BASE + path + f"/{tid}"
+                    r = self.http.get(url, headers=self._auth_headers(), timeout=60)
+                    if r.status_code != 200:
+                        continue
+                    body = r.json()
+                    data = body.get("data", {})
+                    status = (data.get("task_status") or "").lower()
+                    if status == "succeed":
+                        videos = (data.get("task_result") or {}).get("videos") or []
+                        if videos:
+                            it[out_id_key] = videos[0].get("id")
+                            it[out_url_key] = videos[0].get("url")
+                            done_now.append(slug)
+                            self.log.info(f"    OK {slug} ({tid[:10]}...)")
+                        else:
+                            it["_error"] = "succeed sin videos"
+                            done_now.append(slug)
+                    elif status in ("failed", "error", "cancelled"):
+                        it["_error"] = f"task fallo: {body}"
+                        done_now.append(slug)
+                except Exception as exc:
+                    self.log.warning(f"    poll {slug} fallo: {type(exc).__name__}")
+            for slug in done_now:
+                del pending[slug]
+            if pending:
+                self.log.info(f"    quedan {len(pending)} pendientes...")
+                time.sleep(poll_interval)
+                elapsed += poll_interval
+        # Marca timeouts
+        for slug, it in pending.items():
+            it["_error"] = f"timeout fase tras {max_seconds}s"
 
     def generate_batch(self, items: list[dict],
                        delay_seconds: float = 3.0) -> dict:
