@@ -84,17 +84,26 @@ MAX_CLIP_DUR = 10.0
 
 def _resolve_speaker_pool(plano: str, speaker: str, library) -> list[str]:
     """Devuelve la lista ORDENADA de slugs candidatos para esta combinacion
-    plano+speaker, filtrando a los que existen actualmente en la library."""
+    plano+speaker. Filtra a los que existen en la library Y cuyo .mp4
+    existe fisicamente en disco (defiende contra entradas huerfanas en
+    _scenes_index.json tras una limpieza de worktree)."""
     speaker_key = "MARIA" if speaker == "MARIA" else "YAGO" if speaker in ("YAGO", "IAGO") else "AMBOS"
     base = list(SPEAKER_POOL.get(speaker_key, SPEAKER_POOL["AMBOS"]))
     pref_tags = PLANO_PREF_TAGS.get(plano, [])
     if pref_tags:
-        # Sube al principio los que matchean alguna pref tag
         preferred = [s for s in base if any(t in s for t in pref_tags)]
         rest = [s for s in base if s not in preferred]
         base = preferred + rest
-    # Filtrar a los que existen en la library
-    available = [s for s in base if library.find(s)]
+
+    available: list[str] = []
+    for slug in base:
+        entry = library.find(slug)
+        if not entry:
+            continue
+        path = Path(entry.get("path", ""))
+        if not path.exists():
+            continue
+        available.append(slug)
     return available
 
 # Tipo on_screen escaleta -> tipo overlay del overlay_types.py
