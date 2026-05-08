@@ -395,9 +395,12 @@ def generate_escaleta(episode_id: str,
 
     log.info(f"  solicitando escaleta a Claude ({model})...")
     t0 = time.time()
+    # max_tokens 16000: la escaleta v1 con 12000 se truncaba en BLOQUE 4.
+    # Con la regla nueva de pizarra (5 elementos cada 4s en cada interv) la
+    # tabla on-screen pesa mas, asi que damos margen.
     msg = client.messages.create(
         model=model,
-        max_tokens=12000,
+        max_tokens=16000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_msg}],
     )
