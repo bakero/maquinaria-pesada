@@ -308,6 +308,15 @@ def _parse_intervention_body(iv_id: str, speaker: str, body: str) -> dict | None
     m_plano = re.search(r"\*\*PLANO:\*\*\s*([A-Z_]+)", body)
     plano = m_plano.group(1) if m_plano else "ESTABLISHING"
 
+    # PIZARRA: SI/NO (escaleta v2). Si no esta presente, lo deja None y
+    # escaleta_to_pipeline aplica heuristica de retro-compat.
+    m_piz = re.search(r"\*\*PIZARRA:\*\*\s*(SI|S[ÍI]|YES|NO)\b",
+                      body, re.IGNORECASE)
+    uses_pizarra = None
+    if m_piz:
+        token = m_piz.group(1).upper()
+        uses_pizarra = token in ("SI", "SÍ", "YES")
+
     # On-screen table
     on_screen = []
     m_os = re.search(r"\*\*ON-?SCREEN:\*\*", body)
@@ -328,7 +337,7 @@ def _parse_intervention_body(iv_id: str, speaker: str, body: str) -> dict | None
     m_trans = re.search(r"\*\*TRANSICI[ÓO]N\s*OUT:?\*\*\s*([^\n]+)", body)
     transition_out = m_trans.group(1).strip().rstrip(".") if m_trans else "corte"
 
-    return {
+    out = {
         "id":             iv_id,
         "speaker":        speaker,
         "tc_in":          tc_in,
@@ -340,6 +349,9 @@ def _parse_intervention_body(iv_id: str, speaker: str, body: str) -> dict | None
         "on_screen":      on_screen,
         "transition_out": transition_out,
     }
+    if uses_pizarra is not None:
+        out["uses_pizarra"] = uses_pizarra
+    return out
 
 
 if __name__ == "__main__":

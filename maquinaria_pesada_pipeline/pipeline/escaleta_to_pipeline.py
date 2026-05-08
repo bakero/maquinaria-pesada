@@ -18,19 +18,84 @@ from .logger import get_logger
 
 # ─── Mapeos ─────────────────────────────────────────────────────────────
 
-# Plano de la escaleta -> slug de la library + tipo de segmento del track
-PLANO_TO_SLUG = {
-    "ESTABLISHING":         ("studio_establishing_general",     "studio"),
-    "TWO_SHOT_M_ACTIVE":    ("studio_maria_speaks_yago_listens","studio"),
-    "TWO_SHOT_Y_ACTIVE":    ("studio_yago_speaks_maria_listens","studio"),
-    "CLOSE_UP_MARIA":       ("studio_maria_speaking_close",     "studio"),
-    "CLOSE_UP_YAGO":        ("studio_yago_speaking_close",      "studio"),
-    "DETAIL":               ("studio_detail_microphone",        "studio"),
-    "BOTH_COMPLICIT":       ("studio_both_complicit",           "studio"),
-    "OUTRO":                ("studio_outro_closing",            "studio"),
-    "BLACK":                (None,                               "blank"),
-    "PIZARRA":              (None,                               "pizarra"),
+# Plano de la escaleta -> tipo de segmento del track. El SLUG concreto se
+# elige en runtime desde el pool del speaker (rotacion sin repetir dentro
+# de la misma intervencion).
+PLANO_TO_TYPE = {
+    "ESTABLISHING":         "studio",
+    "TWO_SHOT_M_ACTIVE":    "studio",
+    "TWO_SHOT_Y_ACTIVE":    "studio",
+    "CLOSE_UP_MARIA":       "studio",
+    "CLOSE_UP_YAGO":        "studio",
+    "DETAIL":               "studio",
+    "BOTH_COMPLICIT":       "studio",
+    "OUTRO":                "studio",
+    "BLACK":                "blank",
+    "PIZARRA":              "pizarra",
 }
+
+# Pool de clips disponibles por speaker. La rotacion no repite slug dentro
+# de la misma intervencion. Los slugs nuevos (Kling v2) van primero; los
+# antiguos quedan como fallback si los Kling aun no se han generado.
+SPEAKER_POOL = {
+    "MARIA": [
+        # Solo Maria (close-medium frontal)
+        "studio_maria_solo_v1", "studio_maria_solo_v2",
+        "studio_maria_solo_v3", "studio_maria_solo_v4",
+        # Two-shot con Maria activa
+        "studio_two_m_active_v1", "studio_two_m_active_v2",
+        "studio_two_m_active_v3", "studio_two_m_active_v4",
+        "studio_two_m_active_v5",
+        # Fallbacks legacy
+        "studio_maria_speaking_close",
+        "studio_maria_speaks_yago_listens",
+    ],
+    "YAGO": [
+        "studio_yago_solo_v1", "studio_yago_solo_v2",
+        "studio_yago_solo_v3", "studio_yago_solo_v4",
+        "studio_two_y_active_v1", "studio_two_y_active_v2",
+        "studio_two_y_active_v3", "studio_two_y_active_v4",
+        "studio_two_y_active_v5",
+        "studio_yago_speaking_close",
+        "studio_yago_speaks_maria_listens",
+    ],
+    "AMBOS": [
+        "studio_establishing_general",
+        "studio_both_complicit",
+    ],
+}
+
+# Plano -> filtro adicional sobre el pool (preferencia por sub-tipo)
+PLANO_PREF_TAGS = {
+    "CLOSE_UP_MARIA":    ["solo_v"],         # prefiere solo
+    "CLOSE_UP_YAGO":     ["solo_v"],
+    "TWO_SHOT_M_ACTIVE": ["two_m_active"],   # prefiere two-shot
+    "TWO_SHOT_Y_ACTIVE": ["two_y_active"],
+    "ESTABLISHING":      ["establishing"],
+    "BOTH_COMPLICIT":    ["both_complicit"],
+    "OUTRO":             ["outro"],
+    "DETAIL":            ["detail"],
+}
+
+# Duracion maxima de un solo clip antes de partir en sub-segmentos.
+# Kling 1.6 Pro genera 10s nativos.
+MAX_CLIP_DUR = 10.0
+
+
+def _resolve_speaker_pool(plano: str, speaker: str, library) -> list[str]:
+    """Devuelve la lista ORDENADA de slugs candidatos para esta combinacion
+    plano+speaker, filtrando a los que existen actualmente en la library."""
+    speaker_key = "MARIA" if speaker == "MARIA" else "YAGO" if speaker in ("YAGO", "IAGO") else "AMBOS"
+    base = list(SPEAKER_POOL.get(speaker_key, SPEAKER_POOL["AMBOS"]))
+    pref_tags = PLANO_PREF_TAGS.get(plano, [])
+    if pref_tags:
+        # Sube al principio los que matchean alguna pref tag
+        preferred = [s for s in base if any(t in s for t in pref_tags)]
+        rest = [s for s in base if s not in preferred]
+        base = preferred + rest
+    # Filtrar a los que existen en la library
+    available = [s for s in base if library.find(s)]
+    return available
 
 # Tipo on_screen escaleta -> tipo overlay del overlay_types.py
 ELEM_TYPE_MAP = {
@@ -256,48 +321,129 @@ def parsed_escaleta_to_scene_timeline(parsed: dict) -> dict:
 
 def parsed_escaleta_to_scene_track(parsed: dict, library,
                                     audio_duration: float | None = None) -> list[dict]:
-    """Convierte la escaleta en scene_track (estudio/pizarra/blank) usando
-    el plano definido en cada intervencion."""
+    """Convierte la escaleta en scene_track (estudio/pizarra/blank).
+
+    Reglas de montaje:
+      - Cada intervencion -> 1+ segmentos (split si dur > MAX_CLIP_DUR)
+      - No se repite el mismo clip dentro de la misma intervencion
+      - Pizarra: si la intervencion esta marcada como pizarra, todo el
+        rango es pizarra con PIP del presentador (rotacion no-repeat).
+    """
     log = get_logger("escaleta_to_pipeline")
     track = []
+    iv_counter = 0
     for block in parsed["blocks"]:
         for iv in block["interventions"]:
+            iv_counter += 1
             plano = iv["plano"].upper()
-            slug, seg_type = PLANO_TO_SLUG.get(plano, (None, "pizarra"))
+            seg_type = PLANO_TO_TYPE.get(plano, "pizarra")
+            speaker = iv["speaker"] or ""
+            iv_start = float(iv["tc_in"])
+            iv_end = float(iv["tc_out"])
+            iv_dur = max(0.0, iv_end - iv_start)
+            # uses_pizarra: explicito (escaleta v2) o heuristica conservadora.
+            # Defecto = studio fullscreen. Pizarra solo cuando hay material
+            # visual relevante (datos, listas, comparaciones), no cuando
+            # solo hay un name_tag o un sticker.
+            if "uses_pizarra" in iv:
+                uses_pizarra = bool(iv["uses_pizarra"])
+            else:
+                heavy_elements = {
+                    "stat_card", "hierarchy", "hierarchy_diagram",
+                    "hierarchy_visual", "two_column_compare", "compare",
+                    "comparison", "bar_chart", "barchart", "timeline",
+                    "timeline_visual", "timeline_regulation",
+                    "regulation_alert", "highlight_quote", "quote",
+                    "concept_card", "concept_card_image", "recap_grid",
+                    "recap", "examples_grid", "examples", "end_card",
+                }
+                rich_count = sum(
+                    1 for os_item in (iv.get("on_screen") or [])
+                    if (os_item.get("element") or "").lower() in heavy_elements
+                )
+                uses_pizarra = (
+                    plano == "PIZARRA"
+                    or (rich_count >= 2 and iv_dur >= 12.0)
+                )
 
-            seg = {
-                "start":   iv["tc_in"],
-                "end":     iv["tc_out"],
-                "speaker": iv["speaker"],
-                "section": block["name"],
-                "type":    seg_type,
-                "plano":   plano,
-            }
-            if seg_type == "studio" and slug:
-                lib_entry = library.find(slug)
-                if lib_entry:
-                    seg["source"] = lib_entry["path"]
-                else:
-                    log.warning(f"  plano {plano} -> {slug} no en library, "
-                                f"caera a establishing")
-                    fallback = library.find("studio_establishing_general")
-                    if fallback:
-                        seg["source"] = fallback["path"]
+            # Resolver pool
+            pool = _resolve_speaker_pool(plano, speaker, library)
+
+            # Determinar tipo de segmento final:
+            #   - Si la intervencion lleva pizarra -> "pizarra" + PIP
+            #   - Si no -> "studio" (o "blank" si plano BLACK)
+            if seg_type == "blank" or plano == "BLACK":
+                track.append({
+                    "start":   iv_start, "end": iv_end,
+                    "speaker": speaker, "section": block["name"],
+                    "type":    "blank", "plano": plano,
+                    "iv_id":   iv_counter,
+                })
+                continue
+
+            final_type = "pizarra" if uses_pizarra else "studio"
+
+            # Partir la intervencion en sub-segmentos de hasta MAX_CLIP_DUR,
+            # asignando un clip distinto del pool a cada uno.
+            n_subs = max(1, int((iv_dur + MAX_CLIP_DUR - 0.01) // MAX_CLIP_DUR))
+            sub_dur = iv_dur / n_subs
+            used_in_iv: list[str] = []
+            for k in range(n_subs):
+                # Pick: primer slug del pool no usado aun en esta intervencion
+                pick = next((s for s in pool if s not in used_in_iv), None)
+                if pick is None and pool:
+                    pick = pool[k % len(pool)]   # ya recorrido todo el pool
+                used_in_iv.append(pick or "")
+                lib_entry = library.find(pick) if pick else None
+                source_path = lib_entry["path"] if lib_entry else None
+
+                seg_start = iv_start + k * sub_dur
+                seg_end = iv_start + (k + 1) * sub_dur if k < n_subs - 1 else iv_end
+                seg = {
+                    "start":   round(seg_start, 3),
+                    "end":     round(seg_end, 3),
+                    "speaker": speaker,
+                    "section": block["name"],
+                    "type":    final_type,
+                    "plano":   plano,
+                    "iv_id":   iv_counter,
+                    "clip_slug": pick,
+                }
+                if final_type == "studio":
+                    if source_path:
+                        seg["source"] = source_path
                     else:
+                        log.warning(f"  iv{iv_counter} plano {plano}: pool vacio, "
+                                    f"cae a pizarra")
                         seg["type"] = "pizarra"
-            track.append(seg)
+                if final_type == "pizarra" and source_path:
+                    # PIP del presentador encima de la pizarra
+                    seg["pip_source"] = source_path
+                track.append(seg)
 
-    # Consolidar consecutivos del mismo source
+    # Sort + sin consolidar (cada sub-seg debe usar su clip propio).
     track.sort(key=lambda s: s["start"])
-    consolidated = []
-    for seg in track:
-        if (consolidated
-                and consolidated[-1]["type"] == seg["type"]
-                and consolidated[-1].get("source") == seg.get("source")
-                and seg["start"] - consolidated[-1]["end"] < 1.5):
-            consolidated[-1]["end"] = seg["end"]
-        else:
-            consolidated.append(dict(seg))
+    consolidated = track  # alias para no romper el resto del codigo
+
+    # CRITICO: eliminar solapamientos. Si la escaleta tiene TCs solapados
+    # (fin de N > inicio de N+1), al concatenar el body video se "estira"
+    # respecto al audio y los subtitulos quedan desincronizados. Recortamos
+    # cada segmento para que termine, como mucho, donde empieza el siguiente.
+    overlaps_fixed = 0
+    for i in range(len(consolidated) - 1):
+        cur_end = float(consolidated[i]["end"])
+        next_start = float(consolidated[i + 1]["start"])
+        if cur_end > next_start:
+            consolidated[i]["end"] = round(next_start, 3)
+            overlaps_fixed += 1
+    # Descartar segmentos que quedaron con duracion < 0.1s tras el recorte
+    consolidated = [
+        s for s in consolidated
+        if float(s["end"]) - float(s["start"]) >= 0.1
+    ]
+    if overlaps_fixed:
+        log.warning(f"  {overlaps_fixed} solapamientos en escaleta corregidos "
+                    f"(track ahora monotonico, audio<->video sin drift)")
 
     # Rellenar gaps con blank (lead silence, gaps internos, sintonia, tail)
     if audio_duration is None:
