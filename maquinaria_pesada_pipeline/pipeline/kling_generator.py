@@ -202,16 +202,55 @@ class KlingGenerator:
             raise RuntimeError(f"Extend sin task_id: {body}")
         return task_id
 
-    def _download_video(self, url: str, dest: Path) -> Path:
-        import requests
+    def _download_video(self, url: str, dest: Path,
+                        max_retries: int = 4) -> Path:
+        """Descarga robusta. Reintenta hasta 4 veces, valida tamano minimo
+        (>1MB) para detectar truncamientos, y verifica integridad mp4
+        (moov atom) si ffprobe esta disponible."""
+        import requests, shutil, subprocess
         Path(dest).parent.mkdir(parents=True, exist_ok=True)
-        with requests.get(url, stream=True, timeout=300) as r:
-            r.raise_for_status()
-            with open(dest, "wb") as f:
-                for chunk in r.iter_content(chunk_size=1 << 15):
-                    if chunk:
-                        f.write(chunk)
-        return dest
+
+        last_err = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                tmp = dest.with_suffix(dest.suffix + ".part")
+                with requests.get(url, stream=True, timeout=600) as r:
+                    r.raise_for_status()
+                    with open(tmp, "wb") as f:
+                        for chunk in r.iter_content(chunk_size=1 << 15):
+                            if chunk:
+                                f.write(chunk)
+                size = tmp.stat().st_size
+                if size < 1_000_000:  # <1MB indica truncamiento (clip 20s pesa ~45MB)
+                    raise IOError(f"download truncado: {size} bytes")
+                # Verificar integridad mp4 con ffprobe si esta disponible
+                if shutil.which("ffprobe"):
+                    res = subprocess.run(
+                        ["ffprobe", "-v", "error", "-show_entries",
+                         "format=duration", "-of", "default=nw=1:nk=1", str(tmp)],
+                        capture_output=True, text=True,
+                    )
+                    if res.returncode != 0:
+                        raise IOError(f"mp4 corrupto: {res.stderr.strip()[:200]}")
+                # OK: rename atomico
+                if dest.exists():
+                    dest.unlink()
+                tmp.rename(dest)
+                return dest
+            except Exception as exc:
+                last_err = exc
+                self.log.warning(f"  download attempt {attempt}/{max_retries} fallo: "
+                                 f"{type(exc).__name__}: {str(exc)[:200]}")
+                # Limpiar fichero parcial
+                try:
+                    if tmp.exists():
+                        tmp.unlink()
+                except Exception:
+                    pass
+                if attempt < max_retries:
+                    import time as _t
+                    _t.sleep(min(60, 5 * attempt))
+        raise RuntimeError(f"_download_video fallo tras {max_retries} intentos: {last_err}")
 
     # ── flujo de alto nivel ─────────────────────────────────────────
 
