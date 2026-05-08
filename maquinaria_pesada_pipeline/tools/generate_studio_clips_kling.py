@@ -74,6 +74,8 @@ def _maria_solo(slug: str, action: str) -> dict:
         "slug":            slug,
         "category":        "estudio",
         "duration":        10,
+        "target_duration": 20,
+        "extend_prompt":   "continue scene naturally, same person, same studio, subtle natural motion, mouth movements continue speaking, no scene change",
         "image_url":       REFS["maria"],
         "negative_prompt": NEGATIVE_SOLO,
         "tags":            ["estudio", "maria", "solo"],
@@ -94,6 +96,8 @@ def _yago_solo(slug: str, action: str) -> dict:
         "slug":            slug,
         "category":        "estudio",
         "duration":        10,
+        "target_duration": 20,
+        "extend_prompt":   "continue scene naturally, same person, same studio, subtle natural motion, mouth movements continue speaking, no scene change",
         "image_url":       REFS["yago"],
         "negative_prompt": NEGATIVE_SOLO,
         "tags":            ["estudio", "yago", "solo"],
@@ -114,6 +118,8 @@ def _two_shot_m_active(slug: str, action: str) -> dict:
         "slug":            slug,
         "category":        "estudio",
         "duration":        10,
+        "target_duration": 20,
+        "extend_prompt":   "continue scene naturally, same person, same studio, subtle natural motion, mouth movements continue speaking, no scene change",
         "image_url":       REFS["establishing"],
         "negative_prompt": NEGATIVE_TWOSHOT,
         "tags":            ["estudio", "two_shot", "maria_active"],
@@ -135,6 +141,8 @@ def _two_shot_y_active(slug: str, action: str) -> dict:
         "slug":            slug,
         "category":        "estudio",
         "duration":        10,
+        "target_duration": 20,
+        "extend_prompt":   "continue scene naturally, same person, same studio, subtle natural motion, mouth movements continue speaking, no scene change",
         "image_url":       REFS["establishing"],
         "negative_prompt": NEGATIVE_TWOSHOT,
         "tags":            ["estudio", "two_shot", "yago_active"],
@@ -249,7 +257,8 @@ def main():
 
     gen = KlingGenerator(library)
     log.info(f"Generando {len(target)} clip(s) con Kling 1.6 Pro...")
-    log.info(f"Coste estimado: ~${len(target) * 0.90:.2f}")
+    # 20s = base 10s + 2 extends de ~5s. Coste: ~$0.70 base + 2*$0.35 extend
+    log.info(f"Coste estimado: ~${len(target) * 1.40:.2f} (10s base + 2 extends)")
     t0 = time.time()
     res = gen.generate_batch(target, delay_seconds=3.0)
     dt = time.time() - t0
