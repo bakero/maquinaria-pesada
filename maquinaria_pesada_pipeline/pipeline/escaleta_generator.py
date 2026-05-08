@@ -395,15 +395,32 @@ def generate_escaleta(episode_id: str,
 
     log.info(f"  solicitando escaleta a Claude ({model})...")
     t0 = time.time()
-    # max_tokens 16000: la escaleta v1 con 12000 se truncaba en BLOQUE 4.
-    # Con la regla nueva de pizarra (5 elementos cada 4s en cada interv) la
-    # tabla on-screen pesa mas, asi que damos margen.
-    msg = client.messages.create(
+    # max_tokens 32000: con la regla v2 de pizarra (tabla on-screen densa)
+    # los 16000 se quedaban cortos. Sonnet 4.5 admite >60k output. Anthropic
+    # exige streaming cuando estimated_time > 10min, asi que streameamos.
+    msg_chunks = []
+    usage_in = 0
+    usage_out = 0
+    with client.messages.stream(
         model=model,
-        max_tokens=16000,
+        max_tokens=32000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_msg}],
-    )
+    ) as stream:
+        for text in stream.text_stream:
+            msg_chunks.append(text)
+        final_msg = stream.get_final_message()
+        usage_in = final_msg.usage.input_tokens
+        usage_out = final_msg.usage.output_tokens
+
+    class _Shim:
+        pass
+    msg = _Shim()
+    msg.content = [_Shim()]
+    msg.content[0].text = "".join(msg_chunks)
+    msg.usage = _Shim()
+    msg.usage.input_tokens = usage_in
+    msg.usage.output_tokens = usage_out
     elapsed = time.time() - t0
 
     if not msg.content:
