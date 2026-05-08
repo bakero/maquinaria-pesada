@@ -43,15 +43,9 @@ def _format_timestamp(seconds: float) -> str:
 
 
 def _highlight(text: str, keywords: list[str], color: str = "#F5C400") -> str:
-    if not keywords:
-        return text
-    out = text
-    for kw in sorted(keywords, key=len, reverse=True):
-        if not kw or len(kw) < 2:
-            continue
-        pattern = re.compile(r"(?<!\w)(" + re.escape(kw) + r")(?!\w)", re.IGNORECASE)
-        out = pattern.sub(rf'<font color="{color}">\1</font>', out)
-    return out
+    """Sin highlights: el usuario quiere subtitulos 100% blancos.
+    Conservamos la firma para compatibilidad con el resto del pipeline."""
+    return text
 
 
 # ─── Alineacion guion <-> Whisper ─────────────────────────────────────────

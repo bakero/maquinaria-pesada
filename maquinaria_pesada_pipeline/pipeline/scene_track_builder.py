@@ -51,8 +51,15 @@ def _has_rich_overlay(scene: dict) -> bool:
     return False
 
 
-def _pick_studio_clip(scene: dict, library, prefer_close_up_below: float = 8.0) -> str | None:
-    """Devuelve la ruta del MP4 de estudio adecuado para la escena, o None."""
+def _pick_studio_clip(scene: dict, library) -> str | None:
+    """
+    Devuelve la ruta del MP4 de estudio adecuado para la escena.
+
+    REGLA CLAVE (peticion del usuario): no cambiar de camara para
+    intervenciones cortas. Si la intervencion dura menos de 6s,
+    usamos plano general (establishing). Solo en intervenciones largas
+    cambiamos a close-up o two-shot.
+    """
     speaker = (scene.get("speaker") or "").upper().replace("Á", "A").replace("Í", "I")
     section = (scene.get("section") or "").upper()
     duration = float(scene.get("end", 0)) - float(scene.get("start", 0))
@@ -63,31 +70,41 @@ def _pick_studio_clip(scene: dict, library, prefer_close_up_below: float = 8.0) 
         if s:
             return s["path"]
 
-    # 2) Establishing al inicio del primer bloque o tras la sintonia
+    # 2) Saludo / presentacion -> establishing (cambio de seccion)
     if section in ("SALUDO_Y_PRESENTACION", "SALUDO"):
         s = library.find("studio_establishing_general")
         if s:
             return s["path"]
 
-    # 3) Tono complicidad / ironia compartida
+    # 3) Intervencion CORTA (<6s) -> establishing (no merece primer plano)
+    if duration < 6.0:
+        s = library.find("studio_establishing_general")
+        if s:
+            return s["path"]
+
+    # 4) Tono complicidad / ironia compartida (corto-medio) -> two-shot complice
     tones = scene.get("tones", []) or []
-    if any(t in tones for t in ("ironico", "humor")) and duration < 6:
+    if any(t in tones for t in ("ironico", "humor")) and 4 < duration < 9:
         s = library.find("studio_both_complicit")
         if s:
             return s["path"]
 
-    # 4) Por defecto: close-up si dura poco, two-shot si dura mucho
-    if duration < prefer_close_up_below:
+    # 5) Intervencion MEDIA (6-12s) -> close-up del speaker
+    if duration < 12.0:
         slug = DEFAULT_STUDIO_CLIPS.get(speaker)
-    else:
-        slug = TWO_SHOT_CLIPS.get(speaker)
+        if slug:
+            s = library.find(slug)
+            if s:
+                return s["path"]
 
+    # 6) Intervencion LARGA (>=12s) -> two-shot del speaker activo
+    slug = TWO_SHOT_CLIPS.get(speaker)
     if slug:
         s = library.find(slug)
         if s:
             return s["path"]
 
-    # Fallback: cualquier toma de estudio que tengamos
+    # Fallback
     for fallback_slug in ("studio_establishing_general",
                           "studio_yago_speaking_close",
                           "studio_maria_speaking_close"):
@@ -160,6 +177,28 @@ def build_scene_track(timeline: dict,
                             f"speaker={sc.get('speaker')}: cae a pizarra")
 
         track.append(seg)
+
+    # CONSOLIDACION: fusionar segmentos consecutivos del mismo tipo+source
+    # para evitar cortes innecesarios. Si dos intervenciones consecutivas
+    # resuelven al mismo clip de estudio, mantenemos el video rodando
+    # en lugar de cortar y reiniciar (peticion del usuario).
+    track.sort(key=lambda s: float(s["start"]))
+    consolidated = []
+    for seg in track:
+        if (consolidated
+                and consolidated[-1]["type"] == seg["type"]
+                and consolidated[-1].get("source") == seg.get("source")
+                and seg["start"] - consolidated[-1]["end"] < 1.5):
+            consolidated[-1]["end"] = seg["end"]
+            if consolidated[-1].get("speaker") != seg.get("speaker"):
+                consolidated[-1]["speaker"] = (
+                    f"{consolidated[-1].get('speaker','')}/{seg.get('speaker','')}"
+                ).strip("/")
+        else:
+            consolidated.append(dict(seg))
+    log.info(f"  consolidados {len(track)} -> {len(consolidated)} segmentos "
+             f"(fusionados {len(track)-len(consolidated)})")
+    track = consolidated
 
     # Asegurar cobertura continua [0, audio_duration] con segmentos blank.
     audio_duration = float(audio_structure.get("audio_duration") or

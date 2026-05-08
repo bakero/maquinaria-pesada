@@ -187,13 +187,14 @@ def compose_video(config: dict,
         esc = _escape_srt_for_ffmpeg(Path(srt_path))
         # Subtitulos a la franja inferior de la pantalla:
         # MarginV en pixeles desde abajo. ~30 los pega bien al borde.
-        # Fontsize 24 a 1080p (mas legible, menos invasivo).
-        font_size = 24 if h >= 1080 else 18
+        # Subtitulos pequenos y discretos. Fontsize 18 a 1080p (~1.7%
+        # de altura) cabe sin invadir, queda profesional y legible.
+        font_size = 18 if h >= 1080 else 14
         srt_chain = (
             f"subtitles='{esc}':force_style="
             f"'FontName=Arial,Fontsize={font_size},PrimaryColour=&H00E8E8E8,"
-            f"OutlineColour=&H00000000,BorderStyle=1,Outline=3,Shadow=0,"
-            f"MarginV=30,Alignment=2'"
+            f"OutlineColour=&H80000000,BorderStyle=1,Outline=2,Shadow=0,"
+            f"MarginV=40,Alignment=2'"
         )
         filter_parts.append(f"{v_in}{srt_chain}[v]")
     else:
@@ -224,6 +225,17 @@ def compose_video(config: dict,
     return str(final_path)
 
 
+# ── Constantes layout C (PIP corner) ──────────────────────────────────
+# Tamano del PIP del presentador sobre la pizarra: 25% del ancho (a 1920
+# son 480px), 16:9 (270px). Margen 30px desde los bordes inferior/derecho.
+# Borde amarillo CAT 4px.
+PIP_WIDTH_RATIO   = 0.25            # 25% del ancho
+PIP_ASPECT        = 16.0 / 9.0
+PIP_MARGIN        = 30              # px desde borde
+PIP_BORDER_PX     = 4
+PIP_BORDER_COLOR  = "0xF5C400"      # amarillo CAT (BGR-hex para ffmpeg)
+
+
 def _build_body_from_track(scene_track: list[dict],
                             pizarra_frames: list[dict],
                             workdir: Path,
@@ -235,10 +247,21 @@ def _build_body_from_track(scene_track: list[dict],
     Construye body_video alternando segmentos pizarra / estudio / blank.
     Cada segmento se materializa como un MP4 normalizado a (w,h,30fps).
     Despues los concatena con concat demuxer.
+
+    Layout C (PIP corner): cuando un segmento tipo "pizarra" trae
+    `pip_source` (clip del presentador hablando), se compone:
+      - background: pizarra (frames PNG) a pantalla completa
+      - PIP: clip del presentador 25% en bottom-right con borde amarillo CAT
     """
     log = log or get_logger("06_video_compositor")
     workdir.mkdir(parents=True, exist_ok=True)
     seg_clips = []
+
+    # Geometria del PIP en pixeles
+    pip_w = int(round(w * PIP_WIDTH_RATIO))
+    pip_h = int(round(pip_w / PIP_ASPECT))
+    pip_x = w - pip_w - PIP_MARGIN
+    pip_y = h - pip_h - PIP_MARGIN
 
     # Filtro vf comun: scale + format + fps. NOTA: 'format' es un filtro
     # independiente, separado del scale por COMA (no por dos puntos).
@@ -293,6 +316,9 @@ def _build_body_from_track(scene_track: list[dict],
                 f for f in pizarra_frames
                 if f["end"] > seg["start"] and f["start"] < seg["end"]
             ]
+            # Background pizarra (siempre se construye, ya sea final o como
+            # base para PIP overlay)
+            pizarra_bg = workdir / f"seg_{i:03d}_pizarra_bg.mp4"
             if not local_frames:
                 # Fallback a blank
                 blank = workdir / f"seg_{i:03d}_fallback.png"
@@ -304,7 +330,7 @@ def _build_body_from_track(scene_track: list[dict],
                     "-vf", vf_blank,
                     "-c:v", "libx264", "-preset", "veryfast",
                     "-crf", "23", "-pix_fmt", "yuv420p", "-r", "30",
-                    "-an", str(seg_clip),
+                    "-an", str(pizarra_bg),
                 ]
                 _run(cmd, log)
             else:
@@ -329,9 +355,60 @@ def _build_body_from_track(scene_track: list[dict],
                     "-c:v", "libx264", "-preset", "veryfast" if preview else "medium",
                     "-crf", "23" if preview else "20",
                     "-pix_fmt", "yuv420p", "-r", "30",
-                    "-an", str(seg_clip),
+                    "-an", str(pizarra_bg),
                 ]
                 _run(cmd, log)
+
+            # ── Layout C: PIP corner si hay clip del presentador ───────
+            pip_source = seg.get("pip_source")
+            if pip_source and Path(pip_source).exists():
+                # 1) Construir el PIP: clip del presentador escalado
+                #    (pip_w-2*border) x (pip_h-2*border) + pad con borde amarillo.
+                pip_clip_path = workdir / f"seg_{i:03d}_pip.mp4"
+                src_dur = _intro_dur(pip_source) or seg_dur
+                loops = max(0, int(seg_dur // max(src_dur, 0.1)))
+                inner_w = pip_w - 2 * PIP_BORDER_PX
+                inner_h = pip_h - 2 * PIP_BORDER_PX
+                pip_vf = (
+                    f"scale={inner_w}:{inner_h}:flags=lanczos,"
+                    f"pad={pip_w}:{pip_h}:{PIP_BORDER_PX}:{PIP_BORDER_PX}:"
+                    f"color={PIP_BORDER_COLOR},format=yuv420p,fps=30"
+                )
+                cmd_pip = [
+                    "ffmpeg", "-y",
+                    "-stream_loop", str(loops), "-i", str(pip_source),
+                    "-t", f"{seg_dur:.3f}",
+                    "-an",
+                    "-vf", pip_vf,
+                    "-c:v", "libx264", "-preset", "veryfast",
+                    "-crf", "23", "-pix_fmt", "yuv420p", "-r", "30",
+                    str(pip_clip_path),
+                ]
+                _run(cmd_pip, log)
+
+                # 2) Overlay PIP sobre pizarra background
+                cmd_overlay = [
+                    "ffmpeg", "-y",
+                    "-i", str(pizarra_bg),
+                    "-i", str(pip_clip_path),
+                    "-filter_complex",
+                    f"[0:v][1:v]overlay={pip_x}:{pip_y}:format=auto[out]",
+                    "-map", "[out]",
+                    "-t", f"{seg_dur:.3f}",
+                    "-c:v", "libx264", "-preset", "veryfast" if preview else "medium",
+                    "-crf", "23" if preview else "20",
+                    "-pix_fmt", "yuv420p", "-r", "30",
+                    "-an", str(seg_clip),
+                ]
+                _run(cmd_overlay, log)
+            else:
+                # Sin PIP: la pizarra background es el segmento final
+                # (rename mediante ffmpeg copy para mantener naming consistente)
+                cmd_copy = [
+                    "ffmpeg", "-y", "-i", str(pizarra_bg),
+                    "-c", "copy", str(seg_clip),
+                ]
+                _run(cmd_copy, log)
         seg_clips.append(seg_clip)
 
     # Concatenar todos los clips (mismo formato/fps/res)
