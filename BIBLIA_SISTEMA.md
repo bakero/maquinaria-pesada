@@ -1,784 +1,951 @@
-# BIBLIA DEL SISTEMA — MaquinarIA Pesada
-### Sistema de creación automática de contenido con IA
+# BIBLIA DEL SISTEMA · MaquinarIA Pesada
 
-> **Versión:** 2026-05-08  
-> **Repositorio:** https://github.com/bakero/maquinaria-pesada  
-> **Rama de trabajo activa:** `feature/genepisodios`  
+> Documento maestro: explica de extremo a extremo el sistema automático de
+> producción del videopodcast **MaquinarIA Pesada**. Cubre arquitectura,
+> tecnologías, scripts, técnicas de IA, layout visual, infraestructura,
+> cuentas y operativa.
+>
+> **Última actualización:** 8 mayo 2026
+> **Repositorio:** https://github.com/bakero/maquinaria-pesada (público)
+> **Rama activa:** `videopodcast` (consolidaciones a `master` cuando algo funciona)
 > **Mantenedor:** bkasero@gmail.com
 
 ---
 
 ## ÍNDICE
 
-1. [Visión general](#1-vision-general)
-2. [Tecnologías y cuentas de IA](#2-tecnologias-y-cuentas-de-ia)
-3. [Estructura de carpetas](#3-estructura-de-carpetas)
-4. [El contenido: qué es MaquinarIA Pesada](#4-el-contenido)
-5. [Pipeline de audio: cómo se crea un episodio](#5-pipeline-de-audio)
-6. [Pipeline de vídeo: cómo se crea el videopodcast](#6-pipeline-de-video)
-7. [Scripts clave — referencia detallada](#7-scripts-clave)
-8. [La consola de control: Cockpit](#8-cockpit)
-9. [Especificación maestra (PODCAST_MASTER_SPEC.md)](#9-especificacion-maestra)
-10. [Estado actual de producción](#10-estado-actual)
-11. [Flujo de trabajo con Claude Code + Codex](#11-flujo-de-trabajo)
-12. [Gestión de ramas y worktrees](#12-git)
-13. [Variables de entorno y credenciales](#13-credenciales)
-14. [Convenciones de nomenclatura](#14-nomenclatura)
-15. [Reglas de desarrollo (invariantes de sesión)](#15-reglas-de-desarrollo)
+1. [¿Qué es MaquinarIA Pesada?](#1-qué-es-maquinaria-pesada)
+2. [Arquitectura general](#2-arquitectura-general-del-sistema)
+3. [Tecnologías usadas](#3-tecnologías-usadas)
+4. [Cuentas, claves y secretos](#4-cuentas-claves-y-secretos)
+5. [Estructura de carpetas](#5-estructura-de-carpetas)
+6. [Pipeline guion + audio](#6-pipeline-de-generación-de-guion--audio-raíz-del-repo)
+7. [Pipeline de video](#7-pipeline-de-video-maquinaria_pesada_pipeline)
+8. [Layout visual del videopodcast](#8-layout-visual-del-videopodcast)
+9. [Operativa: cómo producir un episodio](#9-operativa-cómo-producir-un-episodio)
+10. [Cockpit (consola web de control)](#10-cockpit-consola-web-de-control)
+11. [Técnicas de IA aplicadas (deep dive)](#11-técnicas-de-ia-aplicadas-deep-dive)
+12. [Bugs conocidos y resueltos](#12-bugs-conocidos-y-resueltos-cronología)
+13. [Pendientes vivos](#13-pendientes-vivos)
+14. [Reglas de oro del sistema](#14-reglas-de-oro-del-sistema)
+15. [Anexo: comandos útiles](#15-anexo-comandos-útiles)
+16. [Glosario](#16-glosario)
 
 ---
 
-## 1. VISIÓN GENERAL
+## 1. ¿Qué es MaquinarIA Pesada?
 
-**MaquinarIA Pesada** es un podcast (y videopodcast) técnico sobre Inteligencia Artificial dirigido a directivos y profesionales que lideran proyectos de IA en empresa, producido **al 100% con IA**:
+Podcast/videopodcast educativo sobre Inteligencia Artificial: 14 módulos
+del máster (M0 hasta M14) producidos íntegramente con IA generativa, sin
+intervención humana en grabación. El producto final es:
 
-- El guion lo genera **OpenAI GPT-4.1** a partir de PDFs de un máster de IA.
-- Las voces las sintetiza **ElevenLabs eleven_v3** con dos personajes: Iago y María.
-- El vídeo lo produce un pipeline Python que combina **Whisper + Pillow + Claude + ffmpeg**.
-- La orquestación, validación y corrección de código la hace **Claude Code** (este asistente).
-- La ejecución de producción en máquina la hace **OpenAI Codex CLI**.
+- **MP4 1080p** subido a YouTube
+- **MP3** subido a Spotify
+- **Cápsulas** y posts derivados para RRSS
 
-El resultado final es un episodio de 12–17 minutos de audio (MP3) y su versión videopodcast (MP4) lista para publicar.
+Cada episodio dura 14-17 min. Tono divulgativo técnico. Dos presentadores
+ficticios: **María** (voz femenina, color marca amarillo CAT `#F5C400`) y
+**Yago** (voz masculina, azul `#4DB8FF`). En el guion va escrito como
+"Yago"; algunos campos legacy lo guardan como "IAGO".
 
-### Flujo de alto nivel
-
-```
-PDF del máster
-    ↓  generar_guion.py (GPT-4.1)
-Guion .txt etiquetado
-    ↓  generar_episodio_v2.py (ElevenLabs)
-Audio .mp3 con música de fondo y sintonía
-    ↓  maquinaria_pesada_pipeline/run_pipeline.py (Whisper + Claude + ffmpeg)
-Videopodcast .mp4 con subtítulos, overlays y chapitulos
-    ↓
-Publicación (YouTube, Spotify, etc.)
-```
+El sistema completo cubre: generación de **guion → audio → video** con
+escaleta de producción profesional, lip-sync futuro, subtítulos y assets
+visuales (estudio + pizarra dinámica).
 
 ---
 
-## 2. TECNOLOGÍAS Y CUENTAS DE IA
+## 2. Arquitectura general del sistema
 
-### Lenguajes y entorno
+```
+                                        ┌──────────────────────┐
+                                        │ PDFs del Máster      │
+                                        │ (input humano)       │
+                                        └──────────┬───────────┘
+                                                   │
+                                          ┌────────▼────────┐
+                                          │ podcast_spec.py │ ← Reglas
+                                          │ + spec markdown │   normativas
+                                          └────────┬────────┘
+                                                   │
+                                          ┌────────▼─────────┐
+                                          │ generar_guion.py │ Anthropic
+                                          │  (Claude Sonnet) │ Sonnet 4.5
+                                          └────────┬─────────┘
+                                                   │
+                                                   ▼ guion .txt
+                                       ┌────────────────────────┐
+                                       │ generar_episodio_v2.py │ ElevenLabs
+                                       │  (TTS dual MARIA/YAGO) │ eleven_v3
+                                       └───────────┬────────────┘
+                                                   ▼ audio .mp3
+   ┌────────────────────────────────────────────────────────────────────┐
+   │                  PIPELINE de VIDEO                                 │
+   │                                                                    │
+   │  1. transcriber.py        Whisper large-v3 word-level              │
+   │  2. content_extractor.py  Parser guion + PDF                       │
+   │  3. audio_analyzer.py     Silencedetect + sintonia_detector        │
+   │      (cross-correlation con scipy.signal.correlate)                │
+   │  4. concept_extractor.py  Claude Haiku → 1614 conceptos PDFs       │
+   │  5. media_finder.py       Wikipedia + Tenor (gifs)                 │
+   │  6. escaleta_generator.py Claude Sonnet 4.5 → escaleta markdown    │
+   │  7. escaleta_parser.py    markdown → estructura canónica           │
+   │  8. escaleta_to_pipeline  scene_track + scene_timeline             │
+   │  9. overlay_renderer.py   PIL → frames PNG por escena              │
+   │  10. subtitle_generator   .srt blanco desde Whisper word-level     │
+   │  11. video_compositor.py  ffmpeg compose Layout C (PIP)            │
+   │                                                                    │
+   │  Generadores de assets (offline):                                  │
+   │    luma_generator.py    Luma Dream Machine (legacy, deprecado)     │
+   │    kling_generator.py   Kling 1.6 Pro vía API oficial Kuaishou     │
+   │      (image-to-video + extend chain para clips de 20s)             │
+   │    sintonia_detector    scipy correlate → posición exacta sintonía │
+   │                                                                    │
+   └────────────────────────────────────────────────────────────────────┘
+                                                   ▼
+                                          ┌──────────────┐
+                                          │  MP4 final   │
+                                          └──────────────┘
+```
 
-| Elemento | Detalle |
-|----------|---------|
+El pipeline está dividido en **dos sub-sistemas**:
+
+1. **Generación de guion + audio** (raíz del repo, scripts CLI Python).
+2. **Generación de video** (`maquinaria_pesada_pipeline/`).
+
+Encima vive una **consola web de control** (`cockpit/`, Streamlit) para
+observabilidad y orquestación.
+
+---
+
+## 3. Tecnologías usadas
+
+### 3.1 Lenguajes y stack
+
+| Componente | Tecnología |
+|---|---|
 | Lenguaje principal | Python 3.12 |
-| Sistema operativo | Windows 11 (ASUS Zenbook S 14 UX5406SA, Intel Lunar Lake) |
-| Gestor de paquetes | pip |
-| Control de versiones | Git + GitHub |
-| IDE / asistente | Claude Code (CLI) |
-| Ejecutor de producción | OpenAI Codex CLI |
+| Sistema operativo | Windows 11 (paths absolutos `C:\Users\Asus\...`) |
+| Shell | Git Bash + PowerShell 5.1 |
+| Repo | Git, GitHub público `bakero/maquinaria-pesada` |
+| Branch activo | `videopodcast` |
+| Web UI | Streamlit (cockpit) |
+| Media engine | ffmpeg + ffprobe (debe estar en PATH) |
+| Procesamiento imagen | Pillow (PIL) |
+| Procesamiento audio DSP | scipy.signal (cross-correlation) |
+| HTTP / SDKs | requests, anthropic, elevenlabs, PyJWT |
 
-### APIs de IA
+### 3.2 Modelos de IA usados
 
-| Servicio | Uso | Modelo activo | Cuenta |
-|----------|-----|---------------|--------|
-| **OpenAI** | Generación de guiones, revisión, extracción de conceptos | `gpt-4.1` (generación), `gpt-4.1-mini` (revisión/conceptos) | OPENAI_API_KEY en `.env` |
-| **ElevenLabs** | Síntesis de voz TTS | `eleven_v3` | ELEVENLABS_API_KEY en `.env` |
-| **Anthropic Claude** | Director visual del pipeline de vídeo (scene timeline) | Sonnet (via API) | ANTHROPIC_API_KEY en `.env` |
-| **Luma AI** | Generación de clips de vídeo (image-to-video) | Luma Dream Machine | LUMA_API_KEY en `.env` |
+| Tarea | Modelo | Coste aprox./episodio |
+|---|---|---|
+| Generación guion | Claude Sonnet 4.5 (`claude-sonnet-4-5`) | ~$0.30 |
+| Generación escaleta | Claude Sonnet 4.5 (max 32k tokens, streaming) | ~$0.30 |
+| Extracción conceptos PDF | Claude Haiku 4.5 | ~$0.05 (todos los PDFs juntos) |
+| TTS dual | ElevenLabs `eleven_v3` (multi-speaker) | ~$0.50 (8-10 min audio) |
+| Transcripción ASR | OpenAI Whisper `large-v3` o `medium` (local) | $0 |
+| Generación clips estudio | Kling 1.6 Pro (Kuaishou) image-to-video | ~$1.40/clip 20s · ~$24 catálogo 18 clips |
+| Imagen referencia | DALL-E 3 / Gemini Imagen 3 | manual |
 
-### Librerías principales
+### 3.3 Servicios externos
 
-```
-# Audio
-elevenlabs          TTS con eleven_v3
-pydub               Montaje y manipulación de audio
-ffmpeg (Gyan)       Codificación y composición de vídeo (WinGet)
-
-# Guiones
-openai              Llamadas a GPT-4.1
-pdfplumber          Extracción de texto de PDFs
-
-# Vídeo
-Pillow              Overlays PNG (name tags, stat cards, stickers)
-openai-whisper      Transcripción con timestamps por palabra
-anthropic           Claude como director visual del scene timeline
-
-# Cockpit
-streamlit           Dashboard web de control
-streamlit-autorefresh  Refresh automático del sidebar
-psutil              Detección de procesos activos
-
-# Utilidades
-python-dotenv       Carga de variables de entorno
-httpx               Llamadas HTTP directas (test de API, créditos)
-```
-
-### Voces ElevenLabs (configuración activa en PODCAST_MASTER_SPEC.md)
-
-| Personaje | Voice ID | Stability | Speed | Similarity | Style |
-|-----------|----------|-----------|-------|------------|-------|
-| **IAGO** | `CdAqYBLnsNjmTqYgD5Ha` | 0.65 | 1.20 | 0.75 | 0.0 |
-| **MARÍA** | `gD1IexrzCvsXPHUuT0s3` | 0.68 | 1.20 | 0.75 | 0.0 |
-
-- `post_speed_multiplier`: 1.10 (se aplica en el montaje pydub)
-- Output format: `mp3_44100_128`
-- Silencios: 300ms entre bloques del mismo speaker, 500ms entre speakers distintos
+| Servicio | Uso | Endpoint |
+|---|---|---|
+| Anthropic API | Claude Sonnet 4.5 + Haiku 4.5 | `api.anthropic.com` |
+| ElevenLabs API | TTS dual con `eleven_v3` | `api.elevenlabs.io` |
+| Kling AI (Kuaishou) | Image-to-video con JWT auth | `api.klingai.com` |
+| GitHub (público) | Hosting de imágenes ref para Kling | `raw.githubusercontent.com` |
+| OpenAI Whisper (local) | ASR | sin red |
+| Wikipedia ES/EN | Imágenes conceptos | `wikipedia.org` |
+| Wikimedia Commons | Imágenes libres | `commons.wikimedia.org` |
+| Tenor | GIFs/memes | `tenor.googleapis.com` |
+| Fal.ai | (Descartado, usábamos antes para Kling) | — |
+| Sync.so / Hedra | Lip-sync (PENDIENTE de SYNC_API_KEY) | `api.sync.so` |
 
 ---
 
-## 3. ESTRUCTURA DE CARPETAS
+## 4. Cuentas, claves y secretos
+
+### 4.1 Archivo `.env` (raíz del repo, en `.gitignore`)
+
+```bash
+# Generación de texto e imágenes
+ANTHROPIC_API_KEY=sk-ant-api03-...
+
+# TTS
+ELEVENLABS_API_KEY=...
+
+# Generación de video estudio (Kling oficial Kuaishou)
+KLING_ACCESS_KEY=AK...                 # 32 chars
+KLING_SECRET_KEY=SK...                 # 32 chars
+
+# Lip-sync (cuando esté contratado)
+SYNC_API_KEY=...                       # Sync.so
+
+# Tenor para gifs/memes (opcional)
+TENOR_API_KEY=...
+```
+
+**Nota crítica**: el repo usa `load_dotenv(path, override=True)` con la
+ruta absoluta `C:\Users\Asus\maquinaria_pesada\.env` para evitar que
+variables de entorno de Windows ya cargadas tengan precedencia sobre el
+archivo.
+
+### 4.2 GitHub público
+
+- Repo: https://github.com/bakero/maquinaria-pesada
+- Visibilidad: **público** (necesario para que Kling pueda descargar las
+  imágenes de referencia desde `raw.githubusercontent.com`)
+- Branch principal: `master`
+- Branch desarrollo: `videopodcast`
+
+### 4.3 Cuentas externas activas
+
+- **Anthropic Console**: https://console.anthropic.com — saldo activo.
+- **ElevenLabs**: usuario con voces clonadas/calibradas para María y Yago.
+- **Kling AI / Kuaishou Cloud**: https://app.klingai.com/global/dev/account
+  — credenciales JWT (Access + Secret).
+- **GitHub**: usuario `bakero`.
+
+---
+
+## 5. Estructura de carpetas
 
 ```
-C:\Users\Asus\maquinaria_pesada\          ← REPO ROOT (main path: master)
+C:\Users\Asus\maquinaria_pesada\
 │
-├── .env                                   ← Credenciales (NO en git)
+├── .env                          ← claves API (gitignored)
+├── .env.example                  ← plantilla pública
 ├── .gitignore
-├── PODCAST_MASTER_SPEC.md                ← FUENTE ÚNICA DE VERDAD (spec + config JSON)
-├── BIBLIA_SISTEMA.md                     ← Este documento
-├── SESION_genepisodios.md                ← Contexto sesión de desarrollo activa
-├── INSTRUCCIONES.txt                     ← Instrucciones operativas para Codex
-├── VOICE_CONFIG_REFERENCE.md            ← Referencia rápida de voces (spec es canónica)
-├── WORKFLOW_PAIR_PROGRAMMING.md          ← Protocolo Claude-Codex
+├── README.md
+├── BIBLIA_SISTEMA.md             ← este documento
+├── PODCAST_MASTER_SPEC.md        ← reglas de guion (normativa)
+├── VOICE_CONFIG_REFERENCE.md     ← config voces ElevenLabs validada
+├── INSTRUCCIONES.txt             ← manual usuario (legacy)
+├── SESION_genepisodios.md        ← memoria sesión (legacy)
 │
-├── PDFs/                                 ← Fuentes de contenido (resúmenes del máster)
-│   ├── M0_T_Introduccion_Estrategica.pdf
-│   ├── M1_T_Fundamentos_Razonamiento.pdf
-│   └── ... (M0–M14, un PDF por módulo)
+├── PDFs/                         ← INPUT humano: PDFs del máster M0..M14
+├── Guiones/                      ← INPUT humano + OUTPUT generador guion
+│   └── M0_T_Introduccion_Estrategica.txt
+├── Logos/                        ← Logo MAQUINARIA PESADA + watermark
+├── Música/                       ← Sintonía + base musical
+│   ├── Sintonia Maquinaria pesada.mp3
+│   └── base podcast.mp3
+├── intro/                        ← intro_video.mp4 (sintonía visual)
 │
-├── Guiones/                              ← Guiones generados (Formato A)
-│   ├── M0_T_Introduccion_Estrategica.txt
-│   ├── M1_T_Fundamentos_Razonamiento.txt
-│   └── ... (M0–M14, un guion por módulo)
+├── episodios/                    ← Audio MP3 generado por episodio
+│   └── M0_E_Introduccion_Estrategica.mp3
+├── escaletas/                    ← Markdown escaleta producción
+│   ├── EP-MOD000_escaleta.md
+│   └── EP-MOD000_escaleta_v1.md.bak
+├── Videos/                       ← OUTPUT final + biblioteca clips
+│   ├── M0_V_Introduccion_Estrategica.mp4
+│   ├── M0_V_Introduccion_Estrategica.srt
+│   └── escenas_biblioteca/
+│       ├── _scenes_index.json    ← Catálogo clips
+│       ├── _concepts_index.json  ← 1614 conceptos extraídos PDFs
+│       ├── refs/                 ← Imágenes referencia Kling
+│       │   ├── Maria.png         ← URL pública GitHub raw
+│       │   ├── Yago.png
+│       │   ├── establishing.png  ← Plano amplio dos presentadores
+│       │   └── studio.png        ← Estudio vacío
+│       ├── estudio/              ← Clips Kling 20s
+│       │   ├── studio_maria_solo_v1.mp4
+│       │   └── ...               ← v2, v3, v4 + two_shots
+│       └── conceptos/            ← Clips Luma legacy (deprecado)
 │
-├── episodios/                            ← Audios finales y logs de producción
-│   ├── M0_E_Introduccion_Estrategica.mp3
-│   ├── M0_produccion.log
-│   ├── M1_E_Fundamentos_Razonamiento.mp3
-│   ├── M1_produccion.log
-│   ├── produccion_runs.log               ← Log maestro de sesiones batch
-│   ├── M{N}_E_{Titulo}_cmd.log           ← Stdout+stderr completo por episodio
-│   └── temp/                             ← Fragmentos MP3 temporales (se borran)
+├── RRSS/                         ← Posts redes sociales (futuro)
 │
-├── Videos/                               ← Videopodcasts y assets visuales
-│   ├── escenas_biblioteca/               ← Banco de escenas reutilizables
-│   │   ├── _scenes_index.json
-│   │   ├── estudio/                      ← Fondos de estudio
-│   │   ├── b_roll/                       ← B-roll genérico
-│   │   ├── conceptos/                    ← Visualizaciones de conceptos
-│   │   ├── transiciones/                 ← Clips de transición
-│   │   ├── stickers_anim/                ← Stickers animados
-│   │   ├── cierres/                      ← Pantallas de cierre
-│   │   ├── media/                        ← Imágenes/GIFs por concepto
-│   │   └── refs/                         ← Referencias de personajes
-│
-├── Música/                               ← Assets de audio
-│   ├── base podcast.mp3                  ← Música de fondo principal
-│   └── Sintonia Maquinaria pesada.mp3    ← Sintonía de apertura (10s)
-│
-├── intro/                                ← Intro del videopodcast (assets)
-├── Logos/                                ← Logos del programa
-│   └── logo sin fondo.png
-│
-├── cockpit/                              ← Dashboard Streamlit de control
-│   ├── app.py                            ← Entry point: streamlit run cockpit/app.py
-│   ├── ui.py                             ← Sidebar "Producción en vivo"
-│   ├── core/
-│   │   ├── paths.py                      ← Resolución de rutas del repo
-│   │   ├── state.py                      ← Inventario por módulo (PDF/guion/audio/vídeo)
-│   │   ├── log_parser.py                 ← Parser de logs de producción
-│   │   └── monitor.py                    ← Detector de procesos activos (psutil)
-│   ├── pages/
-│   │   ├── 1_📊_Estado.py               ← Tabla de estado M0–M14
-│   │   ├── 2_🔌_Conectores.py           ← Servicios y pipelines registrados
-│   │   ├── 3_📝_Generar_Prompt.py       ← Formularios → comandos CLI para Codex
-│   │   ├── 4_📚_Fuentes.py              ← Explorador de PDFs, guiones, audio, vídeo
-│   │   └── 5_📜_Logs.py                 ← Visor de logs con auto-refresh
-│   └── connectors/
-│       ├── pipelines/                    ← Conectores a scripts de generación
-│       └── services/                     ← Conectores a APIs (ElevenLabs, OpenAI, etc.)
-│
-├── maquinaria_pesada_pipeline/           ← Pipeline de videopodcast
-│   ├── run_pipeline.py                   ← Orquestador principal (--preview, --from-step)
-│   ├── setup_project.py                  ← Setup interactivo de assets
-│   ├── pipeline/                         ← Módulos del pipeline (ver sección 6)
+├── maquinaria_pesada_pipeline/   ← PIPELINE de video
+│   ├── run_pipeline.py           ← Orquestador completo legacy (8 pasos)
+│   ├── setup_project.py          ← Wizard inicial → project_config.json
+│   ├── project_config.json       ← Paths del episodio actual
+│   ├── requirements.txt
+│   ├── outputs/                  ← Cache intermedio + logs
+│   │   ├── transcription_raw.json
+│   │   ├── content_data.json
+│   │   ├── audio_structure.json
+│   │   ├── aligned_interventions.json
+│   │   ├── scene_timeline.json
+│   │   ├── scene_track.json
+│   │   ├── frames_index.json
+│   │   ├── frames_cache/         ← PNGs renderizados con PIL
+│   │   ├── _compose_tmp/         ← MP4 segmentos intermedios
+│   │   └── logs/EP-MOD000_pipeline.log
+│   │
+│   ├── pipeline/                 ← Módulos del pipeline (ver §7)
+│   │   ├── logger.py
+│   │   ├── brand.py              ← Colores marca, resoluciones
 │   │   ├── asset_validator.py
-│   │   ├── transcriber.py                ← Whisper
-│   │   ├── audio_analyzer.py             ← Análisis de silencios y estructura
-│   │   ├── content_extractor.py          ← Stats y keywords del guion+PDF
-│   │   ├── scene_builder.py              ← Claude como director visual
-│   │   ├── scene_library.py              ← Banco de escenas reutilizables
-│   │   ├── scene_track_builder.py        ← Construcción del track de escenas
-│   │   ├── overlay_renderer.py           ← Frames PNG con overlays (Pillow)
-│   │   ├── subtitle_generator.py         ← SRT desde guion + Whisper
-│   │   ├── video_compositor.py           ← Composición final con ffmpeg
-│   │   ├── luma_generator.py             ← Clips Luma AI (image-to-video)
-│   │   ├── media_finder.py               ← Buscador de imágenes/GIFs para conceptos
-│   │   └── metadata_generator.py         ← Chapters JSON + thumbnail
-│   └── templates/                        ← Overlays, fondos, stickers, prompts LLM
+│   │   ├── transcriber.py
+│   │   ├── content_extractor.py
+│   │   ├── audio_analyzer.py
+│   │   ├── sintonia_detector.py
+│   │   ├── concept_extractor.py
+│   │   ├── media_finder.py
+│   │   ├── escaleta_generator.py
+│   │   ├── escaleta_parser.py
+│   │   ├── escaleta_to_pipeline.py
+│   │   ├── scene_builder.py      ← (legacy, sólo si NO hay escaleta)
+│   │   ├── scene_track_builder.py ← (legacy)
+│   │   ├── scene_library.py
+│   │   ├── overlay_renderer.py
+│   │   ├── subtitle_generator.py
+│   │   ├── video_compositor.py
+│   │   ├── metadata_generator.py
+│   │   ├── kling_generator.py
+│   │   ├── luma_generator.py     ← (legacy, no usar)
+│   │   └── production_log_parser.py
+│   │
+│   ├── tools/                    ← CLIs de soporte
+│   │   ├── render_from_escaleta.py        ← MAIN: render desde escaleta
+│   │   ├── generate_escaleta.py           ← Genera escaleta con LLM
+│   │   ├── generate_studio_clips_kling.py ← Genera 18 clips estudio
+│   │   ├── generate_studio_clips.py       ← (legacy Luma)
+│   │   ├── kling_recover.py               ← Rescatar tasks huérfanas
+│   │   ├── reverse_clips.py               ← Duplica catálogo gratis
+│   │   ├── rescan_library.py              ← Re-registra mp4s en index
+│   │   ├── analyze_concepts.py            ← Dashboard conceptos
+│   │   └── find_media_for_concepts.py     ← Wikipedia + Tenor
+│   │
+│   └── templates/
+│       ├── overlay_types.py      ← 11 tipos PIL: stat_card, hierarchy,…
+│       ├── background_generators.py
+│       ├── sticker_manager.py
+│       └── system_prompt_timeline.txt
 │
-├── # Scripts de producción de audio (raíz)
-├── generar_guion.py                      ← Genera guion desde PDF con GPT-4.1
-├── generar_episodio_v2.py                ← Sintetiza audio con ElevenLabs
-├── producir_episodio.py                  ← Pipeline completo guion+audio en un comando
-├── lanzar_produccion.py                  ← Batch runner: genera todos los pendientes
-├── validar_episodio.py                   ← Validador post-generación
-├── normalizar_guiones.py                 ← Convierte guiones Formato B → Formato A
-├── podcast_spec.py                       ← Validador y parser de guiones
-├── estado_proyecto.py                    ← Estado de producción por módulo
+├── cockpit/                      ← Consola web Streamlit (ver §10)
+│   ├── app.py
+│   ├── ui.py
+│   ├── core/
+│   ├── connectors/
+│   ├── pages/
+│   ├── PLAN.md
+│   └── SESSION_CONTEXT.md
 │
-└── .claude/
-    ├── worktrees/
-    │   ├── genepisodios/                 ← Worktree activo de feature/genepisodios
-    │   ├── videopodcast/                 ← Worktree de feature/videopodcast
-    │   └── laughing-leavitt-*/           ← Worktree de APPContenidos
-    └── projects/.../memory/              ← Memoria persistente del proyecto
+├── (scripts CLI legacy en raíz)
+├── generar_guion.py              ← Genera guion .txt con Claude
+├── generar_episodio_v2.py        ← Genera audio .mp3 con ElevenLabs
+├── producir_episodio.py          ← Wrapper guion+audio
+├── lanzar_produccion.py          ← Lanzador masivo M0..M14
+├── validar_episodio.py           ← Verifica calidad audio
+├── normalizar_guiones.py         ← Limpia guiones manuales
+├── estado_proyecto.py            ← Snapshot inventario
+├── podcast_spec.py               ← Reglas episodio en Python
+└── dual_debate.py                ← Modo debate experimental
 ```
 
 ---
 
-## 4. EL CONTENIDO
+## 6. Pipeline de generación de guion + audio (raíz del repo)
 
-### El podcast
+### 6.1 `generar_guion.py`
 
-**MaquinarIA Pesada** cubre los 15 módulos de un máster de IA para empresa (M0–M14):
+Convierte un PDF del módulo en un guion `.txt` siguiendo estrictamente
+`PODCAST_MASTER_SPEC.md`:
 
-| Módulo | Tema |
-|--------|------|
-| M0 | Introducción Estratégica |
-| M1 | Fundamentos del Razonamiento IA |
-| M2 | Matemáticas para IA |
-| M3 | Machine Learning Clásico |
-| M4 | Deep Learning |
-| M5 | NLP y LLMs |
-| M6 | Ingeniería de Prompts |
-| M7 | Sistemas RAG |
-| M8 | Ingeniería y LLMOps |
-| M9 | Infraestructura y Despliegue |
-| M10 | Sistemas Agentes |
-| M11 | Automatización con IA |
-| M12 | Seguridad en IA |
-| M13 | Gobernanza y Ética |
-| M14 | Estrategia Empresarial con IA |
+- **Input**: `PDFs/RESUMEN_M0_*.pdf`
+- **Output**: `Guiones/M0_T_*.txt`
+- **Modelo**: Claude Sonnet 4.5 con system prompt de 5KB
+- **Estructura forzada**: HOOK → INTRO_SONIDO → SALUDO → BLOQUE_1..BLOQUE_4
+  → INSERCION_1 → CIERRE_CONCEPTOS → CIERRE_FINAL → VERIFICACIONES
+- **Reglas duras**:
+  - hook agresivo cierra con _"Esto es MaquinarIA Pesada. Arrancamos."_
+  - cierre cita _"...la I.A. crea contenido sobre I.A."_
+  - intervenciones de desarrollo 2-6 frases, máx 32 palabras
+  - tecnicismos con aterrizaje en castellano
+  - etiquetas TTS al inicio (una por intervención)
 
-### Los presentadores
+### 6.2 `generar_episodio_v2.py`
 
-- **Iago** (pronunciado "Yago" en el audio): voz grave, contundente, técnico. Abre los episodios impares.
-- **María**: voz clara, analítica, directa. Abre los episodios pares.
+Convierte el guion `.txt` en MP3 dual:
 
-Formato: conversación a dos voces, dialéctica, que alterna explicación y debate.
+- **Input**: `Guiones/M0_T_*.txt`
+- **Output**: `episodios/M0_E_*.mp3`
+- **TTS engine**: ElevenLabs `eleven_v3` (modelo de máxima calidad
+  multi-speaker)
+- **Voces**: IDs validados en `VOICE_CONFIG_REFERENCE.md` con
+  `VoiceSettings` calibrados (stability, similarity_boost, style,
+  use_speaker_boost)
+- **Etiquetas**: `[ironico]`, `[serio]`, `[tecnico]`, `[curioso]`,
+  `[firme]`, `[risas]` etc. — una por intervención al inicio
+- **Silencios**: pausas controladas con `<silence duration="2s"/>`
+- **Patrón temporal del audio**:
+  ```
+  [silencio 2s] [HOOK] [silencio 2s] [SINTONIA 10s] [silencio]
+   [CONTENIDO ~13min] [silencio 3s final]
+  ```
 
-### Audiencia objetivo
+### 6.3 `producir_episodio.py` y `lanzar_produccion.py`
 
-Profesionales cercanos a tecnología que lideran o participan en proyectos de IA en empresa. Tono: divulgativo técnico, riguroso pero accesible.
+Wrappers para producir uno o varios episodios en cadena.
+
+### 6.4 `validar_episodio.py`
+
+Comprobaciones post-producción: duración 14-17 min, ausencia de errores
+TTS, presencia de hooks/cierres canónicos, créditos consumidos.
 
 ---
 
-## 5. PIPELINE DE AUDIO
+## 7. Pipeline de video (`maquinaria_pesada_pipeline/`)
 
-### Paso 1 — Generación del guion: `generar_guion.py`
+El pipeline tiene **dos modos de entrada**:
 
-**Entrada:** PDF del módulo + `PODCAST_MASTER_SPEC.md`  
-**Salida:** `Guiones/M{N}_T_{Titulo}.txt`  
-**Tecnología:** OpenAI `gpt-4.1`
+- **Modo legacy**: `run_pipeline.py` con scene_builder LLM (genera todo
+  con Claude on-the-fly). _No recomendado._
+- **Modo escaleta** (canónico actual): `tools/render_from_escaleta.py`
+  parte de un `escaletas/<EP>_escaleta.md` ya redactado, que actúa como
+  **guion de producción canónico**. Predecible y editable.
 
-**Proceso:**
-1. Extrae el texto completo del PDF con `pdfplumber`
-2. Extrae fragmentos relevantes del máster con búsqueda por keywords (`extract_relevant_master_context`)
-3. Llama a GPT-4.1 con un prompt que incluye la spec completa, el texto del PDF y el contexto del máster
-4. GPT-4.1 genera el guion en Formato A con las secciones obligatorias
-5. El guion pasa por `normalize_generated_script()` para limpiar etiquetas y formato
-6. Se valida con `validate_script_text()` de `podcast_spec.py`
-7. Si hay errores, GPT-4.1-mini hace una revisión y corrección (`review_model`)
-8. Se añade el bloque `# VERIFICACIONES` con métricas automáticas
+### 7.1 Diagrama de pasos (modo escaleta)
 
-**Formato de guion generado (Formato A):**
 ```
-# HOOK
-IAGO: [tenso] Texto del hook...
-MARIA: [serio] Respuesta...
-...
-Esto es MaquinarIA Pesada. Arrancamos.
-
-# INTRO_SONIDO
-# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
-
-# SALUDO_Y_PRESENTACION
-MARIA: [conversacional] Bienvenidos...
-
-# BLOQUE_1
-...
-# BLOQUE_2
-...
-# INSERCION_1
-...
-# BLOQUE_3
-...
-# BLOQUE_4
-...
-# CIERRE_CONCEPTOS
-No te puedes ir de este capitulo sin haber entendido estos conceptos
-...
-
-# CIERRE_FINAL
-...Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada.
-Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
-
-# VERIFICACIONES
-Palabras totales: X
-Bloques de contenido: Y
-...
+[EP audio.mp3]                     [escaleta.md]                    [PDFs]
+     │                                  │                              │
+     ▼                                  ▼                              ▼
+  transcriber                    escaleta_parser              concept_extractor
+  (Whisper)                      ( markdown → dict )          (Claude Haiku)
+     │                                  │                              │
+     ▼                                  │                              ▼
+  audio_analyzer ───sintonia_detector   │                       _concepts_index.json
+  (silencedetect + cross-correlate)     │                              ↑
+     │                                  ▼                              │
+     ▼                          escaleta_to_pipeline ──────────────────┘
+  audio_structure.json          (split sub-segs, rotate pool,
+     │                            no-repeat, fix overlaps)
+     │                                  │
+     │                                  ├── scene_timeline.json (overlays PIL)
+     │                                  └── scene_track.json    (estudio/pizarra/blank)
+     │                                              │
+     │                                              ▼
+     │                                      overlay_renderer
+     │                                      (PIL → PNG frames)
+     │                                              │
+     │                                              ▼
+     │                                      frames_index.json
+     │                                              │
+     ▼                                              ▼
+  subtitle_generator                       video_compositor (ffmpeg)
+  (whisper words →                          ├── body_video (concat segmentos)
+   chunks ~7w / 3s)                         ├── intro_overlay sobre sintonía
+     │                                      └── subs blancos quemados
+     ▼                                              │
+  M0_V_*.srt                                        ▼
+                                            M0_V_*.mp4 (1080p)
 ```
 
+### 7.2 Detalle por módulo
+
+#### `transcriber.py`
+- Whisper local (`pip install openai-whisper`).
+- Modelo configurable: `tiny`, `base`, `small`, `medium`, `large-v3`.
+- Devuelve `transcription = {text, segments, words}` con `word.start` /
+  `word.end` por palabra (precisión ~50ms con `medium`).
+- Cache en `outputs/transcription_raw.json`.
+
+#### `content_extractor.py`
+- Lee guion + PDF.
+- Parsea estructura (HOOK, BLOQUE_X, intervenciones por speaker).
+- Extrae keywords, citas, datos.
+- Cache en `outputs/content_data.json`.
+
+#### `audio_analyzer.py`
+- Detecta hitos del audio: lead silence (2s), HOOK, sintonía, contenido,
+  silencio final.
+- Usa `ffmpeg -af silencedetect` con threshold `-20dB / 1.5s` (calibrado
+  para audio con música de fondo).
+- Cache en `outputs/audio_structure.json`.
+
+#### `sintonia_detector.py`
+- **Cross-correlación con scipy.signal.correlate** entre el audio del
+  episodio y `Sintonia Maquinaria pesada.mp3`.
+- Devuelve el offset exacto (start, end) con confianza.
+- Imprescindible: silencedetect daba 8.54s para una sintonía de 10s
+  (cortaba). La correlación da 35.21-45.20 = 10.000s exactos.
+- Si confianza ≥ 0.3 anula el resultado de silencedetect.
+
+#### `concept_extractor.py`
+- Procesa todos los PDFs del máster con **Claude Haiku 4.5**.
+- Por cada PDF extrae conceptos: nombre, slug, definición, sinónimos,
+  visual_idea, importance, tema.
+- Salida: `Videos/escenas_biblioteca/_concepts_index.json`
+- Stats actuales: **1614 conceptos / 1355 únicos** (M0..M14 cubierto).
+
+#### `media_finder.py`
+- Busca imágenes/gifs para los conceptos.
+- Fuentes: Wikipedia ES → Wikipedia EN → Wikimedia Commons → Tenor
+  (con `TENOR_API_KEY` opcional).
+- Filtro `_title_matches_term` para descartar resultados irrelevantes.
+
+#### `escaleta_generator.py`
+- **Crea la escaleta de producción** con Claude Sonnet 4.5.
+- System prompt: "Guionista senior de programas de TV con 15 años en
+  cadenas españolas".
+- Reglas v2 actuales:
+  - Layout C (pizarra fullscreen + PIP presentador 25% bottom-right)
+  - Por cada intervención: campo `**PIZARRA:** SI/NO`
+  - Si SI → mínimo 15s, elementos cada 4s, vincular al párrafo dicho
+  - **Nunca poner texto del guion en la pizarra** (sólo datos, gráficos,
+    imágenes, memes — NO citas literales)
+  - ≥1 pizarra cada 3 minutos como mínimo
+- Streaming con `client.messages.stream` (max_tokens 32000).
+- Output: `escaletas/<EP>_escaleta.md` con frontmatter YAML.
+
+#### `escaleta_parser.py`
+- Parser markdown → dict canónico.
+- Reconoce: bloques `## NOMBRE TC IN: ... TC OUT: ...`, intervenciones
+  `### N.M — Speaker`, campos TC / TONO / TEXTO / PLANO / PIZARRA / 
+  ON-SCREEN tabla / TRANSICION.
+- Detecta separador em-dash U+2014 entre número y speaker.
+- Cualquier inconsistencia se loguea pero no rompe.
+
+#### `escaleta_to_pipeline.py`
+- Convierte la escaleta parseada en `scene_timeline.json` + `scene_track.json`.
+- **Rotación no-repeat**: por cada intervención, escoge clips del pool
+  del speaker (`SPEAKER_POOL["MARIA"]` = 9 candidatos) sin repetir slug.
+- **Sub-segmentación**: si una intervención dura más de `MAX_CLIP_DUR=10s`,
+  la parte en sub-segmentos asignando un clip distinto a cada uno.
+- **Fix de solapamientos**: si la escaleta humana tiene TCs que se
+  solapan (fin N > inicio N+1), recorta `seg.end = next.start`.
+  Crítico: sin esto el body video se "estira" respecto al audio y los
+  subtítulos se desincronizan progresivamente.
+- **Heurística pizarra**: si no hay marca explícita, invoca pizarra si
+  `plano == PIZARRA` o `rich_count >= 2 and dur >= 12s`.
+- **Verificación física de archivos**: filtra slugs cuyo `.mp4` ya no
+  existe (defiende contra entradas huérfanas en `_scenes_index.json`).
+
+#### `scene_library.py`
+- Catálogo persistente de clips.
+- Ubicación: `Videos/escenas_biblioteca/_scenes_index.json`
+- Categorías: `estudio`, `cierres`, `conceptos`, `transiciones`.
+- API: `library.find(slug)`, `library.register(slug, path, ...)`.
+
+#### `overlay_renderer.py`
+- Renderiza frames PNG con **PIL** según `scene_timeline.json`.
+- 11 tipos de overlay (`templates/overlay_types.py`):
+  - `stat_card` · `name_tag` · `hierarchy_diagram` · `two_column_compare`
+  - `bar_chart` · `timeline_visual` · `regulation_alert` · `warning_badge`
+  - `highlight_quote` · `recap_grid` · `end_card` · `section_indicator`
+- Backgrounds: `industrial_grid`, etc. (`background_generators.py`).
+- Salida: `outputs/frames_cache/*.png` + `outputs/frames_index.json`.
+
+#### `subtitle_generator.py`
+- Genera `.srt` desde **Whisper word-level** directamente.
+- Chunks de **~7 palabras / ≤3s** o cierre por puntuación final.
+- Skip palabras dentro del rango de la sintonía.
+- **Subtítulos 100% blancos** (sin highlight).
+- Estilo ffmpeg: `Fontsize=18 (1080p) PrimaryColour=&H00E8E8E8
+  BorderStyle=1 Outline=2 MarginV=40 Alignment=2`.
+
+#### `video_compositor.py` — corazón del Layout C
+- Combina:
+  1. **Body video**: secuencia de segmentos del `scene_track`.
+  2. **Audio del episodio** original.
+  3. **Intro_overlay**: el `intro_video.mp4` recortado a la duración
+     exacta de la sintonía detectada.
+  4. **Subtítulos** quemados con filtro `subtitles=`.
+- **Layout C (PIP)**: cuando un segmento es `pizarra` y trae
+  `pip_source`, compone:
+  - Background pizarra a fullscreen.
+  - PIP del presentador 25% del ancho (480×270 a 1080p) con borde
+    amarillo CAT (`#F5C400`) de 4px, esquina inferior derecha,
+    margen 30px.
+- **Constantes layout**:
+  ```python
+  PIP_WIDTH_RATIO   = 0.25
+  PIP_ASPECT        = 16/9
+  PIP_MARGIN        = 30
+  PIP_BORDER_PX     = 4
+  PIP_BORDER_COLOR  = "0xF5C400"
+  ```
+- Filtro vf canónico: `scale={w}:{h}:flags=lanczos,format=yuv420p,fps=30`
+  (la coma entre scale y format es crítica; `:` lo rompe).
+
+#### `kling_generator.py`
+- Genera clips de estudio con **Kling 1.6 Pro** vía API oficial Kuaishou.
+- Auth: **JWT HS256** firmado con `KLING_ACCESS_KEY` + `KLING_SECRET_KEY`.
+  El JWT se regenera por petición (exp 30min).
+- Endpoints:
+  - `POST /v1/videos/image2video`
+  - `POST /v1/videos/video-extend` (chain extends)
+  - `GET /v1/videos/image2video/{task_id}` (polling)
+- **Image-to-video**: usa una URL pública (GitHub raw) como frame
+  inicial → Kling mantiene la consistencia facial/escenario.
+- **Extend chain**: para clips de >10s, `generate_concept` con
+  `target_duration > duration` lanza el base 10s, espera, y encadena
+  N extends de ~5s hasta target.
+- Polling robusto: timeout HTTP 90s, hasta 5 reintentos consecutivos
+  con backoff exponencial.
+- Negative prompt anti-alucinación: `"second person appearing,
+  duplicate person, CAT logo, lip sync error, frozen face"` — clave
+  porque Luma alucinaba una segunda persona en planos individuales.
+
+#### `metadata_generator.py`
+- Genera title, description, tags YouTube + Spotify a partir del guion.
+
 ---
 
-### Paso 2 — Validación y normalización: `podcast_spec.py` + `normalizar_guiones.py`
+## 8. Layout visual del videopodcast
 
-**`podcast_spec.py`** es el validador central. Expone:
+### 8.1 Modos de pantalla
 
-- `load_master_spec()`: parsea el JSON embebido en `PODCAST_MASTER_SPEC.md`
-- `validate_script_text()`: valida estructura, orden de secciones, paridad de speaker en HOOK, frases obligatorias, etiquetas TTS
-- `parse_script_blocks()`: convierte el guion en una lista de bloques `{speaker, text, index, section, tag}`
-- `normalize_text_for_match()`: elimina acentos, normaliza espacios (usado para comparación fuzzy)
+**MODO ESTUDIO (fullscreen)** — usado cuando `PIZARRA: NO`:
+- Clip Kling del presentador o two-shot ocupa toda la pantalla (1920×1080).
+- Subtítulos blancos abajo centrados.
+- Name tag del speaker arriba derecha.
 
-**Validaciones estructurales (fatales — bloquean la generación):**
-- Secciones requeridas en orden correcto
-- HOOK abierto por el speaker correcto según paridad (impar=IAGO, par=MARÍA)
-- Frases literales obligatorias presentes (hook closing, intro comment, concepts opening, final closing)
-- Mínimo 4 bloques de contenido, máximo 6
+**MODO PIZARRA (Layout C, PIP corner)** — usado cuando `PIZARRA: SI`:
+```
+┌────────────────────────────────────────────────┐
+│  Pizarra fullscreen                  ●MARIA    │
+│  (industrial grid background)                  │
+│                                                │
+│  ┌──────────┐                ┌──────────┐     │
+│  │stat_card │   bar_chart    │warning   │     │
+│  │  88%     │                │ badge    │     │
+│  └──────────┘                └──────────┘     │
+│                                                │
+│           hierarchy_diagram                    │
+│                                                │
+│  Subtítulos blancos abajo centrados.    ┌────┐│
+│                                         │PIP │ │
+│  Borde amarillo CAT 4px      bottom-right│Mar │ │
+│  alrededor del PIP                       └────┘│
+└────────────────────────────────────────────────┘
+```
 
-**Validaciones de calidad (WARN — no bloquean):**
-- Palabras totales 1.800–2.200
-- Mínimo 2 frases por bloque
-- Media de palabras por intervención
-- Número de inserciones
+Cada **4s** entra un elemento nuevo en la pizarra. Los elementos
+permanecen hasta el final de la intervención (acumulación visual).
+Mínimo 15s por bloque pizarra. ≥1 pizarra cada 3 min.
 
-**`normalizar_guiones.py`** convierte guiones en Formato B (legacy, con secciones `# INTRO`, `# NÚCLEO TEMÁTICO`, `# CIERRE CON CTA`) al Formato A requerido. Se usó para convertir los 15 guiones generados en sesiones anteriores.
+### 8.2 Identidad de marca
+
+| Color | Hex | Uso |
+|---|---|---|
+| Amarillo CAT | `#F5C400` | María, datos, borde PIP, identidad |
+| Azul | `#4DB8FF` | Yago, técnico, micrófonos del set |
+| Rojo | `#CC2200` | Regulación, alertas, EU AI Act |
+| Gris | `#888888` | Información secundaria |
+| Blanco subtítulo | `#E8E8E8` | Subtítulos (no `#FFFFFF` puro para evitar bloom) |
+
+Negro fondo: `#0D0D0D` (industrial dark, no negro absoluto).
+
+### 8.3 Catálogo de clips (estado a 8 mayo 2026)
+
+Pool por speaker (definido en `escaleta_to_pipeline.py · SPEAKER_POOL`):
+
+```
+MARIA  →  studio_maria_solo_v1..v4         (4 close-medium frontal)
+       +  studio_two_m_active_v1..v5       (5 two-shot Maria activa)
+       +  legacy fallbacks
+       = 9 clips Kling + 2 legacy
+
+YAGO   →  studio_yago_solo_v1..v4
+       +  studio_two_y_active_v1..v5
+       = 9 clips Kling + 2 legacy
+
+AMBOS  →  studio_establishing_general
+       +  studio_both_complicit
+```
+
+Cada clip Kling dura **~20s** (10s base + 2 extends de 5s) y mantiene
+consistencia facial. Coste ~$1.40/clip = ~$25 catálogo completo.
+
+`reverse_clips.py` duplica el catálogo gratis con variantes `_rev`
+(reverse playback, útil sólo para tomas pasivas).
 
 ---
 
-### Paso 3 — Síntesis de audio: `generar_episodio_v2.py`
+## 9. Operativa: cómo producir un episodio
 
-**Entrada:** Guion `.txt` + `PODCAST_MASTER_SPEC.md`  
-**Salida:** `episodios/M{N}_E_{Titulo}.mp3` + log de producción  
-**Tecnología:** ElevenLabs `eleven_v3` + pydub + ffmpeg
-
-**Proceso detallado:**
-
-1. **Setup**: detecta ffmpeg (WinGet o CapCut), carga `.env` con `override=True`
-2. **Parseo del guion**: `parsear_guion()` → llama a `validate_script_text()`, separa issues hard/soft, extrae bloques con `parse_script_blocks()`
-3. **Snapshot inicial**: consulta créditos ElevenLabs disponibles antes de generar
-4. **Generación bloque a bloque**:
-   - Para cada bloque del guion: llama a `client.text_to_speech.convert()` con voz, modelo y VoiceSettings del speaker
-   - 3 reintentos por bloque
-   - Errores 401/403 → `SystemExit` inmediato (no reintentar)
-   - Errores 429 (rate limit) → espera exponencial
-   - Guarda fragmento MP3 temporal en `episodios/temp/`
-5. **Montaje con pydub**:
-   - Concatena todos los fragmentos con silencios entre speakers
-   - Aplica `post_speed_multiplier` (1.10x)
-   - Mezcla la sintonía de apertura al inicio
-   - Mezcla la música de fondo al nivel configurado (-20dB)
-6. **Verificación de audio**: comprueba que el MP3 existe, es legible y tiene duración razonable (WARN si fuera de rango, no ERROR)
-7. **Log de producción**: escribe `episodios/M{N}_produccion.log` con escaleta, métricas, consumo de créditos
-8. **Limpieza**: borra los fragmentos temporales
-
-**Tipos de error y su tratamiento:**
-
-| Error | Tratamiento |
-|-------|-------------|
-| Validación estructural del guion | `SystemExit` (aborta antes de gastar créditos) |
-| Validación de calidad del guion | `[WARN]` + continúa |
-| ElevenLabs 401/403 | `SystemExit` inmediato |
-| ElevenLabs 429 rate limit | Retry con backoff |
-| Bloque TTS falla 3 veces | Registra como fallido, continúa con el resto |
-| Duración fuera de rango | `[WARN]` en log y consola, no falla |
-| Bloques generados < total | ERROR en validación final |
-
----
-
-### Paso 4 — Batch runner: `lanzar_produccion.py`
-
-Detecta automáticamente los módulos con guion pero sin audio (`pendientes()`) y los genera en serie.
-
-- Log por episodio: `episodios/M{N}_E_{Titulo}_cmd.log` (stdout+stderr completo)
-- Log maestro: `episodios/produccion_runs.log` (acumula todas las sesiones)
-- Timeout: 30 minutos por episodio
-- Extrae el error más informativo del output en caso de fallo
+### 9.1 Flujo completo (M0 = ejemplo)
 
 ```bash
-python lanzar_produccion.py                    # todos los pendientes
-python lanzar_produccion.py --ep M5_E_NLP_LLMs # episodio concreto
-python lanzar_produccion.py --dry-run          # muestra comandos sin ejecutar
+# 1. Generar guion (manual, una vez por módulo)
+python generar_guion.py --modulo M0
+
+# 2. Generar audio (TTS dual)
+python generar_episodio_v2.py --modulo M0
+
+# 3. Generar escaleta de producción
+python maquinaria_pesada_pipeline/tools/generate_escaleta.py \
+    --episode EP-MOD000 --modulo M0
+
+# 4. (Opcional) Editar la escaleta en escaletas/EP-MOD000_escaleta.md
+
+# 5. Renderizar el video
+python maquinaria_pesada_pipeline/tools/render_from_escaleta.py \
+    --episode EP-MOD000
+
+#    Modo preview rápido (90s):
+python maquinaria_pesada_pipeline/tools/render_from_escaleta.py \
+    --episode EP-MOD000 --preview --preview-seconds 90
+```
+
+### 9.2 Generación catálogo de clips (una vez)
+
+```bash
+# Generar los 18 clips Kling (~7h cola, ~$25)
+python maquinaria_pesada_pipeline/tools/generate_studio_clips_kling.py
+
+# Re-rastrear el filesystem si _scenes_index.json se desincronizó
+python maquinaria_pesada_pipeline/tools/rescan_library.py
+
+# Duplicar catálogo con reverse playback (gratis)
+python maquinaria_pesada_pipeline/tools/reverse_clips.py
+```
+
+### 9.3 Recuperación de fallos
+
+Si una task de Kling falla por timeout pero el video se generó en sus
+servidores:
+
+```bash
+python maquinaria_pesada_pipeline/tools/kling_recover.py \
+    --slug studio_maria_solo_v1 \
+    --extend-from-video-id 881670742302134272 \
+    --extends 2
 ```
 
 ---
 
-### Paso 5 — Validación post-generación: `validar_episodio.py`
+## 10. Cockpit (consola web de control)
 
-Valida un episodio ya generado con 6 checks:
+### 10.1 Propósito
 
-| # | Check | Tipo |
-|---|-------|------|
-| 1 | MP3 existe y > 1 MB | ERROR |
-| 2 | Audio cargable con pydub | ERROR |
-| 3 | Duración entre 8 y 60 min | WARN |
-| 4 | Log existe y contiene "Produccion completada" | ERROR |
-| 5 | Log sin errores críticos (ERROR/FAILED/Exception) | ERROR |
-| 6 | Bloques procesados == bloques en guion | ERROR si incompleto |
+App web Streamlit para **observabilidad y orquestación**, NO ejecución.
+Centraliza:
+- Inventario de qué hay generado en cada módulo (M0..M14).
+- Browser de PDFs, Guiones, Audios, Videos, Logs.
+- Generador de prompts CLI listos para Codex.
+- Registro modular de conectores (servicios externos como OpenAI,
+  ElevenLabs, ffmpeg, Codex).
+- Tail viewer de logs de generación.
 
-Muestra barra de progreso ASCII de bloques y estimación de créditos ElevenLabs consumidos.
+### 10.2 Estructura
 
-```bash
-python validar_episodio.py --ep M3_E_Machine_Learning_Clasico \
-    --guion Guiones/M3_T_Machine_Learning_Clasico.txt
+```
+cockpit/
+├── app.py                    ← entry point (streamlit run)
+├── ui.py                     ← sidebar persistente "Producción en vivo"
+├── core/
+│   ├── paths.py              ← rutas canónicas
+│   ├── monitor.py            ← psutil watch de procesos
+│   ├── log_parser.py         ← extrae estado de logs
+│   ├── prompt_builder.py     ← genera prompts CLI desde forms
+│   └── state.py              ← cache global Streamlit
+├── connectors/
+│   ├── base.py               ← interfaz Connector
+│   ├── services/             ← openai, elevenlabs, ffmpeg, codex
+│   ├── pipelines/            ← scripts del repo registrados
+│   └── sources/              ← pdf, guion, audio, video
+└── pages/
+    ├── 1_📊_Estado.py
+    ├── 2_🔌_Conectores.py
+    ├── 3_📝_Generar_Prompt.py
+    ├── 4_📚_Fuentes.py
+    └── 5_📜_Logs.py
 ```
 
----
-
-## 6. PIPELINE DE VÍDEO
-
-El pipeline de videopodcast está en `maquinaria_pesada_pipeline/` y produce un MP4 listo para publicar a partir del audio y el guion.
-
-### Orquestador: `run_pipeline.py`
+### 10.3 Lanzamiento
 
 ```bash
-python run_pipeline.py                   # render completo 1080p
-python run_pipeline.py --preview         # primer minuto a 720p (validación rápida)
-python run_pipeline.py --from-step 5     # reanudar desde paso 5
-python run_pipeline.py --force           # ignorar caches
-python run_pipeline.py --no-llm          # forzar heurístico (sin Claude)
-```
-
-### Pasos del pipeline
-
-| Paso | Módulo | Tecnología | Output |
-|------|--------|------------|--------|
-| 0 | `asset_validator` | stdlib | Verifica rutas y formatos |
-| 1 | `transcriber` | OpenAI Whisper | `transcription_raw.json` (timestamps por palabra) |
-| 2 | `content_extractor` | GPT-4.1-mini | `content_data.json` (stats, keywords, conceptos) |
-| 3 | `audio_analyzer` | pydub | `audio_structure.json` (silencios, sintonía, hook) |
-| 4 | `scene_builder` | **Claude Sonnet** | `scene_timeline.json` (qué escena va en cada momento) |
-| 5 | `scene_track_builder` | Python | Track sincronizado de escenas + duración |
-| 6 | `overlay_renderer` | **Pillow** | Frames PNG con name tags, stat cards, stickers |
-| 7 | `subtitle_generator` | Whisper + guion | `*_subtitulos.srt` con keywords resaltadas |
-| 8 | `video_compositor` | **ffmpeg** | MP4 final (intro + cuerpo + subtítulos) |
-| 9 | `metadata_generator` | GPT-4.1-mini | Chapters JSON + thumbnail |
-
-### Claude como director visual (scene_builder)
-
-Claude Sonnet recibe el audio structure JSON (silencios, secciones, momentos clave) y el content data (conceptos, keywords) y genera el `scene_timeline.json`: para cada segmento del episodio, qué tipo de escena visual usar (estudio, b-roll conceptual, sticker de concepto, transición, cierre).
-
-Puede forzarse a modo heurístico con `--no-llm` para no gastar créditos.
-
-### Banco de escenas (`Videos/escenas_biblioteca/`)
-
-Biblioteca de assets visuales reutilizables indexada en `_scenes_index.json`:
-- **estudio**: fondos del estudio de grabación virtual
-- **b_roll**: clips B-roll genéricos
-- **conceptos**: visualizaciones de conceptos técnicos
-- **transiciones**: clips de transición entre secciones
-- **stickers_anim**: stickers animados de refuerzo
-- **cierres**: pantallas de cierre y CTA
-- **media**: imágenes y GIFs por concepto (generadas por `media_finder.py`)
-- **refs**: referencias de personajes para Luma AI
-
-### Luma AI (luma_generator)
-
-Genera clips cortos (5–10s) de vídeo con Luma Dream Machine a partir de imágenes de referencia de los personajes, para crear B-roll con consistencia visual de Iago y María.
-
----
-
-## 7. SCRIPTS CLAVE — REFERENCIA DETALLADA
-
-### `podcast_spec.py`
-
-Motor central de validación. **No genera nada — solo valida y parsea.**
-
-```python
-from podcast_spec import load_master_spec, validate_script_text, parse_script_blocks
-
-spec = load_master_spec("PODCAST_MASTER_SPEC.md")
-issues = validate_script_text(guion_text, ep_code, spec)
-bloques = parse_script_blocks(guion_text, spec)
-```
-
-Funciones principales:
-- `load_master_spec(path)` → dict con toda la config
-- `validate_script_text(text, ep_code, spec)` → list[str] de issues
-- `parse_script_blocks(text, spec)` → list[dict] con speaker, text, index, section, tag
-- `normalize_text_for_match(text)` → str sin acentos, lowercase
-- `opening_speaker(ep_code, spec)` → "IAGO" | "MARIA"
-- `next_episode_code(guiones_dir, spec)` → siguiente código de episodio disponible
-- `build_script_stats(bloques, spec)` → métricas del guion
-
-### `generar_guion.py`
-
-Genera guiones con GPT-4.1. Admite contexto adicional de otros PDFs.
-
-```bash
-python generar_guion.py --pdf PDFs/M5_T_NLP_LLMs.pdf
-python generar_guion.py --pdf PDFs/M5_T_NLP_LLMs.pdf --contexto PDFs/master_completo.pdf
-```
-
-### `generar_episodio_v2.py`
-
-Motor de síntesis de audio.
-
-```bash
-python generar_episodio_v2.py \
-    --guion Guiones/M5_T_NLP_LLMs.txt \
-    --ep M5_E_NLP_LLMs
-
-# Opciones
---solo-bloque 7      # generar solo el bloque 7 (debug)
---dry-run            # parsear guion sin sintetizar
-```
-
-### `estado_proyecto.py`
-
-Estado de producción por módulo. **Ejecutar siempre desde el main path.**
-
-```bash
-python estado_proyecto.py              # tabla completa
-python estado_proyecto.py --pendiente  # solo módulos incompletos
-python estado_proyecto.py --codex      # comandos CLI para Codex
-python estado_proyecto.py --assets     # verificar assets de audio/música
-```
-
-### `normalizar_guiones.py`
-
-Convierte guiones Formato B (legacy) al Formato A requerido. Genera `.bak` antes de sobreescribir.
-
-```bash
-python normalizar_guiones.py            # todos los guiones M*.txt
-python normalizar_guiones.py --dry-run  # simular sin escribir
-python normalizar_guiones.py --file Guiones/M5_T_NLP_LLMs.txt  # uno concreto
-```
-
----
-
-## 8. COCKPIT
-
-Dashboard Streamlit para monitorizar y controlar la producción.
-
-### Arrancar
-
-```bash
-cd C:\Users\Asus\maquinaria_pesada
+pip install -r requirements-cockpit.txt   # streamlit, psutil, streamlit-autorefresh
 streamlit run cockpit/app.py
 ```
 
-O con repo alternativo:
+Por defecto en http://localhost:8501.
+
+### 10.4 Filosofía
+
+El cockpit **no ejecuta** procesos largos en su request handler (los
+disparos pesados van a Codex con prompts CLI generados en la página
+"Generar Prompt"). El refresh del sidebar es cada 5s vía
+`streamlit-autorefresh`, polling con `psutil` para detectar procesos
+python en marcha.
+
+---
+
+## 11. Técnicas de IA aplicadas (deep dive)
+
+### 11.1 Generación de texto (LLM)
+
+- **Claude Sonnet 4.5** (anthropic) para guion + escaleta. System
+  prompt extenso (5-7KB) con reglas duras.
+- **Streaming requerido** para max_tokens > umbral (Anthropic exige
+  streaming si la generación estimada > 10 min).
+- **Prompt caching de Anthropic**: el system prompt se cachea, baja
+  coste en runs subsecuentes.
+
+### 11.2 Extracción de conceptos (LLM con structured output)
+
+- **Claude Haiku 4.5** procesa cada PDF con un schema JSON:
+  `[{name, slug, definicion, sinonimos, visual_idea, importance}]`.
+- Coste muy bajo (~$0.05 todos los PDFs) por usar Haiku.
+- Resultado normalizado y dedupe por slug.
+
+### 11.3 ASR (Whisper)
+
+- `large-v3` para máxima precisión, `medium` para balance, `tiny` para
+  test.
+- Output con timestamps por palabra, imprescindible para subtítulos
+  sincronizados.
+
+### 11.4 TTS multi-speaker
+
+- ElevenLabs `eleven_v3` con dos voces calibradas (María/Yago).
+- Etiquetas inline `[ironico]`, `[serio]`, etc. al inicio de cada
+  intervención modulan el tono.
+- `<silence duration="2s"/>` controla las pausas para que
+  `audio_analyzer` pueda detectar la estructura.
+
+### 11.5 Cross-correlation (DSP) — sintonía detection
+
+- Problema: silencedetect no es preciso cuando hay música de fondo
+  durante el contenido.
+- Solución: `scipy.signal.correlate(audio_episodio, sintonia_mp3)`
+  busca el offset exacto donde aparece la sintonía.
+- Devuelve `(start, end, confidence)` con precisión sub-segundo.
+
+### 11.6 Image-to-video (Kling diffusion)
+
+- Modelo: Kling 1.6 Pro (Kuaishou). Diffusion-based video generation.
+- **Image-to-video**: el frame inicial es una imagen de referencia
+  pública. La consistencia facial es ~95% entre clips.
+- **Extend feature**: continúa la escena desde el último frame del
+  clip previo. Cada extend añade ~5s. Concatenando: 10s base + 5s + 5s
+  = 20s. Observación: la cámara orbita ligeramente (no zoom in),
+  efecto cinematográfico aceptable.
+- Negative prompt anti-alucinación de segunda persona, marcas, lipsync
+  errors.
+
+### 11.7 Forced alignment (futuro, no implementado)
+
+- Para subtítulos = texto exacto del guion en lugar de Whisper words,
+  se evaluó **WhisperX** (wav2vec2 forced alignment, precisión ~20ms).
+- Decisión actual: usar Whisper words directamente — el problema de
+  sincronización resultó ser drift de scene_track (corregido), no de
+  timestamps Whisper.
+
+### 11.8 Lip-sync (futuro, pendiente API key)
+
+- Sync.so `lipsync-v2` o Hedra Character-3.
+- Coste estimado: $1/episodio en HOOK + CIERRE_FINAL · $5/episodio
+  entero.
+
+---
+
+## 12. Bugs conocidos y resueltos (cronología)
+
+| Bug | Causa | Fix |
+|---|---|---|
+| Subtítulos desincronizados crecientes | scene_track con TCs que se solapan acumulando 30s de drift | `escaleta_to_pipeline` recorta `seg.end = next.start` (`d131594`) |
+| `studio` vs `estudio` (en/es) | scene_track_builder ponía "studio", compositor checkeaba "estudio" | `seg["type"] in ("estudio", "studio")` (`d131594`) |
+| ffmpeg "Option not found scale=...:format=..." | Dos puntos entre filtros | Coma: `scale=…,format=…` |
+| Sintonía cortada/desfasada | silencedetect daba 8.54s para 10s | Cross-correlation scipy (`sintonia_detector.py`) |
+| Stat_card valor "202" en vez de "88%" | Regex truncaba 2026 a 3 dígitos | Regex con sufijo obligatorio + lookahead (`8b2284d`) |
+| Polling Kling timeout 30s | Read timeout corto | 90s + 5 retries con backoff (`b7c1ac4`) |
+| Escaleta truncada | max_tokens 12000-16000 insuficientes | 32000 con streaming (`12080e5`) |
+| Pool studio resuelve a clips inexistentes | `_scenes_index.json` con entradas huérfanas | `_resolve_speaker_pool` verifica `Path.exists()` (`1b55211`) |
+| Subtítulos amarillos en keywords | Highlight automático con keywords | `_highlight()` retorna texto sin modificar (`d131594`) |
+
+---
+
+## 13. Pendientes vivos
+
+1. **17 clips Kling** generándose en background (~6h cola, $24).
+2. **Reforzar prompt v2** para que el LLM no ponga texto del guion en
+   la pizarra (`highlight_quote` con citas literales).
+3. **Wrap de texto** en `warning_badge` / `regulation_alert` (se cortan
+   labels >24 chars).
+4. **Pizarra rica con imágenes**: integrar `media_finder` (Wikipedia +
+   Tenor) en `escaleta_generator` para que las cards no sean sólo texto.
+5. **Lip-sync Sync.so** cuando llegue `SYNC_API_KEY` del usuario.
+6. **Caja "CAT" residual** en `establishing.png` y `studio.png`
+   (fondo izquierdo, logo CAT pequeño en un container amarillo).
+7. **Episodios M1..M14** producir en cadena con `lanzar_produccion.py`.
+
+---
+
+## 14. Reglas de oro del sistema
+
+1. **El audio es la verdad temporal**. Nunca cambiar el texto de las
+   intervenciones desde el video pipeline; el audio ya está fijado.
+2. **Los cortes de plano sólo en pausas naturales** (puntos, fines de
+   idea). Nunca a mitad de frase.
+3. **No repetir clip** dentro de la misma intervención.
+4. **Pizarra = sólo cuando aporta**. Mínimo 15s, elementos cada 4s,
+   ≥1 cada 3min, NO cita literal del guion.
+5. **El monorepo no es el sistema de filesystem real**: muchos paths
+   son absolutos a `C:\Users\Asus\maquinaria_pesada\`. El código asume
+   esa raíz.
+6. **`override=True` en load_dotenv**: las variables de entorno cargadas
+   por Windows NO deben ganar a las del archivo `.env`.
+7. **Streaming en Anthropic** cuando max_tokens > 16k.
+8. **Los clips de Kling necesitan URL pública** (no localhost, no
+   catbox — Kling bloquea catbox.moe). GitHub raw funciona si el repo
+   es público.
+9. **Trabajar siempre en rama `videopodcast`**. Consolidar a `master`
+   sólo cuando un hito está validado.
+10. **Idioma de respuesta y commits: español** salvo nombres técnicos
+    (que van en inglés).
+
+---
+
+## 15. Anexo: comandos útiles
+
 ```bash
-REPO_ROOT=C:\otro\repo streamlit run cockpit/app.py
-```
+# Verificar estado del repo
+cd /c/Users/Asus/maquinaria_pesada && git status
 
-### Páginas
+# Ver logs en vivo de un render
+tail -f maquinaria_pesada_pipeline/outputs/logs/EP-MOD000_pipeline.log
 
-**📊 Estado (página principal)**
-- Tabla por módulo M0–M14 con estado de PDF/Guion/Audio/Vídeo
-- Métricas globales en tiempo real
-- Click en ✅/❌ → modal con resumen de validaciones del último log
+# Inspeccionar la library de clips
+cat Videos/escenas_biblioteca/_scenes_index.json | jq 'keys'
 
-**🔌 Conectores**
-- Lista de conectores registrados: servicios (ElevenLabs, OpenAI, ffmpeg, Codex), pipelines (generar_guion, generar_episodio, validar_episodio), fuentes (PDF, guion, audio, log, vídeo)
-- Test de conectividad por conector
+# Re-render preview rápido (~5min)
+python maquinaria_pesada_pipeline/tools/render_from_escaleta.py \
+    --episode EP-MOD000 --preview --preview-seconds 90
 
-**📝 Generar Prompt**
-- Formularios para construir comandos CLI listos para pegar en Codex
-- Selección de módulo, opciones de generación, configuración de voz
+# Lanzar cockpit
+streamlit run cockpit/app.py
 
-**📚 Fuentes**
-- Explorador de archivos por categoría (PDFs, guiones, episodios, vídeos, logs)
-- Preview de contenido
+# Generar 1 clip Kling (test crédito)
+python maquinaria_pesada_pipeline/tools/generate_studio_clips_kling.py \
+    --slug studio_maria_solo_v2
 
-**📜 Logs**
-- Visor de `produccion_runs.log` y logs individuales
-- Auto-refresh configurable
-- Resaltado de errores y WARNs
-
-### Sidebar: Producción en vivo
-
-Se muestra en todas las páginas. Detecta en tiempo real (via `psutil`) si hay algún script del pipeline corriendo:
-- Muestra PID, RAM, tiempo transcurrido
-- Tail del log activo (últimas 3 líneas)
-- Lista de archivos generándose en este momento
-- Refresh cada 5 segundos (`streamlit-autorefresh`)
-
-Scripts monitorizados: `generar_guion.py`, `generar_episodio_v2.py`, `lanzar_produccion.py`, `validar_episodio.py`, `normalizar_guiones.py`, `run_pipeline.py`, `dual_debate.py` y más.
-
----
-
-## 9. ESPECIFICACIÓN MAESTRA
-
-`PODCAST_MASTER_SPEC.md` es la **fuente única de verdad** del proyecto. Contiene:
-
-1. **Texto en markdown**: reglas narrativas, principios editoriales, instrucciones operativas
-2. **Bloque JSON embebido** (entre `<!-- PODCAST_SPEC_JSON_START -->` y `<!-- PODCAST_SPEC_JSON_END -->`): configuración estructurada que consumen todos los scripts
-
-El JSON incluye:
-- `directories`: rutas relativas de PDFs, guiones, audios, vídeos, música, etc.
-- `openai`: modelos GPT y parámetros de generación
-- `episode_defaults`: duración objetivo, audiencia, tono, límites de audio
-- `speakers`: config de IAGO y MARÍA (display_name, etiquetas permitidas, paridad)
-- `script_rules`: secciones requeridas/opcionales, frases obligatorias literales
-- `audio_rules`: modelo ElevenLabs, voces, VoiceSettings, silencios, música
-
-**Nunca editar el JSON directamente** si se hace desde Claude Code: el JSON debe ser consistente con el texto markdown. Si hay discrepancia, el JSON gana (es lo que leen los scripts).
-
----
-
-## 10. ESTADO ACTUAL DE PRODUCCIÓN
-
-*(Actualizado: 2026-05-08)*
-
-| Módulo | PDF | Guion | Audio | Vídeo | Notas |
-|--------|-----|-------|-------|-------|-------|
-| M0 | ✓ | ✓ | ✓ | ✓ | **COMPLETO** |
-| M1 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M2 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M3 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M4 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M5 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M6 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M7 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M8 | ✓ | ✓ | ✓ | — | Falta vídeo. Duración 12 min (WARN) |
-| M9 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M10 | ✓ | ✓ | ✓ | — | Falta vídeo. Duración 11.4 min (WARN) |
-| M11 | ✓ | ✓ | ✓ | — | Falta vídeo |
-| M12 | ✓ | ✓ | — | — | **Créditos ElevenLabs agotados** |
-| M13 | ✓ | ✓ | — | — | **Créditos ElevenLabs agotados** |
-| M14 | ✓ | ✓ | — | — | **Créditos ElevenLabs agotados** |
-
-**Créditos ElevenLabs**: agotados (límite del plan: 232.959 chars). Necesario recargar para generar M12–M14.
-
----
-
-## 11. FLUJO DE TRABAJO CON CLAUDE CODE + CODEX
-
-### División de responsabilidades
-
-| Claude Code (este asistente) | Codex CLI |
-|------------------------------|-----------|
-| Diseña y modifica scripts | Ejecuta los scripts |
-| Valida lógica y estructura | Genera guiones (`generar_guion.py`) |
-| Gestiona git (commits, merges) | Genera audios (`lanzar_produccion.py`) |
-| Detecta y corrige bugs | Lanza pipelines de vídeo |
-| Actualiza specs y documentación | Reporta resultados |
-
-### Workflow típico de producción de un módulo nuevo
-
-```bash
-# 1. [Codex] Ver qué hay pendiente
-python estado_proyecto.py --codex
-
-# 2. [Codex] Generar guion desde PDF
-python generar_guion.py --pdf PDFs/M12_T_Seguridad_IA.pdf
-
-# 3. [Claude Code] Revisar guion si falla validación
-#    → normalizar_guiones.py o editar directamente
-
-# 4. [Codex] Generar audio (cuando haya créditos)
-python lanzar_produccion.py --ep M12_E_Seguridad_IA
-
-# 5. [Codex] Validar resultado
-python validar_episodio.py --ep M12_E_Seguridad_IA \
-    --guion Guiones/M12_T_Seguridad_IA.txt
-
-# 6. [Codex] Generar vídeo
-cd maquinaria_pesada_pipeline
-python run_pipeline.py --preview   # validar primero
-python run_pipeline.py             # render completo
-
-# 7. [Claude Code] Commit y consolidar en master
+# Recuperar task Kling huérfana
+python maquinaria_pesada_pipeline/tools/kling_recover.py \
+    --task-id <ID> --kind base --slug recovery_test
 ```
 
 ---
 
-## 12. GESTIÓN DE RAMAS Y WORKTREES
+## 16. Glosario
 
-```
-master  ←  rama estable, producción
-  ├── feature/genepisodios  ←  generación audio, guiones, validación
-  ├── feature/videopodcast  ←  pipeline de vídeo, Luma, escenas
-  └── APPContenidos         ←  cockpit Streamlit
-```
-
-### Worktrees activos
-
-| Path | Rama | Propósito |
-|------|------|-----------|
-| `C:\...\maquinaria_pesada` | `master` | Trunk — scripts de producción, no tocar desde aquí |
-| `.claude\worktrees\genepisodios` | `feature/genepisodios` | Desarrollo activo de audio/guiones |
-| `.claude\worktrees\videopodcast` | `feature/videopodcast` | Pipeline de vídeo |
-| `.claude\worktrees\laughing-leavitt-*` | `APPContenidos` | Cockpit |
-
-### Regla de consolidación
-
-Desarrollar en feature → cuando funcione, merge en master con `--no-ff` → push.
-
-### ⚠️ Los scripts de producción se ejecutan desde el main path
-
-`estado_proyecto.py`, `lanzar_produccion.py`, `generar_episodio_v2.py` usan `Path(__file__).parent` para resolver `episodios/`, `Guiones/`, etc. Desde un worktree, estas rutas apuntan al directorio del worktree (que no tiene los archivos generados). **Siempre ejecutar producción desde `C:\Users\Asus\maquinaria_pesada`**.
+- **Hook**: gancho inicial del episodio, ~30s con un dato/pregunta
+  potente y cierre canónico _"Esto es MaquinarIA Pesada. Arrancamos."_
+- **Sintonía**: 10s de música identificativa entre HOOK y CONTENIDO.
+  Detectada por cross-correlation.
+- **Plano**: tipo de toma del scene_track. ESTABLISHING / TWO_SHOT_*_ACTIVE
+  / CLOSE_UP_* / DETAIL / BOTH_COMPLICIT / OUTRO / BLACK / PIZARRA.
+- **PIP**: Picture-in-Picture, el recuadro 25% bottom-right con el
+  presentador cuando la pizarra es fullscreen.
+- **scene_track**: lista de segmentos `[{type, start, end, source,
+  pip_source, ...}]`. Define qué se muestra en cada momento.
+- **scene_timeline**: lista de escenas con sus overlays PIL.
+- **Library**: catálogo persistente de clips Kling/Luma con metadata
+  por slug.
+- **Pool**: subconjunto del library asignado a un speaker, usado por
+  el rotador no-repeat.
+- **Drift**: desfase progresivo entre audio y video (corregido).
+- **Layout C**: pizarra fullscreen + PIP del presentador en esquina.
+  Layout activo desde 8 mayo 2026.
 
 ---
 
-## 13. VARIABLES DE ENTORNO Y CREDENCIALES
+**FIN BIBLIA · MaquinarIA Pesada**
 
-Archivo: `C:\Users\Asus\maquinaria_pesada\.env` (NO en git)
-
-```env
-ELEVENLABS_API_KEY=sk_...      # TTS — eleven_v3
-OPENAI_API_KEY=sk-...          # GPT-4.1 para guiones
-ANTHROPIC_API_KEY=sk-ant-...   # Claude para scene_builder
-LUMA_API_KEY=...               # Luma AI para clips de vídeo
-
-# Opcional
-REPO_ROOT=C:\Users\Asus\maquinaria_pesada   # para el cockpit
-```
-
-**Todos los scripts usan `load_dotenv(override=True)`** para que el `.env` tenga prioridad sobre variables de entorno del shell (evita problemas con keys cacheadas en la sesión).
-
-### Límites de API a vigilar
-
-| API | Límite | Estado actual |
-|-----|--------|---------------|
-| ElevenLabs | 232.959 chars/ciclo | **0 restantes — recargar** |
-| OpenAI | Según plan | OK |
-| Anthropic | Según plan Max 5x | OK |
-| Luma | Según plan | OK |
-
----
-
-## 14. CONVENCIONES DE NOMENCLATURA
-
-| Tipo de archivo | Patrón | Ejemplo |
-|-----------------|--------|---------|
-| PDF fuente | `M{N}_T_{Titulo}.pdf` | `M3_T_Machine_Learning_Clasico.pdf` |
-| Guion | `M{N}_T_{Titulo}.txt` | `M3_T_Machine_Learning_Clasico.txt` |
-| Audio final | `M{N}_E_{Titulo}.mp3` | `M3_E_Machine_Learning_Clasico.mp3` |
-| Vídeo final | `M{N}_V_{Titulo}.mp4` | `M3_V_Machine_Learning_Clasico.mp4` |
-| Log de producción | `M{N}_produccion.log` | `M3_produccion.log` |
-| Log de comando | `M{N}_E_{Titulo}_cmd.log` | `M3_E_Machine_Learning_Clasico_cmd.log` |
-
-Donde `{N}` es el número de módulo (0–14) y `{Titulo}` es el nombre del tema en CamelCase con guiones bajos.
-
-La letra intermedia indica la etapa:
-- `_T_` = Texto/Guion
-- `_E_` = Episodio (audio)
-- `_V_` = Vídeo
-
----
-
-## 15. REGLAS DE DESARROLLO (invariantes de sesión)
-
-### Regla principal: cambio + verificación siempre juntos
-
-> **Todo cambio introducido en la generación (`generar_episodio_v2.py`, `generar_guion.py`, `podcast_spec.py`, etc.) DEBE tener su contraparte en `validar_episodio.py`: un check que confirme que ese cambio se aplica correctamente en todos los episodios producidos.**
->
-> Sin verificación → el cambio no está completo.
-
-### Otras reglas operativas
-
-1. **Commits atómicos**: un commit por cambio funcional. Mensaje claro con prefijo (`fix:`, `feat:`, `chore:`, `docs:`).
-2. **Nunca editar `.env`** desde los scripts. Solo leer con `load_dotenv(override=True)`.
-3. **`PODCAST_MASTER_SPEC.md` es canónica**: cualquier cambio de configuración (voces, límites, secciones) va primero ahí, luego se propaga al código.
-4. **Hard vs Soft en validación**: errores estructurales (secciones, speaker, frases obligatorias) = `SystemExit`. Problemas de calidad (word count, duración, frases cortas) = `[WARN]` + continuar.
-5. **Producción siempre desde el main path**: `lanzar_produccion.py` y `estado_proyecto.py` desde `C:\Users\Asus\maquinaria_pesada`, nunca desde un worktree.
-6. **No mezclar scopes entre ramas**: `genepisodios` no toca `cockpit/` ni `maquinaria_pesada_pipeline/`. `videopodcast` no toca `Guiones/`. `APPContenidos` no toca scripts de audio.
-
----
-
-*Documento generado automáticamente por Claude Code — MaquinarIA Pesada 2026*
+Mantén este documento actualizado tras cada cambio arquitectónico. Si
+añades un módulo nuevo, regla nueva, modelo nuevo, account nueva — entra
+aquí. Es la fuente única de verdad del sistema.
