@@ -765,6 +765,72 @@ python en marcha.
 
 ---
 
+## 11.bis QA (Quality Assurance) — políticas de validación
+
+Cada artefacto que el sistema produce pasa por una función `check_X()` en
+`pipeline/qa.py` antes de registrarse en la library / entregarse. Si
+`check.ok == False`, el artefacto se descarta y NO se contamina el
+estado del proyecto.
+
+### Inventario de verificadores
+
+| Función | Artefacto | Reglas |
+|---|---|---|
+| `check_kling_clip(path, min_dur, max_dur)` | Clip Kling MP4 | existe + tamaño ≥2MB + ffprobe lee duración (moov OK) + duración en rango + aspect 16:9 ±5% |
+| `check_escaleta_md(path)` | Escaleta markdown | existe + ≥8 bloques + ≥20 intervenciones + cierre limpio (no truncado) + ≥50% de ivs marcan PIZARRA SI/NO |
+| `check_scene_track(path, audio_dur)` | scene_track.json | monotónico (0 solapamientos) + drift vs audio_duration < 1s |
+| `check_audio_structure(path)` | audio_structure.json | duración 600-1100s + sintonía detectada (8-12s) + content_start/end coherentes |
+| `check_video_final(path, audio_dur)` | MP4 final | tamaño ≥30MB + duración ≈ audio (drift <1.5s) + resolución 1920×1080 |
+| `check_library_integrity(library)` | Library completa | cada slug tiene fichero físico + tamaño OK + ffprobe OK |
+| `check_srt(path)` | Subtítulos SRT | ≥50 chunks + ningún chunk >6s |
+
+### Persistencia de tareas Kling (`kling_tasks.jsonl`)
+
+Append-only journal con fsync en cada escritura. Eventos:
+
+```jsonl
+{"event":"submit","slug":"...","task_id":"...","kind":"base|extend",
+ "extend_step":0,"image_url":"...","duration":10,"target_duration":20}
+{"event":"complete","slug":"...","task_id":"...","video_id":"...","video_url":"..."}
+{"event":"fail","slug":"...","task_id":"...","reason":"..."}
+{"event":"download","slug":"...","path":"...","size":12345}
+{"event":"qa","slug":"...","ok":true,"checks":{...}}
+{"event":"register","slug":"...","ok":true}
+```
+
+**Regla crítica**: el `submit` se loguea ANTES de pollear. Si el proceso
+muere durante el polling, la tarea queda registrada y `kling_reconcile.py`
+puede recuperarla (no se pierden créditos pagados).
+
+### Recuperación de tareas huérfanas
+
+```bash
+# Ver qué hay pendiente sin gastar nada
+python tools/kling_reconcile.py --dry-run
+
+# Recuperar todo lo huérfano (poll Kling + descarga + QA + register)
+python tools/kling_reconcile.py
+
+# Solo un slug
+python tools/kling_reconcile.py --slug studio_yago_solo_v1
+```
+
+### Lecciones aprendidas (8 mayo 2026)
+
+Tras una sesión cara de generación con Kling:
+
+| Problema | Causa | Mitigación |
+|---|---|---|
+| 26+ tareas huérfanas pagadas no descargadas | Submits sin persistencia → proceso muere y se pierden | `kling_tasks.jsonl` con fsync ANTES de pollear |
+| Clips truncados (4MB en vez de 47MB) | Download timeout sin retry | `_download_video` con 4 retries + verificación moov atom |
+| 429 cascading en parallel | Submit demasiado rápido (1.5s) saturó Kling | spacing 5-8s + retry exponencial 10s..120s |
+| 429 persistente con submits aislados | Cuota diaria/mensual del plan agotada | Esperar reset (24h UTC+8) antes de relanzar |
+| Refs viejas servidas durante batch | `git push` no se hizo antes de generar | Verificar MD5 local↔GitHub raw antes de cada batch |
+| Stat_card "202" en vez de "88%" | Regex truncaba años a 3 dígitos | Regex con sufijo obligatorio (%/M/K/B) + lookahead |
+| Subtítulos desincronizados crecientes | scene_track con TCs solapados acumulando 30s drift | `escaleta_to_pipeline` recorta `seg.end = next.start` |
+
+---
+
 ## 11. Técnicas de IA aplicadas (deep dive)
 
 ### 11.1 Generación de texto (LLM)
