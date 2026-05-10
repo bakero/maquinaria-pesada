@@ -1,0 +1,33 @@
+## MaquinarIA Pesada — tema base (industrial CAT dark)
+## Sobre este tema base, cockpit/theme.py inyecta CSS extra (fonts Google,
+## bordes, transformaciones de texto, etc.). Si solo quieres ajustar colores
+## rápidamente, hazlo aquí.
+
+[theme]
+base = "dark"
+
+# CAT Yellow (consistente con BIBLIA.md spec)
+primaryColor = "#F5C400"
+
+# Carbón profundo
+backgroundColor = "#0D0D0D"
+
+# Acero oscuro (cards, sidebar)
+secondaryBackgroundColor = "#1A1A1A"
+
+# Off-white antiglare
+textColor = "#F2F2F2"
+
+# Tipografía base — el theme.py override con Barlow Condensed + Oswald + JetBrains Mono.
+# 'sans serif' aquí solo es fallback si el CSS injection falla.
+font = "sans serif"
+
+[server]
+# Sin auto-abrir el navegador (lo deja a tu discreción)
+headless = false
+
+# Recarga inmediata al guardar archivos del cockpit
+runOnSave = true
+
+[browser]
+gatherUsageStats = false

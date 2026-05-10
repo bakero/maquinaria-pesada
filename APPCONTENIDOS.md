@@ -203,6 +203,49 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 - Esta sesión (APPContenidos) actualiza el archivo cada vez que se cierre una decisión, antes o durante la implementación.
 **Cambios técnicos**: este archivo, generado retroactivamente con las 13 decisiones previas + esta entrada.
 
+### 2026-05-10 · #15 — Tema visual industrial CAT (dark + amarillo + acero)
+
+**Tipo**: decisión + implementación
+**Contexto**: el usuario pide apariencia industrial: amarillo CAT corporativo, paleta metalizada (excavadoras, hormigoneras, camiones), tipografías angulares, logo de MaquinarIA Pesada visible.
+
+**Decisión** (commit visual cohesivo, ajustable a posteriori si no convence):
+
+1. **Modo base**: dark. Las máquinas de obra se fotografían en contextos sucios y oscuros; el negro hace que el amarillo CAT pegue duro. Light theme descartado: pierde contundencia.
+
+2. **Paleta**:
+   - Fondo: `#0D0D0D` (carbón) y `#1A1A1A` (acero oscuro) para superficies elevadas (cards, sidebar).
+   - Bordes / divisores: `#3A3A3A` (acero medio) y `#262626` (panel).
+   - Texto: `#F2F2F2` primario, `#A8A8A8` secundario (acero claro).
+   - **Primario CAT**: `#F5C400` (consistente con BIBLIA.md). Hover/dark: `#D4A800`.
+   - Acentos según spec: IAGO `#4DB8FF` (azul eléctrico), MARIA `#F5C400` (amarillo), alerta `#CC2200`, OK `#00B894`.
+
+3. **Tipografía** (Google Fonts, embedidas vía CSS injection):
+   - Display / títulos: **Oswald** SemiBold/Bold, `text-transform: uppercase`, `letter-spacing` ancho.
+   - Cuerpo: **Barlow Condensed** Regular/Medium (modernidad técnica condensada).
+   - Numérico / código: **JetBrains Mono** (sensación técnica/HUD).
+   - Descartadas: Bebas Neue (demasiado gritón para textos largos), Black Ops One (militar > industrial), Stencil (cliché).
+
+4. **Logo**: `st.logo("Logos/logo sin fondo.png", size="large")`. La versión sin fondo es la default por spec; las metálicas y la de fondo amarillo quedan reservadas para producción de assets, no para UI.
+
+5. **Implementación**:
+   - `.streamlit/config.toml` en raíz del repo: tema base (primaryColor, backgroundColor, secondaryBackgroundColor, textColor, font).
+   - `cockpit/theme.py` (nuevo): función `inject_theme()` que mete CSS custom (Google Fonts + overrides Streamlit + utilidades). Llamada desde `app.py` y cada página tras `set_page_config()`.
+   - Bordes amarillos en containers de "Producción en vivo" (sidebar) y en headers de página.
+   - Botones con esquinas ligeramente angulares (border-radius 2px), uppercase, hover con borde amarillo.
+
+6. **Constantes de color** centralizadas en `theme.py` (variables CSS y un dict Python para que código futuro reutilice los valores).
+
+**Cambios técnicos** (próximo commit):
+- `.streamlit/config.toml` (nuevo)
+- `cockpit/theme.py` (nuevo, ~120 líneas CSS embebido)
+- `cockpit/ui.py` (modificado: `render_status_sidebar` aplica clases del tema)
+- `cockpit/app.py` + 5 páginas (modificadas: `st.logo()` + `inject_theme()` tras `set_page_config()`)
+- `BIBLIA.md` actualizable a posteriori con el detalle del tema (deuda menor).
+
+**Próximos pasos / impacto**:
+- Si el usuario quiere variantes (paleta más sucia/grunge, fuente más agresiva, light mode), se itera con cambios localizados en `theme.py`.
+- El tema NO afecta a la lógica de la cockpit ni al pipeline de generación. Solo presentación.
+
 ---
 
 ## Resumen de commits de la sesión (orden cronológico)

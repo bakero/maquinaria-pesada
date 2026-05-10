@@ -11,11 +11,14 @@ import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import SourceConnector  # noqa: E402
+from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Logs", page_icon="📜", layout="wide")
+inject_theme()
+render_logo()
 render_status_sidebar()
-st.title("📜 Logs de producción")
+st.title("LOGS DE PRODUCCIÓN")
 
 src: SourceConnector = connectors.get("log")  # type: ignore[assignment]
 
