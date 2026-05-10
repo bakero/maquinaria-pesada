@@ -10,11 +10,14 @@ if str(_ROOT) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from cockpit.core import log_parser, state  # noqa: E402
+from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Estado", page_icon="📊", layout="wide")
+inject_theme()
+render_logo()
 render_status_sidebar()
-st.title("📊 Estado de producción")
+st.title("ESTADO DE PRODUCCIÓN")
 st.caption("Pulsa cualquier ✅/❌ para ver el resumen de validaciones de la última ejecución.")
 
 states = state.scan()
@@ -53,6 +56,14 @@ def _show_summary(module: str, category: str) -> None:
     )
     badge = {"ok": "🟢 OK", "fail": "🔴 con errores", "no-data": "⚪ sin datos"}[summary.status]
     cols[2].markdown(f"**Estado**\n\n{badge}")
+
+    source_label = {"jsonl": "📦 estructurado (runlog)", "text": "📄 texto (regex)", "none": "—"}
+    st.caption(f"Fuente: {source_label.get(summary.source, summary.source)}")
+
+    if summary.phase_counts:
+        with st.expander(f"📊 Conteo por fase ({sum(summary.phase_counts.values())} eventos)"):
+            for ph, n in sorted(summary.phase_counts.items(), key=lambda x: -x[1]):
+                st.write(f"- `{ph}`: **{n}**")
 
     if summary.first_ts or summary.last_ts:
         st.caption(f"Run: {summary.first_ts or '—'}  →  {summary.last_ts or '—'}")

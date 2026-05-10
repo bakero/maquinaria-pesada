@@ -10,11 +10,14 @@ if str(_ROOT) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402
+from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Conectores", page_icon="🔌", layout="wide")
+inject_theme()
+render_logo()
 render_status_sidebar()
-st.title("🔌 Conectores")
+st.title("CONECTORES")
 st.caption(
     "Servicios externos, pipelines del repo y tipos de fuente. "
     "Añade un fichero en `cockpit/connectors/{services,pipelines,sources}/` para registrar uno nuevo."
