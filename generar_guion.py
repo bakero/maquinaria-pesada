@@ -364,12 +364,61 @@ def _fix_tts_closing_tags(content: str) -> str:
     return content
 
 
+_TAG_REMAP = {
+    "curiosa": "curioso", "esceptica": "esceptico", "ironica": "ironico",
+    "didactica": "didactico", "explicativa": "explicativo", "directa": "directo",
+    "seria": "serio", "firme": "firme", "contundenta": "contundente",
+    "reflexiva": "reflexivo", "natural": "natural", "pausada": "pausado",
+    "calida": "calido", "clara": "claro", "analitico": "analitica",
+}
+
+
+def _fix_gendered_tags(content: str) -> str:
+    """Remapea variantes de genero de tags TTS a la forma canonica del spec.
+    Soporta formato [tag] (T-type) y <tag></tag> (M-type).
+    """
+    def _remap_sq(m: re.Match) -> str:          # [tag]
+        canonical = _TAG_REMAP.get(m.group(1).lower(), m.group(1).lower())
+        return f"[{canonical}]"
+
+    def _remap_ang(m: re.Match) -> str:          # <tag> o </tag>
+        slash = m.group(1) or ""
+        canonical = _TAG_REMAP.get(m.group(2).lower(), m.group(2).lower())
+        return f"<{slash}{canonical}>"
+
+    content = re.sub(r"\[([a-zA-Z_]+)\]", _remap_sq, content)
+    content = re.sub(r"<(/?)([a-zA-Z_]+)>", _remap_ang, content)
+    return content
+
+
 def _remove_blacklisted_opening(content: str, spec: dict) -> str:
-    """Elimina interjecciones prohibidas al inicio de un bloque hablado."""
-    blacklist = spec.get("script_rules", {}).get("blacklisted_interjections", [])
+    """Elimina interjecciones prohibidas.
+    - Si el bloque empieza con [tag] + interjeccion → elimina la interjeccion.
+    - Si el bloque es corto (≤ reaction_word_limit) → elimina la interjeccion de cualquier posicion.
+    """
+    rules = spec.get("script_rules", {})
+    blacklist = rules.get("blacklist_validation_interjections") or rules.get("blacklisted_interjections") or []
+    short_limit = rules.get("reaction_word_limit", 12)
+
+    # Calcular palabra count sin tag
+    plain = re.sub(r"^\[[^\]]+\]\s*", "", content.strip())
+    word_count = len(plain.split())
+    is_short = word_count <= short_limit
+
+    LEADING_TAG = r"(?:(\[[^\]]+\])\s*)?"
     for phrase in blacklist:
-        pat = re.compile(r"^" + re.escape(phrase) + r"[.,!]?\s*", re.IGNORECASE)
-        content = pat.sub("", content).strip()
+        # Caso 1: al inicio del bloque (con o sin tag previo)
+        pat_start = re.compile(
+            r"^" + LEADING_TAG + re.escape(phrase) + r"[.,!]?\s*",
+            re.IGNORECASE,
+        )
+        content = pat_start.sub(r"\1 ", content).strip()
+
+        # Caso 2: en bloque corto, en cualquier posicion
+        if is_short:
+            pat_any = re.compile(r"\b" + re.escape(phrase) + r"\b[.,!]?\s*", re.IGNORECASE)
+            content = pat_any.sub("", content).strip()
+
     return content
 
 
@@ -387,6 +436,7 @@ def normalize_generated_script(script_text: str, spec: dict) -> str:
             content  = m.group(2).strip()
             content  = re.sub(r"\bIago\b", "Yago", content, flags=re.IGNORECASE)
             content  = _fix_tts_closing_tags(content)
+            content  = _fix_gendered_tags(content)
             content  = _remove_blacklisted_opening(content, spec)
             normalized.append(f"{speaker}: {content}")
         else:
