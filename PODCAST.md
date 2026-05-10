@@ -308,6 +308,34 @@ HARD_KEYWORDS = (
 
 ---
 
+#### [DECISIÓN] `PODCAST_M_SPEC.md` — spec normativa v2 para episodios M (Módulos)
+
+**Adoptada en:** 2026-05-10  
+**Commit:** `66d6c7c`  
+**Motivo:** La spec anterior de episodios M era genérica y no capturaba el elemento diferenciador clave del formato M: el bloque `APLICACION_PRACTICA` que ancla el módulo al sistema real que genera el podcast. Esta v2 formaliza esa diferencia con reglas precisas, fuentes verificables y mecanismo de fallback.
+
+**Cambios clave vs spec anterior:**
+
+| Aspecto | Spec anterior | Spec M v2 |
+|---------|---------------|-----------|
+| Bloques de contenido | BLOQUE_1-4 + INSERCIONES | PANORAMA + TEMAS_CLAVE + LIMITES + APLICACION_PRACTICA |
+| APLICACION_PRACTICA | Opcional / vaga | Obligatoria, 3-4 min, 3 momentos internos, basada en docs vivos |
+| Fuente del bloque | No especificada | 4 documentos vivos: BIBLIA_SISTEMA, PRIMERPODCAST, VIDEOPODCAST, PODCAST |
+| Hard-fail si sin material | No | Sí — loguea y detiene generación |
+| Artefacto de extracción | No | Sí — `episodios/temp/aplicacion_extraida_M{n}.md` |
+| Override manual | No | Sí — `PDFs/aplicacion_practica/M{n}.md` prioritario |
+| Reparto APLICACION_PRACTICA | No especificado | Maria 30-40% (abre+cierra), Yago 60-70% (detalla) |
+| Modelo generador | No especificado | `claude-sonnet-4-5` (Anthropic) |
+
+**Estructura requerida:**
+`HOOK` · `INTRO_SONIDO` · `SALUDO_Y_PRESENTACION` · `BLOQUE_PANORAMA` · `BLOQUE_TEMAS_CLAVE` · `BLOQUE_LIMITES` · `APLICACION_PRACTICA` · `CIERRE_CONCEPTOS` · `CIERRE_FINAL` · `VERIFICACIONES`
+
+**Secciones prohibidas** (QA duro): `BLOQUE_1-4`, `BLOQUE_QUE/COMO`, `INSERCION_1-3`, `INSERCION_EMPRESA`
+
+**Aviso IA versión M (enganche):** obligatorio en SALUDO_Y_PRESENTACION, 18-25s, debe contener "sistema automatico" + "puede contener errores" + frase que conecte con APLICACION_PRACTICA.
+
+---
+
 #### [DECISIÓN] `PODCAST_T_SPEC.md` — spec normativa para episodios T (Temas)
 
 **Adoptada en:** 2026-05-10  
@@ -367,6 +395,7 @@ HARD_KEYWORDS = (
 | `111216a` | merge: videopodcast (pipeline audio/subtitles) → master |
 | `217a484` | merge: videopodcast → master (biblia + escaleta generator + Kling) |
 | `525be93` | feat: PODCAST_T_SPEC.md — spec normativa para episodios T (Temas) |
+| `66d6c7c` | feat: PODCAST_M_SPEC.md — spec normativa v2 para episodios M (Módulos) |
 
 ---
 
