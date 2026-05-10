@@ -21,6 +21,7 @@ from pathlib import Path
 
 DEFAULT_M_SPEC_PATH = Path("PODCAST_M_SPEC.md")
 DEFAULT_T_SPEC_PATH = Path("PODCAST_T_SPEC.md")
+DEFAULT_SPEC_PATH   = DEFAULT_M_SPEC_PATH   # alias de retrocompatibilidad
 
 # Marcadores soportados: (start, end)
 _MARKERS: list[tuple[str, str]] = [
