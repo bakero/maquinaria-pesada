@@ -246,6 +246,33 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 - Si el usuario quiere variantes (paleta más sucia/grunge, fuente más agresiva, light mode), se itera con cambios localizados en `theme.py`.
 - El tema NO afecta a la lógica de la cockpit ni al pipeline de generación. Solo presentación.
 
+### 2026-05-10 · #16 — Consolidación final en master: docs untracked + merge APPContenidos + reconciliación de biblias
+
+**Tipo**: git + decisión + doc
+**Contexto**: el ecosistema de docs estaba fragmentado en tres áreas con trabajo no consolidado.
+1. `PRIMERPODCAST.md` y borradores de escaleta `escaletas/EP-MOD000_*.md` untracked en main path (master).
+2. La rama `APPContenidos` con todo el trabajo del cockpit (incluyendo el tema visual #15) nunca llegó a master.
+3. Dos "biblias" en paralelo: `BIBLIA_SISTEMA.md` (45 KB, master, canónica del proyecto) y `BIBLIA.md` (53 KB, APPContenidos, mía con cockpit en detalle).
+
+**Decisión** (validada con el usuario: "haz las tres cosas"):
+
+1. **Comprometer los docs untracked** (`PRIMERPODCAST.md` + `escaletas/EP-MOD000_*.md`) directamente en master desde el main path. Son project-level y deben vivir en el trunk.
+
+2. **Mergear `APPContenidos` → `master`** con `--no-ff` para preservar la traza del trabajo de la sesión cockpit. Trae 8+ commits (modal, sidebar, runlog, BIBLIA, APPCONTENIDOS, theme, etc.).
+
+3. **Reconciliar biblias**: `BIBLIA_SISTEMA.md` se queda como canónica. Las secciones únicas de `BIBLIA.md` (cockpit en detalle, técnicas IA listadas, costes orientativos, roadmap) se absorben en `BIBLIA_SISTEMA.md`. `BIBLIA.md` se borra para evitar drift.
+
+**Cambios técnicos** (3+ commits en master):
+- Commit A: `docs: PRIMERPODCAST.md + escaletas EP-MOD000` (en main path).
+- Commit B: `Merge branch 'APPContenidos'` (--no-ff).
+- Commit C: `docs: reconcilia BIBLIA.md en BIBLIA_SISTEMA.md` (edita BIBLIA_SISTEMA.md, borra BIBLIA.md).
+- Push final a `origin/master`.
+
+**Próximos pasos / impacto**:
+- `BIBLIA_SISTEMA.md` queda como única referencia técnica del sistema.
+- La rama `APPContenidos` queda mergeada pero no se borra (sigue siendo el worktree activo de esta sesión).
+- Otras sesiones (`feature/genepisodios`, `feature/videopodcast`) deberán hacer `git pull origin master` para ver el cockpit, el tema y la biblia unificada.
+
 ---
 
 ## Resumen de commits de la sesión (orden cronológico)
@@ -275,4 +302,4 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 
 ---
 
-*Diario activo desde 2026-05-10. Última entrada: #14.*
+*Diario activo desde 2026-05-10. Última entrada: #16.*
