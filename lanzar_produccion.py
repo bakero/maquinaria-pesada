@@ -122,14 +122,16 @@ def _extract_error_hint(stdout: str, stderr: str) -> str:
 
 def run_episode(ep_code: str, guion_path: Path, dry_run: bool) -> bool:
     """Ejecuta generar_episodio_v2.py para un episodio. Devuelve True si OK."""
+    ep_t = episode_type(guion_path.stem)
+    spec_file = "PODCAST_T_SPEC.md" if ep_t == "T" else "PODCAST_M_SPEC.md"
     cmd = [
         sys.executable,
         str(BASE_DIR / "generar_episodio_v2.py"),
         "--guion", str(guion_path.relative_to(BASE_DIR)),
         "--ep",    ep_code,
+        "--spec",  spec_file,
     ]
     log_path = cmd_log_path(ep_code)
-    ep_t = episode_type(guion_path.stem)
 
     sep = "=" * 60
     print(f"\n{sep}")
