@@ -289,22 +289,22 @@ def build_verification_section(
     coverage_pct  = int(round(len(coverage_hits) / max(len(concept_list), 1) * 100))
     lines = [
         "# VERIFICACIONES",
-        "#",
-        f"# PALABRAS TOTALES : {stats['word_count_total']} "
+        "##",
+        f"## PALABRAS TOTALES : {stats['word_count_total']} "
         f"(objetivo: {rules['minimum_word_count']}-{rules.get('maximum_word_count', '?')})",
-        f"# MEDIA PALABRAS/INTERVENCION : {stats['avg_words_per_intervention']:.1f}",
-        "#",
-        "# COBERTURA DE CONCEPTOS DEL PDF:",
+        f"## MEDIA PALABRAS/INTERVENCION : {stats['avg_words_per_intervention']:.1f}",
+        "##",
+        "## COBERTURA DE CONCEPTOS DEL PDF:",
     ]
     for concept in concept_list:
         mentions = stats["concept_mentions"].get(concept, 0)
         marker = "OK" if mentions >= 1 else "FALTA"
-        lines.append(f"# [{marker}] {concept}: {mentions} menciones")
-    lines.append(f"# Cobertura: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
+        lines.append(f"## [{marker}] {concept}: {mentions} menciones")
+    lines.append(f"## Cobertura: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
     lines.extend([
-        "#",
-        "# TOKENS ANTHROPIC:",
-        f"# {usage.report()}",
+        "##",
+        "## TOKENS ANTHROPIC:",
+        f"## {usage.report()}",
     ])
     return "\n".join(lines) + "\n"
 

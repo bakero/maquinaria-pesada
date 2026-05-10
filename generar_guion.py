@@ -380,6 +380,92 @@ def strip_verification_block(text: str) -> str:
     return re.sub(r"\n# VERIFICACIONES[\s\S]*$", "", text.strip(), flags=re.MULTILINE).strip()
 
 
+def enforce_fixed_phrases(text: str, spec: dict) -> str:
+    """Inyecta frases fijas del spec si el modelo no las incluyo exactamente.
+
+    Opera sobre el cuerpo del guion (sin bloque de verificaciones).
+    Preserva la etiqueta TTS del bloque si existe.
+    """
+    from podcast_spec import normalize_text_for_match, extract_leading_tag, remove_leading_tag
+
+    rules = spec["script_rules"]
+    SPEAKER_RE = re.compile(r"^(IAGO|MARIA)\s*:\s*(.*)$", re.IGNORECASE | re.MULTILINE)
+
+    def _inject_into_section(
+        body: str,
+        section_marker: str,
+        phrase: str,
+        position: str,  # "first_block" | "last_block"
+    ) -> str:
+        """Sustituye el bloque objetivo de la sección con la frase fija si no está."""
+        norm_phrase = normalize_text_for_match(phrase)
+        if norm_phrase in normalize_text_for_match(body):
+            return body  # ya está, nada que hacer
+
+        lines = body.split("\n")
+        sec_idx = None
+        for i, ln in enumerate(lines):
+            if ln.strip().upper() == f"# {section_marker}":
+                sec_idx = i
+                break
+        if sec_idx is None:
+            return body  # sección no encontrada
+
+        # Encontrar bloques hablados en la sección
+        next_sec_idx = len(lines)
+        for i in range(sec_idx + 1, len(lines)):
+            if lines[i].strip().startswith("# ") and not lines[i].strip().startswith("## "):
+                next_sec_idx = i
+                break
+
+        block_indices = [
+            i for i in range(sec_idx + 1, next_sec_idx)
+            if SPEAKER_RE.match(lines[i].strip())
+        ]
+        if not block_indices:
+            return body
+
+        target_idx = block_indices[0] if position == "first_block" else block_indices[-1]
+        target_line = lines[target_idx].strip()
+        m = SPEAKER_RE.match(target_line)
+        if not m:
+            return body
+
+        speaker = m.group(1).upper()
+        content = m.group(2).strip()
+        tag = extract_leading_tag(content)
+
+        if position == "last_block":
+            # Reemplazar contenido completo del bloque con la frase fija
+            new_content = f"<calido>{phrase}</calido>" if not tag else f"{tag}{phrase}</{tag.strip('<>')}>"
+            lines[target_idx] = f"{speaker}: {new_content}"
+        else:
+            # Prefijar la frase al bloque (para conceptos_closing)
+            plain = remove_leading_tag(content)
+            if tag:
+                inner_tag = tag.strip("<>")
+                new_content = f"{tag}{phrase} {plain}</{inner_tag}>"
+            else:
+                new_content = f"{phrase} {plain}"
+            lines[target_idx] = f"{speaker}: {new_content}"
+
+        return "\n".join(lines)
+
+    # ── final_closing_phrase → último bloque de CIERRE_FINAL ─────────────────
+    if rules.get("final_closing_phrase"):
+        text = _inject_into_section(text, "CIERRE_FINAL", rules["final_closing_phrase"], "last_block")
+
+    # ── concepts_closing_phrase → primer bloque de CIERRE_CONCEPTOS ──────────
+    if rules.get("concepts_closing_phrase"):
+        text = _inject_into_section(text, "CIERRE_CONCEPTOS", rules["concepts_closing_phrase"], "first_block")
+
+    # ── hook_closing_phrase → último bloque de HOOK ───────────────────────────
+    if rules.get("hook_closing_phrase"):
+        text = _inject_into_section(text, "HOOK", rules["hook_closing_phrase"], "last_block")
+
+    return text
+
+
 # ---------------------------------------------------------------------------
 # Sección de verificaciones
 # ---------------------------------------------------------------------------
@@ -398,26 +484,26 @@ def build_verification_section(
 
     lines = [
         "# VERIFICACIONES",
-        "#",
-        f"# PALABRAS TOTALES : {stats['word_count_total']} "
+        "##",
+        f"## PALABRAS TOTALES : {stats['word_count_total']} "
         f"(objetivo: {rules['minimum_word_count']}-{rules['maximum_word_count']})",
-        f"# MEDIA PALABRAS/INTERVENCION : {stats['avg_words_per_intervention']:.1f}",
-        "#",
-        "# COBERTURA DE CONCEPTOS DEL PDF:",
+        f"## MEDIA PALABRAS/INTERVENCION : {stats['avg_words_per_intervention']:.1f}",
+        "##",
+        "## COBERTURA DE CONCEPTOS DEL PDF:",
     ]
     for concept in concept_list:
         mentions = stats["concept_mentions"].get(concept, 0)
-        marker = "✅" if mentions >= 1 else "❌"
-        lines.append(f"# {marker} {concept}: {mentions} menciones")
-    lines.append(f"# Cobertura total: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
+        marker = "[OK]" if mentions >= 1 else "[--]"
+        lines.append(f"## {marker} {concept}: {mentions} menciones")
+    lines.append(f"## Cobertura total: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
     lines.extend([
-        "#",
-        "# APLICACION_PRACTICA:",
-        f"# Párrafos encontrados en docs vivos: {ficha.get('paragraphs_found', 0)}",
-        f"# Por documento: {ficha.get('hits_by_doc', {})}",
-        "#",
-        "# TOKENS ANTHROPIC:",
-        f"# {usage.report()}",
+        "##",
+        "## APLICACION_PRACTICA:",
+        f"## Parrafos encontrados en docs vivos: {ficha.get('paragraphs_found', 0)}",
+        f"## Por documento: {ficha.get('hits_by_doc', {})}",
+        "##",
+        "## TOKENS ANTHROPIC:",
+        f"## {usage.report()}",
     ])
     return "\n".join(lines) + "\n"
 
@@ -548,6 +634,7 @@ def main() -> None:
         )
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)
+        draft = enforce_fixed_phrases(draft, spec)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
@@ -559,13 +646,13 @@ def main() -> None:
 
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
         for issue in hard_issues:
-            print(f"         ❌ {issue}")
+            print(f"         [HARD] {issue}")
         for issue in soft_issues:
-            print(f"         ⚠  {issue}")
+            print(f"         [WARN] {issue}")
 
         if not hard_issues:
             draft = draft_with_ver
-            print("         ✅ Validación OK")
+            print("         [PASS] Validacion OK")
             break
 
         if attempt == args.max_intentos:
@@ -589,7 +676,7 @@ def main() -> None:
         if soft_issues:
             print(f"  Issues soft    : {len(soft_issues)}")
     else:
-        print("  Validación     : ✅ PASS")
+        print("  Validacion     : PASS")
     print(f"{'='*60}\n")
 
     # Resumen de estado del proyecto

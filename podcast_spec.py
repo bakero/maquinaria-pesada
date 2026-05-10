@@ -177,10 +177,10 @@ def allowed_tags_for_speaker(speaker: str, spec: dict) -> set[str]:
 
 def section_title(line: str) -> str | None:
     stripped = line.strip()
-    if stripped.startswith("# "):
+    # Solo reconoce "# PALABRA" (un hash + espacio), NO "## ..." (comentarios de verificacion)
+    if stripped.startswith("# ") and not stripped.startswith("## "):
         candidate = stripped[2:].strip().upper()
-        # Excluye líneas que empiezan con "# VERIFICACION" (comentarios de verificación)
-        if candidate and not candidate.startswith("VERIFICACI"):
+        if candidate:
             return candidate
     return None
 
@@ -432,14 +432,15 @@ def validate_script_text(
                     f"en bloque {block['index']}."
                 )
 
-    # ── 7. Frases fijas ─────────────────────────────────────────────────────
-    if rules.get("hook_closing_phrase") and rules["hook_closing_phrase"] not in text:
+    # ── 7. Frases fijas (comparacion normalizada: sin acentos, lowercase) ──────
+    norm_text = normalize_text_for_match(text)
+    if rules.get("hook_closing_phrase") and normalize_text_for_match(rules["hook_closing_phrase"]) not in norm_text:
         issues.append("Falta la frase fija de cierre del hook.")
-    if rules.get("final_closing_phrase") and rules["final_closing_phrase"] not in text:
+    if rules.get("final_closing_phrase") and normalize_text_for_match(rules["final_closing_phrase"]) not in norm_text:
         issues.append("Falta la frase fija de cierre final.")
-    if rules.get("concepts_closing_phrase") and rules["concepts_closing_phrase"] not in text:
+    if rules.get("concepts_closing_phrase") and normalize_text_for_match(rules["concepts_closing_phrase"]) not in norm_text:
         issues.append("Falta la apertura fija del cierre de conceptos.")
-    if rules.get("intro_comment") and rules["intro_comment"] not in text:
+    if rules.get("intro_comment") and normalize_text_for_match(rules["intro_comment"]) not in norm_text:
         issues.append("Falta la instruccion de intro de sonido.")
 
     # ── 8. Aviso de IA (keywords obligatorias) ──────────────────────────────
