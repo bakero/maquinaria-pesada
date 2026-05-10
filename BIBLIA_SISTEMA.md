@@ -763,6 +763,55 @@ disparos pesados van a Codex con prompts CLI generados en la página
 `streamlit-autorefresh`, polling con `psutil` para detectar procesos
 python en marcha.
 
+### 10.5 Evolución reciente (sesión APPContenidos · 2026-05-10)
+
+Trabajo absorbido desde la rama `APPContenidos` (commit merge `6040434`).
+Diario completo de las decisiones de la sesión cockpit en
+[`APPCONTENIDOS.md`](APPCONTENIDOS.md) (16 entradas).
+
+#### Tema visual industrial CAT
+- Paleta dark + amarillo CAT (`#F5C400`) + acero gris.
+- Tipografías: **Oswald** (titulares uppercase, letter-spacing ancho),
+  **Barlow Condensed** (cuerpo), **JetBrains Mono** (numérico/HUD).
+- Bordes 2px (esquinas casi cuadradas), H1 con barra amarilla a la
+  izquierda (bandera de obra), divisores con degradado amarillo.
+- Implementación: `.streamlit/config.toml` (tema base) + `cockpit/theme.py`
+  (`inject_theme()` + `render_logo()`). Llamado desde `app.py` y las 5
+  páginas tras `set_page_config()`.
+- Logo: `Logos/logo sin fondo.png` vía `st.logo()` (Streamlit ≥ 1.35).
+
+#### Sidebar persistente "Producción en vivo"
+- En todas las páginas, refresh 5s.
+- Procesos Python detectados con `psutil` cuya cmdline contiene un script
+  conocido (`generar_guion.py`, `generar_episodio_v2.py`, `run_pipeline.py`,
+  etc.). Muestra PID, label, tiempo, RAM, log activo (mtime <5min) + tail
+  3 últimas líneas.
+- "Generándose ahora": ficheros aparecidos en `episodios/`/`output/`/`Videos/`
+  con mtime <10min.
+- Read-only: nunca lanza nada.
+
+#### Modal de validaciones en página Estado
+- Iconos OK/KO de cada celda (PDF/Guion/Audio/Video/Log) son **clicables**.
+- Click → `@st.dialog` con resumen de la última ejecución para esa
+  (módulo, categoría): errores, warnings, señales OK, conteo por fase,
+  sample, badge de fuente (`📦 estructurado` / `📄 texto`).
+
+#### Observabilidad estructurada con `runlog.py`
+- Módulo nuevo en raíz del repo, sin dependencias externas (stdlib).
+- API: `with RunLogger(episode, module, script) as log: log.event(phase, **kwargs)`.
+- Output: `episodios/{episode}_events.jsonl` (append-only, una línea
+  JSON por evento).
+- Campos automáticos: `ts`, `episode`, `module`, `script`, `pid`, `phase`,
+  `level` (`info`/`warn`/`error`), `category` (`pdf`/`guion`/`audio`/
+  `video`/`log`/`system`). Kwargs libres para extras (`block`, `speaker`,
+  `ms`, `credits`, `exc`, …).
+- `cockpit/core/log_parser.py` ahora usa **prioridad JSONL > regex**:
+  si existe `*_events.jsonl` para el módulo, parsea estructurado; si no,
+  fallback al regex de logs libres.
+- Pendiente: migrar generadores (`generar_guion.py`, `generar_episodio_v2.py`,
+  etc.) a `runlog`. Trabajo en sesión `feature/genepisodios`. El fallback
+  regex sigue funcionando mientras tanto.
+
 ---
 
 ## 11.bis QA (Quality Assurance) — políticas de validación
@@ -1007,6 +1056,59 @@ python maquinaria_pesada_pipeline/tools/kling_recover.py \
 - **Drift**: desfase progresivo entre audio y video (corregido).
 - **Layout C**: pizarra fullscreen + PIP del presentador en esquina.
   Layout activo desde 8 mayo 2026.
+
+---
+
+## Anexo A — Estimación de costes por episodio
+
+> Cifras orientativas para **un episodio de 15 min**. Pueden variar según
+> tarifas vigentes de cada API. No incluye Kling B-roll (cobro aparte por
+> minuto generado, ~$1-2 por episodio según cantidad de clips).
+
+| Servicio | Modelo | Métrica | Volumen típico | Coste aprox. |
+|---|---|---|---|---|
+| Anthropic | Claude Sonnet 4.5 (guion + escaleta) | tokens | ~10k in + 8k out | $0.10–$0.20 |
+| Anthropic | Claude Haiku (concept_extractor) | tokens | ~3k in + 1k out | $0.005 |
+| OpenAI | `whisper-1` | minutos audio | 15 min | $0.09 |
+| ElevenLabs | `eleven_v3` | caracteres | ~12k chars (1900 palabras × ~6) | $0.30–$0.60 |
+| Kling | 1.6 Pro image-to-video | segundos generados | 30-60s de B-roll | $1.00–$2.00 |
+| **Total estimado / episodio** | | | | **~$1.50–$3.00** |
+
+15 episodios completos ≈ **$23–$45**. Coste marginal trivial frente al
+trabajo manual equivalente.
+
+---
+
+## Anexo B — Esquema de evento JSONL (`runlog`)
+
+Eventos emitidos por los generadores vía `runlog.RunLogger`. Un objeto
+JSON por línea, append-only en `episodios/{episode}_events.jsonl`.
+
+```json
+{
+  "ts": "ISO 8601 con sufijo Z (UTC)",
+  "episode": "string (M3_E_ML | EP001 | …)",
+  "module": "M0..M14",
+  "script": "filename.py",
+  "pid": 4242,
+  "phase": "string (start | extract_pdf | parse_blocks | synth_block | mount_audio | validate | end | …)",
+  "level": "info | warn | error",
+  "category": "pdf | guion | audio | video | log | system",
+
+  "// kwargs libres": "ejemplos comunes:",
+  "block": 12,
+  "speaker": "IAGO | MARIA",
+  "ms": 312,
+  "credits": 1024,
+  "exc": "string (solo en errores)",
+  "traceback": "string truncado (solo en errores)",
+  "elapsed_s": 0.01
+}
+```
+
+Lectura desde la cockpit: `cockpit.core.log_parser.parse(module, category)`
+prioriza JSONL si existe; si no, cae a regex sobre `*.log`. Misma API
+`CategorySummary` en ambos casos.
 
 ---
 
