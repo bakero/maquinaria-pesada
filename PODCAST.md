@@ -308,6 +308,35 @@ HARD_KEYWORDS = (
 
 ---
 
+#### [DECISIÓN] `PODCAST_T_SPEC.md` — spec normativa para episodios T (Temas)
+
+**Adoptada en:** 2026-05-10  
+**Commit:** `525be93`  
+**Motivo:** Los episodios M (módulo) son resúmenes de 15 min del máster completo (15 módulos). Los episodios T son piezas cortas (10 min objetivo) por tema concreto — ~100 episodios en total, uno por tópico específico del máster. Requieren spec propia por diferencias estructurales y editoriales significativas.
+
+**Diferencias clave vs `PODCAST_M_SPEC.md`:**
+
+| Aspecto | Episodios M | Episodios T |
+|---------|-------------|-------------|
+| Duración objetivo | 15 min | 10 min (rango 9–12) |
+| Bloques de contenido | BLOQUE_1 a BLOQUE_4 + 3 INSERCIONES | BLOQUE_QUE + BLOQUE_COMO + BLOQUE_LIMITES |
+| Modelo generador | GPT-4.1 (OpenAI) | claude-sonnet-4-5 (Anthropic) |
+| Roles presentadores | Intercambiados | Asignados: Yago→QUÉ, compartido→CÓMO, María→LÍMITES |
+| Blacklist interjecciones | No | Sí — 8 frases bloqueantes (QA duro) |
+| Fuentes secundarias | Solo PDF módulo | Jerarquía: glosario, benchmarks, fuentes directas |
+| Pre-escritura | No obligatoria | Sí — mapa conceptual, tesis, ángulo de ataque |
+
+**Secciones requeridas:**
+`HOOK` · `INTRO_SONIDO` · `SALUDO_Y_PRESENTACION` · `BLOQUE_QUE` · `BLOQUE_COMO` · `BLOQUE_LIMITES` · `CIERRE_CONCEPTOS` · `CIERRE_FINAL` · `VERIFICACIONES`
+
+**Secciones prohibidas** (QA duro): `BLOQUE_1-4`, `INSERCION_1-3`, `APLICACION_PRACTICA`
+
+**QA rules activados:** `hard_fail_on_blacklist_interjection`, `hard_fail_on_forbidden_section`, `hard_fail_on_missing_warning_keyword`, `hard_fail_on_wrong_role_leader`
+
+**Pendiente:** implementar `podcast_t_spec.py` (validador) y `generar_guion_t.py` (generador).
+
+---
+
 ## Pendientes abiertos (al 2026-05-10)
 
 | # | Pendiente | Bloqueado por |
@@ -317,6 +346,9 @@ HARD_KEYWORDS = (
 | 3 | Fix: `estado_proyecto.py` desde worktree no ve episodios | Decisión de arquitectura de rutas pendiente |
 | 4 | Soft quality warnings en guiones M1–M14 | Word count / sentence count por debajo de objetivo |
 | 5 | Subir episodios a YouTube / Spotify | Manual, tras completar vídeo |
+| 6 | Implementar `podcast_t_spec.py` — validador episodios T | Depende de PODCAST_T_SPEC.md (ya disponible) |
+| 7 | Implementar `generar_guion_t.py` — generador episodios T | Depende de podcast_t_spec.py |
+| 8 | Crear fuentes auxiliares: `glosario_unificado.md`, `benchmarks_academicos.md`, `fuentes_directas.md` | Manual |
 
 ---
 
@@ -334,6 +366,7 @@ HARD_KEYWORDS = (
 | `987d08f` | chore: remove .bak files from tracking (covered by .gitignore) |
 | `111216a` | merge: videopodcast (pipeline audio/subtitles) → master |
 | `217a484` | merge: videopodcast → master (biblia + escaleta generator + Kling) |
+| `525be93` | feat: PODCAST_T_SPEC.md — spec normativa para episodios T (Temas) |
 
 ---
 
