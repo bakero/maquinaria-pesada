@@ -1,0 +1,122 @@
+# HOOK
+
+MARIA: <conversacional>En 2012, un modelo llamado AlexNet ganó el concurso ImageNet con un margen de error del quince por ciento. El segundo clasificado tenía un veintiséis por ciento. Esa diferencia de once puntos no era una mejora incremental. Era una revolución. AlexNet usaba redes neuronales convolucionales entrenadas con GPUs, y ese momento marcó el inicio de la era del deep learning. Trece años después, en 2025, los LLMs que usamos cada día son el resultado directo de esa misma tecnología escalada a niveles que en 2012 parecían ciencia ficción. Setenta mil millones de parámetros organizados en capas que aprenden representaciones del lenguaje sin que nadie les diga qué características buscar. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+MARIA: <calido>Soy Maria Sendero.
+
+IAGO: <calido>Y yo Yago Elías. Bienvenidos al módulo cuatro de MaquinarIA Pesada: Deep Learning.
+
+MARIA: <directo>Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo el sistema que está generando este podcast aplica exactamente los conceptos de deep learning que vamos a explicar ahora.
+
+# BLOQUE_PANORAMA
+
+IAGO: <didactico>El deep learning es la tecnología que ha producido los avances más espectaculares en inteligencia artificial de los últimos quince años. Desde AlexNet en visión por computadora hasta GPT en procesamiento del lenguaje natural. Y la pregunta que este módulo responde es: ¿por qué el deep learning supera a todos los enfoques anteriores en tantas tareas? La respuesta tiene que ver con representaciones jerárquicas. Una red neuronal profunda aprende automáticamente qué características son relevantes en los datos y cómo combinarlas para hacer predicciones. Sin feature engineering manual. Sin que un humano le diga qué buscar.
+
+MARIA: <esceptico>Eso suena a magia. ¿Qué significa realmente "aprender representaciones jerárquicas"?
+
+IAGO: <explicativo>Significa que las capas más superficiales de la red aprenden características simples, y las capas más profundas aprenden características más abstractas combinando las anteriores. En visión por computadora, la primera capa detecta bordes. La segunda detecta texturas. La tercera detecta formas. La cuarta detecta objetos completos. Y todo eso emerge del entrenamiento, no de reglas programadas a mano. El deep learning no es magia: es álgebra lineal más funciones de activación no lineales más descenso del gradiente, aplicados a enormes cantidades de datos y poder computacional.
+
+IAGO: <serio>Lo que hace difícil de entender intuitivamente el deep learning es la escala. Un LLM moderno tiene miles de millones de parámetros organizados en cientos de capas, procesando secuencias de miles de tokens. Pero los principios básicos son los mismos que en una red neuronal de tres capas y cien parámetros. Este módulo cubre esos principios. Primero, las arquitecturas: desde las redes feedforward básicas hasta las convolucionales que revolucionaron la visión por computadora. Segundo, el entrenamiento: backpropagation, optimizadores, regularización. Tercero, el paradigma moderno: preentrenamiento más fine-tuning, RLHF, LoRA y QLoRA.
+
+MARIA: <curioso>¿Y por qué importa entender esto si los modelos ya están entrenados?
+
+IAGO: <contundente>Porque cuando haces fine-tuning de un modelo, cuando ajustas hiperparámetros, cuando decides si usar LoRA o fine-tuning completo, estás tomando decisiones que requieren entender estos mecanismos. El deep learning no es una caja negra que funciona sola. Es un sistema de ingeniería con trade-offs específicos que necesitas conocer para usarlo en producción.
+
+# BLOQUE_TEMAS_CLAVE
+
+IAGO: <didactico>Empecemos por las redes convolucionales, las CNNs. Son el tipo de red neuronal diseñada específicamente para procesar datos con estructura espacial: imágenes, vídeos, señales de audio. La clave de las CNNs es la operación de convolución. Un filtro pequeño se desliza sobre la imagen calculando el producto escalar entre el filtro y cada parche de la imagen. El resultado es un mapa de activación que indica dónde aparece el patrón que el filtro detecta. Múltiples filtros aprenden distintos tipos de patrones. Y aquí está la magia: los filtros no se programan, se aprenden durante el entrenamiento.
+
+MARIA: <curioso>¿Qué hace que las CNNs sean tan efectivas para imágenes?
+
+IAGO: <explicativo>Tres propiedades fundamentales. Primera: compartición de pesos. El mismo filtro se aplica a toda la imagen, reduciendo dramáticamente el número de parámetros. Una red feedforward que procesara una imagen de doscientos veinticuatro por doscientos veinticuatro píxeles tendría millones de conexiones solo en la primera capa. Una CNN con filtros de tres por tres tiene solo nueve pesos por filtro. Segunda: invarianza a la traslación. El mismo patrón es detectado independientemente de su posición en la imagen. Y tercera: jerarquía de representaciones. Las capas más profundas aprenden características más abstractas y de mayor escala a partir de las más simples de las capas anteriores.
+
+MARIA: <analitica>Ahora hablemos de backpropagation, que es el algoritmo que hace posible entrenar estas redes. La idea fundamental es aplicar la regla de la cadena del cálculo para calcular eficientemente los gradientes de la función de pérdida con respecto a todos los parámetros del modelo. El proceso tiene dos fases: el forward pass, donde calculas el output del modelo dado un input y almacenas las activaciones intermedias, y el backward pass, donde calculas los gradientes propagándolos desde la capa de output hacia las capas anteriores. Los gradientes calculados se usan para actualizar los parámetros en la dirección que reduce la pérdida.
+
+IAGO: <tenso>Y aquí aparece uno de los principales problemas del entrenamiento de redes profundas: el vanishing gradient, el gradiente que se desvanece. Cuando los gradientes se propagan hacia atrás a través de muchas capas, tienden a disminuir exponencialmente. Las capas más alejadas del output aprenden muy lentamente o directamente dejan de aprender.
+
+MARIA: <directo>¿Cómo se resuelve?
+
+IAGO: <explicativo>Tres soluciones principales. Primera: funciones de activación que evitan la saturación. ReLU y sus variantes no saturan para valores positivos, a diferencia de la sigmoide o la tangente hiperbólica que sí lo hacen. Segunda: inicialización cuidadosa de los pesos. Xavier initialization, He initialization. Y tercera: conexiones residuales, las ResNets. Añaden atajos que permiten a los gradientes fluir directamente de las capas posteriores a las anteriores sin pasar por todas las capas intermedias. ResNet fue una de las innovaciones más importantes en arquitecturas de deep learning.
+
+IAGO: <didactico>Tercer concepto clave: los optimizadores. El descenso del gradiente estocástico básico, el SGD, actualiza los parámetros usando el gradiente calculado sobre un mini-batch de datos. Funciona, pero converge lentamente y puede quedar atrapado en óptimos locales o en puntos de silla del espacio de pérdida. Los optimizadores modernos mejoran SGD añadiendo momento, que acelera la convergencia en la dirección de descenso constante, y tasas de aprendizaje adaptativas, que ajustan la tasa de aprendizaje de cada parámetro individualmente basándose en el historial de gradientes.
+
+MARIA: <curioso>¿Cuál es el optimizador estándar ahora?
+
+IAGO: <contundente>AdamW. Es Adam con decoupled weight decay, weight decay desacoplado. Adam combina momento y tasas de aprendizaje adaptativas, y AdamW separa la penalización de weight decay del gradiente para una regularización más efectiva. Para el fine-tuning de LLMs, la tasa de aprendizaje óptima es típicamente mucho menor que para el entrenamiento desde cero, entre diez y cien veces menor, y el uso de un learning rate scheduler que reduce la tasa de aprendizaje a lo largo del entrenamiento es estándar. Por ejemplo, cosine annealing con warmup.
+
+MARIA: <analitica>Cuarto concepto: el paradigma del preentrenamiento más fine-tuning. Esto ha transformado radicalmente cómo se desarrollan los modelos de IA. En el paradigma anterior, cada tarea requería entrenar un modelo desde cero con datos etiquetados de esa tarea específica. El preentrenamiento permite entrenar una sola vez un modelo grande sobre enormes cantidades de datos no etiquetados para aprender representaciones generales y ricas del mundo, y luego adaptar ese modelo a tareas específicas con muchos menos datos etiquetados. Para los LLMs, el preentrenamiento se hace típicamente sobre terabytes de texto de internet usando la tarea de language modeling: predecir el siguiente token.
+
+IAGO: <explicativo>Y ese proceso aprende representaciones de palabras, conceptos, relaciones semánticas, estructuras gramaticales, hechos sobre el mundo, y razonamiento lógico implícito. El modelo preentrenado es el peso bruto de la inteligencia lingüística que luego puede adaptarse a miles de tareas distintas con fine-tuning. Es la razón por la que GPT-4, Claude, Llama funcionan tan bien en tareas para las que no fueron entrenados explícitamente.
+
+MARIA: <directo>Quinto concepto: RLHF, Reinforcement Learning from Human Feedback. Es la técnica que transformó los LLMs de generadores de texto en asistentes útiles y seguros. InstructGPT, de OpenAI en 2022, demostró que un modelo de mil trescientos millones de parámetros entrenado con RLHF superaba en utilidad y seguridad a modelos de ciento setenta y cinco mil millones de parámetros entrenados solo con language modeling. El proceso de RLHF tiene tres fases: primero, fine-tuning supervisado con ejemplos de conversaciones de alta calidad. Segundo, entrenamiento de un modelo de recompensa que predice qué respuesta prefieren los humanos dado un prompt, usando pares de respuestas con preferencias anotadas por humanos. Tercero, optimización del modelo usando el modelo de recompensa como señal de feedback con el algoritmo PPO, Proximal Policy Optimization.
+
+IAGO: <serio>Y ahora existe DPO, Direct Preference Optimization, que es una alternativa más simple al RLHF que logra alineamiento similar sin necesidad de entrenar el modelo de recompensa ni usar PPO. Los modelos más recientes, Claude, Llama 3, usan variantes de DPO o técnicas similares para el alineamiento. Es ingeniería de sistemas aplicada al comportamiento de los modelos.
+
+# BLOQUE_LIMITES
+
+MARIA: <esceptico>Ahora hablemos de lo que no funciona, porque el deep learning tiene límites muy claros. Primero: el fine-tuning completo de un LLM de setenta mil millones de parámetros requiere decenas de GPUs de alta gama durante días y produce un modelo completo de ciento cuarenta gigabytes que debe desplegarse por separado de la versión base. Eso es inviable para la mayoría de proyectos. Y aquí es donde entran las técnicas de PEFT, Parameter-Efficient Fine-Tuning, ajuste eficiente de parámetros. LoRA, Low-Rank Adaptation, es la más popular: en lugar de ajustar directamente los pesos del modelo, añade matrices de bajo rango a las capas de atención del Transformer. Estas matrices son mucho más pequeñas que los pesos originales, típicamente el cero coma uno al uno por ciento del total de parámetros.
+
+IAGO: <reflexivo>Y QLoRA combina LoRA con la cuantización del modelo base en cuatro bits, reduciendo dramáticamente los requisitos de memoria. Hace posible el fine-tuning de modelos de setenta mil millones de parámetros en una sola GPU de consumo con veinticuatro gigabytes de VRAM. Eso es un cambio de orden de magnitud en accesibilidad.
+
+MARIA: <tenso>Segundo límite: el vanishing gradient no está completamente resuelto. ReLU, inicialización correcta y conexiones residuales ayudan, pero en redes muy profundas o con secuencias muy largas el problema sigue apareciendo. Los Transformers con self-attention mitigan esto porque cada token puede atender directamente a cualquier otro token sin pasar por capas intermedias, pero incluso los Transformers tienen límites de contexto.
+
+IAGO: <directo>Tercero: la regularización en deep learning es más arte que ciencia. Dropout funciona bien en redes feedforward pero puede dañar el rendimiento en redes recurrentes. Batch normalization estabiliza el entrenamiento pero introduce dependencias entre ejemplos del mini-batch que pueden causar problemas en inferencia. Layer normalization es el estándar en Transformers, pero la elección de dónde aplicarla, antes o después de las capas de atención, afecta significativamente el rendimiento. No hay reglas universales.
+
+MARIA: <esceptico>Cuarto: el preentrenamiento más fine-tuning funciona extraordinariamente bien, pero introduce un problema de distribución. El modelo preentrenado aprendió de datos de internet, que tienen sesgos, errores, y contenido tóxico. El fine-tuning puede mitigar esos problemas, pero no los elimina completamente. Y cuando haces fine-tuning en un dominio muy específico, el modelo puede olvidar capacidades generales que tenía después del preentrenamiento. Eso se llama catastrophic forgetting, olvido catastrófico.
+
+IAGO: <serio>Y quinto: RLHF y DPO alinean los modelos con las preferencias humanas, pero esas preferencias son subjetivas y culturalmente dependientes. Lo que un anotador considera una buena respuesta puede no coincidir con lo que otro anotador considera bueno. Y el modelo aprende a optimizar para las preferencias de los anotadores, no para alguna noción objetiva de corrección o utilidad. Es un trade-off inherente.
+
+# APLICACION_PRACTICA
+
+IAGO: <conversacional>Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta operativa es: cuando tienes que generar cien episodios de podcast con calidad consistente, ¿cómo aplicas los conceptos de deep learning que acabamos de explicar?
+
+MARIA: <directo>El sistema que genera MaquinarIA Pesada usa un LLM preentrenado, Claude Sonnet, para generar los guiones. No es un modelo entrenado desde cero. Es un modelo preentrenado que se adapta a la tarea específica mediante prompting estructurado. Eso es transfer learning en su forma más pura: tomas un modelo que aprendió representaciones generales del lenguaje durante el preentrenamiento y lo adaptas a una tarea específica sin reentrenar los pesos del modelo. El prompting es la interfaz de adaptación.
+
+IAGO: <explicativo>El system prompt del generador tiene aproximadamente cinco mil bytes. Está dividido en reglas duras y reglas de tono. Las reglas duras incluyen estructura de bloques obligatoria, longitudes mínimas por intervención, lista negra de interjecciones, reparto de palabras por speaker. Las reglas de tono incluyen perfiles de los presentadores, uso de etiquetas TTS, alternancia de líder por bloque. Y aquí está la conexión directa con el concepto de fine-tuning: el system prompt actúa como un fine-tuning en tiempo de inferencia. No estamos ajustando los pesos del modelo, pero sí estamos condicionando su comportamiento de forma muy específica para la tarea.
+
+IAGO: <serio>El sistema también usa un validador automático que revisa cada guion generado antes de enviarlo a síntesis de audio. El validador verifica que el guion cumple con la especificación: estructura correcta de bloques, longitud dentro del rango objetivo, ausencia de interjecciones prohibidas, reparto equilibrado de palabras entre speakers. Cuando el validador detecta un problema, el guion se rechaza y el generador intenta de nuevo. Esto es una forma de optimización iterativa similar conceptualmente a como RLHF optimiza un LLM: hay una señal de recompensa, en este caso binaria, que indica si el guion es aceptable o no, y el sistema ajusta su output basándose en esa señal.
+
+MARIA: <curioso>¿Y eso ha funcionado?
+
+IAGO: <contundente>Cien episodios generados. La mayoría pasa validación a la primera. Cuando falla, falla por la misma razón que cualquier proyecto de fine-tuning del módulo que acabamos de explicar: el prompt no es código, pero sí se rompe. Si las instrucciones son ambiguas, el modelo interpreta. Si las reglas son contradictorias, el modelo elige. Y si la tarea es demasiado compleja para el contexto disponible, el modelo degrada. Esos son los límites del transfer learning mediante prompting.
+
+MARIA: <analitica>La conexión con el concepto de representaciones jerárquicas es directa. El modelo preentrenado aprendió durante el preentrenamiento representaciones de conceptos como "podcast", "episodio", "guion", "diálogo", "estructura narrativa". El system prompt especifica cómo combinar esas representaciones para producir un output específico: un guion de podcast técnico con estructura modular, reparto equilibrado, y tono divulgativo. El modelo no necesita aprender qué es un podcast desde cero. Ya lo sabe. Solo necesita aprender cómo este podcast específico se diferencia de otros podcasts.
+
+# CIERRE_CONCEPTOS
+
+IAGO: <didactico>No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: el deep learning aprende representaciones jerárquicas de los datos sin feature engineering manual. Es la razón de su superioridad en imagen, texto, y audio. Segundo: las CNNs son el estándar para visión por computadora gracias a la compartición de pesos, la invarianza a la traslación, y la jerarquía de representaciones. Tercero: backpropagation más descenso del gradiente es el mecanismo de aprendizaje. El vanishing gradient se resuelve con ReLU, inicialización correcta, y conexiones residuales. Cuarto: AdamW es el optimizador estándar para LLMs. El learning rate scheduler es imprescindible.
+
+MARIA: <claro>Quinto: el preentrenamiento más fine-tuning es el paradigma dominante. El modelo aprende representaciones generales y se adapta a tareas específicas con muchos menos datos. Sexto: RLHF y DPO alinean los LLMs con las preferencias humanas. Y séptimo: LoRA y QLoRA permiten el fine-tuning eficiente de LLMs grandes con recursos limitados. El cero coma uno al uno por ciento de los parámetros captura la adaptación necesaria. Y como acabamos de ver, el prompting estructurado es una forma de transfer learning aplicable sin reentrenar el modelo.
+
+# CIERRE_FINAL
+
+MARIA: <calido>Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2676 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 66.9
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] rlhf: 8 menciones
+## [OK] tuning: 18 menciones
+## [OK] el deep learning: 7 menciones
+## [OK] deep learning: 13 menciones
+## [OK] profundas: 4 menciones
+## [OK] sgd: 2 menciones
+## [OK] ia: 1 menciones
+## [OK] modelo de recompensa: 3 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 11
+## Por documento: {'BIBLIA_SISTEMA': 0, 'PRIMERPODCAST': 1, 'VIDEOPODCAST': 0, 'PODCAST': 10}
+##
+## TOKENS ANTHROPIC:
+## input=19206 output=5922 cache_read=0 cache_create=0 total=25128

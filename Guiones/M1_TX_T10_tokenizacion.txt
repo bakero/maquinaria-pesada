@@ -1,0 +1,112 @@
+# HOOK
+
+IAGO: [contundente] GPT-4 cobra cinco dólares por millón de tokens de entrada. No por palabras. No por caracteres. Por tokens. Un documento de diez páginas en español tiene veinticinco mil tokens. Procesar diez mil documentos al mes cuesta mil doscientos cincuenta dólares solo en entrada. Y la mayoría de las empresas no saben qué es exactamente un token, por qué el español es un veinte por ciento más caro que el inglés, o por qué los modelos no pueden contar las letras dentro de la palabra "strawberry". Hoy explicamos la tokenización: el proceso invisible que determina qué ve realmente un modelo de lenguaje cuando le envías texto. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: Soy Yago.
+
+MARIA: Y yo María. Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+IAGO: Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo.
+
+MARIA: Hoy vamos a hablar de tokenización. El proceso que convierte tu texto en números antes de que un modelo lo procese.
+
+# BLOQUE_QUE
+
+IAGO: [didactico] La tokenización es el primer paso que ocurre cuando envías texto a un modelo de lenguaje. Tomas una cadena de texto crudo, por ejemplo "Los modelos no leen palabras", y la conviertes en una secuencia de enteros. Cada entero representa un token en el vocabulario del modelo. Ese vocabulario es una lista cerrada de entre cincuenta mil y doscientos mil fragmentos de texto que el modelo aprendió durante su entrenamiento. Cada fragmento tiene un identificador único, un número entero. El modelo no ve letras. No ve palabras. Ve esa secuencia de IDs numéricos.
+
+MARIA: ¿Y esos fragmentos son palabras completas?
+
+IAGO: [explicativo] Depende del idioma y de la frecuencia. En inglés, palabras muy comunes como "the", "and", "is" son tokens únicos. Una palabra menos frecuente como "tokenization" se divide en dos o tres tokens: "token" más "ization". Una palabra rara o un término técnico que el modelo nunca vio se divide en fragmentos más pequeños, hasta llegar a bytes individuales si es necesario. El algoritmo garantiza que cualquier texto puede tokenizarse sin tokens desconocidos.
+
+IAGO: [directo] Esto importa porque los tokens son la unidad de facturación en todas las APIs comerciales. OpenAI, Anthropic, Google: todos cobran por token, no por palabra ni por carácter. Y la relación entre tokens y palabras no es constante. En inglés, un token equivale aproximadamente a cero setenta y cinco palabras. En español, esa proporción es peor. El mismo contenido en español requiere entre un diez y un veinte por ciento más tokens que en inglés. En árabe o en hindi, hasta tres veces más.
+
+MARIA: O sea que una ventana de contexto de ciento veintiocho mil tokens no es igual en todos los idiomas.
+
+IAGO: Ciento veintiocho mil tokens en inglés equivalen a unos cien mil tokens en español para el mismo volumen de información. Si estás construyendo un sistema multilingüe, tienes que planificar tus ventanas de contexto con esto en cuenta. No es un detalle técnico. Es un factor de coste directo.
+
+# BLOQUE_COMO
+
+IAGO: [explicativo] El algoritmo dominante en los modelos actuales se llama Byte-Pair Encoding, BPE. Fue originalmente un algoritmo de compresión de datos de los años noventa, adaptado para procesamiento de lenguaje natural en dos mil dieciséis por Sennrich, Haddow y Birch. El proceso de entrenamiento del tokenizador empieza con un vocabulario de todos los bytes individuales: doscientos cincuenta y seis en byte-level BPE. Luego aplica una regla iterativa: encuentra el par de tokens adyacentes más frecuente en el corpus de entrenamiento, y fusiónalo en un nuevo token. Repite hasta alcanzar el tamaño de vocabulario objetivo.
+
+MARIA: ¿Y cuántas fusiones se hacen en un modelo como GPT-4?
+
+IAGO: GPT-2 aprendió cincuenta mil fusiones. GPT-4 usa el tokenizador cl100k_base con aproximadamente cien mil tokens. GPT-4o usa o200k_base con doscientos mil tokens. Más fusiones significa que más fragmentos comunes se representan como tokens únicos, lo que produce secuencias más cortas para el mismo texto. Secuencias más cortas significan menor coste de procesamiento y menor coste de API.
+
+MARIA: [analitica] Entonces el tokenizador no es neutral. Está aprendiendo qué fragmentos son frecuentes en el corpus de entrenamiento. Si ese corpus es mayoritariamente inglés, el tokenizador será más eficiente con inglés.
+
+IAGO: Correcto. Los tokenizadores de los modelos actuales están fuertemente sesgados hacia el inglés porque fueron entrenados principalmente sobre texto en inglés. Eso explica por qué el español, el francés, el chino o el árabe son sistemáticamente más caros en tokens. No es una decisión de diseño. Es una consecuencia estadística del corpus de entrenamiento.
+
+MARIA: [conversacional] Hablemos del proceso inverso. Una vez que el modelo genera una secuencia de IDs como salida, ¿cómo se convierte eso de vuelta en texto?
+
+IAGO: [claro] Ese proceso se llama decodificación. Cada ID de token tiene asociado un fragmento de texto en el vocabulario. El decodificador toma la secuencia de IDs que el modelo generó, busca el fragmento de texto correspondiente a cada ID, y los concatena. El resultado es el texto final que ves como respuesta del modelo. La decodificación es determinista: dado un ID, siempre produces el mismo fragmento de texto.
+
+MARIA: ¿Y qué pasa con los números? Porque he visto que los modelos cometen errores aritméticos básicos.
+
+IAGO: [reflexivo] Los números son un caso especial problemático. Un número como "12345" puede tokenizarse como un único token o como varios tokens, dependiendo del tokenizador y de si ese número específico apareció con frecuencia en el corpus de entrenamiento. Si "12345" es un único token, el modelo ve un ID entero, no los dígitos individuales. Cuando le pides que sume "12345" más "67890", el modelo no tiene acceso a los dígitos. Solo ve dos IDs. Para hacer aritmética, necesita usar razonamiento extendido para descomponer los tokens, o usar herramientas de cálculo externas.
+
+# BLOQUE_LIMITES
+
+MARIA: [esceptico] Vamos con lo que falla. El caso más famoso es el problema de contar letras. Si le preguntas a GPT-4 cuántas erres hay en "strawberry", falla. ¿Por qué?
+
+IAGO: Porque "strawberry" se tokeniza como un único token. El modelo ve un ID numérico, digamos el doce mil trescientos cuarenta y cinco. No ve S-t-r-a-w-b-e-r-r-y. No tiene acceso a la estructura interna del token. Cuando le preguntas cuántas erres hay, el modelo no puede contarlas porque no puede ver las letras individuales dentro del token.
+
+MARIA: [directo] Entonces el tokenizador está ocultando información al modelo.
+
+IAGO: En cierto sentido, sí. El tokenizador comprime información para eficiencia, pero esa compresión tiene un coste: el modelo pierde acceso a la estructura interna de los tokens. La solución es pedirle al modelo que descomponga explícitamente la palabra en letras antes de contar, o usar modelos con razonamiento extendido que pueden hacer esa descomposición internamente.
+
+MARIA: [analitica] Otro límite: el código. ¿Cómo se comporta la tokenización con lenguajes de programación?
+
+IAGO: Python y JavaScript son relativamente eficientes en tokens porque los identificadores de variables comunes, las palabras clave del lenguaje, y la sintaxis básica aparecieron con frecuencia en el corpus de entrenamiento. Pero lenguajes menos representados, como Fortran o COBOL, son sistemáticamente menos eficientes. Y dentro del mismo lenguaje, código con nombres de variables muy específicos de un dominio puede ser menos eficiente que código con nombres genéricos.
+
+MARIA: [tenso] Y luego está el problema del coste. Dijiste al principio que procesar diez mil documentos de diez páginas en español cuesta mil doscientos cincuenta dólares al mes solo en tokens de entrada. Eso escala mal.
+
+IAGO: [firme] Escala mal si no optimizas. Hay técnicas prácticas: eliminar espacios redundantes, usar JSON compacto en lugar de JSON indentado, evitar repetir las mismas instrucciones en cada llamada usando prompt caching si el proveedor lo ofrece. Anthropic ofrece prompt caching con descuento del noventa por ciento en tokens de caché. Para sistemas de alto volumen, la optimización de tokens tiene impacto económico directo y medible.
+
+MARIA: ¿Y qué pasa si el tokenizador está mal diseñado para tu dominio?
+
+IAGO: [serio] Si estás trabajando en un dominio con mucha terminología especializada, médica, legal, técnica, y esa terminología no apareció en el corpus de entrenamiento del tokenizador, cada término se dividirá en múltiples tokens. Eso degrada el rendimiento del modelo porque fragmenta conceptos que deberían ser unidades semánticas. En esos casos, entrenar un tokenizador específico de dominio puede mejorar significativamente el rendimiento. Pero eso requiere acceso al entrenamiento del modelo, no solo a la API.
+
+MARIA: O sea que la tokenización no es transparente. Afecta directamente a lo que el modelo puede hacer.
+
+IAGO: Afecta a qué información puede ver el modelo dentro de un token, cómo se segmentan los conceptos compuestos, y cuánto cuesta procesar cada tipo de texto. No es un detalle de implementación. Es una decisión de arquitectura con consecuencias prácticas.
+
+# CIERRE_CONCEPTOS
+
+MARIA: No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+IAGO: Uno: los tokens son fragmentos de texto codificados como enteros, no palabras ni caracteres. El modelo procesa secuencias de IDs numéricos.
+
+MARIA: Dos: BPE, Byte-Pair Encoding, es el algoritmo dominante. Fusiona iterativamente los pares más frecuentes hasta alcanzar el vocabulario objetivo.
+
+IAGO: Tres: los tokens son la unidad de facturación. El español es entre un diez y un veinte por ciento más caro que el inglés en tokens para el mismo contenido.
+
+MARIA: Y cuatro: el tokenizador oculta información al modelo. Si un concepto es un único token, el modelo no puede acceder a su estructura interna sin razonamiento explícito.
+
+# CIERRE_FINAL
+
+IAGO: Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 1548 (objetivo: 1300-1700)
+## MEDIA PALABRAS/INTERVENCION : 40.7
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] tokens: 28 menciones
+## [FALTA] seccion: 0 menciones
+## [OK] bpe: 3 menciones
+## [OK] gpt: 6 menciones
+## [OK] tokenizacion: 5 menciones
+## [OK] en ingles: 5 menciones
+## [OK] id: 5 menciones
+## [OK] los tokens son: 3 menciones
+## Cobertura: 88% (objetivo: 75%)
+##
+## TOKENS ANTHROPIC:
+## input=23996 output=5937 cache_read=0 total=29933

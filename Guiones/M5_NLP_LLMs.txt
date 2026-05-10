@@ -1,0 +1,134 @@
+# HOOK
+
+IAGO: <conversacional>En 2018, BERT revolucionó el procesamiento del lenguaje natural con embeddings contextuales. Un año después, GPT-2 demostró que un modelo podía generar texto coherente sin límite aparente. En 2022, ChatGPT llegó a 100 millones de usuarios en dos meses. Y en 2025, modelos como o3 resuelven problemas de razonamiento a nivel experto. Del análisis de sentimientos en redes sociales a la generación automática de código funcional, los Large Language Models han pasado de experimento académico a infraestructura crítica en menos de una década. Pero detrás de esa capacidad aparentemente mágica hay una arquitectura específica, límites técnicos reales, y decisiones de ingeniería que determinan qué funciona y qué falla en producción. Esto es MaquinarIA Pesada. Arrancamos.</conversacional>
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: <natural>Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.</natural>
+
+MARIA: <natural>Y yo María. Hoy cerramos el módulo 5: NLP y Large Language Models.</natural>
+
+IAGO: <directo>Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast, y al final del episodio veremos cómo se aplica lo de hoy a la tokenización y generación de estos guiones.</directo>
+
+# BLOQUE_PANORAMA
+
+IAGO: <didactico>El procesamiento del lenguaje natural existe como disciplina desde los años 50. Pero el NLP de 2025 y el NLP de 2015 son casi campos distintos. Este módulo cubre esa transformación y sus consecuencias prácticas. Vamos a ver cuatro territorios: primero, la evolución histórica del NLP, desde reglas escritas a mano hasta los Transformers. Segundo, la arquitectura técnica de los LLMs modernos: cómo funcionan por dentro, qué componentes los forman, por qué generan texto token por token. Tercero, tokenización y embeddings, que son la representación interna del lenguaje en estos modelos. Y cuarto, los casos de uso empresariales reales: clasificación, extracción de información, resumen de documentos, traducción automática.</didactico>
+
+MARIA: <curiosa>¿Por qué importa entender la arquitectura interna si lo que queremos es usar el modelo?</curiosa>
+
+IAGO: <firme>Porque los límites de producción vienen de la arquitectura. Las alucinaciones, la sensibilidad al prompt, el coste por token, la latencia en generación larga: todo eso tiene causa técnica. Si no entiendes por qué un LLM genera token por token de forma autoregresiva, no entiendes por qué los errores tempranos se propagan ni por qué la generación de textos largos es cara y lenta. Si no entiendes tokenización, no entiendes por qué el mismo texto en inglés cuesta menos tokens que en chino. Y si no entiendes embeddings, no entiendes cómo funcionan los sistemas RAG que están en el 80% de las aplicaciones empresariales de LLMs.</firme>
+
+MARIA: <analitica>O sea, arquitectura como mapa de límites operativos.</analitica>
+
+IAGO: <contundente>Eso mismo. Este módulo responde tres preguntas: qué pueden hacer los LLMs, qué no pueden hacer, y por qué. Las tres son igual de importantes para quien los aplica en producción.</contundente>
+
+# BLOQUE_TEMAS_CLAVE
+
+IAGO: <explicativo>Primer concepto clave: la evolución del NLP. Las primeras aproximaciones eran basadas en reglas. Gramáticas formales, léxicos, reglas de transformación escritas a mano por lingüistas. Funcionaban para tareas muy acotadas pero no escalaban. El machine learning estadístico llegó después: Naive Bayes para clasificación de texto, modelos n-gram para el lenguaje, SVMs con TF-IDF para recuperación de información. Mejoraba el rendimiento pero seguía requiriendo feature engineering manual y no capturaba bien el significado semántico.</explicativo>
+
+MARIA: <curiosa>¿Cuándo aparece la idea de que las palabras tienen vectores?</curiosa>
+
+IAGO: <didactico>Con los word embeddings. Word2Vec y GloVe introdujeron la representación distribuida del significado: palabras semánticamente similares tienen vectores cercanos en el espacio de embeddings. Pero eran embeddings estáticos: la palabra "banco" tenía el mismo vector fuera banco financiero o banco de parque. BERT en 2018 introdujo los embeddings contextuales: la misma palabra tiene distintas representaciones según el contexto. Y GPT cerró el ciclo: un modelo capaz de generar texto coherente de forma abierta, que resultó ser la arquitectura más poderosa para el lenguaje natural.</didactico>
+
+MARIA: <analitica>Segundo concepto: arquitectura de los LLMs modernos. ¿Qué es un Transformer decoder-only?</analitica>
+
+IAGO: <tecnico>Los LLMs modernos son Transformers decoder-only entrenados con language modeling autoregresivo. El objetivo es simple: dado un contexto de tokens, predecir el siguiente token. Durante la inferencia, el modelo genera texto token por token, añadiendo cada token generado al contexto para generar el siguiente. Este proceso autoregresivo es la razón de que los LLMs sean lentos para generar textos largos: cada token requiere una pasada completa por el modelo. Y es la razón de que los errores tempranos en la generación se propaguen y amplifiquen.</tecnico>
+
+MARIA: <directa>¿Qué componentes tiene por dentro?</directa>
+
+IAGO: <explicativo>El tokenizador convierte texto a tokens y viceversa. El embedding de tokens mapea cada token a un vector de alta dimensionalidad. Las capas de self-attention multi-cabeza son el corazón del Transformer: capturan las relaciones entre todos los tokens del contexto. Las capas feed-forward posición por posición aplican transformaciones no lineales a cada posición. La normalización de capas, Layer Norm, estabiliza el entrenamiento. Y la cabeza de lenguaje proyecta el vector de la última capa al vocabulario y produce las probabilidades del siguiente token. La escala, número de capas, dimensionalidad de los vectores, número de cabezas de atención, determina el número total de parámetros y las capacidades del modelo.</explicativo>
+
+IAGO: <conversacional>Tercer concepto: capacidades y límites. Las capacidades extraordinarias primero. Los LLMs modernos comprenden y generan texto en múltiples idiomas y estilos casi perfectamente para los idiomas de alta representación en los datos de entrenamiento. Escriben código funcional en docenas de lenguajes de programación, con debugging, explicación, y documentación. Analizan y resumen documentos largos, contratos, informes, papers científicos, con ventanas de contexto de 128K a 1 millón de tokens. Hacen razonamiento matemático y lógico multi-paso: modelos como o3 alcanzan o superan el nivel experto humano en muchos benchmarks. Generan contenido creativo, ficción, poesía, guiones, publicidad, con coherencia temática y estilística extensa. Y hacen aprendizaje en contexto: el modelo puede aprender a realizar tareas nuevas simplemente viendo ejemplos en el prompt, sin fine-tuning.</conversacional>
+
+MARIA: <esceptica>Y los límites. Porque los hay.</esceptica>
+
+IAGO: <serio>Los hay, y son tan importantes como las capacidades. Las alucinaciones son el límite más conocido y más costoso: los modelos generan afirmaciones incorrectas con total confianza. Especialmente en hechos específicos, fechas, nombres propios, estadísticas. En razonamiento matemático sin herramientas de cálculo. Y cuando el modelo no tiene suficiente información pero el formato del prompt invita a generar contenido específico. Los sesgos heredados del corpus de entrenamiento producen respuestas discriminatorias o inexactas para grupos subrepresentados. La dependencia del prompt, prompt sensitivity, significa que variaciones aparentemente menores en el prompt pueden producir respuestas muy distintas. Y el límite del contexto sigue siendo real: aunque los modelos frontier tienen ventanas de 128K a 1 millón de tokens, la atención del modelo se diluye con contextos muy largos y puede perder información de las partes más lejanas del contexto.</serio>
+
+MARIA: <analitica>Cuarto concepto: tokenización y embeddings. ¿Qué es un token?</analitica>
+
+IAGO: <didactico>Los LLMs no procesan texto directamente: procesan secuencias de tokens, que son fragmentos de texto de tamaño variable. Típicamente de 1 a 4 caracteres para texto en inglés. El tokenizador convierte texto a tokens y viceversa. El tokenizador de los LLMs modernos usa el algoritmo BPE, Byte Pair Encoding, o variantes. Empieza con todos los caracteres como tokens individuales y fusiona iterativamente los pares de tokens más frecuentes en el corpus de entrenamiento. El resultado es un vocabulario de típicamente 50.000 a 100.000 tokens que equilibra cobertura, puede tokenizar cualquier texto, con eficiencia, los textos comunes se representan con pocos tokens.</didactico>
+
+MARIA: <curiosa>¿Por qué importa el número de tokens?</curiosa>
+
+IAGO: <firme>Porque el número de tokens es la unidad de coste y latencia de los LLMs. El texto en inglés usa típicamente 1 token por 4 caracteres o aproximadamente 1 token por 0.75 palabras. El texto en idiomas distintos del inglés puede ser significativamente menos eficiente: el chino, el árabe, y el código en ciertos lenguajes de programación pueden usar más tokens por unidad de información. Los números, fechas, y caracteres especiales frecuentemente se tokenizan de forma ineficiente. Entender la tokenización ayuda a gestionar el coste y la latencia.</firme>
+
+IAGO: <explicativo>Y los embeddings. Los embeddings son representaciones vectoriales de texto, palabras, frases, párrafos, o documentos completos, en espacios de alta dimensionalidad, típicamente 768 a 4096 dimensiones, donde los textos semánticamente similares tienen vectores cercanos. Son la tecnología fundamental de los sistemas RAG: los documentos y las consultas se representan como vectores y se recuperan por similaridad semántica. Los modelos de embedding especializados, text-embedding-3-large de OpenAI, E5 de Microsoft, BGE de BAAI, están optimizados específicamente para producir representaciones vectoriales de alta calidad, a diferencia de los LLMs que están optimizados para generar texto.</explicativo>
+
+MARIA: <directa>¿Cómo se comparan embeddings?</directa>
+
+IAGO: <tecnico>La distancia coseno es la métrica estándar: mide el ángulo entre dos vectores, siendo 0 para vectores idénticos y 1 para vectores ortogonales. Las bases de datos vectoriales, Qdrant, Pinecone, Weaviate, Chroma, pgvector, almacenan millones de embeddings y permiten búsquedas de similaridad eficientes, k-nearest-neighbors aproximado con índices HNSW o IVF. El fine-tuning de modelos de embedding para dominios específicos puede mejorar significativamente la calidad de la recuperación en sistemas RAG: los embeddings genéricos no capturan bien la terminología especializada de dominios como medicina, derecho, o ingeniería.</tecnico>
+
+# BLOQUE_LIMITES
+
+MARIA: <esceptica>Ahora los contraintuitivos y lo que falla del módulo entero. Primer contraintuitivo: los LLMs no entienden. Generan.</esceptica>
+
+IAGO: <reflexivo>Es el contraintuitivo más importante del campo. Los LLMs son modelos de lenguaje, no modelos de conocimiento. Predicen el siguiente token basándose en patrones estadísticos del corpus de entrenamiento. No tienen un modelo interno del mundo. No razonan en el sentido humano. Cuando un LLM dice que la capital de Francia es París, no está recuperando un hecho de una base de datos interna: está generando la secuencia de tokens más probable dada la pregunta. Por eso alucinan: porque generan lo que parece correcto según los patrones del corpus, no lo que es correcto según la realidad.</reflexivo>
+
+MARIA: <analitica>Segundo contraintuitivo: más parámetros no siempre significa mejor rendimiento en producción.</analitica>
+
+IAGO: <conversacional>Correcto. Los modelos más grandes tienen más capacidad, pero también más latencia, más coste, y más requisitos de infraestructura. Para muchos casos de uso empresariales, un modelo pequeño fine-tuneado específicamente para la tarea supera a un modelo frontier genérico en calidad, coste, y velocidad. Los modelos de 7B a 13B parámetros fine-tuneados son la columna vertebral de la mayoría de las aplicaciones de NLP en producción, no los modelos de 175B o más.</conversacional>
+
+MARIA: <directa>Tercer contraintuitivo: los benchmarks académicos no predicen el rendimiento en tu caso de uso.</directa>
+
+IAGO: <serio>Los benchmarks como MMLU, HumanEval, GPQA, son útiles para comparar modelos en tareas generales. Pero tu caso de uso tiene especificidades que los benchmarks no capturan: tu terminología, tu formato de datos, tu distribución de consultas, tus requisitos de latencia y coste. Los modelos frontier de 2025 saturan muchos benchmarks académicos, pero eso no garantiza que funcionen bien en tu problema específico sin fine-tuning o sin un sistema RAG bien diseñado.</serio>
+
+MARIA: <esceptica>Cuarto contraintuitivo: los embeddings no capturan todo el significado.</esceptica>
+
+IAGO: <reflexivo>Los embeddings capturan similaridad semántica, pero no capturan intención, negación, ironía, o contexto pragmático. Dos frases con embeddings muy cercanos pueden tener significados opuestos si una contiene una negación. Los sistemas RAG que dependen solo de similaridad de embeddings pueden recuperar documentos semánticamente similares pero pragmáticamente irrelevantes. Por eso los sistemas RAG de producción suelen combinar recuperación por embeddings con filtros de metadatos, reranking, y validación con el LLM.</reflexivo>
+
+# APLICACION_PRACTICA
+
+MARIA: <conversacional>Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: si los LLMs tokenizan de forma distinta según el idioma y el contenido, ¿cómo afecta eso al coste y la latencia cuando tienes que generar 100 episodios de podcast con calidad consistente?</conversacional>
+
+IAGO: <tecnico>El sistema de MaquinarIA Pesada genera guiones de podcast usando Claude Sonnet 4.5. Cada guion tiene entre 2.200 y 2.800 palabras habladas. El spec del podcast está en un documento maestro de 5 KB que se pasa como contexto en cada llamada. Los PDFs de los módulos tienen entre 8 y 15 páginas. El prompt completo de generación, incluyendo spec, PDF del módulo, y instrucciones específicas del episodio, tiene entre 15.000 y 25.000 tokens de entrada. El guion generado tiene entre 3.000 y 4.000 tokens de salida. El coste por episodio en tokens de Claude Sonnet 4.5 está entre 0.40 y 0.60 dólares por guion.</tecnico>
+
+MARIA: <curiosa>¿Y la tokenización afecta de forma distinta según el contenido?</curiosa>
+
+IAGO: <explicativo>Sí. El texto técnico con muchos términos en inglés, como "Transformer", "self-attention", "BPE", tokeniza de forma más eficiente que el texto puramente en castellano porque el tokenizador de Claude está optimizado para inglés. Los números y las fechas tokenizan de forma ineficiente: una fecha como "2025-05-09" puede usar 4 o 5 tokens. Los guiones de los episodios de módulos técnicos, como este, usan más tokens por palabra que los guiones de módulos más conceptuales. Eso afecta al coste: el coste por episodio varía hasta un 30% según el contenido técnico del módulo.</explicativo>
+
+MARIA: <analitica>¿Y la latencia?</analitica>
+
+IAGO: <serio>La latencia de generación de un guion completo está entre 45 y 90 segundos. Eso es para 3.000 a 4.000 tokens de salida. La velocidad de generación de Claude Sonnet 4.5 es de aproximadamente 50 a 70 tokens por segundo. La latencia es casi lineal con el número de tokens de salida: un guion más largo tarda proporcionalmente más. Para el audio, el sistema usa ElevenLabs eleven_v3. La latencia de síntesis de voz es de aproximadamente 1 segundo por cada 10 segundos de audio generado. Un episodio de 16 minutos tarda entre 90 y 120 segundos en sintetizarse.</serio>
+
+MARIA: <directa>¿Y eso ha funcionado?</directa>
+
+IAGO: <firme>100 episodios generados hasta ahora. La mayoría pasa validación a la primera. Cuando falla, falla por la misma razón que cualquier proyecto del módulo que acabamos de explicar: el prompt no es código, pero sí se rompe. Las alucinaciones aparecen cuando el PDF del módulo tiene lagunas y el modelo rellena con contenido plausible pero incorrecto. La sensibilidad al prompt aparece cuando cambiamos el spec: una modificación aparentemente menor en la estructura del prompt puede cambiar el tono o la longitud del guion generado. Y la tokenización ineficiente aparece en los módulos con más contenido técnico en inglés, que usan más tokens y cuestan más.</firme>
+
+MARIA: <conversacional>O sea, el sistema de producción del podcast es un caso de uso real de todo lo que hemos explicado en el módulo: tokenización, coste por token, latencia de generación, límites del modelo, sensibilidad al prompt.</conversacional>
+
+IAGO: <contundente>Eso mismo. El sistema que está generando este episodio es una aplicación de producción de NLP y LLMs. Con sus capacidades, sus límites, y sus costes operativos.</contundente>
+
+# CIERRE_CONCEPTOS
+
+IAGO: <didactico>No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: los LLMs son Transformers decoder-only entrenados con language modeling autoregresivo. Generan texto token por token. Segundo: tokenización BPE. 1 token por 4 caracteres en inglés, variable en otros idiomas. El número de tokens es la unidad de coste y latencia. Tercero: embeddings. Representaciones vectoriales semánticas. Bases de datos vectoriales para búsqueda de similaridad a escala. Cuarto: alucinaciones. El límite más costoso en producción. Los modelos generan afirmaciones incorrectas con total confianza. Y quinto: el sistema que genera este podcast usa Claude Sonnet 4.5 para los guiones y ElevenLabs para el audio. El coste por episodio está entre 0.40 y 0.60 dólares en tokens. La tokenización ineficiente de contenido técnico afecta al coste.</didactico>
+
+# CIERRE_FINAL
+
+MARIA: <natural>Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.</natural>
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2655 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 57.7
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] nlp: 7 menciones
+## [OK] los llms modernos: 5 menciones
+## [OK] tokens: 28 menciones
+## [OK] embeddings: 19 menciones
+## [OK] gpt: 2 menciones
+## [--] ia: 0 menciones
+## [OK] lenguaje natural: 3 menciones
+## [OK] de informacion: 3 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 166
+## Por documento: {'BIBLIA_SISTEMA': 66, 'PRIMERPODCAST': 18, 'VIDEOPODCAST': 44, 'PODCAST': 38}
+##
+## TOKENS ANTHROPIC:
+## input=37104 output=10463 cache_read=0 cache_create=0 total=47567

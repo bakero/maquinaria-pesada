@@ -1,0 +1,164 @@
+# HOOK
+
+IAGO: <didactico>Cada día, miles de empresas despliegan sistemas de inteligencia artificial en producción. Y cada día, una parte significativa de esos sistemas falla en las primeras semanas. No porque el modelo sea malo. No porque los datos sean insuficientes. Fallan porque la infraestructura sobre la que se despliegan no está preparada para la realidad de producción. Un modelo que funciona perfectamente en un portátil de desarrollo puede colapsar cuando tiene que manejar cien usuarios simultáneos, cuando una API externa cae, o cuando el coste de tokens se dispara hasta consumir el presupuesto mensual en tres días. La infraestructura es el fundamento silencioso que determina si un sistema de IA funciona o fracasa en el mundo real. Hoy vamos a desmontar las decisiones críticas: cloud contra on-premise, arquitecturas de despliegue, seguridad de credenciales, optimización de latencia, y gestión del coste total. Esto es MaquinarIA Pesada. Arrancamos.</didactico>
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: <conversacional>Bienvenidos a MaquinarIA Pesada, el podcast donde desmontamos la inteligencia artificial por dentro. Soy Yago.</conversacional>
+
+MARIA: <conversacional>Y yo soy María. Hoy cerramos el módulo nueve: infraestructura y despliegue de sistemas de IA.</conversacional>
+
+IAGO: <serio>Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo se aplica lo de hoy al sistema que está produciendo este podcast, porque ese sistema también es infraestructura de IA en producción.</serio>
+
+# BLOQUE_PANORAMA
+
+IAGO: <explicativo>La infraestructura de IA en dos mil veinticinco es más compleja que la infraestructura de software tradicional. No estamos hablando solo de servidores y bases de datos. Estamos hablando de un ecosistema que incluye APIs de modelos de lenguaje, bases de datos vectoriales para sistemas RAG, orquestadores de herramientas para agentes, plataformas de observabilidad específicas para LLMs, y todo eso tiene que funcionar de forma coordinada bajo carga real. La pregunta fundamental de este módulo es: ¿dónde y cómo despliegas un sistema de IA para que sobreviva al contacto con usuarios reales?</explicativo>
+
+MARIA: <curioso>¿Y por qué es tan diferente de desplegar una aplicación web normal?</curioso>
+
+IAGO: <directo>Porque los sistemas de IA tienen patrones de fallo y de coste que no existen en aplicaciones tradicionales. Un sistema web tradicional falla cuando el servidor se cae o cuando la base de datos se satura. Un sistema de IA puede fallar porque una API externa de LLM tiene un downtime, porque un usuario malicioso consume tu presupuesto de tokens en una hora, porque la latencia de primera respuesta es tan alta que los usuarios abandonan, o porque el modelo funciona perfectamente en desarrollo pero en producción recibe inputs que nunca viste en tus tests. La infraestructura tiene que estar diseñada para manejar esa variabilidad.</directo>
+
+MARIA: <analitica>Entonces el módulo cubre qué </analitica>
+
+IAGO: <explicativo>Tres bloques principales. Primero, las decisiones de dónde desplegar: cloud público contra on-premise, y las arquitecturas de despliegue más comunes para sistemas de IA. Segundo, seguridad en el despliegue: cómo proteger las credenciales de APIs externas, cómo evitar que un usuario abuse del sistema, y cómo diseñar para resiliencia ante fallos. Tercero, optimización de rendimiento y coste: cómo reducir la latencia, cómo gestionar el coste de los tokens, y cómo calcular el coste total de propiedad de un sistema LLM en producción. Al final del episodio veremos cómo todas estas decisiones se aplican en un sistema real: el que está generando este podcast.</explicativo>
+
+# BLOQUE_TEMAS_CLAVE
+
+IAGO: <didactico>Empecemos por la decisión más fundamental: cloud público contra on-premise. Cloud público significa AWS, Azure, o Google Cloud. On-premise significa tus propios servidores en tu propio datacenter. La mayoría de las organizaciones que empiezan con IA deberían elegir cloud público, y hay razones concretas para eso. Cloud te da acceso inmediato a GPUs de última generación sin inversión inicial en hardware. Te da servicios gestionados para todos los componentes de la infraestructura de IA: AWS SageMaker, Azure ML, Google Vertex AI. Te da escalado automático: si tu sistema recibe mil usuarios un día y diez mil al día siguiente, el cloud escala automáticamente sin que tengas que comprar más servidores.</didactico>
+
+MARIA: <esceptico>Pero entonces por qué alguien elegiría on-premise si cloud es tan superior.</esceptico>
+
+IAGO: <contundente>Porque hay tres razones específicas donde on-premise gana. Primera: soberanía de datos. Si tus datos no pueden salir de tu datacenter por regulación o por política corporativa, no tienes opción, tienes que desplegar on-premise. Segunda: el punto de cruce de coste. Si tu volumen de inferencia es tan alto que el coste de cloud supera al coste de comprar y mantener tu propia infraestructura, on-premise es más barato a largo plazo. Tercera: latencia extremadamente baja. Si necesitas latencia de milisegundos y la red hacia el cloud no puede garantizarla, on-premise es la única opción. Fuera de esos tres casos, cloud es la elección correcta.</contundente>
+
+MARIA: <reflexivo>Y cuál es la estrategia híbrida que funciona en la práctica.</reflexivo>
+
+IAGO: <explicativo>La más común es: usar APIs de cloud para desarrollo y para casos de uso de bajo volumen, y desplegar modelos propios on-premise para casos de uso de alto volumen o alta sensibilidad de datos. Desarrollas tu sistema con la API de OpenAI o Anthropic, validas que funciona, y cuando el volumen crece o cuando necesitas control total sobre los datos, despliegas tu propio modelo on-premise. Esa estrategia te da velocidad de desarrollo con cloud y control de coste con on-premise.</explicativo>
+
+MARIA: <didactico>Ahora hablemos de arquitecturas de despliegue. Cuáles son los patrones más comunes para sistemas de IA en producción.</didactico>
+
+IAGO: <conversacional>Hay cuatro patrones principales.</conversacional>
+
+MARIA: <explicativo>El primero es el patrón API Gateway más LLM Backend. Es el más simple y el más frecuente. Tienes una API REST que recibe las solicitudes del usuario, las procesa, llama al modelo de lenguaje, y devuelve la respuesta. Todo el sistema es un único servicio monolítico. Es perfecto para empezar porque es fácil de desarrollar y de depurar, pero tiene un límite de escalabilidad: si una parte del sistema se satura, todo el sistema se satura.</explicativo>
+
+IAGO: <didactico>El segundo patrón es microservicios. Cada componente del sistema de IA es un servicio independiente: un servicio de retrieval para RAG, un servicio de inferencia del LLM, un servicio de orquestación de herramientas para agentes. Cada servicio puede escalar independientemente. Si el retrieval de RAG es el cuello de botella, escalas solo ese servicio sin tocar el resto. Es más complejo de desarrollar y de operar, pero es el patrón correcto para sistemas de IA de alta escala.</didactico>
+
+MARIA: <conversacional>El tercero es event-driven, arquitectura dirigida por eventos.</conversacional>
+
+IAGO: <explicativo>En lugar de que el usuario espere una respuesta síncrona, los eventos del negocio disparan workflows de IA de forma asíncrona. Un nuevo contrato subido dispara el análisis automático. Un nuevo ticket de soporte dispara la clasificación automática. El usuario no espera, recibe una notificación cuando el procesamiento termina. Este patrón es más robusto ante fallos y ante picos de tráfico que el patrón síncrono, porque los eventos se encolan y se procesan cuando hay capacidad disponible.</explicativo>
+
+MARIA: <curioso>Y el cuarto patrón.</curioso>
+
+IAGO: <directo>Serverless. Funciones AWS Lambda o Azure Functions que se activan bajo demanda y escalan a cero cuando no hay tráfico. Es ideal para cargas intermitentes: un sistema que procesa documentos una vez al día no necesita un servidor corriendo todo el día. Pero tiene límites en la duración de ejecución que pueden ser problemáticos para agentes de larga ejecución. Si tu agente necesita cinco minutos para completar una tarea, serverless no es una opción.</directo>
+
+IAGO: <serio>Ahora hablemos de seguridad. El primer problema de seguridad en infraestructura de IA es la gestión de secretos y credenciales. Los sistemas de IA en producción necesitan acceder a múltiples servicios externos: APIs de LLM, bases de datos, APIs de sistemas empresariales. Cada uno de esos servicios requiere credenciales que deben protegerse rigurosamente. Y los anti-patrones más comunes son también los más peligrosos.</serio>
+
+MARIA: <esceptico>Cuáles son esos anti-patrones.</esceptico>
+
+IAGO: <contundente>Almacenar las credenciales en el código fuente. API keys hardcodeadas en el código. Almacenar las credenciales en variables de entorno sin cifrar. Almacenar las credenciales en archivos de configuración sin cifrar que se suben al repositorio de git. Esos tres anti-patrones aparecen en la mayoría de los sistemas de IA que fallan por brechas de seguridad. La práctica correcta es usar un gestor de secretos: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, o Google Secret Manager. Esos sistemas almacenan las credenciales de forma cifrada, con rotación automática y acceso auditado.</contundente>
+
+MARIA: <analitica>Y el principio de mínimo privilegio cómo se aplica aquí.</analitica>
+
+IAGO: <explicativo>Cada servicio o componente debe tener solo las credenciales necesarias para su función específica. El agente de atención al cliente no debe tener acceso a las bases de datos financieras internas. El sistema de análisis de contratos no debe tener permisos de escritura en los sistemas de producción. Esta granularidad de permisos limita el daño potencial si un componente es comprometido o si sufre un ataque de prompt injection exitoso. Si un atacante consigue que tu agente ejecute código malicioso, el daño está limitado por los permisos que ese agente tiene.</explicativo>
+
+MARIA: <didactico>Ahora el segundo problema de seguridad: protección contra abuso. Los sistemas de IA expuestos a usuarios externos necesitan defenderse contra usuarios que consumen desproporcionadamente los recursos, scrapers automatizados, y atacantes que intentan explotar el sistema. La primera línea de defensa es el rate limiting: limitar el número de solicitudes por usuario o por IP en una ventana de tiempo. Si un usuario hace más de cien solicitudes por minuto, probablemente es un bot o un scraper, no un usuario legítimo.</didactico>
+
+IAGO: <conversacional>Y la autenticación con JWT o API keys por usuario.</conversacional>
+
+MARIA: <explicativo>La autenticación no solo controla el acceso, también permite auditoría del uso y revocación granular de acceso. Si detectas que un usuario está abusando del sistema, puedes revocar su API key sin afectar a otros usuarios. Y si necesitas investigar un incidente de seguridad, puedes auditar qué usuario hizo qué solicitud en qué momento. Sin autenticación por usuario, no tienes esa visibilidad.</explicativo>
+
+IAGO: <serio>Y el circuit breaker es crítico para resiliencia. Un circuit breaker desconecta automáticamente un componente que está fallando para evitar que sus fallos en cascada afecten al resto del sistema. Si la API de OpenAI tiene un downtime, el circuit breaker detecta que las llamadas están fallando, desconecta ese componente, y devuelve un error controlado al usuario en lugar de dejar que todo el sistema se cuelgue esperando respuestas que nunca llegan.</serio>
+
+# BLOQUE_LIMITES
+
+MARIA: <esceptico>Ahora hablemos de lo que falla. Porque la infraestructura de IA tiene puntos de fallo que no son obvios hasta que te los encuentras en producción. El primero es la latencia de primera respuesta. En los sistemas conversacionales, el tiempo desde que el usuario envía la consulta hasta que recibe el primer token de la respuesta es crítico para la experiencia del usuario. Si ese tiempo supera los tres segundos, el usuario percibe el sistema como lento aunque la respuesta completa llegue rápido después.</esceptico>
+
+IAGO: <reflexivo>Y eso no es un problema de velocidad del modelo.</reflexivo>
+
+MARIA: <contundente>Exacto. Puede ser un problema de red, de colas de procesamiento, de inicialización del modelo, o de tiempo de retrieval en sistemas RAG. La solución es el streaming: devolver los tokens al usuario según se generan, en lugar de esperar a que el modelo genere la respuesta completa. El streaming reduce dramáticamente la latencia de primera respuesta percibida y hace los sistemas conversacionales mucho más responsivos. Pero el streaming requiere que toda tu infraestructura soporte comunicación asíncrona, y eso no es trivial de implementar.</contundente>
+
+IAGO: <conversacional>El segundo punto de fallo es el coste de tokens descontrolado.</conversacional>
+
+MARIA: <esceptico>Los sistemas de IA pueden generar costes que crecen de forma no lineal con el uso. Un sistema que cuesta diez dólares al día con cien usuarios puede costar mil dólares al día con mil usuarios, no cien dólares. Eso pasa cuando el system prompt es muy largo, cuando los usuarios generan conversaciones muy largas, o cuando el sistema hace múltiples llamadas al LLM por cada solicitud del usuario. Si no monitorizas el gasto de tokens en tiempo real, puedes encontrarte con una factura de diez mil dólares a final de mes sin haber visto la alarma.</esceptico>
+
+IAGO: <directo>Y el tercer punto de fallo es la dependencia de servicios externos. Los sistemas de IA en producción suelen depender de múltiples APIs externas: la API del LLM, la API de la base de datos vectorial, las APIs de las herramientas del agente. Si cualquiera de esas APIs tiene un downtime o una degradación, tu sistema falla. Y no puedes controlar la disponibilidad de esos servicios externos.</directo>
+
+MARIA: <analitica>La solución es diseñar para degradación elegante. Si la API del LLM falla, el sistema devuelve un error controlado al usuario en lugar de colapsar. Si la base de datos vectorial es lenta, el sistema devuelve resultados sin contexto RAG en lugar de hacer esperar al usuario indefinidamente. Degradación elegante significa que el sistema sigue funcionando, aunque con funcionalidad reducida, cuando un componente falla.</analitica>
+
+# APLICACION_PRACTICA
+
+MARIA: <conversacional>Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: ¿cómo se despliega un sistema de producción automática de contenido que tiene que generar catorce episodios de podcast y videopodcast con calidad consistente, bajo presupuesto controlado, y sin intervención humana en el proceso?</conversacional>
+
+IAGO: <explicativo>El sistema de MaquinarIA Pesada es un caso de infraestructura híbrida. La generación de guiones usa la API de Anthropic Claude en cloud: Sonnet cuatro punto cinco para los guiones largos de módulos, Haiku cuatro punto cinco para extracción de conceptos. La generación de audio usa la API de ElevenLabs, también en cloud. Pero el orquestador del pipeline, el validador de guiones, y el montaje de audio y video corren en local, en un portátil ASUS Zenbook. Esa arquitectura híbrida nos da control de costes: solo pagamos tokens cuando generamos contenido, no pagamos infraestructura corriendo veinticuatro siete.</explicativo>
+
+MARIA: <curioso>Y cómo se gestionan las credenciales en ese sistema.</curioso>
+
+IAGO: <serio>Las credenciales de Anthropic, ElevenLabs, y Kling se almacenan en variables de entorno locales, nunca en el código fuente. El sistema las lee al arrancar usando la librería python-dotenv. No usamos un gestor de secretos cloud porque el sistema corre en local y solo tiene un usuario, pero la regla de no hardcodear credenciales se respeta estrictamente. Cada script tiene acceso solo a las credenciales que necesita: el generador de guiones no tiene acceso a las credenciales de ElevenLabs, el generador de audio no tiene acceso a las credenciales de Kling.</serio>
+
+MARIA: <analitica>Y el rate limiting cómo funciona.</analitica>
+
+IAGO: <explicativo>No tenemos rate limiting porque el sistema no está expuesto a usuarios externos. Pero tenemos control de presupuesto: el sistema monitoriza el gasto de tokens en tiempo real y loguea alertas cuando el gasto diario supera el presupuesto configurado. Eso nos permite detectar si un guion está consumiendo más tokens de lo esperado antes de que el coste se dispare. Y tenemos circuit breakers en las llamadas a APIs externas: si Anthropic o ElevenLabs devuelven errores consecutivos, el sistema aborta la generación y loguea el fallo en lugar de reintentar indefinidamente.</explicativo>
+
+MARIA: <conversacional>Y la optimización de latencia.</conversacional>
+
+IAGO: <directo>El sistema usa streaming en la generación de guiones: Claude devuelve el texto según lo genera, y el sistema lo va escribiendo a disco en tiempo real. Eso no reduce el tiempo total de generación, pero permite que el sistema empiece a validar el guion antes de que Claude termine de generarlo. En la generación de audio, no usamos streaming porque ElevenLabs devuelve el audio completo de cada intervención, pero hemos optimizado la velocidad de las voces: multiplicador uno punto dos para ambos presentadores, lo que reduce el tiempo de audio en un veinte por ciento sin perder inteligibilidad.</directo>
+
+MARIA: <esceptico>Y el prompt caching, que el módulo menciona como técnica de reducción de coste, se usa en el sistema.</esceptico>
+
+IAGO: <reflexivo>Sí, pero de forma limitada. El system prompt del generador de guiones tiene cinco kilobytes y es constante entre episodios. Anthropic cachea ese system prompt y reduce el coste de los tokens de entrada en un ochenta por ciento para las llamadas posteriores a la primera. Eso funciona bien para los episodios T, que comparten el mismo system prompt. Pero para los episodios M, el system prompt incluye el PDF del resumen del módulo, que cambia entre módulos, así que el caching es menos efectivo. Aun así, el ahorro acumulado en catorce módulos es significativo.</reflexivo>
+
+MARIA: <conversacional>Y el coste total de propiedad del sistema, cómo se calcula.</conversacional>
+
+IAGO: <explicativo>El TCO del sistema incluye tres componentes principales. Primero, coste de tokens: input tokens de Anthropic para generación de guiones más output tokens más tokens de ElevenLabs para generación de audio. Segundo, coste de infraestructura: el portátil ya existía, así que el coste incremental es cero, pero si tuviéramos que comprar hardware específico para el proyecto, ese coste entraría aquí. Tercero, coste de las APIs de video: Kling para generación de clips visuales. El sistema monitoriza el gasto de cada componente por episodio y loguea el total en un archivo de costes. Eso nos permite identificar qué episodios son más caros de producir y optimizar los que se desvían del presupuesto.</explicativo>
+
+MARIA: <analitica>Entonces el aprendizaje operativo es que la infraestructura de IA no es solo elegir cloud o on-premise. Es diseñar para control de costes, para resiliencia ante fallos de APIs externas, y para monitorización del gasto en tiempo real.</analitica>
+
+IAGO: <contundente>Exacto. Y el sistema que está generando este podcast es un ejemplo de que esas decisiones de infraestructura no son abstractas. Son concretas, tienen impacto medible en coste y en fiabilidad, y determinan si el sistema funciona o falla en producción.</contundente>
+
+# CIERRE_CONCEPTOS
+
+MARIA: <firme>No te puedes ir de este capitulo sin haber entendido estos conceptos.</firme>
+
+IAGO: <didactico>Primero: la infraestructura de IA incluye APIs de LLM, bases vectoriales, orquestadores de agentes, y plataformas de observabilidad. No es solo servidores.</didactico>
+
+MARIA: <claro>Segundo: cloud público es la opción default. On-premise solo cuando hay requisitos de soberanía de datos, volumen extremo, o latencia crítica.</claro>
+
+IAGO: <directo>Tercero: los patrones de arquitectura son API Gateway simple para empezar, microservicios para escalar componentes independientemente, event-driven para workflows asíncronos, y serverless para cargas intermitentes.</directo>
+
+MARIA: <contundente>Cuarto: seguridad significa secretos en gestores como Vault o Secrets Manager, mínimo privilegio en credenciales, rate limiting para APIs públicas, y circuit breaker para resiliencia.</contundente>
+
+IAGO: <serio>Quinto: optimización de latencia con streaming para reducir la latencia de primera respuesta percibida, cuantización para acelerar inferencia, y frameworks como vLLM para alto throughput.</serio>
+
+MARIA: <analitica>Y sexto: el TCO incluye tokens más infraestructura más observabilidad más equipo. Monitorizar el gasto de tokens en tiempo real es crítico para no tener sorpresas en la factura.</analitica>
+
+# CIERRE_FINAL
+
+IAGO: <conversacional>Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.</conversacional>
+
+MARIA: <calido>Nos escuchamos pronto.</calido>
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3180 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 52.1
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] ia: 23 menciones
+## [OK] llm: 9 menciones
+## [OK] premise: 14 menciones
+## [OK] api: 15 menciones
+## [OK] aws: 4 menciones
+## [OK] los sistemas de: 7 menciones
+## [OK] bases de datos: 4 menciones
+## [OK] seguridad: 8 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 169
+## Por documento: {'BIBLIA_SISTEMA': 66, 'PRIMERPODCAST': 20, 'VIDEOPODCAST': 45, 'PODCAST': 38}
+##
+## TOKENS ANTHROPIC:
+## input=18158 output=6419 cache_read=0 cache_create=0 total=24577

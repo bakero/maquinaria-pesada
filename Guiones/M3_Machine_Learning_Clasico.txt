@@ -1,0 +1,142 @@
+# HOOK
+
+IAGO: <didactico>En este momento, miles de empresas están invirtiendo millones en modelos de lenguaje de última generación para resolver problemas que un algoritmo de regresión logística resolvería en cinco minutos. Un XGBoost bien optimizado puede predecir el churn de clientes con un noventa y tres por ciento de precisión, entrenar en dos minutos en un portátil, y explicar exactamente por qué cada cliente está en riesgo. Un LLM para el mismo problema necesitaría miles de ejemplos etiquetados, horas de fine-tuning, y seguiría siendo una caja negra. La paradoja del machine learning clásico en dos mil veinticinco es esta: todo el mundo habla de inteligencia artificial generativa, pero el ochenta por ciento de los problemas reales de predicción en producción se resuelven mejor con algoritmos que tienen treinta años de antigüedad. Esto es MaquinarIA Pesada. Arrancamos.</didactico>
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: <conversacional>Bienvenidos a un nuevo episodio de MaquinarIA Pesada. Soy Yago.</conversacional>
+
+MARIA: <conversacional>Y yo soy Maria. Hoy cerramos el módulo tres: Machine Learning Clásico.</conversacional>
+
+IAGO: <directo>Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Al final del episodio veremos cómo los conceptos de este módulo se aplican al propio sistema que está generando estas palabras.</directo>
+
+# BLOQUE_PANORAMA
+
+IAGO: <explicativo>El machine learning clásico es el conjunto de algoritmos de aprendizaje automático que dominaron la inteligencia artificial antes de la revolución del deep learning. Hablamos de regresión lineal, árboles de decisión, Random Forests, XGBoost, máquinas de vectores de soporte, clustering. Algoritmos que en muchos casos tienen décadas de historia académica, literatura científica consolidada, y miles de casos de uso documentados en producción. La pregunta que este módulo responde es directa: por qué estos algoritmos siguen siendo relevantes en dos mil veinticinco, cuándo usarlos en lugar de modelos de lenguaje o redes neuronales profundas, y cómo aplicarlos con rigor técnico para que funcionen en producción.</explicativo>
+
+MARIA: <esceptico>Porque la percepción general es que esto es tecnología obsoleta.</esceptico>
+
+IAGO: <contundente>Y esa percepción es incorrecta. El machine learning clásico sigue siendo la herramienta correcta para una categoría enorme de problemas: datos tabulares estructurados. Si tienes una tabla con filas y columnas, variables numéricas y categóricas, y necesitas predecir una variable objetivo, un XGBoost o un Random Forest van a superar a un LLM en precisión, velocidad, interpretabilidad y coste. Los LLMs son extraordinarios para texto libre, generación de contenido, razonamiento sobre lenguaje natural. Pero para predecir si un cliente va a abandonar tu servicio el próximo mes basándote en su historial de transacciones, un modelo de gradient boosting entrenado en diez mil ejemplos te da mejor resultado que un GPT-4 con prompting sofisticado.</contundente>
+
+MARIA: <analitica>Entonces el mapa del territorio es: tipo de datos, volumen, requisitos de interpretabilidad.</analitica>
+
+IAGO: <explicativo>Exacto. Este módulo cubre tres paradigmas fundamentales del machine learning. Aprendizaje supervisado: tienes pares de entrada y salida correcta, el modelo aprende la función que mapea una a otra. Es clasificación cuando la salida es categórica, spam o no spam, fraude o legítimo. Es regresión cuando la salida es continua, precio de una vivienda, demanda de producto. Aprendizaje no supervisado: no tienes etiquetas, el modelo busca estructura en los datos. Clustering para segmentar clientes, reducción de dimensionalidad para visualizar datos complejos, detección de anomalías sin ejemplos previos de qué es anómalo. Y aprendizaje por refuerzo: el modelo aprende interactuando con un entorno, recibiendo recompensas por acciones beneficiosas. Es la base del RLHF, Reinforcement Learning from Human Feedback, que se usa para alinear los modelos de lenguaje con preferencias humanas.</explicativo>
+
+MARIA: <conversacional>Y el pipeline de trabajo es distinto al de los LLMs.</conversacional>
+
+IAGO: <didactico>Completamente. Un proyecto de machine learning clásico sigue etapas bien definidas. Primero, análisis exploratorio de datos: entiendes la distribución, identificas valores faltantes, visualizas correlaciones. Sin esta fase, diseñas el modelo a ciegas. Segundo, feature engineering: transformas y creas variables a partir de los datos brutos para que el modelo pueda aprender. Esta etapa frecuentemente tiene más impacto en el rendimiento que la elección del algoritmo. Tercero, selección del modelo y optimización de hiperparámetros: pruebas distintas arquitecturas, ajustas configuraciones. Y cuarto, evaluación rigurosa con datos de test separados, que no han tocado el entrenamiento en ningún momento. Ese pipeline es disciplina de ingeniería, no experimentación caótica.</didactico>
+
+# BLOQUE_TEMAS_CLAVE
+
+IAGO: <explicativo>Vamos con los algoritmos núcleo del machine learning clásico. Empezamos por la base: regresión lineal y regresión logística. La regresión lineal modela la relación entre una variable de respuesta continua y una o más variables predictoras como una función lineal. Es el modelo más simple de machine learning supervisado, pero es el punto de referencia obligatorio para cualquier problema de regresión. Si un modelo más complejo no supera a la regresión lineal, algo está mal: o los datos no tienen patrones no lineales que explotar, o el modelo complejo está sobreajustando. La regresión logística extiende esto a clasificación binaria mediante la función logística, que mapea valores lineales a probabilidades entre cero y uno. A pesar del nombre, regresión logística es clasificación, no regresión.</explicativo>
+
+MARIA: <conversacional>Y las regularizaciones L1 y L2 son extensiones de estos modelos.</conversacional>
+
+IAGO: <explicativo>Correcto. Lasso, que es regularización L1, y Ridge, que es L2, añaden penalizaciones sobre el tamaño de los pesos del modelo. Esto reduce el sobreajuste y, en el caso de L1, selecciona automáticamente las variables más relevantes poniendo a cero los pesos de las irrelevantes. Son herramientas esenciales cuando tienes muchas variables predictoras y sospechas que algunas son ruido.</explicativo>
+
+MARIA: <analitica>Siguiente algoritmo: árboles de decisión y Random Forests. Los árboles son los modelos interpretables por excelencia.</analitica>
+
+IAGO: <didactico>Un árbol de decisión divide el espacio de features en regiones rectangulares mediante una secuencia de divisiones binarias. Cada nodo interno es una condición sobre una variable: edad mayor de treinta y cinco años, sí o no. Cada rama es el resultado de esa condición. Cada hoja es una predicción. Puedes trazar el camino completo de una predicción desde la raíz hasta la hoja y entender exactamente qué condiciones se aplicaron. Eso los hace valiosos en dominios regulados donde la explicabilidad es requerida por ley. La limitación es la alta varianza: pequeños cambios en los datos de entrenamiento producen árboles completamente distintos.</didactico>
+
+MARIA: <conversacional>Y ahí entran los Random Forests.</conversacional>
+
+IAGO: <explicativo>Los Random Forests resuelven la varianza mediante ensamble. Entrenas múltiples árboles, cada uno sobre una muestra aleatoria de los datos y las features. Promedias las predicciones de todos los árboles. Cada árbol individual tiene alta varianza pero poco sesgo. El promedio de muchos árboles reduce drásticamente la varianza y produce un modelo con excelente capacidad de generalización. Los Random Forests son uno de los algoritmos más robustos del machine learning clásico y frecuentemente la primera opción para datos tabulares sin invertir en feature engineering extenso.</explicativo>
+
+IAGO: <contundente>Y luego está el estado del arte para datos tabulares: Gradient Boosting, y sus implementaciones optimizadas XGBoost, LightGBM, CatBoost. Gradient Boosting construye el modelo de forma iterativa. Empiezas con un modelo simple, frecuentemente un árbol pequeño. Calculas los errores residuales de ese modelo. Entrenas un nuevo modelo para predecir esos errores. Añades el nuevo modelo al conjunto. Repites. Cada nuevo árbol corrige los errores del conjunto anterior. XGBoost y LightGBM añaden regularización, manejo de valores faltantes, soporte nativo para variables categóricas, y paralelización del entrenamiento. En dos mil veinticinco, estos algoritmos siguen siendo el estado del arte para la mayoría de los problemas de predicción con datos tabulares estructurados.</contundente>
+
+MARIA: <esceptico>Y superan a las redes neuronales profundas en muchos casos.</esceptico>
+
+IAGO: <directo>En datos tabulares de tamaño moderado, menos de un millón de filas, XGBoost frecuentemente supera a las redes neuronales en velocidad de entrenamiento, interpretabilidad con SHAP, y rendimiento predictivo. Para volúmenes masivos o datos con estructura espacial o temporal compleja, las redes neuronales pueden ganar. Pero para el caso de uso corporativo típico, tablas con miles o decenas de miles de filas, XGBoost es la herramienta correcta.</directo>
+
+MARIA: <conversacional>Último bloque de algoritmos: SVM, k-NN, y clustering.</conversacional>
+
+IAGO: <explicativo>Las máquinas de vectores de soporte, SVM, buscan el hiperplano de máximo margen que separa las clases en el espacio de features. Son especialmente efectivas en espacios de alta dimensionalidad y con datos de entrenamiento limitados, lo que las hace populares en bioinformática y análisis de texto con features TF-IDF. El kernel trick permite modelar fronteras de decisión no lineales sin mapear explícitamente los datos a espacios de dimensionalidad absurda. k-NN, k-Nearest Neighbors, es el algoritmo más simple conceptualmente: para clasificar un punto nuevo, encuentras los k puntos más cercanos en el conjunto de entrenamiento y asignas la clase mayoritaria. Es altamente interpretable pero no escala bien con grandes datasets porque requiere comparar el nuevo punto con todos los puntos de entrenamiento en cada inferencia.</explicativo>
+
+MARIA: <analitica>Y clustering es aprendizaje no supervisado.</analitica>
+
+IAGO: <didactico>k-Means divide los datos en k clusters esféricos de tamaño similar, minimizando la varianza dentro de cada cluster. DBSCAN identifica clusters de forma arbitraria basándose en la densidad de puntos, lo que lo hace adecuado para datos con formas no esféricas y permite identificar puntos de ruido. Hierarchical Clustering construye una jerarquía de clusters que puedes visualizar como un dendrograma, útil para explorar la estructura de los datos a distintos niveles de granularidad. Estos algoritmos son las herramientas principales para segmentación de clientes, análisis de mercado, detección de patrones sin supervisión humana.</didactico>
+
+# BLOQUE_LIMITES
+
+MARIA: <esceptico>Ahora lo incómodo. El overfitting es el problema central del machine learning clásico. Y es fácil caer en él sin darte cuenta.</esceptico>
+
+IAGO: <conversacional>El overfitting ocurre cuando el modelo aprende los patrones específicos de los datos de entrenamiento tan bien que no generaliza a datos nuevos. Un modelo sobreajustado tiene alta precisión en entrenamiento pero baja precisión en test. Los síntomas son claros: la curva de aprendizaje muestra que el error de entrenamiento sigue bajando mientras el error de validación empieza a subir. Eso significa que el modelo está memorizando ruido en lugar de aprender patrones generalizables.</conversacional>
+
+MARIA: <analitica>Y es especialmente frecuente con modelos complejos y datasets pequeños. Un árbol de decisión sin restricciones puede memorizar cada ejemplo de entrenamiento perfectamente y fallar completamente en test.</analitica>
+
+IAGO: <explicativo>Las técnicas de regularización mitigan el overfitting. L1 y L2 añaden penalizaciones por complejidad. Dropout en redes neuronales desactiva aleatoriamente neuronas durante el entrenamiento. Early stopping detiene el entrenamiento cuando el error de validación empieza a subir. Data augmentation crea variaciones artificiales de los datos de entrenamiento para aumentar el volumen efectivo. La selección correcta de la técnica y su intensidad es una de las decisiones de diseño más importantes en un proyecto de machine learning.</explicativo>
+
+MARIA: <tenso>Y luego está el test set contaminado, que es uno de los errores más graves y más frecuentes. Si cualquier información del test set filtra al proceso de entrenamiento, tus resultados de evaluación sobreestiman el rendimiento real en producción.</tenso>
+
+IAGO: <contundente>La regla de oro: el test set no se toca hasta el momento final de evaluación del modelo seleccionado. Nunca se usa para tomar decisiones de diseño. Si normalizas los datos usando estadísticas de todo el dataset incluyendo el test set, has contaminado el test. Si haces feature selection mirando correlaciones en todo el dataset, has contaminado el test. Si optimizas hiperparámetros evaluando en el test set, has contaminado el test. El test set es sagrado.</contundente>
+
+MARIA: <esceptico>Y la validación cruzada k-fold es la técnica estándar para estimar rendimiento de forma imparcial. Pero tiene sus propios problemas.</esceptico>
+
+IAGO: <explicativo>La validación cruzada divide el dataset en k partes del mismo tamaño. Entrenas k veces, cada vez usando k menos uno folds como entrenamiento y uno como validación. El rendimiento promedio sobre los k folds da una estimación más robusta que una sola división. La validación cruzada estratificada garantiza que cada fold mantiene la misma proporción de clases que el dataset original, crítico para datasets desbalanceados. El problema es el coste computacional: entrenas k modelos en lugar de uno. Para datasets grandes o modelos complejos, eso puede ser prohibitivo.</explicativo>
+
+MARIA: <analitica>Y finalmente, la interpretabilidad. Los Random Forests y XGBoost son cajas negras parciales. Puedes extraer feature importance, pero eso no te dice cómo interactúan las variables ni por qué el modelo hizo una predicción específica para un caso concreto.</analitica>
+
+IAGO: <didactico>SHAP, SHapley Additive exPlanations, resuelve esto con garantías matemáticas. SHAP proporciona interpretabilidad global, qué variables son más importantes en general, e interpretabilidad local, por qué el modelo hizo esta predicción para este caso. Se basa en la teoría de juegos cooperativos y es la herramienta de interpretabilidad más usada en machine learning clásico. Es especialmente relevante para cumplimiento del AI Act europeo, que requiere explicabilidad para sistemas de alto riesgo. Pero SHAP tiene coste computacional alto para modelos grandes y datasets masivos.</didactico>
+
+# APLICACION_PRACTICA
+
+MARIA: <conversacional>Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. El sistema tiene que tomar decisiones de clasificación y validación en múltiples etapas del pipeline. La pregunta operativa es: cuándo usamos machine learning clásico y cuándo usamos modelos de lenguaje en un sistema de producción de contenido automatizado.</conversacional>
+
+IAGO: <explicativo>El sistema de MaquinarIA Pesada tiene un validador de guiones que es un caso de uso directo de clasificación binaria. Antes de generar el audio, el guion pasa por un validador que detecta patrones prohibidos: interjecciones de la lista negra como exactamente, claro que sí, muy bien dicho. También valida estructura: que existan las secciones obligatorias, que las intervenciones tengan longitud mínima, que el reparto de palabras entre speakers cumpla los umbrales. Ese validador podría implementarse con un LLM: le pasas el guion completo y le pides que identifique violaciones de las reglas. Pero la decisión técnica fue usar expresiones regulares y análisis sintáctico determinista. Por qué: porque es un problema de clasificación sobre texto estructurado con reglas explícitas. Un regex que busca las interjecciones prohibidas tiene cero falsos negativos si está bien escrito, latencia de milisegundos, y coste cero. Un LLM tendría latencia de segundos, coste por token, y probabilidad no cero de falsos negativos porque los LLMs no son deterministas.</explicativo>
+
+MARIA: <analitica>Entonces la regla es: si el problema tiene reglas explícitas y datos estructurados, usa lógica determinista o machine learning clásico.</analitica>
+
+IAGO: <directo>Correcto. Otro caso en el sistema: la detección de sintonía en el pipeline de video. El sistema tiene que identificar dónde empieza y termina la sintonía de intro en el audio del episodio para sincronizar el video. Eso es detección de patrones en señal de audio. La solución implementada usa cross-correlation con scipy.signal.correlate: tomas la sintonía de referencia, calculas la correlación cruzada con el audio del episodio, el pico de correlación te da la posición exacta donde aparece la sintonía. Es procesamiento de señal clásico, no machine learning ni deep learning. Latencia: menos de un segundo para un episodio de quince minutos. Precisión: submuestral, detecta el frame exacto. Alternativa con deep learning: entrenar una red neuronal para detectar la sintonía. Coste de entrenamiento: alto. Coste de inferencia: más alto que scipy. Precisión: probablemente similar. Ganancia: cero.</directo>
+
+MARIA: <conversacional>Y hay casos donde sí usáis modelos de lenguaje.</conversacional>
+
+IAGO: <explicativo>El generador de guiones usa Claude Sonnet, un LLM de última generación. Por qué: porque generar un guion de podcast de dieciséis minutos con estructura narrativa, diálogo natural, y contenido técnico riguroso es un problema de generación de lenguaje natural complejo. No hay conjunto de reglas explícitas que capture la calidad narrativa. Un sistema basado en templates produciría guiones mecánicos y repetitivos. El LLM, con un system prompt de cinco kilobytes que especifica estructura, tono, reglas duras, y ejemplos, genera guiones que pasan validación en el ochenta por ciento de los casos a la primera. Cuando falla, falla por las mismas razones que cualquier sistema de machine learning: el prompt no captura todos los edge cases, o el modelo sobreajusta a patrones del entrenamiento que no generalizan.</explicativo>
+
+MARIA: <tenso>Entonces la lección operativa es: el tipo de problema dicta la herramienta, no la moda tecnológica.</tenso>
+
+IAGO: <contundente>En cien episodios generados, el validador determinista ha detectado violaciones de reglas con cero falsos negativos. La detección de sintonía con scipy no ha fallado una sola vez. El generador de guiones con LLM tiene tasa de éxito del ochenta por ciento, que es excelente para generación de contenido complejo. Si hubiéramos intentado resolver la validación con un LLM o la generación de guiones con templates, el sistema no funcionaría. La elección correcta de herramienta para cada problema es la diferencia entre un sistema que funciona en producción y un prototipo que impresiona en demos pero falla en la realidad.</contundente>
+
+# CIERRE_CONCEPTOS
+
+MARIA: <conversacional>No te puedes ir de este capitulo sin haber entendido estos conceptos.</conversacional>
+
+IAGO: <didactico>Primero: el machine learning clásico sigue siendo la herramienta correcta para datos tabulares estructurados. XGBoost supera a los LLMs en precisión, velocidad, interpretabilidad y coste para estos problemas.</didactico>
+
+MARIA: <analitica>Segundo: los tres paradigmas son supervisado, no supervisado, y por refuerzo. Supervisado necesita etiquetas, no supervisado busca estructura sin etiquetas, refuerzo aprende por recompensas.</analitica>
+
+IAGO: <explicativo>Tercero: Random Forests y XGBoost son los algoritmos más robustos y versátiles para clasificación y regresión en datos tabulares. SHAP es la herramienta estándar de interpretabilidad.</explicativo>
+
+MARIA: <firme>Cuarto: el overfitting se detecta con curvas de aprendizaje y se mitiga con regularización. El test set contaminado es un error grave que invalida la evaluación.</firme>
+
+IAGO: <contundente>Y quinto, aplicado al sistema real: la elección entre machine learning clásico y LLMs debe basarse en el tipo de datos y el tipo de problema, no en la moda tecnológica. Reglas explícitas y datos estructurados: lógica determinista. Generación de lenguaje complejo: LLMs. Esa es la disciplina de ingeniería.</contundente>
+
+# CIERRE_FINAL
+
+MARIA: <conversacional>Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.</conversacional>
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2971 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 59.4
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [--] ml: 0 menciones
+## [OK] clustering: 5 menciones
+## [OK] dbscan: 1 menciones
+## [OK] shap: 5 menciones
+## [OK] interpretabilidad: 9 menciones
+## [OK] entrenamiento: 18 menciones
+## [OK] xgboost: 10 menciones
+## [--] ia: 0 menciones
+## Cobertura total: 75% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 32
+## Por documento: {'BIBLIA_SISTEMA': 10, 'PRIMERPODCAST': 4, 'VIDEOPODCAST': 4, 'PODCAST': 14}
+##
+## TOKENS ANTHROPIC:
+## input=20337 output=6291 cache_read=0 cache_create=0 total=26628

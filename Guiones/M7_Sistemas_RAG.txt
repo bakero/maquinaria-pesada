@@ -1,0 +1,144 @@
+# HOOK
+
+IAGO: <didactico>Imagina que tienes que responder a una pregunta técnica sobre un producto que lanzaste hace tres meses. Abres ChatGPT, escribes la pregunta, y la respuesta que obtienes es correcta... pero está basada en la versión del producto de hace un año. O peor: el modelo alucina una característica que nunca existió. Esto no es un fallo del modelo. Es su diseño. Los LLMs tienen su conocimiento congelado en el momento del entrenamiento. Y para cualquier aplicación empresarial real, eso es inaceptable. RAG, Retrieval-Augmented Generation, resuelve ese problema de una forma elegante: en lugar de pedirle al modelo que recuerde, le das los documentos relevantes para que lea antes de responder. Y eso cambia todo. Esto es MaquinarIA Pesada. Arrancamos.</didactico>
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+IAGO: <conversacional>Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.</conversacional>
+
+MARIA: <conversacional>Y yo soy Maria. Hoy cerramos el módulo siete: Sistemas RAG y Gestión del Conocimiento.</conversacional>
+
+IAGO: <directo>Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo se aplica lo de hoy a ese sistema, concretamente a cómo gestiona su propia base de conocimiento para generar estos guiones.</directo>
+
+# BLOQUE_PANORAMA
+
+IAGO: <explicativo>RAG es probablemente la técnica más importante que ha salido de la explosión de los LLMs en empresa. Y no es porque sea compleja. Es porque resuelve dos problemas que hacen que un LLM sin RAG sea casi inútil para aplicaciones reales. Primero: el conocimiento congelado. Un modelo entrenado en dos mil veintitrés no sabe nada de lo que pasó en dos mil veinticuatro. Segundo: las alucinaciones. El modelo puede generar información que suena perfecta pero que es completamente falsa. RAG resuelve ambos problemas con una idea simple: no le pidas al modelo que recuerde. Dale los documentos relevantes y pídele que responda basándose en ellos.</explicativo>
+
+MARIA: <curioso>¿Y eso funciona?</curioso>
+
+IAGO: <contundente>Funciona tan bien que se ha convertido en el patrón arquitectónico dominante para aplicaciones de LLM en empresa. Fue introducido formalmente por Lewis y su equipo en Facebook AI Research en dos mil veinte. Desde entonces, prácticamente cualquier asistente de documentación, cualquier sistema de preguntas y respuestas sobre bases de conocimiento internas, cualquier herramienta de análisis de contratos o compliance con regulaciones usa RAG. La razón es que combina lo mejor de dos mundos: la capacidad de búsqueda de información de los motores de búsqueda, que puedes actualizar sin reentrenar nada, con la capacidad de síntesis y razonamiento de los LLMs, que pueden leer múltiples documentos y generar una respuesta coherente en lenguaje natural.</contundente>
+
+MARIA: <analitica>Entonces RAG es básicamente buscar documentos y dárselos al modelo.</analitica>
+
+IAGO: <explicativo>En esencia, sí. Pero el diablo está en los detalles. Un sistema RAG básico tiene dos fases. La fase de indexación, que es offline: tomas tus documentos, los divides en fragmentos de texto manejables que llamamos chunks, conviertes cada chunk en un embedding vectorial usando un modelo de embedding, y los almacenas en una base de datos vectorial junto con sus metadatos. La fase de recuperación y generación, que es online: cuando llega una pregunta del usuario, la conviertes en un embedding con el mismo modelo, buscas los chunks más similares por similaridad coseno en la base vectorial, y se los pasas al LLM junto con la pregunta original para que genere la respuesta.</explicativo>
+
+MARIA: <esceptico>¿Y con eso ya está?</esceptico>
+
+IAGO: <firme>Para muchos casos de uso, sorprendentemente sí. Un RAG básico funciona bien si tus documentos están bien escritos, si las preguntas de los usuarios usan vocabulario similar al de los documentos, y si la respuesta está contenida en uno o dos chunks. Pero cuando eso no se cumple, necesitas técnicas avanzadas. Y de eso va este módulo.</firme>
+
+# BLOQUE_TEMAS_CLAVE
+
+IAGO: <didactico>Vamos con los conceptos clave. Primero: chunking. Cómo divides tus documentos en fragmentos es uno de los determinantes más importantes de la calidad de tu sistema RAG. La estrategia más simple es chunking por tamaño fijo: divides cada N tokens con un overlap de M tokens entre chunks consecutivos. Es simple, pero no respeta la estructura del documento. Un chunk puede empezar a mitad de una frase o cortar un párrafo por la mitad. La alternativa es chunking por estructura semántica: divides por párrafos, por secciones, o por títulos. Produces chunks más cohesivos, pero de tamaño variable, lo que puede ser un problema si algunos chunks son demasiado grandes o demasiado pequeños.</didactico>
+
+MARIA: <curioso>¿Y cuál es mejor?</curioso>
+
+IAGO: <explicativo>Depende del tipo de documentos y del tipo de preguntas. Pero hay una técnica más sofisticada que funciona bien en muchos casos: recursive chunking. Usas una jerarquía de divisores. Primero intentas dividir por doble salto de línea. Si el chunk resultante sigue siendo demasiado grande, divides por salto de línea. Si sigue siendo grande, divides por frase. Y así hasta alcanzar el tamaño objetivo. Es más inteligente porque respeta la estructura natural del texto tanto como sea posible.</explicativo>
+
+MARIA: <analitica>Pero el tamaño del chunk importa, ¿no? ¿Cuál es el tamaño óptimo?</analitica>
+
+IAGO: <contundente>Hay un trade-off fundamental. Chunks pequeños, doscientos a cuatrocientos tokens, producen mejor precisión de recuperación porque cada chunk es sobre un tema específico. Pero le dan menos contexto al LLM. Chunks grandes, mil a dos mil tokens, le dan más contexto al LLM pero recuperan más ruido: información irrelevante junto con la relevante. El tamaño óptimo depende de tu caso de uso. Y la forma más rigurosa de determinarlo es evaluar con RAGAS, que veremos en un momento.</contundente>
+
+MARIA: <didactico>Segundo concepto clave: búsqueda híbrida. Yago, la búsqueda puramente vectorial tiene un problema, ¿no? Si tu pregunta usa un término técnico específico o un acrónimo que el embedding no captura bien, puedes no recuperar el documento correcto aunque contenga exactamente ese término.</didactico>
+
+IAGO: <explicativo>Correcto. La búsqueda vectorial captura similaridad semántica, pero puede fallar con términos exactos. La búsqueda keyword, que es lo que usan los motores de búsqueda tradicionales con algoritmos como BM25, captura esos términos exactos pero no captura la similaridad semántica. La búsqueda híbrida combina ambas. Recuperas candidatos con búsqueda vectorial y con búsqueda keyword, y luego usas un algoritmo de re-ranking para combinar y ordenar los resultados. El algoritmo más común es RRF, Reciprocal Rank Fusion, aunque también puedes usar un cross-encoder. La búsqueda híbrida produce consistentemente mejores resultados que cualquiera de los dos enfoques por separado, especialmente para documentos técnicos y dominios especializados.</explicativo>
+
+IAGO: <didactico>Tercer concepto: re-ranking y HyDE. El re-ranking es la técnica de usar un modelo más preciso pero más lento para reordenar un conjunto inicial de candidatos. Los cross-encoders, que toman el par pregunta más documento como input y producen un score de relevancia, son significativamente más precisos que los bi-encoders, que codifican pregunta y documento por separado. Pero son demasiado lentos para buscar sobre millones de documentos. La solución es la pipeline retrieve-then-rerank: usas búsqueda eficiente para obtener los veinte o cincuenta candidatos más relevantes, y luego usas el cross-encoder para reordenar esos candidatos y seleccionar los tres a cinco mejores para el LLM.</didactico>
+
+MARIA: <curioso>¿Y qué es HyDE?</curioso>
+
+IAGO: <explicativo>HyDE, Hypothetical Document Embeddings, resuelve el problema del desajuste semántico entre la pregunta y los documentos. La idea es generar un documento hipotético de respuesta a la pregunta usando el LLM, y luego usar el embedding de ese documento para recuperar los documentos reales más similares. Suena raro, pero funciona porque el documento hipotético está escrito en el mismo estilo y vocabulario que los documentos reales, lo que produce mejores embeddings para la búsqueda.</explicativo>
+
+MARIA: <analitica>Cuarto concepto: evaluación con RAGAS. Porque todo esto está muy bien, pero necesitas medir si tu sistema RAG funciona o no.</analitica>
+
+IAGO: <didactico>RAGAS es el framework estándar de evaluación de sistemas RAG. Define cuatro métricas principales. Faithfulness: qué porcentaje de las afirmaciones de la respuesta están fundamentadas en los chunks recuperados. Answer Relevancy: qué tan relevante es la respuesta para la pregunta del usuario. Context Precision: qué porcentaje de los chunks recuperados son realmente relevantes para la pregunta. Y Context Recall: qué porcentaje de la información relevante disponible fue recuperada. Estas métricas se calculan automáticamente usando un LLM como evaluador, lo que te permite evaluar la calidad del sistema a escala sin evaluación humana costosa.</didactico>
+
+MARIA: <esceptico>Un LLM evaluando a otro LLM. ¿fiable?</esceptico>
+
+IAGO: <firme>Es fiable si lo calibras correctamente. RAGAS usa prompts cuidadosamente diseñados y validados empíricamente. Y en la práctica, las métricas de RAGAS correlacionan muy bien con la evaluación humana. Es la herramienta estándar de la industria por una razón.</firme>
+
+# BLOQUE_LIMITES
+
+MARIA: <tenso>Ahora lo que no funciona. Porque RAG suena a solución perfecta, pero tiene limitaciones importantes. Primera: el problema del contexto disperso. Si la respuesta a una pregunta requiere información de múltiples chunks que están dispersos en el documento o en múltiples documentos, y cada chunk individualmente no parece suficientemente relevante, el sistema puede no recuperar todos los chunks necesarios. Y entonces la respuesta es incompleta o incorrecta.</tenso>
+
+IAGO: <reflexivo>Es un problema real. Y no tiene solución perfecta. Puedes aumentar el número de chunks recuperados, pero entonces aumentas el ruido. Puedes usar parent-child chunking, donde mantienes chunks pequeños para la recuperación pero pasas al LLM el chunk padre más grande que los contiene. Pero eso aumenta el coste y la latencia. O puedes usar GraphRAG, que estructura el conocimiento en un grafo y permite razonamiento sobre relaciones entre entidades. Pero eso requiere procesamiento adicional y no funciona bien para todo tipo de documentos.</reflexivo>
+
+MARIA: <analitica>Segunda limitación: la calidad de los embeddings. Si tu modelo de embedding no captura bien la semántica de tu dominio específico, la búsqueda vectorial va a fallar. Y los modelos de embedding generales, aunque son buenos, no son perfectos para dominios técnicos muy especializados.</analitica>
+
+IAGO: <explicativo>La solución es fine-tuning del modelo de embedding con datos de tu dominio. Pero eso requiere datos de entrenamiento de calidad: pares de pregunta-documento relevante. Y no todo el mundo tiene esos datos o los recursos para hacer fine-tuning. La alternativa práctica es la búsqueda híbrida, que compensa las debilidades de los embeddings con búsqueda keyword.</explicativo>
+
+MARIA: <tenso>Tercera limitación, y esta es la más incómoda: RAG no resuelve el problema de las alucinaciones. Solo lo reduce. El LLM puede seguir generando información que no está en los chunks recuperados, especialmente si la pregunta es ambigua o si los chunks contienen información contradictoria. Y el usuario puede no darse cuenta de que parte de la respuesta es alucinada y parte es fundamentada.</tenso>
+
+IAGO: <firme>Por eso la métrica de Faithfulness de RAGAS es tan importante. Te dice qué porcentaje de las afirmaciones de la respuesta están fundamentadas en los chunks. Y por eso en aplicaciones críticas necesitas incluir citas explícitas en la respuesta: cada afirmación debe ir acompañada de la referencia al chunk del que proviene. Eso hace la respuesta más larga y menos fluida, pero es la única forma de que el usuario pueda verificar la información.</firme>
+
+# APLICACION_PRACTICA
+
+MARIA: <conversacional>Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: ¿cómo gestiona este sistema su propia base de conocimiento para generar guiones técnicamente rigurosos sobre catorce módulos de un máster en IA?</conversacional>
+
+IAGO: <explicativo>El sistema tiene una arquitectura RAG completa. La base de conocimiento está en la carpeta PDFs, con una estructura jerárquica. Hay PDFs de resúmenes de módulo en PDFs slash resumenes, que son la fuente primaria para los episodios M como este. Hay PDFs de temas individuales en PDFs slash temas, que son la fuente primaria para los episodios T. Y hay documentos auxiliares en PDFs slash auxiliares: un glosario unificado con definiciones canónicas de términos técnicos, un documento de benchmarks académicos que lista qué universidades cubren cada módulo, y un documento de fuentes directas con papers y documentación oficial. La fase de indexación es manual: el autor del proyecto procesa los PDFs del máster y los organiza en esa estructura. No hay embeddings ni base vectorial porque el sistema usa un LLM con contexto largo que puede procesar los PDFs completos directamente.</explicativo>
+
+MARIA: <curioso>Entonces no es RAG puro. Es más bien un sistema de recuperación estructurada más LLM.</curioso>
+
+IAGO: <contundente>Correcto. Es una decisión de diseño. Para un corpus de catorce módulos, con PDFs de veinte a cincuenta páginas cada uno, es más eficiente y predecible usar contexto largo que montar una base vectorial. El sistema recupera el PDF completo del módulo o tema correspondiente y se lo pasa al LLM junto con las especificaciones de guion. Pero la fase de recuperación sigue siendo crítica: el generador tiene que extraer del PDF los conceptos clave, los datos numéricos con cifra concreta, los casos con nombre propio, y los contraintuitivos del módulo. Y tiene que cumplir una regla dura: al menos uno de esos elementos del PDF debe aparecer en los primeros noventa segundos hablados del episodio.</contundente>
+
+MARIA: <analitica>¿Y cómo se asegura el sistema de que el guion cubre al menos el setenta y cinco por ciento de los conceptos clave del PDF?</analitica>
+
+IAGO: <explicativo>Hay una fase de pre-escritura obligatoria. Antes de escribir el guion, el generador rellena internamente una tabla con los elementos clave extraídos del PDF: cuatro datos numéricos, tres casos con nombre propio, una frase-fuerza del resumen ejecutivo, tres contraintuitivos del módulo. Y luego, en la fase de verificación, el sistema valida que esos elementos aparecen en el guion. Si la cobertura es inferior al setenta y cinco por ciento, se loguea como soft-warn. Si elementos críticos faltan, es hard-fail y el guion no se valida.</explicativo>
+
+MARIA: <tenso>Pero el sistema también tiene que aplicar los conceptos del módulo a su propia arquitectura. Eso es el bloque APLICACION_PRACTICA que estamos en este momento. ¿Cómo recupera esa información?</tenso>
+
+IAGO: <didactico>Ahí es donde el sistema usa RAG de verdad. Hay cuatro documentos vivos en la raíz del repositorio: BIBLIA_SISTEMA punto md, que es la referencia técnica estática del sistema completo. PRIMERPODCAST punto md, que es el diario de producción del pipeline de audio. VIDEOPODCAST punto md, que es el diario de producción del pipeline de video. Y PODCAST punto md, que es el diario operativo unificado con marcas estructuradas como DECISIÓN, CAMBIO, INCIDENCIA, PRODUCCIÓN, REGLA. Para cada módulo M, el generador hace una pasada de extracción sobre esos cuatro documentos buscando entradas que mencionen explícitamente conceptos del módulo, tecnologías o patrones del módulo, y decisiones marcadas que tocan los conceptos del módulo. Construye internamente una ficha de aplicación con el problema concreto encontrado, la decisión técnica tomada, cifras verificables, y la conexión con los conceptos del módulo. Esa ficha se guarda como artefacto temporal en episodios slash temp slash aplicacion_extraida_M{n} punto md para trazabilidad.</didactico>
+
+MARIA: <esceptico>¿Y si no hay material suficiente en esos documentos para un módulo concreto?</esceptico>
+
+IAGO: <firme>Entonces el sistema hace hard-fail. No inventa contenido. Loguea en VERIFICACIONES que no hay material suficiente y pide intervención humana: el autor debe enriquecer los documentos vivos con material relevante para ese módulo, o proveer un override manual en PDFs slash aplicacion_practica slash M{n} punto md con el formato de la ficha. Es una regla dura del sistema: la aplicación práctica debe basarse en hechos verificables del sistema real, no en contenido inventado.</firme>
+
+MARIA: <conversacional>Entonces este bloque que estamos escuchando ahora mismo se generó extrayendo información de esos cuatro documentos sobre cómo el sistema gestiona su base de conocimiento.</conversacional>
+
+IAGO: <contundente>Exacto. Y si escuchas con atención, todo lo que he dicho es verificable: la estructura de carpetas PDFs, la jerarquía de fuentes primarias y secundarias, la fase de pre-escritura obligatoria, la regla del setenta y cinco por ciento de cobertura, la extracción de los cuatro documentos vivos, la ficha de aplicación como artefacto temporal. Todo está documentado en BIBLIA_SISTEMA punto md y en PODCAST_MASTER_SPEC punto md. Esa es la diferencia entre RAG bien hecho y contenido inventado.</contundente>
+
+# CIERRE_CONCEPTOS
+
+MARIA: <conversacional>No te puedes ir de este capitulo sin haber entendido estos conceptos.</conversacional>
+
+IAGO: <didactico>Primero: RAG resuelve los dos problemas principales de los LLMs en empresa: conocimiento desactualizado y alucinaciones. Lo hace recuperando documentos relevantes y poniéndolos en el contexto del LLM para que genere la respuesta basándose en ellos.</didactico>
+
+MARIA: <didactico>Segundo: la arquitectura básica tiene dos fases. Indexación offline: chunking, embedding, base vectorial. Recuperación y generación online: embedding de la consulta, búsqueda vectorial, LLM con contexto.</didactico>
+
+IAGO: <didactico>Tercero: las técnicas avanzadas son búsqueda híbrida, que combina búsqueda vectorial y keyword. Re-ranking con cross-encoder para mejorar la precisión. Parent-child chunking para balancear precisión y contexto. Y HyDE para resolver el desajuste semántico entre pregunta y documentos.</didactico>
+
+MARIA: <didactico>Cuarto: RAGAS es el framework estándar de evaluación. Mide cuatro dimensiones: Faithfulness, Answer Relevancy, Context Precision, y Context Recall. Usa un LLM como evaluador para calcular las métricas automáticamente.</didactico>
+
+IAGO: <contundente>Y quinto: la aplicación práctica. En este sistema, la recuperación es estructurada por carpetas y jerarquía de fuentes, no por embeddings. Pero la extracción de conceptos del PDF y de los documentos vivos sigue los principios de RAG: recuperar lo relevante, validar la cobertura, y basar el contenido en hechos verificables. No inventar.</contundente>
+
+# CIERRE_FINAL
+
+MARIA: <conversacional>Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.</conversacional>
+
+IAGO: <calido>Hasta la próxima.</calido>
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2906 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 57.0
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] rag: 20 menciones
+## [OK] llm: 18 menciones
+## [OK] ragas: 7 menciones
+## [OK] que porcentaje de: 4 menciones
+## [OK] busqueda hibrida: 5 menciones
+## [--] la consulta y: 0 menciones
+## [OK] recuperacion: 7 menciones
+## [OK] indexacion: 3 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 19
+## Por documento: {'BIBLIA_SISTEMA': 3, 'PRIMERPODCAST': 1, 'VIDEOPODCAST': 5, 'PODCAST': 10}
+##
+## TOKENS ANTHROPIC:
+## input=17562 output=6021 cache_read=0 cache_create=0 total=23583
