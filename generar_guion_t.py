@@ -255,6 +255,22 @@ INSTRUCCIONES CRÍTICAS:
     return system, user
 
 
+def _fix_tts_closing_tags(content: str) -> str:
+    open_match = re.search(r"<([a-zA-Z_]+)>", content)
+    if open_match:
+        tag = open_match.group(1).lower()
+        content = re.sub(r"</(iago|maria|yago|IAGO|MARIA|YAGO)>", f"</{tag}>", content, flags=re.IGNORECASE)
+    return content
+
+
+def _remove_blacklisted_opening(content: str, spec: dict) -> str:
+    blacklist = spec.get("script_rules", {}).get("blacklisted_interjections", [])
+    for phrase in blacklist:
+        pat = re.compile(r"^" + re.escape(phrase) + r"[.,!]?\s*", re.IGNORECASE)
+        content = pat.sub("", content).strip()
+    return content
+
+
 def normalize_generated_script(script_text: str, spec: dict) -> str:
     SPEAKER_PAT = re.compile(r"^(IAGO|MARIA|MARÍA)\s*:\s*(.*)$", re.IGNORECASE)
     lines = script_text.replace("\r\n", "\n").split("\n")
@@ -264,7 +280,9 @@ def normalize_generated_script(script_text: str, spec: dict) -> str:
         m = SPEAKER_PAT.match(stripped)
         if m:
             speaker = m.group(1).upper().replace("Í", "I")
-            content = re.sub(r"\bIago\b", "Yago", m.group(2).strip())
+            content = re.sub(r"\bIago\b", "Yago", m.group(2).strip(), flags=re.IGNORECASE)
+            content = _fix_tts_closing_tags(content)
+            content = _remove_blacklisted_opening(content, spec)
             normalized.append(f"{speaker}: {content}")
         else:
             normalized.append(stripped)
