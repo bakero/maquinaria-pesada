@@ -6,9 +6,9 @@ los 14 episodios de resumen de módulo que cierran cada bloque de Ts.
 Reemplaza al spec genérico anterior **solo para episodios M**. Los episodios T
 (temas individuales) tienen su propio spec en `PODCAST_T_SPEC.md`.
 
-Versión: 2026-05-10 (v3 — incorpora correcciones de la revisión de los 7 episodios T piloto + extracción automática desde documentos vivos)
+Versión: 2026-05-12 (v4 — referencias temporales 2026, ampliación de duración, refuerzo de ejemplos cotidianos)
 Tipo: M
-Duración objetivo: 15-17 minutos (rango 14-18 min)
+Duración objetivo: 17-19 minutos (rango 16-20 min)
 
 ---
 
@@ -35,7 +35,7 @@ diferenciación.
 
 - Priorizar claridad antes que estilo.
 - Mantener tono divulgativo-técnico, riguroso y accesible.
-- Episodios de **14 a 18 min**, objetivo práctico **15-17 min**.
+- Episodios de **16 a 20 min**, objetivo práctico **17-19 min**. Se prefiere extender duración antes que dejar conceptos sin aterrizar.
 - Empezar siempre con hook que cumpla una de las 3 plantillas (§5).
 - **Apertura por paridad del número de MÓDULO:** impares Yago, pares Maria.
   M0 → Maria, M1 → Yago, M2 → Maria, M3 → Yago, etc.
@@ -303,7 +303,18 @@ Las fuentes secundarias NO pueden inflar el guion.
 ### 7.3 Reglas generales de contenido
 
 - Cubrir al menos el **75%** de los conceptos clave del PDF RESUMEN.
-- Conceptos complejos con ejemplo cotidiano + traslación corporativa.
+- **Cada concepto técnico complejo debe ir seguido de una analogía cotidiana en ≤2 frases**, antes de la traslación corporativa. La audiencia núcleo es técnica, pero la secundaria (CTO/CIO/CEO y oyente curioso) tiene que poder seguir el episodio sin sentirse expulsada. Es preferible alargar el episodio antes que dejar un concepto sin aterrizar.
+- Marcadores aceptables para introducir el ejemplo cotidiano (uso libre, sin léxico obligatorio): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
+- Soft-warn si un concepto del PDF aparece en BLOQUE_TEMAS_CLAVE sin ningún marcador de analogía cotidiana en las 6 frases siguientes.
+
+### 7.4 Referencias temporales
+
+Regla operativa para que el corpus envejezca bien:
+
+- **Año por defecto: 2026** (año de producción del podcast). Cuando se hable del estado actual del mercado, de los modelos, del ecosistema o de la práctica empresarial, **no se cita año**; se usan formas como "hoy", "actualmente", "en este momento", "ahora mismo".
+- **Excepción única — publicaciones/informes/papers/eventos identificables**: ahí sí se conserva el año real ("el paper de Sennrich de 2016", "el informe McKinsey State of AI de 2025", "la encuesta IBM AI in Action 2024", "el lanzamiento de GPT-4 en 2023"). El año va siempre acompañado de un autor o publicación con nombre propio.
+- **Prohibido**: usar 2024 o 2025 como marcador del presente (ej. "en 2025 las empresas..."). Hard-warn si se detecta `\b(2024|2025|dos mil veint(icuatro|icinco))\b` y en las 6 palabras anteriores NO aparece uno de: paper, informe, estudio, reporte, publicación, encuesta, según, lanzamiento, McKinsey, Hugging Face, Anthropic, OpenAI, Google, Meta, Gartner, IBM, IDC, Lucid, Forrester, Stanford.
+- **Permitido sin etiqueta**: 2026 (presente), o años pasados narrados como historia ("el primer invierno llegó en los setenta", "los Transformers se publicaron en 2017").
 
 ---
 
@@ -429,7 +440,7 @@ Debe incluir literalmente:
 <!-- PODCAST_M_SPEC_JSON_START -->
 ```json
 {
-  "version": "2026-05-10-v3",
+  "version": "2026-05-12-v4",
   "spec_type": "M",
   "project_name": "MaquinarIA Pesada",
   "language": "es",
@@ -457,13 +468,13 @@ Debe incluir literalmente:
     "stream": true
   },
   "episode_defaults": {
-    "duration_minutes": 16,
-    "duration_range_minutes": [14, 18],
-    "target_audience": "Profesionales tecnicos curiosos sobre como funciona la IA por dentro. CTOs/CIOs/CEOs y profesionales de IT como audiencia secundaria. Pieza ancla del modulo.",
+    "duration_minutes": 18,
+    "duration_range_minutes": [16, 20],
+    "target_audience": "Profesionales tecnicos curiosos sobre como funciona la IA por dentro. CTOs/CIOs/CEOs y profesionales de IT como audiencia secundaria. Pieza ancla del modulo. Toda concepto complejo se aterriza con analogia cotidiana antes de la traslacion tecnica/corporativa.",
     "tone": "divulgativo tecnico, riguroso pero accesible, con momento de ingenieria-real en APLICACION_PRACTICA",
     "hook_style": "menu_3_plantillas",
-    "minimum_audio_minutes": 13.5,
-    "maximum_audio_minutes": 18.5
+    "minimum_audio_minutes": 15.5,
+    "maximum_audio_minutes": 20.5
   },
   "parity_rules": {
     "applies_to": "module_number",
@@ -547,8 +558,8 @@ Debe incluir literalmente:
     "max_consecutive_blocks_same_speaker": 2,
     "key_concepts_block_count_min": 3,
     "key_concepts_block_count_max": 5,
-    "minimum_word_count": 2200,
-    "maximum_word_count": 2800,
+    "minimum_word_count": 2400,
+    "maximum_word_count": 3400,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 10,
     "reaction_word_limit": 12,
@@ -745,7 +756,32 @@ Debe incluir literalmente:
     "soft_warn_on_aplicacion_single_concept_only": true,
     "soft_warn_on_secondary_vs_primary_conflict": true,
     "soft_warn_on_live_docs_vs_resumen_conflict": true,
-    "soft_warn_on_module_with_low_live_docs_coverage": true
+    "soft_warn_on_module_with_low_live_docs_coverage": true,
+    "soft_warn_on_temporal_reference_without_publication_context": true,
+    "soft_warn_on_missing_everyday_analogy_after_complex_concept": true
+  },
+  "temporal_references": {
+    "default_year": 2026,
+    "current_state_uses_no_year": true,
+    "publication_context_markers": [
+      "paper", "informe", "estudio", "reporte", "publicacion", "encuesta", "segun",
+      "lanzamiento", "McKinsey", "Hugging Face", "Anthropic", "OpenAI", "Google",
+      "Meta", "Gartner", "IBM", "IDC", "Lucid", "Forrester", "Stanford", "MIT"
+    ],
+    "forbidden_present_year_patterns": [
+      "\\b2024\\b", "\\b2025\\b", "dos mil veinticuatro", "dos mil veinticinco"
+    ],
+    "context_window_words": 6
+  },
+  "everyday_analogy_rule": {
+    "applies_to_blocks": ["BLOQUE_TEMAS_CLAVE", "BLOQUE_PANORAMA"],
+    "required_per_complex_concept": 1,
+    "max_sentences_per_analogy": 2,
+    "marker_phrases": [
+      "imagina que", "es como cuando", "piensa en", "el equivalente seria",
+      "en tu dia a dia", "igual que", "lo mismo que pasa cuando", "como si",
+      "es como", "como cuando"
+    ]
   },
   "reporting": {
     "require_script_validation": true,

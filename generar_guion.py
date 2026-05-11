@@ -356,6 +356,16 @@ INSTRUCCIONES CRÍTICAS:
     - BLOQUE_TEMAS_CLAVE: COMPARTIDO. Cada speaker debe tener ENTRE 40% y 60% de las palabras totales del bloque. Alterna el liderazgo por concepto. Si IAGO lleva 2 conceptos seguidos, el siguiente lo lidera MARIA.
     - BLOQUE_LIMITES: MARIA debe tener ≥65% de las palabras del bloque. IAGO da contexto técnico corto.
     - En BLOQUE_TEMAS_CLAVE si tienes 4 conceptos: IAGO-MARIA-IAGO-MARIA (150-200 palabras por concepto líder, el otro hace 1-2 preguntas de ≤20 palabras cada una).
+15. REFERENCIAS TEMPORALES — REGLA DURA:
+    - El podcast se produce en 2026. Cuando hables del ESTADO ACTUAL (mercado, modelos, prácticas, ecosistema), NO cites año: usa "hoy", "actualmente", "en este momento", "ahora mismo".
+    - Solo cita un año cuando esté pegado a una publicación, paper, informe, encuesta o lanzamiento identificable por su nombre propio ("paper de Sennrich de 2016", "McKinsey State of AI 2025", "estudio de Hugging Face de 2023", "lanzamiento de GPT-4 en 2023"). En ese caso, conserva el año real del documento.
+    - PROHIBIDO escribir "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente. Si necesitas un año del presente, usa 2026 (excepcional) o reformula sin año.
+16. EJEMPLO COTIDIANO POR CONCEPTO COMPLEJO — REGLA DURA:
+    - Cada concepto técnico del PDF que introduzcas en BLOQUE_PANORAMA o BLOQUE_TEMAS_CLAVE debe ir acompañado de UNA analogía cotidiana en 1-2 frases, antes (o como parte de) la traslación corporativa.
+    - Marcadores recomendados (no obligatorios léxicamente): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
+    - Audiencia: aunque el oyente núcleo es técnico, hay CTOs, CIOs y oyentes curiosos. NINGÚN concepto debe quedar definido solo por su jerga técnica. Prefiere extender duración antes que dejar un concepto sin aterrizar.
+17. CIERRE_CONCEPTOS: ENTRE 3 Y 5 conceptos. NUNCA 6, NUNCA 2. Cuenta exactamente cuántas intervenciones de speaker hay en CIERRE_CONCEPTOS (sin contar la apertura "No te puedes ir de este capitulo...") y verifica que estén entre 3 y 5.
+18. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Si vas a poner 3 de IAGO, intercala una pregunta corta de MARIA. Y viceversa.
 """
     return system, user
 

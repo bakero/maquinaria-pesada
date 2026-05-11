@@ -257,6 +257,16 @@ INSTRUCCIONES CRÍTICAS:
     - BLOQUE_QUE: IAGO debe tener ≥65% de palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
     - BLOQUE_COMO: COMPARTIDO. Cada speaker ENTRE 40%-60% del total del bloque. Alterna liderazgo por sub-concepto. Si el bloque tiene 2 sub-conceptos: sub1 lo lidera IAGO (150-180 palabras), sub2 lo lidera MARIA (150-180 palabras). Cada líder hace explicación principal; el otro hace 1-2 preguntas cortas.
     - BLOQUE_LIMITES: MARIA debe tener ≥65% de palabras. IAGO da contexto técnico en intervenciones medias.
+16. REFERENCIAS TEMPORALES — REGLA DURA:
+    - El podcast se produce en 2026. Cuando hables del ESTADO ACTUAL (mercado, modelos, prácticas, ecosistema), NO cites año: usa "hoy", "actualmente", "en este momento", "ahora mismo".
+    - Solo cita un año cuando esté pegado a una publicación, paper, informe, encuesta o lanzamiento identificable por su nombre propio (ej: "paper de Sennrich de 2016", "estudio de Hugging Face de 2023", "McKinsey State of AI 2025"). En ese caso, conserva el año real del documento.
+    - PROHIBIDO usar "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente.
+17. EJEMPLO COTIDIANO POR CONCEPTO COMPLEJO — REGLA DURA:
+    - Cada concepto técnico del PDF que introduzcas en BLOQUE_QUE o BLOQUE_COMO debe ir acompañado de UNA analogía cotidiana en 1-2 frases, antes (o como parte de) la traslación técnica.
+    - Marcadores recomendados (no obligatorios léxicamente): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
+    - Audiencia: aunque el oyente núcleo es técnico, hay CTOs, CIOs y oyentes curiosos que no deben sentirse expulsados. Es preferible alargar el episodio antes que dejar un concepto sin aterrizar.
+18. CIERRE_CONCEPTOS: cuenta exactamente 3 intervenciones de speaker (sin contar la apertura "No te puedes ir..."). Ni 2, ni 4, ni 5. HARD-FAIL si te desvías.
+19. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Si vas a poner 3 de IAGO, intercala una pregunta corta de MARIA. Y viceversa.
 """
     return system, user
 
