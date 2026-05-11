@@ -6,9 +6,9 @@ los ~100 episodios del corpus del máster, uno por tema individual.
 Reemplaza al spec genérico anterior **solo para episodios T**. Los episodios M
 (resúmenes de módulo) tienen su propio spec en `PODCAST_M_SPEC.md`.
 
-Versión: 2026-05-10 (v3 — incorpora correcciones de la revisión de los 7 episodios piloto)
+Versión: 2026-05-12 (v4 — referencias temporales 2026, refuerzo de ejemplos cotidianos, leve ampliación de duración)
 Tipo: T
-Duración objetivo: 10 minutos (rango 9-12 min)
+Duración objetivo: 11 minutos (rango 10-13 min)
 
 ---
 
@@ -33,9 +33,9 @@ del máster. Sirve a:
 ## 2. Principios duros
 
 - Priorizar claridad antes que estilo.
-- No huir de la explicación técnica, pero aterrizar siempre con ejemplos.
+- No huir de la explicación técnica, pero aterrizar siempre con ejemplos cotidianos antes de la traslación técnica.
 - Mantener tono divulgativo-técnico, riguroso y accesible.
-- Episodios de **9 a 12 min**, objetivo práctico **10 min**.
+- Episodios de **10 a 13 min**, objetivo práctico **11 min**. Se prefiere extender duración antes que dejar un concepto sin aterrizar.
 - Empezar siempre con hook que cumpla una de las 3 plantillas (§5).
 - **Apertura por paridad del número de TEMA (no del módulo):** impares Yago,
   pares Maria. T1 → Yago, T2 → Maria, T3 → Yago, T4 → Maria, etc.
@@ -266,7 +266,7 @@ VERIFICACIONES y se justifica.
    - Lista de papers, documentación oficial y URLs canónicas.
    - Uso para citar de forma específica cuando un dato del PDF principal
      necesita respaldo ("según el paper de OpenAI/Anthropic/Google de
-     octubre 2025...").
+     2026...", o el año real del documento si la publicación es anterior).
    - Máximo 2 menciones por episodio.
 
 **Regla anti-relleno:**
@@ -283,9 +283,20 @@ principal. Se loguea en VERIFICACIONES como soft-warn.
 ### 7.3 Reglas generales de contenido
 
 - Cubrir al menos el **75%** de los conceptos clave del PDF del tema.
-- Conceptos complejos con ejemplo cotidiano + traslación corporativa.
+- **Cada concepto técnico complejo debe ir seguido de una analogía cotidiana en ≤2 frases**, antes (o como parte de) la traslación corporativa. La audiencia núcleo es técnica, pero la secundaria (CTO/CIO/CEO y oyente curioso) tiene que poder seguir el episodio sin sentirse expulsada por terminología. Es preferible alargar el episodio antes que dejar un concepto sin aterrizar.
+- Marcadores aceptables (uso libre, sin léxico obligatorio): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
+- Soft-warn si un término técnico denso aparece en BLOQUE_COMO sin ningún marcador de analogía cotidiana en las 6 frases siguientes.
 - Si un concepto del PDF es muy visual para audio, justificar su ausencia en
   VERIFICACIONES.
+
+### 7.4 Referencias temporales
+
+Regla operativa para que el corpus envejezca bien:
+
+- **Año por defecto: 2026** (año de producción del podcast). Cuando se hable del estado actual del mercado, de los modelos o de la práctica empresarial, **no se cita año**; se usan formas como "hoy", "actualmente", "en este momento", "ahora mismo".
+- **Excepción única — publicaciones/informes/papers/eventos identificables**: ahí sí se conserva el año real ("el paper de Sennrich de 2016", "el estudio de Hugging Face de 2023", "el informe McKinsey State of AI 2025"). El año va siempre acompañado de un autor o publicación con nombre propio.
+- **Prohibido**: usar 2024 o 2025 como marcador del presente. Hard-warn si se detecta `\b(2024|2025|dos mil veint(icuatro|icinco))\b` y en las 6 palabras anteriores NO aparece uno de: paper, informe, estudio, reporte, publicación, encuesta, según, lanzamiento, McKinsey, Hugging Face, Anthropic, OpenAI, Google, Meta, Gartner, IBM, IDC, Lucid, Forrester, Stanford.
+- **Permitido sin etiqueta**: 2026 (presente), o años pasados narrados como historia ("el primer invierno llegó en los setenta", "los Transformers se publicaron en 2017").
 
 ---
 
@@ -322,7 +333,7 @@ Debe incluir literalmente:
 <!-- PODCAST_T_SPEC_JSON_START -->
 ```json
 {
-  "version": "2026-05-10-v3",
+  "version": "2026-05-12-v4",
   "spec_type": "T",
   "project_name": "MaquinarIA Pesada",
   "language": "es",
@@ -347,13 +358,13 @@ Debe incluir literalmente:
     "stream": true
   },
   "episode_defaults": {
-    "duration_minutes": 10,
-    "duration_range_minutes": [9, 12],
-    "target_audience": "Profesionales tecnicos curiosos sobre como funciona la IA por dentro. CTOs/CIOs/CEOs y profesionales de IT como audiencia secundaria.",
+    "duration_minutes": 11,
+    "duration_range_minutes": [10, 13],
+    "target_audience": "Profesionales tecnicos curiosos sobre como funciona la IA por dentro. CTOs/CIOs/CEOs y profesionales de IT como audiencia secundaria. Toda concepto complejo se aterriza con analogia cotidiana antes de la traslacion tecnica.",
     "tone": "divulgativo tecnico, riguroso pero accesible",
     "hook_style": "menu_3_plantillas",
-    "minimum_audio_minutes": 8.5,
-    "maximum_audio_minutes": 12.5
+    "minimum_audio_minutes": 9.5,
+    "maximum_audio_minutes": 13.5
   },
   "parity_rules": {
     "applies_to": "tema_number",
@@ -426,8 +437,8 @@ Debe incluir literalmente:
     ],
     "max_consecutive_blocks_same_speaker": 2,
     "key_concepts_block_count_exact": 3,
-    "minimum_word_count": 1300,
-    "maximum_word_count": 1700,
+    "minimum_word_count": 1400,
+    "maximum_word_count": 1900,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 8,
     "reaction_word_limit": 12,
@@ -557,7 +568,32 @@ Debe incluir literalmente:
     "soft_warn_on_missing_preescritura_evidence": true,
     "soft_warn_on_pingpong_pattern": true,
     "soft_warn_on_secondary_vs_primary_conflict": true,
-    "soft_warn_on_unused_benchmark_when_relevant": true
+    "soft_warn_on_unused_benchmark_when_relevant": true,
+    "soft_warn_on_temporal_reference_without_publication_context": true,
+    "soft_warn_on_missing_everyday_analogy_after_complex_concept": true
+  },
+  "temporal_references": {
+    "default_year": 2026,
+    "current_state_uses_no_year": true,
+    "publication_context_markers": [
+      "paper", "informe", "estudio", "reporte", "publicacion", "encuesta", "segun",
+      "lanzamiento", "McKinsey", "Hugging Face", "Anthropic", "OpenAI", "Google",
+      "Meta", "Gartner", "IBM", "IDC", "Lucid", "Forrester", "Stanford", "MIT"
+    ],
+    "forbidden_present_year_patterns": [
+      "\\b2024\\b", "\\b2025\\b", "dos mil veinticuatro", "dos mil veinticinco"
+    ],
+    "context_window_words": 6
+  },
+  "everyday_analogy_rule": {
+    "applies_to_blocks": ["BLOQUE_QUE", "BLOQUE_COMO"],
+    "required_per_complex_concept": 1,
+    "max_sentences_per_analogy": 2,
+    "marker_phrases": [
+      "imagina que", "es como cuando", "piensa en", "el equivalente seria",
+      "en tu dia a dia", "igual que", "lo mismo que pasa cuando", "como si",
+      "es como", "como cuando"
+    ]
   },
   "reporting": {
     "require_script_validation": true,
