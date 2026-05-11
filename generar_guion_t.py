@@ -253,6 +253,10 @@ INSTRUCCIONES CRÍTICAS:
 13. Traduce o aterriza cualquier tecnicismo en la misma intervención.
 14. Un solo [tag] al inicio de cada intervención cuando aporte tono.
     Tags disponibles: {json.dumps(spec['speakers']['IAGO']['allowed_tags'][:10])}, etc.
+15. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE (cuéntalas antes de cerrar cada bloque):
+    - BLOQUE_QUE: IAGO debe tener ≥65% de palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
+    - BLOQUE_COMO: COMPARTIDO. Cada speaker ENTRE 40%-60% del total del bloque. Alterna liderazgo por sub-concepto. Si el bloque tiene 2 sub-conceptos: sub1 lo lidera IAGO (150-180 palabras), sub2 lo lidera MARIA (150-180 palabras). Cada líder hace explicación principal; el otro hace 1-2 preguntas cortas.
+    - BLOQUE_LIMITES: MARIA debe tener ≥65% de palabras. IAGO da contexto técnico en intervenciones medias.
 """
     return system, user
 

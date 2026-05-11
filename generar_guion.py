@@ -351,6 +351,11 @@ INSTRUCCIONES CRÍTICAS:
 11. Objetivo de palabras habladas (sin headers ni speakers): {spec['script_rules']['minimum_word_count']}-{spec['script_rules']['maximum_word_count']}.
 12. Intervenciones de desarrollo: mínimo {spec['script_rules']['minimum_sentences_per_intervention']} frases.
 13. Traduce o aterriza al castellano cualquier tecnicismo en la misma intervención.
+14. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE (cuéntalas mentalmente antes de pasar al siguiente bloque):
+    - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras del bloque. MARIA hace preguntas cortas (≤12 palabras cada una, máx 3 intervenciones).
+    - BLOQUE_TEMAS_CLAVE: COMPARTIDO. Cada speaker debe tener ENTRE 40% y 60% de las palabras totales del bloque. Alterna el liderazgo por concepto. Si IAGO lleva 2 conceptos seguidos, el siguiente lo lidera MARIA.
+    - BLOQUE_LIMITES: MARIA debe tener ≥65% de las palabras del bloque. IAGO da contexto técnico corto.
+    - En BLOQUE_TEMAS_CLAVE si tienes 4 conceptos: IAGO-MARIA-IAGO-MARIA (150-200 palabras por concepto líder, el otro hace 1-2 preguntas de ≤20 palabras cada una).
 """
     return system, user
 

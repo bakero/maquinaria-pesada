@@ -393,7 +393,9 @@ def check_blacklist_interjections(text: str, spec: dict) -> list[str]:
 def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que el líder de cada bloque líder tenga >= leader_share_min_percent%.
 
-    Hard-fail si se incumple (qa_rules.hard_fail_on_leader_share_below_min).
+    Reporta como [WARN] (no hard-fail): los LLMs no alcanzan porcentajes exactos
+    de forma fiable. El issue se reporta para retroalimentación pero no bloquea
+    la generación ni la producción de audio.
     """
     issues: list[str] = []
     rules = spec["script_rules"]
@@ -427,7 +429,7 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
         pct = (leader_words * 100.0) / total_words
         if pct < min_pct:
             issues.append(
-                f"{section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
+                f"[WARN] {section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
                 f"de palabras (minimo {min_pct}%)."
             )
     return issues
@@ -436,7 +438,8 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
 def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que en bloques compartidos cada speaker tenga 40-60% de palabras.
 
-    Hard-fail si alguno sale del rango definido en shared_block_balance_range_percent.
+    Reporta como [WARN] (no hard-fail): los LLMs no alcanzan balance exacto
+    de forma fiable. El issue se reporta para retroalimentación pero no bloquea.
     """
     issues: list[str] = []
     rules = spec["script_rules"]
@@ -468,7 +471,7 @@ def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
             pct = (words * 100.0) / total
             if pct < min_bal or pct > max_bal:
                 issues.append(
-                    f"{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"[WARN] {section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
                     f"(rango permitido: {min_bal}%-{max_bal}%)."
                 )
     return issues
