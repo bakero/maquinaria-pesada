@@ -273,6 +273,48 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 - La rama `APPContenidos` queda mergeada pero no se borra (sigue siendo el worktree activo de esta sesión).
 - Otras sesiones (`feature/genepisodios`, `feature/videopodcast`) deberán hacer `git pull origin master` para ver el cockpit, el tema y la biblia unificada.
 
+### 2026-05-10 · #17 — Planificador de tareas en la cockpit
+
+**Tipo**: decisión + implementación
+**Contexto**: el usuario pasa un listado de 236 tareas (semanas pre-lanzamiento + 9 semanas iniciales) con dos tipos de fecha (`LISTA` = fecha límite, `SALE` = fecha pública), ownership, dependencias y marcadores críticos 🔴. Quiere verlas en la app y recibir avisos al cumplirse fechas.
+
+**Decisión**:
+
+1. **Fuente única**: la fuente canónica es markdown (lo que pega el usuario). Se guarda en `planner/source/2026-05-10_lista_inicial.md`. Un parser regenera el JSON estructurado cuando cambia el source.
+
+2. **Storage en 2 ficheros**:
+   - `planner/tareas.json` — derivado (lista de tasks con id, title, owner, lista, sale, deps, block, subsection, critical, is_check, etc.). Regenerable desde el source.
+   - `planner/_state.json` — mutable (status por task: `pending`/`in_progress`/`done`/`blocked` + completed_at + notes). Se modifica desde la UI.
+
+3. **Parser**: `planner/import_from_md.py` (regex). Soporta `LISTA: dd/mm/aaaa [hh:mm]`, `SALE: dd/mm/aaaa [hh:mm]`, `SALE: —` (vacío), `LISTA: diario SN` / `LISTA: continuo` (recurrente), `DEP: T001, T002`, marcador 🔴 al inicio del título.
+
+4. **Página en la cockpit**: `cockpit/pages/6_📋_Planificador.py` con vistas:
+   - **Hoy** (LISTA hoy y no done) — destacado arriba.
+   - **Atrasadas** (LISTA < hoy y no done).
+   - **Próximas críticas 🔴** (próximos 7 días).
+   - **Por bloque/semana** con filtros (owner, status, search).
+   - **Marcar done / in_progress / blocked / notes** desde la UI (escribe `_state.json`).
+
+5. **Alertas en sidebar**: `render_status_sidebar()` añade bloque "📋 PLANIFICADOR" con contadores (hoy: N, atrasadas: M, críticas próximas: K). Visible en todas las páginas, refresh 5s.
+
+6. **No push notifications todavía**: avisos solo visibles dentro de la app. Notificaciones OS/email son siguiente paso si lo pide explícitamente.
+
+7. **Recurrentes** (`diario SN`, `continuo`): se almacenan con flag `recurring: true`, no aparecen en "Hoy" ni "Atrasadas" salvo que se marquen manualmente. Se listan aparte.
+
+**Cambios técnicos**:
+- `planner/source/2026-05-10_lista_inicial.md` (canonical source)
+- `planner/import_from_md.py` (parser)
+- `planner/tareas.json` (generado)
+- `planner/_state.json` (estado inicial vacío)
+- `cockpit/core/planner.py` (loader, mutator, alert calculator)
+- `cockpit/pages/6_📋_Planificador.py` (UI)
+- `cockpit/ui.py` (sidebar añade bloque planificador)
+
+**Próximos pasos / impacto**:
+- Cuando el usuario actualice el listado, edita el source MD y re-ejecuta el parser.
+- Si quiere notificaciones OS (toast Windows) o email, se añade en una iteración posterior con `win10toast` o `plyer`.
+- El planificador queda en `APPContenidos`; merge a master cuando el usuario lo pida.
+
 ---
 
 ## Resumen de commits de la sesión (orden cronológico)
@@ -302,4 +344,4 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 
 ---
 
-*Diario activo desde 2026-05-10. Última entrada: #16.*
+*Diario activo desde 2026-05-10. Última entrada: #17.*

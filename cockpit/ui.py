@@ -2,9 +2,69 @@
 from __future__ import annotations
 
 import time
+from datetime import date
 from pathlib import Path
 
 from cockpit.core import monitor
+
+
+def render_planner_widget() -> None:
+    """Compact planner alert block for the sidebar."""
+    import streamlit as st
+
+    try:
+        from cockpit.core import planner
+    except Exception as exc:
+        st.caption(f"⚠️ planner indisponible: {exc!r}")
+        return
+
+    tasks = planner.load_tasks()
+    if not tasks:
+        st.caption("Sin planificador cargado.")
+        st.caption("→ `python planner/import_from_md.py`")
+        return
+
+    today = date.today()
+    s = planner.alert_summary(tasks, today=today)
+
+    # Render summary line with chips
+    chips = []
+    if s.overdue:
+        chips.append(f"🔴 {s.overdue} atras.")
+    if s.due_today:
+        chips.append(f"🟡 {s.due_today} hoy")
+    if s.publishing_today:
+        chips.append(f"📤 {s.publishing_today} publ.")
+    if s.upcoming_critical:
+        chips.append(f"⚠️ {s.upcoming_critical} crít.")
+
+    if chips:
+        st.markdown(" · ".join(chips))
+    else:
+        st.success("Sin alertas")
+
+    # Progress
+    pct = (s.done / s.total * 100) if s.total else 0
+    st.caption(f"Progreso: **{s.done}/{s.total}** ({pct:.0f}%)")
+    st.progress(pct / 100, text=None)
+
+    # Quick list of today's tasks (top 3)
+    due = planner.due_today(tasks, today=today)
+    if due:
+        with st.expander(f"🟡 Hoy ({len(due)})", expanded=False):
+            for t in sorted(due, key=lambda x: (x.lista_time or "23:59"))[:5]:
+                hour = f"`{t.lista_time}`" if t.lista_time else "•"
+                critmark = "🔴" if t.critical else ""
+                st.caption(f"{hour} {critmark} **{t.id}** {t.title[:48]}")
+
+    # Quick list of overdue (top 3)
+    od = planner.overdue(tasks, today=today)
+    if od:
+        with st.expander(f"🔴 Atrasadas ({len(od)})", expanded=False):
+            for t in sorted(od, key=lambda x: x.lista_date or "9999")[:5]:
+                dt = t.lista_date or t.lista_raw
+                critmark = "🔴" if t.critical else ""
+                st.caption(f"📅 {dt} {critmark} **{t.id}** {t.title[:48]}")
 
 
 def render_status_sidebar(auto_refresh_seconds: int = 5) -> None:
@@ -17,6 +77,10 @@ def render_status_sidebar(auto_refresh_seconds: int = 5) -> None:
     import streamlit as st
 
     with st.sidebar:
+        st.markdown("### 📋 PLANIFICADOR")
+        render_planner_widget()
+        st.divider()
+
         st.markdown("### 🎬 Producción en vivo")
 
         if not monitor._HAS_PSUTIL:
