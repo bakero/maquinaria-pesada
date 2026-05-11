@@ -1,5 +1,5 @@
 # HOOK
-MARIA: <conversacional> En 2024, el cibercrimen alcanzó 9.5 billones de dólares. Para 2026, se proyectan más de 10.5 billones. Y ahora, una parte creciente de esos ataques no explota vulnerabilidades de código: explota el lenguaje natural. Un atacante que consigue manipular el comportamiento de un sistema de inteligencia artificial con acceso a herramientas reales puede causar daños en producción sin tocar una sola línea de código. La prompt injection tiene una tasa de éxito del 89.6%. Y es el riesgo número uno del OWASP Top 10 para aplicaciones LLM por segundo año consecutivo. Esto es MaquinarIA Pesada. Arrancamos.
+MARIA: <conversacional> Hoy, el cibercrimen mueve 9.5 billones de dólares al año y la trayectoria apunta a superar los 10.5 billones muy pronto. Y ahora, una parte creciente de esos ataques no explota vulnerabilidades de código: explota el lenguaje natural. Un atacante que consigue manipular el comportamiento de un sistema de inteligencia artificial con acceso a herramientas reales puede causar daños en producción sin tocar una sola línea de código. La prompt injection tiene una tasa de éxito del 89.6%. Y es el riesgo número uno del OWASP Top 10 para aplicaciones LLM por segundo año consecutivo. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]

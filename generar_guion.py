@@ -332,7 +332,9 @@ MATERIAL DE APLICACION_PRACTICA (extraído de los 4 documentos vivos):
 INSTRUCCIONES CRÍTICAS:
 1. El hook lo abre {opener}. Cierra exactamente con: {spec['script_rules']['hook_closing_phrase']}
 2. Después del hook incluye exactamente: # INTRO_SONIDO  (siguiente línea: {spec['script_rules']['intro_comment']})
-3. El aviso de IA va en # SALUDO_Y_PRESENTACION, 18-25s, dicho por {opener}.
+3. AVISO DE IA — REGLA DURA: va en # SALUDO_Y_PRESENTACION, 18-25s.
+   **HARD-FAIL si lo dice cualquier speaker que NO sea {opener}**.
+   El bloque del aviso DEBE empezar exactamente con "{opener}:" (mismo speaker que abrió el HOOK por paridad del módulo). NO {other} bajo ningún concepto.
    Debe contener EXACTAMENTE las palabras: "sistema automatico" y "puede contener errores".
    Añade una frase que conecte con APLICACION_PRACTICA (ej: "al final del episodio veremos cómo se aplica lo de hoy a ese sistema").
 4. Estructura obligatoria en orden:

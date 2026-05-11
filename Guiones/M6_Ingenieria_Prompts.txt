@@ -1,5 +1,5 @@
 # HOOK
-MARIA: <conversacional> En 2024, el 88% de las empresas tecnológicas ya usaban modelos de lenguaje en producción. Pero solo el 33% reportó resultados consistentes y controlables. ¿La diferencia? No estaba en el modelo que usaban. Estaba en cómo le hablaban. La ingeniería de prompts pasó de ser un arte intuitivo a convertirse en la disciplina técnica más demandada del mercado de IA. Y sin embargo, sigue siendo la más subestimada. Hoy vamos a desmontar por qué escribir un buen prompt no es escribir bien, sino pensar como un ingeniero. Esto es MaquinarIA Pesada. Arrancamos.
+MARIA: <conversacional> Hoy, el 88% de las empresas tecnológicas ya usa modelos de lenguaje en producción. Pero solo el 33% reporta resultados consistentes y controlables. ¿La diferencia? No estaba en el modelo que usaban. Estaba en cómo le hablaban. La ingeniería de prompts pasó de ser un arte intuitivo a convertirse en la disciplina técnica más demandada del mercado de IA. Y sin embargo, sigue siendo la más subestimada. Hoy vamos a desmontar por qué escribir un buen prompt no es escribir bien, sino pensar como un ingeniero. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
