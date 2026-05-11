@@ -338,11 +338,11 @@ INSTRUCCIONES CRÍTICAS:
 4. Estructura obligatoria en orden:
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_TEMAS_CLAVE → # BLOQUE_LIMITES → # APLICACION_PRACTICA → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (no las generes): BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, BLOQUE_QUE, BLOQUE_COMO, INSERCION_1, INSERCION_2, INSERCION_3, INSERCION_EMPRESA
-6. APLICACION_PRACTICA: 3 momentos internos:
-   - Momento 1 ({other} plantea, ~45-60s): "Ahora veamos cómo todo esto se aplica en un sistema real..."
-   - Momento 2 ({opener} detalla, ~2-2.5 min): usa el material de los docs vivos. NO inventes hechos.
+6. APLICACION_PRACTICA: 3 momentos internos (SIEMPRE así, independiente del opener del hook):
+   - Momento 1 (MARIA plantea, ~45-60s): "Ahora veamos cómo todo esto se aplica en un sistema real..."
+   - Momento 2 (IAGO detalla, ~2-2.5 min): usa el material de los docs vivos. NO inventes hechos.
      Si el material es escaso, hazlo explícito en el texto ("en nuestro sistema hemos tenido que resolver...").
-   - Momento 3 (cierre conjunto, ~30-45s)
+   - Momento 3 (cierre conjunto MARIA+IAGO, ~30-45s)
 7. CIERRE_CONCEPTOS abre con: {spec['script_rules']['concepts_closing_phrase']}
    Lista 3-5 conceptos. Al menos uno conectado con APLICACION_PRACTICA.
 8. CIERRE_FINAL incluye exactamente: {spec['script_rules']['final_closing_phrase']}
@@ -573,7 +573,10 @@ def build_verification_section(
         f"## Por documento: {ficha.get('hits_by_doc', {})}",
         "##",
         "## TOKENS ANTHROPIC:",
-        f"## {usage.report()}",
+        f"## input_tokens: {usage.input_tokens}",
+        f"## output_tokens: {usage.output_tokens}",
+        f"## cache_read: {usage.cache_read}",
+        f"## total: {usage.total}",
     ])
     return "\n".join(lines) + "\n"
 
@@ -710,7 +713,7 @@ def main() -> None:
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
         draft_with_ver = draft.rstrip() + "\n\n" + verification
 
-        local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list)
+        local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)
         hard_issues  = [i for i in local_issues if not i.startswith("[WARN]")]
         soft_issues  = [i for i in local_issues if i.startswith("[WARN]")]
 

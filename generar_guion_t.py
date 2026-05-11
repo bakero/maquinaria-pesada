@@ -217,7 +217,7 @@ def build_generation_prompt(
 PARÁMETROS DEL EPISODIO:
 - Módulo: M{modulo_n}
 - Tema: {topic_display}
-- Hook abre: {opener} (paridad del módulo)
+- Hook abre: {opener} (paridad del TEMA)
 - Duración objetivo: {spec['episode_defaults']['duration_minutes']} min (rango: {spec['episode_defaults']['duration_range_minutes']})
 
 PDF DEL TEMA (fuente principal):
@@ -243,7 +243,9 @@ INSTRUCCIONES CRÍTICAS:
      Explica LÍMITES: qué falla, cuándo no funciona, contraintuitivos, riesgos.
 7. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
 8. # CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
-   Lista 3-4 conceptos. Conciso.
+   Exactamente 3 conceptos (ni 2 ni 4 — hard-fail si hay otra cantidad).
+   Alternados: líder-apoyo-líder o apoyo-líder-apoyo según paridad del TEMA.
+   Cada concepto en una sola frase, no expandidos.
 9. # CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
 10. Usa "Yago" en el texto hablado, nunca "Iago".
 11. Objetivo de palabras habladas: {rules['minimum_word_count']}-{rules['maximum_word_count']}.
@@ -327,6 +329,81 @@ def strip_verification_block(text: str) -> str:
     return re.sub(r"\n# VERIFICACIONES[\s\S]*$", "", text.strip(), flags=re.MULTILINE).strip()
 
 
+def enforce_fixed_phrases(text: str, spec: dict) -> str:
+    """Inyecta frases fijas del spec si el modelo no las incluyo exactamente.
+
+    Idéntica a la de generar_guion.py; opera sin bloque de verificaciones.
+    """
+    rules = spec["script_rules"]
+    SPEAKER_RE = re.compile(r"^(IAGO|MARIA)\s*:\s*(.*)$", re.IGNORECASE | re.MULTILINE)
+
+    def _inject_into_section(
+        body: str,
+        section_marker: str,
+        phrase: str,
+        position: str,  # "first_block" | "last_block"
+    ) -> str:
+        norm_phrase = normalize_text_for_match(phrase)
+        if norm_phrase in normalize_text_for_match(body):
+            return body
+        lines = body.split("\n")
+        sec_idx = None
+        for i, ln in enumerate(lines):
+            if ln.strip().upper() == f"# {section_marker}":
+                sec_idx = i
+                break
+        if sec_idx is None:
+            return body
+        next_sec_idx = len(lines)
+        for i in range(sec_idx + 1, len(lines)):
+            if lines[i].strip().startswith("# ") and not lines[i].strip().startswith("## "):
+                next_sec_idx = i
+                break
+        block_indices = [
+            i for i in range(sec_idx + 1, next_sec_idx)
+            if SPEAKER_RE.match(lines[i].strip())
+        ]
+        if not block_indices:
+            return body
+        target_idx = block_indices[0] if position == "first_block" else block_indices[-1]
+        target_line = lines[target_idx].strip()
+        m = SPEAKER_RE.match(target_line)
+        if not m:
+            return body
+        speaker = m.group(1).upper()
+        content = m.group(2).strip()
+        tag = extract_leading_tag(content)
+        if position == "last_block":
+            new_content = f"[calido]{phrase}" if not tag else f"{tag}{phrase}"
+            lines[target_idx] = f"{speaker}: {new_content}"
+        else:
+            plain = remove_leading_tag(content)
+            new_content = f"{tag}{phrase} {plain}" if tag else f"{phrase} {plain}"
+            lines[target_idx] = f"{speaker}: {new_content}"
+        return "\n".join(lines)
+
+    if rules.get("final_closing_phrase"):
+        text = _inject_into_section(text, "CIERRE_FINAL", rules["final_closing_phrase"], "last_block")
+    if rules.get("concepts_closing_phrase"):
+        text = _inject_into_section(text, "CIERRE_CONCEPTOS", rules["concepts_closing_phrase"], "first_block")
+    if rules.get("hook_closing_phrase"):
+        text = _inject_into_section(text, "HOOK", rules["hook_closing_phrase"], "last_block")
+    return text
+
+
+def extract_leading_tag(text: str) -> str | None:
+    """Extrae [tag] al inicio si existe."""
+    import re as _re
+    m = _re.match(r"^\[(.+?)\]\s*", text.strip())
+    return f"[{m.group(1).strip()}]" if m else None
+
+
+def remove_leading_tag(text: str) -> str:
+    """Elimina [tag] al inicio si existe."""
+    import re as _re
+    return _re.sub(r"^\[(.+?)\]\s*", "", text.strip(), count=1)
+
+
 def build_verification_section(
     script_body: str,
     spec: dict,
@@ -354,7 +431,10 @@ def build_verification_section(
     lines.extend([
         "##",
         "## TOKENS ANTHROPIC:",
-        f"## {usage.report()}",
+        f"## input_tokens: {usage.input_tokens}",
+        f"## output_tokens: {usage.output_tokens}",
+        f"## cache_read: {usage.cache_read}",
+        f"## total: {usage.total}",
     ])
     return "\n".join(lines) + "\n"
 
@@ -445,11 +525,12 @@ def main() -> None:
         )
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)
+        draft = enforce_fixed_phrases(draft, spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)
         draft_with_ver = draft.rstrip() + "\n\n" + verification
 
-        local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list)
+        local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)
         hard_issues  = [i for i in local_issues if not i.startswith("[WARN]")]
         soft_issues  = [i for i in local_issues if i.startswith("[WARN]")]
 

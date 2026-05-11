@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -115,20 +116,57 @@ def episode_number(ep_code: str) -> int:
     return int(match.group(1))
 
 
-def opening_speaker(ep_code: str, spec: dict) -> str:
-    """Devuelve MARIA o IAGO según paridad del módulo y la spec.
+def tema_number(ep_code: str) -> int:
+    """Extrae el número de tema de un ep_code T-type.
 
-    Pares (M0, M2, M4…) → MARIA
-    Impares (M1, M3, M5…) → IAGO
+    M1_TX_E_T10_Nombre → 10
+    M7_TX_E_T1_Titulos → 1
     """
-    number = episode_number(ep_code)
-    for speaker, cfg in spec["speakers"].items():
-        if number % 2 == 0 and cfg.get("opens_even_modules"):
-            return speaker
-        if number % 2 == 1 and cfg.get("opens_odd_modules"):
-            return speaker
-    # fallback: par=MARIA, impar=IAGO
-    return "MARIA" if number % 2 == 0 else "IAGO"
+    m = re.search(r"_T(\d+)(?:_|$)", ep_code, re.IGNORECASE)
+    if not m:
+        raise ValueError(f"No se pudo extraer número de tema de: {ep_code}")
+    return int(m.group(1))
+
+
+def opening_speaker(ep_code: str, spec: dict) -> str:
+    """Devuelve MARIA o IAGO según paridad y tipo de episodio.
+
+    T-type: paridad del número de TEMA.
+      T impares → IAGO (Yago); T pares → MARIA.
+    M-type: tabla explícita del spec (M0→MARIA, M1→IAGO, …).
+      Fallback a paridad de módulo si no hay tabla.
+    """
+    spec_type = spec.get("spec_type", "M")
+
+    if spec_type == "T":
+        t_num = tema_number(ep_code)
+        for speaker, cfg in spec["speakers"].items():
+            if t_num % 2 == 1 and cfg.get("opens_odd_temas"):
+                return speaker
+            if t_num % 2 == 0 and cfg.get("opens_even_temas"):
+                return speaker
+        # fallback: impares=IAGO, pares=MARIA
+        return "IAGO" if t_num % 2 == 1 else "MARIA"
+
+    else:
+        # M-type: explicit_table primero
+        parity = spec.get("parity_rules", {})
+        explicit_table = parity.get("explicit_table", {})
+        mod_num = episode_number(ep_code)
+        key = f"M{mod_num}"
+        if key in explicit_table:
+            val = explicit_table[key].lower()
+            if val in ("yago", "iago"):
+                return "IAGO"
+            if val == "maria":
+                return "MARIA"
+        # fallback: flags en speakers
+        for speaker, cfg in spec["speakers"].items():
+            if mod_num % 2 == 0 and cfg.get("opens_even_modules"):
+                return speaker
+            if mod_num % 2 == 1 and cfg.get("opens_odd_modules"):
+                return speaker
+        return "MARIA" if mod_num % 2 == 0 else "IAGO"
 
 
 # ---------------------------------------------------------------------------
@@ -349,6 +387,225 @@ def check_blacklist_interjections(text: str, spec: dict) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Validaciones v3: líder, compartido, aviso, conceptos, glosario, tokens
+# ---------------------------------------------------------------------------
+
+def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
+    """Valida que el líder de cada bloque líder tenga >= leader_share_min_percent%.
+
+    Hard-fail si se incumple (qa_rules.hard_fail_on_leader_share_below_min).
+    """
+    issues: list[str] = []
+    rules = spec["script_rules"]
+    min_pct = rules.get("leader_share_min_percent", 65)
+
+    # Construir mapa {sección: speaker_líder}
+    leader_for_section: dict[str, str] = {}
+    for speaker, cfg in spec["speakers"].items():
+        for section in cfg.get("leads_blocks", []):
+            leader_for_section[section] = speaker
+
+    # Agrupar bloques por sección
+    section_blocks: dict[str, list[dict]] = defaultdict(list)
+    for block in blocks:
+        if block.get("section"):
+            section_blocks[block["section"]].append(block)
+
+    for section, leader_speaker in leader_for_section.items():
+        sec_blocks = section_blocks.get(section, [])
+        if not sec_blocks:
+            continue
+        total_words = 0
+        leader_words = 0
+        for b in sec_blocks:
+            wc = count_words(remove_leading_tag(b["text"]))
+            total_words += wc
+            if b["speaker"] == leader_speaker:
+                leader_words += wc
+        if total_words == 0:
+            continue
+        pct = (leader_words * 100.0) / total_words
+        if pct < min_pct:
+            issues.append(
+                f"{section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
+                f"de palabras (minimo {min_pct}%)."
+            )
+    return issues
+
+
+def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
+    """Valida que en bloques compartidos cada speaker tenga 40-60% de palabras.
+
+    Hard-fail si alguno sale del rango definido en shared_block_balance_range_percent.
+    """
+    issues: list[str] = []
+    rules = spec["script_rules"]
+    bal_range = rules.get("shared_block_balance_range_percent", [40, 60])
+    min_bal, max_bal = bal_range[0], bal_range[1]
+
+    # Recoger secciones compartidas (deben aparecer en ambos speakers)
+    shared_sections: set[str] = set()
+    for cfg in spec["speakers"].values():
+        for section in cfg.get("shares_blocks", []):
+            shared_sections.add(section)
+
+    # Agrupar bloques por sección
+    section_blocks: dict[str, list[dict]] = defaultdict(list)
+    for block in blocks:
+        if block.get("section"):
+            section_blocks[block["section"]].append(block)
+
+    for section in shared_sections:
+        sec_blocks = section_blocks.get(section, [])
+        if not sec_blocks:
+            continue
+        speaker_words: dict[str, int] = defaultdict(int)
+        for b in sec_blocks:
+            wc = count_words(remove_leading_tag(b["text"]))
+            speaker_words[b["speaker"]] += wc
+        total = sum(speaker_words.values()) or 1
+        for speaker, words in speaker_words.items():
+            pct = (words * 100.0) / total
+            if pct < min_bal or pct > max_bal:
+                issues.append(
+                    f"{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"(rango permitido: {min_bal}%-{max_bal}%)."
+                )
+    return issues
+
+
+def validate_aviso_speaker(text: str, ep_code: str, spec: dict) -> list[str]:
+    """Valida que las keywords del aviso de IA las diga el opener del episodio.
+
+    Hard-fail si warning_must_be_said_by_opener=true y lo dice el otro speaker.
+    Busca en la sección SALUDO_Y_PRESENTACION.
+    """
+    issues: list[str] = []
+    rules = spec["script_rules"]
+    if not rules.get("warning_must_be_said_by_opener", False):
+        return issues
+
+    required_kws = rules.get("warning_phrase_keywords_required", [])
+    if not required_kws:
+        return issues
+
+    opener = opening_speaker(ep_code, spec)
+    blocks = parse_script_blocks(text, spec)
+
+    # Solo comprobamos bloques dentro de SALUDO_Y_PRESENTACION
+    saludo_blocks = [b for b in blocks if b.get("section") == "SALUDO_Y_PRESENTACION"]
+
+    for block in saludo_blocks:
+        block_norm = normalize_text_for_match(block["text"])
+        kw_found = any(normalize_text_for_match(kw) in block_norm for kw in required_kws)
+        if kw_found and block["speaker"] != opener:
+            issues.append(
+                f"El aviso de IA lo dice {block['speaker']} (bloque {block['index']}) "
+                f"pero debe decirlo {opener}."
+            )
+    return issues
+
+
+def validate_concepts_count(blocks: list[dict], spec: dict) -> list[str]:
+    """Valida el número de bloques hablados en CIERRE_CONCEPTOS.
+
+    T-type: exactamente key_concepts_block_count_exact (= 3).
+    M-type: entre key_concepts_block_count_min y key_concepts_block_count_max (3-5).
+    """
+    issues: list[str] = []
+    rules = spec["script_rules"]
+
+    cierre_blocks = [b for b in blocks if b.get("section") == "CIERRE_CONCEPTOS"]
+    count = len(cierre_blocks)
+
+    if "key_concepts_block_count_exact" in rules:
+        exact = rules["key_concepts_block_count_exact"]
+        if count != exact:
+            issues.append(
+                f"CIERRE_CONCEPTOS tiene {count} bloque(s) hablados; "
+                f"se requieren exactamente {exact}."
+            )
+    else:
+        min_c = rules.get("key_concepts_block_count_min", 3)
+        max_c = rules.get("key_concepts_block_count_max", 5)
+        if not (min_c <= count <= max_c):
+            issues.append(
+                f"CIERRE_CONCEPTOS tiene {count} bloque(s) hablados; "
+                f"rango permitido: {min_c}-{max_c}."
+            )
+    return issues
+
+
+def validate_glossary_present(spec: dict, base_dir: Path | None = None) -> list[str]:
+    """Valida que exista el archivo de glosario unificado. Hard-fail si no existe."""
+    issues: list[str] = []
+    glossary_path_str = (
+        spec.get("script_rules", {})
+        .get("sources", {})
+        .get("secondary", {})
+        .get("glossary", {})
+        .get("path", "PDFs/auxiliares/glosario_unificado.md")
+    )
+    base = base_dir or Path(".")
+    glossary_path = base / glossary_path_str
+    if not glossary_path.exists():
+        issues.append(
+            f"Glosario no encontrado: {glossary_path_str}. "
+            "Hard-fail: el glosario es obligatorio (PDFs/auxiliares/glosario_unificado.md)."
+        )
+    return issues
+
+
+def validate_input_tokens(text: str, spec: dict) -> list[str]:
+    """Valida que VERIFICACIONES reporte input_tokens > 0.
+
+    Hard-fail si qa_rules.hard_fail_on_zero_input_tokens = true.
+    """
+    issues: list[str] = []
+    qa = spec.get("qa_rules", {})
+    if not qa.get("hard_fail_on_zero_input_tokens", False):
+        return issues
+
+    m = re.search(r"input_tokens[:\s=]+(\d+)", text, re.IGNORECASE)
+    if not m:
+        issues.append("VERIFICACIONES no reporta input_tokens (debe ser > 0).")
+    elif int(m.group(1)) == 0:
+        issues.append(
+            "VERIFICACIONES reporta input_tokens=0. "
+            "Hard-fail: el generador debe leer el PDF fuente."
+        )
+    return issues
+
+
+def validate_pdf_coverage(text: str, spec: dict, concepts: list[str]) -> list[str]:
+    """Valida cobertura minima de conceptos del PDF. Hard-fail si < 75%."""
+    issues: list[str] = []
+    if not concepts:
+        return issues
+    rules = spec["script_rules"]
+    min_coverage_pct = rules.get("minimum_pdf_coverage_percent", 0)
+    if not min_coverage_pct:
+        return issues
+    qa = spec.get("qa_rules", {})
+    hard_fail = qa.get("hard_fail_on_pdf_coverage_below_75", False)
+
+    concept_mentions = {
+        c: count_concept_mentions(text, c) for c in concepts
+    }
+    coverage_hits = [c for c, n in concept_mentions.items() if n >= 1]
+    coverage_pct = int(round(len(coverage_hits) / max(len(concepts), 1) * 100))
+    if coverage_pct < min_coverage_pct:
+        missing = [c for c in concepts if concept_mentions.get(c, 0) < 1]
+        prefix = "" if hard_fail else "[WARN] "
+        issues.append(
+            f"{prefix}Cobertura de conceptos del PDF: {coverage_pct}% "
+            f"(minimo: {min_coverage_pct}%). "
+            f"Sin mencionar: {', '.join(missing[:5])}."
+        )
+    return issues
+
+
+# ---------------------------------------------------------------------------
 # Validación principal del guion
 # ---------------------------------------------------------------------------
 
@@ -357,13 +614,14 @@ def validate_script_text(
     ep_code: str,
     spec: dict,
     concepts: list[str] | None = None,
+    base_dir: Path | None = None,
 ) -> list[str]:
     """Valida el guion contra el spec.
 
     Devuelve lista de issues. Lista vacía = válido.
-    Separación hard/soft según el spec:
-      - issues que son hard-fail van directamente en la lista
-      - issues soft-warn llevan el prefijo [WARN]
+    Issues hard-fail van directamente; soft-warn llevan prefijo [WARN].
+
+    base_dir: directorio raíz del proyecto, para resolver rutas (glosario, etc.)
     """
     issues: list[str] = []
     rules = spec["script_rules"]
@@ -382,9 +640,7 @@ def validate_script_text(
         last_position = position
 
     # ── 2. Secciones prohibidas (hard-fail) ────────────────────────────────
-    if rules.get("qa_rules" if "qa_rules" in spec else "_", {}).get(
-        "hard_fail_on_forbidden_section", True
-    ) or spec.get("qa_rules", {}).get("hard_fail_on_forbidden_section", True):
+    if spec.get("qa_rules", {}).get("hard_fail_on_forbidden_section", True):
         for section in rules.get("forbidden_sections", []):
             if section in sections:
                 issues.append(f"Seccion prohibida encontrada: #{section}.")
@@ -444,11 +700,8 @@ def validate_script_text(
     if rules.get("intro_comment") and normalize_text_for_match(rules["intro_comment"]) not in norm_text:
         issues.append("Falta la instruccion de intro de sonido.")
 
-    # ── 8. Aviso de IA (keywords obligatorias) ──────────────────────────────
-    spoken_text = " ".join(remove_leading_tag(b["text"]) for b in blocks)
-    normalized_spoken = normalize_text_for_match(spoken_text)
+    # ── 8. Aviso de IA (keywords obligatorias presentes en el texto) ──────────
     normalized_full = normalize_text_for_match(text)
-
     required_kws = rules.get("warning_phrase_keywords_required", [])
     for kw in required_kws:
         if normalize_text_for_match(kw) not in normalized_full:
@@ -461,11 +714,16 @@ def validate_script_text(
     if soft_kws and not soft_kw_found:
         issues.append("[WARN] El aviso de IA no contiene ninguna frase de enganche recomendada.")
 
-    # ── 9. "Iago" en lugar de "Yago" ────────────────────────────────────────
+    # ── 9. Aviso dicho por el opener correcto ────────────────────────────────
+    issues.extend(validate_aviso_speaker(text, ep_code, spec))
+
+    # ── 10. "Iago" en lugar de "Yago" ────────────────────────────────────────
+    spoken_text = " ".join(remove_leading_tag(b["text"]) for b in blocks)
+    normalized_spoken = normalize_text_for_match(spoken_text)
     if "iago" in normalized_spoken:
         issues.append("El texto hablado contiene 'Iago' (debe usarse 'Yago').")
 
-    # ── 10. Palabras totales ─────────────────────────────────────────────────
+    # ── 11. Palabras totales ─────────────────────────────────────────────────
     stats = build_script_stats(text, spec, concepts)
     min_words = rules.get("minimum_word_count", 0)
     max_words = rules.get("maximum_word_count", 99999)
@@ -480,7 +738,7 @@ def validate_script_text(
             f"(maximo recomendado: {max_words})."
         )
 
-    # ── 11. Frases por intervención en bloques de desarrollo ─────────────────
+    # ── 12. Frases por intervención en bloques de desarrollo ─────────────────
     min_sents = rules.get("minimum_sentences_per_intervention", 2)
     max_sents = rules.get("maximum_sentences_per_intervention", 10)
     dev_sections = set(rules.get("required_sections", [])) - {
@@ -501,7 +759,7 @@ def validate_script_text(
                 f"tiene {count_val} frases (maximo: {max_sents})."
             )
 
-    # ── 12. Media de palabras por intervención ───────────────────────────────
+    # ── 13. Media de palabras por intervención ───────────────────────────────
     avg_min = rules.get("target_avg_words_per_intervention_min", 0)
     if avg_min and stats["avg_words_per_intervention"] < avg_min:
         issues.append(
@@ -509,25 +767,35 @@ def validate_script_text(
             f"{stats['avg_words_per_intervention']:.1f} (minimo: {avg_min})."
         )
 
-    # ── 13. Blacklist de interjecciones (hard-fail) ──────────────────────────
+    # ── 14. Blacklist de interjecciones (hard-fail) ──────────────────────────
     blacklisted = check_blacklist_interjections(text, spec)
     for phrase in blacklisted:
         issues.append(f"Interjeccion prohibida encontrada: '{phrase}'.")
 
-    # ── 14. Cobertura de conceptos del PDF (soft-warn) ───────────────────────
+    # ── 15. Cobertura de conceptos del PDF ───────────────────────────────────
     if concepts:
-        min_coverage_pct = rules.get("minimum_pdf_coverage_percent", 0)
-        coverage_hits = [
-            c for c, mentions in stats["concept_mentions"].items() if mentions >= 1
-        ]
-        coverage_pct = int(round(len(coverage_hits) / max(len(concepts), 1) * 100))
-        if min_coverage_pct and coverage_pct < min_coverage_pct:
-            missing = [c for c in concepts if stats["concept_mentions"].get(c, 0) < 1]
-            issues.append(
-                f"[WARN] Cobertura de conceptos del PDF: {coverage_pct}% "
-                f"(objetivo: {min_coverage_pct}%). "
-                f"Sin mencionar: {', '.join(missing[:5])}."
-            )
+        issues.extend(validate_pdf_coverage(text, spec, concepts))
+
+    # ── 16. Líder por bloque (hard-fail) ────────────────────────────────────
+    if spec.get("qa_rules", {}).get("hard_fail_on_leader_share_below_min", False):
+        issues.extend(validate_leader_share(blocks, spec))
+
+    # ── 17. Balance de bloque compartido (hard-fail) ─────────────────────────
+    issues.extend(validate_shared_block_balance(blocks, spec))
+
+    # ── 18. Número de conceptos en CIERRE_CONCEPTOS (hard-fail) ──────────────
+    if spec.get("qa_rules", {}).get(
+        "hard_fail_on_concepts_count_not_exact_3",
+        spec.get("qa_rules", {}).get("hard_fail_on_concepts_count_out_of_range", False),
+    ):
+        issues.extend(validate_concepts_count(blocks, spec))
+
+    # ── 19. Glosario presente (hard-fail) ────────────────────────────────────
+    if spec.get("qa_rules", {}).get("hard_fail_on_missing_glossary", False):
+        issues.extend(validate_glossary_present(spec, base_dir))
+
+    # ── 20. Input tokens > 0 (hard-fail) ─────────────────────────────────────
+    issues.extend(validate_input_tokens(text, spec))
 
     return issues
 
