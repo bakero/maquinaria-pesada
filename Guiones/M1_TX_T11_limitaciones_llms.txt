@@ -1,0 +1,100 @@
+# HOOK
+IAGO: [grave] En 2023, un abogado presentó ante un tribunal federal de Nueva York seis casos judiciales que no existían. Los había generado ChatGPT. El juez impuso sanciones monetarias. Ese mismo año, Air Canada tuvo que indemnizar a un pasajero porque su chatbot prometió una tarifa que nunca existió. Y un banco europeo descubrió errores en análisis financieros porque el modelo hizo mal las cuentas. Estos no son bugs. Son limitaciones estructurales de los LLMs que no desaparecerán con el siguiente modelo. Hoy explicamos por qué los modelos de lenguaje aluden, se equivocan en aritmética y olvidan lo que está en medio del contexto. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: Soy Yago.
+
+MARIA: Y yo María.
+
+IAGO: Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo.
+
+MARIA: Hoy hablamos de las limitaciones estructurales de los LLMs. No de bugs que se arreglan en la siguiente versión, sino de problemas que vienen del diseño mismo de estos sistemas.
+
+# BLOQUE_QUE
+IAGO: [didactico] Empecemos por lo básico. Cuando hablamos de limitaciones estructurales de los LLMs, hablamos de cinco categorías principales. Primera: alucinación, que es la tendencia a generar texto que suena correcto pero es falso. Segunda: corte de conocimiento, que significa que el modelo no sabe nada posterior a su fecha de entrenamiento. Tercera: aritmética imprecisa, porque los números se representan como tokens, no como valores matemáticos. Cuarta: lost in the middle, que es la degradación de atención cuando la información relevante está en el centro de un contexto largo. Y quinta: inconsistencia temporal, que significa que el mismo modelo con el mismo input puede dar respuestas diferentes en llamadas distintas.
+
+MARIA: ¿Y por qué son estructurales y no bugs?
+
+IAGO: [explicativo] Porque vienen del paradigma de entrenamiento. Los LLMs aprenden a predecir el siguiente token minimizando la cross-entropy loss sobre texto real. Aprenden a generar texto que suena como texto real. No aprenden a razonar sobre la verdad de las proposiciones. Cuando les preguntas sobre hechos específicos fuera de sus patrones de entrenamiento, generan lo que suena más probable. Y lo que suena probable a veces es incorrecto.
+
+MARIA: O sea, el modelo no distingue entre lo plausible y lo verdadero.
+
+IAGO: Y lo peligroso es que no va acompañado de señales de incertidumbre. El modelo genera citas bibliográficas inexistentes con el mismo tono confiado con el que genera información correcta.
+
+# BLOQUE_COMO
+IAGO: [explicativo] Vamos al mecanismo técnico de la alucinación. Durante el entrenamiento, el modelo ve millones de documentos y aprende distribuciones de probabilidad sobre secuencias de tokens. Si le preguntas por un caso judicial, el modelo no consulta una base de datos de casos reales. Genera tokens que maximizan la probabilidad condicional dado el contexto. Si el patrón "caso judicial citado en demanda" aparece en sus datos con nombres como "Smith vs. Jones", el modelo puede generar "García vs. Rodríguez" porque estadísticamente encaja, aunque ese caso no exista.
+
+MARIA: [conversacional] Y el corte de conocimiento funciona distinto. Ahí el problema no es que el modelo invente, sino que literalmente no sabe.
+
+IAGO: Correcto. Un modelo con corte en enero de 2026 no tiene datos sobre eventos de febrero en adelante. Para casos de uso que dependen de información actualizada, legislación reciente, precios de mercado, un LLM sin herramientas de búsqueda o RAG actualizado es inadecuado.
+
+MARIA: [explicativo] La aritmética imprecisa tiene una causa técnica concreta: la tokenización. Los números se representan como tokens, no como valores matemáticos. El número "1234567" puede ser un único token. El modelo no tiene acceso a los dígitos individuales a menos que razone explícitamente sobre ellos. Si le pides multiplicar dos números grandes, el modelo genera el patrón estadístico de "resultado de multiplicación", no ejecuta la operación. Por eso comete errores, especialmente con números grandes o con múltiples pasos de cálculo.
+
+IAGO: ¿Y lost in the middle?
+
+MARIA: [didactico] Lost in the middle es un fenómeno documentado por Liu y otros en 2023. Experimentos sistemáticos muestran que los LLMs rinden peor cuando la información relevante está en el centro del contexto en comparación con cuando está al principio o al final. Caídas de precisión de hasta 20 puntos porcentuales para información posicionada en el centro de un contexto de 32K tokens frente al mismo modelo con la misma información al principio. La causa técnica es cómo funcionan los mecanismos de atención: la información en los extremos tiene mayor peso en la representación final.
+
+IAGO: Y la inconsistencia temporal viene del muestreo.
+
+MARIA: Sí. Con temperatura mayor que cero, el modelo muestrea aleatoriamente de la distribución de probabilidad. El mismo input puede producir respuestas diferentes en llamadas distintas. Para sistemas que requieren consistencia total, auditoría, compliance, decisiones con consecuencias legales, esto es un problema.
+
+# BLOQUE_LIMITES
+MARIA: [serio] Ahora hablemos de lo que falla en la práctica. Primer error común: pensar que los modelos de razonamiento no alucinan. Los modelos de razonamiento reducen las alucinaciones en tareas donde el razonamiento multi-paso ayuda, pero siguen siendo sistemas estadísticos. Para información factual fuera de sus patrones de entrenamiento, siguen pudiendo alucinar.
+
+IAGO: ¿Y la creencia de que las alucinaciones son raras?
+
+MARIA: [firme] Depende del dominio. En dominios altamente especializados, derecho en jurisdicciones específicas, regulación reciente, investigación científica de nicho, las tasas de alucinación pueden ser muy altas porque el modelo tiene pocos datos de entrenamiento sobre esos temas. No es un fenómeno marginal.
+
+IAGO: El fine-tuning tampoco es una solución completa.
+
+MARIA: [explicativo] Correcto. El fine-tuning mejora el rendimiento en dominio pero no elimina la tendencia a alucinar. Un modelo fine-tuned sobre manuales médicos puede alucinar sobre medicamentos o dosis si esas combinaciones no están representadas en sus datos de fine-tuning. El modelo sigue generando lo plausible, no lo verificado.
+
+IAGO: ¿Qué pasa con sistemas en producción sin salvaguardas?
+
+MARIA: [contundente] Fallos silenciosos esperando a manifestarse. El caso de Air Canada es perfecto: el chatbot prometió una tarifa de duelo que no existía en la política de la empresa. La corte canadiense falló que Air Canada era responsable de las afirmaciones de su chatbot. Coste: indemnización más daño reputacional. El sistema no tenía mecanismos para detectar que la respuesta era incorrecta.
+
+IAGO: ¿Y cómo se diseña un sistema resiliente?
+
+MARIA: [didactico] Cuatro principios. Primero, asumir que el modelo puede fallar y diseñar el sistema para que los fallos sean detectables. Segundo, usar RAG para anclar respuestas en documentos verificables con citas explícitas. Tercero, implementar evaluación automática continua sobre un golden dataset que incluye casos donde el modelo debería admitir ignorancia. Cuarto, diseñar human-in-the-loop para decisiones de alto impacto. Morgan Stanley desplegó un asistente con RAG sobre cien mil documentos de research financiero. Cada respuesta incluye citas al documento fuente. Si el documento no existe o la cita es incorrecta, es detectable. Esto no elimina las alucinaciones pero las hace visibles y auditables.
+
+IAGO: Para aritmética, la solución es siempre herramientas.
+
+MARIA: Siempre. Conectar el LLM a un intérprete de Python que ejecute los cálculos. Para información actualizada, herramientas de búsqueda web o RAG sobre bases de datos actualizadas en tiempo real. Para consistencia, temperatura cero y documentar cuándo la variabilidad del modelo afecta al resultado.
+
+IAGO: [explicativo] Y eso conecta con un patrón cotidiano que se ve en muchas adopciones tecnológicas. Imagina que compras una herramienta nueva esperando que resuelva un problema sin tocar tus procesos. La herramienta funciona, pero si tus flujos no la acompañan, el resultado decepciona. Con los modelos de lenguaje pasa lo mismo: el modelo no falla por sí solo, falla cuando el sistema alrededor no está diseñado para gestionar sus límites. Por eso la diferencia entre un piloto y producción no está en el modelo, sino en la ingeniería que lo envuelve. Esa ingeniería incluye validación de fuentes, gestión de errores, observabilidad y un ciclo claro de revisión humana.
+
+MARIA: [analitica] Y antes de cerrar este bloque, conviene aterrizarlo con una imagen cotidiana. Piensa en un GPS: te lleva al destino la mayoría de las veces, pero si confías al cien por cien y dejas de mirar la carretera, acabas en un campo. Con los modelos de lenguaje pasa igual. Funcionan muy bien dentro de su zona de confianza, pero el oyente que quiere usarlos en su organización tiene que mantener la atención en los puntos donde el sistema puede equivocarse: datos sensibles, decisiones críticas, información que cambia rápido. Esa atención no es desconfianza, es buena ingeniería.
+# CIERRE_CONCEPTOS
+MARIA: No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+IAGO: Primero: los LLMs generan lo plausible, no lo verdadero. La alucinación es una consecuencia estructural del paradigma de entrenamiento.
+
+MARIA: Segundo: las limitaciones no desaparecen con más parámetros. Se desplazan a dominios menos representados.
+
+# CIERRE_FINAL
+IAGO: Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 1245 (objetivo: 1300-1700)
+## MEDIA PALABRAS/INTERVENCION : 36.6
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [FALTA] seccion: 0 menciones
+## [OK] rag: 5 menciones
+## [OK] llm: 2 menciones
+## [OK] alucinacion: 4 menciones
+## [OK] corte de conocimiento: 2 menciones
+## [OK] middle: 3 menciones
+## [OK] limitaciones estructurales de: 3 menciones
+## [FALTA] las limitaciones de: 0 menciones
+## Cobertura: 75% (objetivo: 75%)
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 25350
+## output_tokens: 5888
+## cache_read: 0
+## total: 31238

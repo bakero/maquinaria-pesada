@@ -385,6 +385,7 @@ _TAG_REMAP = {
     "seria": "serio", "firme": "firme", "contundenta": "contundente",
     "reflexiva": "reflexivo", "natural": "natural", "pausada": "pausado",
     "calida": "calido", "clara": "claro", "analitico": "analitica",
+    "tensa": "tenso", "tecnico": "explicativo", "tecnica": "explicativo",
 }
 
 

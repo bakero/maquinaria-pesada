@@ -1,0 +1,156 @@
+# HOOK
+IAGO: <didactico> El ochenta y ocho por ciento de las empresas usa IA en producción. Pero solo el treinta y tres por ciento ha conseguido escalarla más allá de los proyectos piloto. ¿Qué falla entre medias? La infraestructura. Un modelo que funciona perfectamente en tu portátil puede caer en producción por un pico de tráfico, por una API de terceros que se cae, o porque nadie calculó cuánto cuesta procesar cien mil consultas al día. La diferencia entre un prototipo impresionante y un sistema que funciona de verdad no está en el modelo. Está en dónde lo despliegas, cómo lo proteges, y cuánto te cuesta mantenerlo vivo. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada. Soy Yago.
+
+MARIA: <conversacional> Y yo María. Hoy cerramos el módulo nueve: infraestructura y despliegue de sistemas de IA.
+
+IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast. Al final del episodio veremos cómo las decisiones de infraestructura que explicamos hoy se aplicaron al sistema que está generando estas palabras.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> La infraestructura es el fundamento invisible de cualquier sistema de IA en producción. Es lo que separa un notebook de desarrollo que funciona en tu portátil de un sistema que atiende a mil usuarios simultáneos sin caerse. Y la infraestructura de IA en dos mil veintiseis es más compleja que la de software tradicional. No solo tienes servidores y bases de datos. Tienes APIs de modelos de lenguaje, bases de datos vectoriales para RAG, orquestadores de herramientas para agentes, y plataformas de observabilidad específicas para LLMs. Cada componente tiene sus propias decisiones de arquitectura, sus propios puntos de fallo, y su propia línea en el presupuesto.
+
+MARIA: <curioso> ¿Y cuál es la primera decisión que hay que tomar?
+
+IAGO: <firme> Dónde despliegas. Cloud público o infraestructura propia. AWS, Azure, Google Cloud te dan acceso inmediato a GPUs de última generación, escalado automático, y servicios gestionados para todos los componentes. Es la opción correcta para la mayoría de organizaciones que empiezan con IA. Pero hay casos donde necesitas infraestructura propia. Cuando los datos no pueden salir de tu datacenter por requisitos legales. Cuando el volumen de inferencia es tan alto que el coste de cloud supera al de comprar tus propias máquinas. O cuando necesitas latencias tan bajas que la red hacia el cloud no te las garantiza.
+
+MARIA: <analitica> O sea, cloud por defecto, on-premise solo cuando tienes razones muy específicas.
+
+IAGO: <contundente> Y la estrategia híbrida más común es usar APIs cloud para desarrollo y casos de bajo volumen, y desplegar modelos propios on-premise para los casos de alto volumen o alta sensibilidad. Ahora, una vez que decides dónde despliegas, necesitas decidir cómo estructuras el sistema. Los patrones de arquitectura más comunes son cuatro. El patrón API Gateway más LLM Backend es el más simple: una API REST recibe las solicitudes, las procesa, llama al modelo, devuelve la respuesta. Funciona bien para casos de uso directos. El patrón de microservicios divide cada componente en un servicio independiente: uno para retrieval de RAG, otro para inferencia del modelo, otro para las herramientas del agente. Te permite escalar cada componente por separado, pero añade complejidad operativa.
+
+MARIA: <reflexivo> ¿Y cuándo necesitas esa complejidad?
+
+IAGO: <explicativo> Cuando tienes componentes con cargas muy diferentes. Si tu sistema de RAG recibe mil consultas por minuto pero solo cien de ellas necesitan llamar al modelo más caro, puedes escalar el servicio de retrieval independientemente del servicio de inferencia. El tercer patrón es event-driven: los eventos del negocio disparan workflows de IA de forma asíncrona. Un contrato nuevo subido al sistema dispara el análisis automático. Es más robusto ante fallos y picos de tráfico que el patrón síncrono. Y el cuarto es serverless: funciones Lambda o Azure Functions que se activan bajo demanda y escalan a cero cuando no hay tráfico. Ideal para cargas intermitentes, pero tiene límites en la duración de ejecución que pueden ser problemáticos para agentes de larga ejecución.
+
+MARIA: <claro> Cuatro patrones, cada uno con su caso de uso. ¿Y qué pasa cuando algo falla?
+
+IAGO: <grave> Ahí es donde entra la resiliencia. Los sistemas de IA dependen de servicios externos que pueden caerse: APIs de modelos, bases de datos, APIs de sistemas empresariales. Necesitas circuit breakers que desconecten automáticamente un componente que está fallando para evitar que sus fallos en cascada afecten al resto del sistema. Necesitas reintentos con backoff exponencial para llamadas a APIs externas. Y necesitas observabilidad: logs estructurados, métricas de latencia por componente, trazas distribuidas que te permitan seguir una solicitud a través de todos los servicios.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Ahora entramos en los conceptos núcleo del módulo. Vamos a cubrir cuatro: gestión de secretos, rate limiting y autenticación, optimización de latencia, y gestión del coste total de propiedad. Empezamos por gestión de secretos.
+
+MARIA: <esceptico> Secretos. Suena obvio, pero es donde más se falla.
+
+IAGO: <contundente> Correcto. Los sistemas de IA en producción necesitan acceder a múltiples servicios externos usando credenciales. APIs de modelos, bases de datos, APIs de sistemas empresariales. Y los anti-patrones más comunes son peligrosísimos: almacenar las credenciales directamente en el código fuente, en variables de entorno sin cifrar, o en archivos de configuración que se suben al repositorio de git. La práctica correcta es usar un gestor de secretos. HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager. Almacenan las credenciales de forma cifrada, con rotación automática y acceso auditado. Y aplicas el principio de mínimo privilegio: cada servicio tiene solo las credenciales necesarias para su función específica. El agente de atención al cliente no debe tener acceso a las bases de datos financieras. El sistema de análisis de contratos no debe tener permisos de escritura en producción.
+
+MARIA: <analitica> O sea, granularidad de permisos para limitar el daño si algo se compromete.
+
+IAGO: <firme> Ahora, segundo concepto: rate limiting y autenticación. Los sistemas de IA expuestos a usuarios externos necesitan protegerse contra abuso. Usuarios que consumen desproporcionadamente los recursos, scrapers automatizados, atacantes que intentan explotar el sistema.
+
+MARIA: <directo> ¿Y cómo se protege?
+
+IAGO: <explicativo> Rate limiting es la primera línea de defensa. Limitas el número de solicitudes por usuario o por IP en una ventana de tiempo. Si un usuario supera el límite, rechazas sus solicitudes hasta que pase la ventana. La autenticación con JWT o API keys por usuario te permite no solo control de acceso sino también auditoría del uso y revocación granular. Y el circuit breaker desconecta automáticamente un componente que está fallando para evitar que sus fallos afecten al resto. Es crítico para la resiliencia cuando dependes de APIs externas que pueden tener downtimes o degradaciones.
+
+MARIA: <conversacional> Tercer concepto: optimización de latencia. Aquí es donde el usuario nota si el sistema funciona o no.
+
+IAGO: <grave> La latencia en sistemas de IA tiene múltiples fuentes que deben optimizarse independientemente. La latencia de primera respuesta, Time To First Token, es crítica para la experiencia del usuario en sistemas conversacionales. Es el tiempo desde que el usuario envía la consulta hasta que recibe el primer token de la respuesta. Y la técnica más efectiva para reducir la latencia percibida es el streaming: devolver los tokens al usuario según se generan, en lugar de esperar a que el modelo genere la respuesta completa. Hace los sistemas conversacionales mucho más responsivos.
+
+MARIA: <curioso> ¿Y a nivel de modelo?
+
+IAGO: <didactico> Cuantización del modelo. Reduces la precisión de los parámetros de dieciséis bits a ocho bits o cuatro bits. Reduces el uso de memoria y aumentas la velocidad de inferencia con mínima pérdida de calidad. Selección de la GPU correcta: H100 o A100 para máxima velocidad, L4 o T4 para máximo valor coste-rendimiento. Y frameworks de serving optimizados: vLLM con PagedAttention para máximo throughput, TGI para alta disponibilidad.
+
+MARIA: <analitica> Y luego está el prompt caching, que reduce costes y latencia al mismo tiempo.
+
+IAGO: <explicativo> El prompt caching es una técnica disponible en las APIs de Anthropic, OpenAI y Google. Cuando el mismo prefijo de prompt se reutiliza en múltiples llamadas, el proveedor puede cachear los estados de atención para ese prefijo y evitar recalcularlos en cada llamada. Es especialmente efectivo en sistemas donde el system prompt es largo y constante, como los asistentes con RAG donde el contexto de los documentos es estático. Puede reducir el coste de las llamadas en un ochenta a noventa por ciento.
+
+MARIA: <directo> Cuarto concepto: gestión del coste total de propiedad. TCO. Aquí es donde muchos proyectos se estrellan.
+
+IAGO: <contundente> El coste total de propiedad de un sistema LLM en producción incluye múltiples componentes. Coste de los tokens: input tokens por precio por token más output tokens por precio por token, que puede variar cien veces entre modelos frontier y modelos pequeños. Coste de infraestructura: servidores, instancias GPU, bases de datos vectoriales, almacenamiento. Coste de las herramientas de observabilidad y monitorización. Y coste del equipo de ingeniería para mantenimiento y mejora continua.
+
+MARIA: <reflexivo> ¿Y cómo se gestiona?
+
+IAGO: <firme> Monitorización del gasto de tokens en tiempo real. Alertas cuando el gasto diario supera el presupuesto. Optimización del modelo por caso de uso: no todos los pasos del pipeline necesitan el modelo más caro. Y evaluación periódica de si los modelos más nuevos y baratos pueden reemplazar a los más caros sin pérdida de calidad. El TCO es la suma de tokens, infraestructura, observabilidad y equipo. Si no monitorizas cada línea, el coste se te escapa.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Porque todo esto suena muy ordenado en teoría, pero en producción hay límites duros que la gente no ve hasta que se estrellan.
+
+IAGO: <conversacional> Adelante.
+
+MARIA: <analitica> Primer límite: el cloud crossover point. La idea de que cloud es siempre más barato es falsa. Cuando tu volumen de inferencia es suficientemente alto, el coste de pagar por tokens en una API cloud supera al de comprar tus propias GPUs y desplegar modelos propios. Y ese punto de cruce llega antes de lo que la gente piensa. Si estás procesando millones de tokens al día, necesitas hacer las cuentas. Puede que te salga más barato comprar una H100 y desplegar un modelo open source que pagar a OpenAI o Anthropic.
+
+IAGO: <reflexivo> ¿Y cuándo aplica?
+
+MARIA: <directo> Cuando tienes volumen predecible y alto. Si tu carga es intermitente o variable, cloud sigue siendo más eficiente porque pagas solo por lo que usas. Pero si tienes un flujo constante de consultas, el coste fijo de infraestructura propia se amortiza rápido. Segundo límite: la latencia de red. Puedes tener el modelo más rápido del mundo, pero si tu usuario está en Madrid y tu API está en Virginia, la latencia de red añade cientos de milisegundos que el usuario nota. Y no hay cuantización ni streaming que lo arregle. La solución es desplegar en múltiples regiones, pero eso multiplica tu complejidad operativa y tu coste.
+
+IAGO: <grave> O sea, latencia de red como límite físico.
+
+MARIA: <contundente> Tercer límite: los circuit breakers no te salvan de todo. Si tu sistema depende de una API externa crítica y esa API se cae durante horas, el circuit breaker te evita el fallo en cascada pero no te da una solución. Necesitas fallbacks reales: un modelo local más simple que pueda responder aunque sea con menor calidad, o una respuesta predefinida que al menos no deje al usuario colgado. Los circuit breakers son resiliencia, no disponibilidad.
+
+IAGO: <reflexivo> ¿Y el cuarto límite?
+
+MARIA: <esceptico> El cuarto límite es la observabilidad. Puedes tener logs perfectos, métricas en tiempo real, trazas distribuidas, y aun así no entender por qué un usuario específico recibió una respuesta mala. Porque los sistemas de IA tienen variabilidad intrínseca. El mismo prompt con el mismo modelo puede dar respuestas diferentes. Y esa no determinismo hace que debuggear sea mucho más difícil que en software tradicional. Necesitas no solo logs técnicos sino logs semánticos: qué prompt se envió, qué respuesta se recibió, qué evaluación automática dio esa respuesta. Y eso multiplica el volumen de datos que tienes que almacenar y analizar.
+
+IAGO: <conversacional> O sea, observabilidad como problema de escala.
+
+MARIA: <firme> Y el quinto límite es el coste oculto del equipo. Puedes automatizar el despliegue, puedes tener infraestructura como código, puedes tener CI/CD perfecto. Pero alguien tiene que mantener esos sistemas, alguien tiene que responder cuando algo falla a las tres de la mañana, alguien tiene que evaluar los nuevos modelos que salen cada mes. El coste del equipo de ingeniería es a menudo mayor que el coste de la infraestructura. Y si no lo presupuestas, te quedas sin recursos para mantener el sistema vivo.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: ¿cómo se despliega un sistema que tiene que generar catorce episodios de videopodcast de forma automática, con calidad consistente, sin intervención humana en la grabación?
+
+IAGO: <didactico> El sistema de MaquinarIA Pesada es un caso interesante de arquitectura híbrida. Usa APIs cloud para los componentes más complejos, y scripts locales para el control del pipeline. La generación de guiones usa la API de Anthropic Claude Sonnet, que es el modelo con mejor capacidad de seguir especificaciones largas y estructuradas. La generación de audio usa la API de ElevenLabs con el modelo eleven_v3, que da la calidad conversacional necesaria para que las voces de Yago y María suenen naturales. Y la generación de video usa la API de Kling AI para los clips visuales que acompañan al audio. Todos esos componentes son servicios cloud externos.
+
+MARIA: <curioso> ¿Y qué pasa con la infraestructura local?
+
+IAGO: <explicativo> El orquestador del pipeline corre localmente en un portátil ASUS Zenbook. Es un script Python que coordina las llamadas a las APIs, gestiona los archivos intermedios, monta el audio con pydub y ffmpeg, y genera el video final. La decisión de correr el orquestador localmente en lugar de en cloud se tomó por dos razones. Primera: el volumen de episodios es bajo, catorce episodios en total, no justifica el coste de infraestructura cloud permanente. Segunda: el control del proceso es más directo cuando corre en local, especialmente durante el desarrollo donde necesitas iterar rápido.
+
+MARIA: <analitica> ¿Y la gestión de secretos?
+
+IAGO: <firme> Las credenciales de las APIs están en variables de entorno locales, no en el código. Las API keys de Anthropic, ElevenLabs y Kling se cargan desde un archivo .env que no se sube al repositorio de git. Es el patrón básico pero efectivo para un sistema de un solo operador. Si el sistema escalara a múltiples usuarios o a producción compartida, se migraría a AWS Secrets Manager o similar. Pero para el caso de uso actual, variables de entorno locales son suficientes.
+
+MARIA: <reflexivo> ¿Y el rate limiting?
+
+IAGO: <explicativo> El rate limiting no es necesario porque el sistema no está expuesto a usuarios externos. Es un pipeline batch que genera un episodio a la vez, bajo demanda. No hay riesgo de abuso ni de picos de tráfico. Lo que sí hay es control de costes: el script monitoriza el gasto de tokens en cada llamada a la API de Anthropic y el gasto de caracteres en cada llamada a ElevenLabs. Si el coste de un episodio supera el umbral esperado, el sistema lanza una alerta. Eso evita sorpresas en la factura mensual.
+
+MARIA: <conversacional> ¿Y la latencia? ¿Importa en un sistema batch?
+
+IAGO: <didactico> La latencia de las APIs no es crítica porque el sistema no es interactivo. Pero sí importa el tiempo total de generación de un episodio. Un episodio completo tarda aproximadamente veinte a treinta minutos en generarse: cinco minutos para el guion, diez a quince minutos para el audio, y cinco a diez minutos para el video. La optimización principal fue usar streaming en la generación del guion: el script empieza a procesar el guion según llegan los tokens de la API, en lugar de esperar a que el guion completo esté generado. Eso reduce el tiempo de primera respuesta percibido cuando estás monitorizando el proceso.
+
+MARIA: <claro> O sea, arquitectura híbrida: cloud para los modelos pesados, local para el control. Gestión de secretos básica pero efectiva. Control de costes en tiempo real. Y optimización de latencia donde importa, que es el tiempo total de pipeline.
+
+IAGO: <conversacional> Y el aprendizaje clave es que la infraestructura correcta depende del caso de uso. Para un sistema batch de bajo volumen, infraestructura local más APIs cloud es más eficiente que desplegar todo en cloud. Para un sistema interactivo de alto volumen, la respuesta sería diferente. No hay arquitectura universal. Hay decisiones específicas para cada caso.
+
+# CIERRE_CONCEPTOS
+IAGO: <firme> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+MARIA: <claro> Uno: la decisión cloud versus on-premise depende de volumen, sensibilidad de datos y latencia. Cloud es el default, on-premise cuando tienes razones específicas.
+
+IAGO: <didactico> Dos: los patrones de arquitectura son API Gateway simple, microservicios, event-driven y serverless. Cada uno con su caso de uso.
+
+MARIA: <analitica> Tres: gestión de secretos en gestores cifrados, mínimo privilegio en credenciales, rate limiting para APIs públicas.
+
+IAGO: <explicativo> Cuatro: optimización de latencia con streaming, cuantización, vLLM para serving, y prompt caching para reducir costes hasta un noventa por ciento.
+
+# CIERRE_FINAL
+IAGO: <conversacional> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+MARIA: <calido> Nos escuchamos pronto.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2894 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 47.4
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] ia: 11 menciones
+## [OK] llm: 2 menciones
+## [OK] premise: 4 menciones
+## [OK] api: 15 menciones
+## [OK] aws: 3 menciones
+## [OK] los sistemas de: 4 menciones
+## [OK] bases de datos: 6 menciones
+## [--] seguridad: 0 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 169
+## Por documento: {'BIBLIA_SISTEMA': 66, 'PRIMERPODCAST': 20, 'VIDEOPODCAST': 45, 'PODCAST': 38}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 32439
+## output_tokens: 11631
+## cache_read: 0
+## total: 44070

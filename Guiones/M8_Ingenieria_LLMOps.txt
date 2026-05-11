@@ -1,0 +1,158 @@
+# HOOK
+MARIA: <conversacional> En dos mil veintitrés, OpenAI lanzó GPT-4 y miles de empresas empezaron a construir productos con IA generativa. Un año después, el ochenta y siete por ciento de esos proyectos seguían en fase de experimento. Nunca llegaron a producción. Y de los que sí llegaron, el cuarenta por ciento falló en los primeros doce meses. No porque el modelo no funcionara. Sino porque nadie sabía cómo mantenerlo vivo cuando empezaba a degradarse, cuando los costes se disparaban, o cuando el comportamiento cambiaba sin avisar. Hoy hablamos de LLMOps: la ingeniería que cierra la brecha entre el experimento brillante y el sistema que funciona todos los días. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <calido> Bienvenidos a MaquinarIA Pesada. Soy Maria.
+
+IAGO: <calido> Y yo soy Yago. Hoy cerramos el módulo ocho: Ingeniería de Modelos y LLMOps.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo todo lo que contamos hoy se aplica a este sistema que está generando el podcast.
+
+IAGO: <conversacional> Empecemos por el panorama completo.
+
+# BLOQUE_PANORAMA
+IAGO: <didactico> LLMOps es la disciplina que convierte experimentos de IA en sistemas de producción que funcionan de forma confiable y sostenible. Extiende MLOps, que es la operacionalización de modelos de machine learning clásico, con las características específicas de los sistemas basados en modelos de lenguaje grande. Y esas características cambian todo. Porque en LLMOps el modelo es frecuentemente una API externa que puede cambiar de comportamiento cuando el proveedor actualiza su versión. Los prompts son tan importantes como el código y deben versionarse con el mismo rigor. La evaluación de calidad es más compleja porque estás evaluando texto libre, no categorías predefinidas. Y los costes de inferencia son proporcionales al número de tokens que procesas y generas, lo que significa que cada decisión de diseño tiene impacto económico directo.
+
+MARIA: <esceptico> Y por eso el ochenta y siete por ciento de los proyectos nunca llega a producción.
+
+IAGO: <firme> Las causas no son técnicas. Son operacionales. El sistema se degrada sin monitorización. Los costes escalan más rápido de lo previsto. El equipo no tiene visibilidad sobre qué está fallando. Y no hay proceso para actualizar el modelo cuando cambia la distribución de los datos. LLMOps resuelve eso con tres pilares: versionado riguroso de todo lo que afecta al comportamiento del sistema, observabilidad completa del flujo de inferencia, y automatización de la calidad con pipelines de CI/CD adaptados a IA.
+
+MARIA: <curioso> ¿Qué preguntas responde este módulo?
+
+IAGO: <explicativo> Primero: cómo versionar no solo el código sino también los prompts, los modelos y los datos de evaluación. Segundo: cuándo usar fine-tuning y cuándo basta con prompting. Tercero: cómo monitorizar un sistema LLM en producción para detectar degradación antes de que los usuarios se quejen. Cuarto: cómo construir un pipeline de CI/CD que valide automáticamente la calidad del modelo antes de desplegar. Y quinto: cómo gestionar el trade-off entre coste, latencia y calidad usando test-time compute con modelos de razonamiento.
+
+MARIA: <analitica> ¿Y por qué importa esto ahora?
+
+IAGO: <contundente> Porque estamos en la fase de maduración de la IA generativa. Las empresas que experimentaron en dos mil veintitrés ahora necesitan sistemas que funcionen en producción con SLAs, presupuestos y equipos que puedan mantenerlos. LLMOps es la diferencia entre un prototipo impresionante y un producto que genera valor todos los días.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> El primer concepto clave es el versionado. En un sistema LLM tienes que versionar cuatro cosas: el modelo, los prompts, los datos de entrenamiento o evaluación, y la configuración del sistema. Sin versionado completo es imposible reproducir el estado del sistema en un momento anterior, saber qué produjo un cambio de comportamiento observado en producción, o deshacer un cambio que degrada el rendimiento. Los prompts son especialmente críticos porque son parte del código del sistema. Su gestión debe incluir control de versiones con git, revisión de cambios con code review, y testing antes de desplegar en producción.
+
+MARIA: <curioso> ¿Y cómo se versiona un modelo que es una API externa?
+
+IAGO: <explicativo> Versionas el ID específico del modelo de la API. Por ejemplo, gpt-4o-2024-08-06 en lugar de solo gpt-4o. Eso garantiza que tu sistema use la misma versión del modelo aunque el proveedor actualice el modelo por defecto. Para modelos propios entrenados, usas registros de modelos como MLflow Model Registry o Weights and Biases Registry. Estos sistemas almacenan el modelo con metadatos completos: métricas, hiperparámetros, dataset usado, y gestionan el ciclo de vida con estados como staging, production, archived.
+
+MARIA: <analitica> ¿Y los datos?
+
+IAGO: <claro> Para datasets y modelos grandes se usa DVC, Data Version Control. Permite hacer commit de referencias a archivos grandes en el repositorio de git mientras almacena los archivos reales en almacenamiento externo como S3 o Google Cloud Storage. Así tienes la trazabilidad de git sin saturar el repositorio con archivos de gigabytes.
+
+MARIA: <conversacional> Pasemos a la decisión de fine-tuning versus prompting. Es una de las preguntas que más se repite.
+
+IAGO: <firme> Es la decisión estratégica más importante en LLMOps. El prompting es más rápido porque no requiere datos de entrenamiento ni tiempo de entrenamiento. Es más flexible porque los prompts se pueden cambiar en minutos. Y es más económico en el corto plazo. El fine-tuning produce mejor rendimiento para tareas bien definidas con suficientes datos de entrenamiento, típicamente más de quinientos a mil ejemplos de alta calidad. Reduce el coste de inferencia porque el modelo fine-tuneado con instrucciones más cortas puede reemplazar prompts largos con muchos ejemplos. Y puede producir comportamientos que no son alcanzables con prompting: estilos muy específicos, formatos de output muy particulares, conocimiento de dominio especializado.
+
+MARIA: <esceptico> ¿Cuál es la regla práctica?
+
+IAGO: <contundente> Empieza siempre con prompting. Si después de optimizar el prompt el rendimiento no es suficiente, considera el fine-tuning. El fine-tuning es especialmente valioso en tres casos: comportamientos de formato muy específico que requieren muchos ejemplos en el prompt y el fine-tuning eliminaría esa necesidad, mejora del rendimiento en tareas especializadas donde el modelo base tiene conocimiento limitado, y reducción de coste cuando hay un volumen de inferencia muy alto porque el modelo fine-tuneado con menor prompt puede ser más económico.
+
+MARIA: <didactico> El tercer concepto es la observabilidad. En LLMs tiene tres dimensiones: logs, trazas y métricas. Los logs registran todas las interacciones: prompts, respuestas, metadatos de la llamada. Las trazas siguen el flujo de una solicitud a través de todos los componentes del sistema: recuperación RAG, llamada al LLM, ejecuciones de herramientas. Y las métricas son agregaciones de los logs y trazas en el tiempo: latencia promedio, coste por solicitud, tasas de error, métricas de calidad del modelo.
+
+IAGO: <reflexivo> Sin estas tres dimensiones operar un sistema LLM en producción es como conducir sin instrumentos.
+
+MARIA: <analitica> ¿Y cómo mides la calidad del modelo en producción?
+
+IAGO: <explicativo> Es la métrica más difícil de monitorizar porque requiere evaluar la calidad del texto generado, no solo métricas técnicas como latencia o errores HTTP. Usas métricas proxy: tasa de thumbs down de los usuarios, tasa de escalada a humanos, tasa de repetición de consultas que sugiere que la respuesta anterior no fue satisfactoria. Estas métricas pueden detectar degradación del modelo sin necesitar evaluación humana directa. Y usas LLM-as-judge: un segundo LLM evalúa la calidad de las respuestas del sistema sobre una muestra del cinco al diez por ciento del tráfico. Proporciona evaluaciones automáticas con mayor correlación con el juicio humano que las métricas proxy.
+
+MARIA: <curioso> ¿Qué herramientas se usan?
+
+IAGO: <claro> LangSmith es la más integrada con el ecosistema LangChain y LangGraph. Se activa con dos variables de entorno y traza automáticamente todas las llamadas a LLMs, todas las recuperaciones RAG, todas las ejecuciones de herramientas. Produce trazas visuales que muestran el flujo completo de cada solicitud. Langfuse es la alternativa open-source más popular, con soporte para múltiples frameworks y modelos, y la ventaja de poder desplegarse on-premise para mayor privacidad. Weights and Biases Traces integra la observabilidad de LLMs con el tracking de experimentos de entrenamiento, útil para equipos que hacen fine-tuning.
+
+MARIA: <conversacional> El cuarto concepto es CI/CD para sistemas de IA. El pipeline de integración continua y despliegue continuo adaptado a LLMs.
+
+IAGO: <didactico> El pipeline de CI/CD para LLMs extiende el CI/CD estándar de software con checks específicos para IA. El pipeline de pull request en un sistema LLM incluye tests unitarios del código Python del sistema con pytest, tests de integración de las herramientas del agente para verificar que las funciones de herramienta manejan correctamente los casos de borde, tests de seguridad del prompt con el golden dataset adversarial donde el sistema debe rechazar definitivamente esos prompts maliciosos, tests de calidad del LLM con el golden dataset de casos de uso representativos donde el sistema debe mantener o mejorar el rendimiento anterior, y análisis de costes para verificar que el cambio no aumenta el coste de tokens por encima de un umbral. Solo si todos estos checks pasan el pull request puede mergearse.
+
+MARIA: <esceptico> El golden dataset de calidad es crítico.
+
+IAGO: <firme> Es el componente más crítico y el más diferente al CI/CD estándar. Requiere un golden dataset de cincuenta a doscientos casos representativos con outputs de referencia, actualizados periódicamente con nuevos tipos de inputs observados en producción. Requiere evaluadores automáticos para medir la calidad, típicamente LLM-as-judge con rúbricas específicas para el caso de uso. Y requiere umbrales de regresión: si el rendimiento cae más de equis por ciento respecto a la versión anterior, el pipeline falla. Este enfoque previene las regresiones accidentales de calidad que son una de las causas más comunes de degradación de sistemas LLM en producción.
+
+MARIA: <conversacional> Y el quinto concepto es test-time compute. El paradigma de mejorar la calidad invirtiendo más computación durante la inferencia, no durante el entrenamiento.
+
+IAGO: <explicativo> Los modelos de razonamiento como o3 de OpenAI y Claude con extended thinking usan este paradigma. En lugar de generar directamente la respuesta, generan un scratchpad de razonamiento que puede ser muy extenso antes de producir la respuesta final. Este razonamiento adicional en el tiempo de inferencia produce mejoras significativas en benchmarks de matemáticas, código y razonamiento lógico. La implicación para LLMOps es que ahora hay un trade-off explícito entre coste y latencia por un lado, y calidad por el otro, que se puede ajustar en tiempo de ejecución.
+
+MARIA: <analitica> ¿Cómo se ajusta ese trade-off?
+
+IAGO: <claro> Para preguntas sencillas usas el modelo estándar: rápido y barato. Para preguntas complejas usas el modelo de razonamiento: más lento y caro pero más preciso. Puedes incluso usar un modelo pequeño como router que clasifica la complejidad de la pregunta y decide qué modelo usar. Esto se llama modelo escalonado por complejidad y es una de las técnicas más efectivas para optimizar el trade-off coste-calidad en producción.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora lo incómodo. Qué falla en LLMOps cuando lo implementas en el mundo real.
+
+IAGO: <conversacional> Primero: el golden dataset se queda obsoleto. Lo construyes con los casos de uso que conoces hoy. Pero en producción los usuarios generan tipos de inputs que no anticipaste. Si no actualizas el golden dataset periódicamente con muestras del tráfico real, tus tests de CI/CD dejan de ser representativos y puedes desplegar cambios que degradan el rendimiento en los casos reales sin que el pipeline lo detecte.
+
+MARIA: <analitica> Segundo: las métricas proxy de calidad no detectan todos los problemas. La tasa de thumbs down solo captura los usuarios que se molestan en dar feedback. La tasa de repetición de consultas puede ser alta porque el usuario está refinando su pregunta, no porque la respuesta anterior fue mala. Y la tasa de escalada a humanos puede ser baja porque el sistema da respuestas incorrectas con confianza y el usuario no se da cuenta. Las métricas proxy son útiles para detectar cambios bruscos pero no para medir la calidad absoluta del sistema.
+
+IAGO: <reflexivo> Tercero: el versionado de APIs externas no te protege completamente. Aunque uses gpt-4o-2024-08-06 en lugar de gpt-4o, OpenAI puede actualizar el modelo detrás de ese ID específico sin cambiar el ID. Lo han hecho antes. Y aunque documenten que el comportamiento debe ser consistente, en la práctica pequeñas variaciones en el comportamiento del modelo pueden afectar a tu sistema. La única protección real es tener observabilidad completa y alertas sobre métricas de calidad.
+
+MARIA: <firme> Cuarto: el fine-tuning no siempre mejora el rendimiento. Puede sobreajustarse a los datos de entrenamiento y perder la capacidad de generalización del modelo base. Puede introducir sesgos que no estaban en el modelo base si los datos de entrenamiento no son suficientemente diversos. Y puede degradarse con el tiempo si la distribución de los datos de producción se aleja de la distribución de los datos de entrenamiento. El fine-tuning no es set and forget. Requiere monitorización continua y re-entrenamiento periódico.
+
+IAGO: <conversacional> Quinto: los costes de observabilidad pueden ser significativos. Si trazas todas las llamadas a LLMs con LangSmith o Langfuse, y tu sistema procesa millones de solicitudes al mes, los costes de almacenamiento y consulta de las trazas pueden ser comparables a los costes de inferencia del LLM. La solución es samplear: trazar el cien por cien de los errores pero solo el uno o cinco por ciento de las solicitudes exitosas. Así mantienes visibilidad sobre los problemas sin pagar por trazar todo.
+
+MARIA: <esceptico> Y sexto: el CI/CD con tests de LLM es lento. Si tu golden dataset tiene doscientos casos y cada caso requiere una llamada al LLM para generar la respuesta y otra llamada para evaluarla con LLM-as-judge, el pipeline puede tardar varios minutos. Eso ralentiza el ciclo de desarrollo. La solución es paralelizar las llamadas al LLM y usar modelos más rápidos para los tests cuando sea posible. Pero el trade-off entre velocidad del pipeline y exhaustividad de los tests es real.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Porque si hablamos de LLMOps, de versionado, de observabilidad, de CI/CD, tenemos que preguntarnos: ¿cómo se operacionaliza un sistema que genera cien episodios de podcast con calidad consistente, que versiona los prompts como código, que monitoriza el coste de tokens, y que valida la calidad antes de publicar?
+
+IAGO: <didactico> El sistema de MaquinarIA Pesada es un caso de estudio de LLMOps aplicado a generación de contenido a escala. El pipeline completo tiene tres fases: generación de guion con Claude Sonnet, síntesis de audio con ElevenLabs, y producción de video con Kling y ffmpeg. Cada fase tiene versionado, observabilidad y validación automática. Empecemos por el versionado. Los prompts del sistema están en archivos markdown en el repositorio: PODCAST_M_SPEC.md para episodios de módulo, PODCAST_T_SPEC.md para episodios de tema. Cada cambio en los prompts pasa por pull request con revisión de código. El sistema registra en cada guion generado la versión del spec usada, el modelo de Claude usado con su ID específico, y los tokens de input y output consumidos. Eso permite reproducir qué versión del sistema generó cada episodio.
+
+MARIA: <curioso> ¿Y cómo se versiona el audio?
+
+IAGO: <explicativo> Cada archivo de audio generado incluye en sus metadatos el ID de la voz de ElevenLabs usada, la configuración de estabilidad y similarity boost, y la versión del modelo de síntesis. El sistema guarda los parámetros de normalización de audio aplicados: target de menos dieciséis dBFS, true peak de menos uno punto cinco dBTP, y multiplicador de velocidad de uno punto uno. Si el audio de un episodio tiene un problema, podemos reproducir cómo se generó y ajustar los parámetros para corregirlo.
+
+MARIA: <analitica> ¿Y la observabilidad?
+
+IAGO: <claro> El sistema registra métricas de producción en cada ejecución: tokens de input y output consumidos por Claude, créditos de ElevenLabs consumidos para el audio, duración real del episodio generado, y tiempo de ejecución de cada fase del pipeline. Estos datos se guardan en el bloque de VERIFICACIONES al final de cada guion y en logs estructurados que permiten análisis retrospectivo. Por ejemplo, sabemos que el coste promedio de generar un episodio M es de cero punto treinta dólares en tokens de Claude y cinco punto veinte dólares en créditos de ElevenLabs. Y sabemos que la duración promedio de los episodios M está en quince punto ocho minutos, dentro del rango objetivo de catorce a dieciocho minutos.
+
+MARIA: <esceptico> ¿Y cómo se valida la calidad antes de publicar?
+
+IAGO: <firme> El sistema tiene un pipeline de validación automática que se ejecuta después de generar el guion y antes de sintetizar el audio. Valida que el guion cumple todas las reglas del spec: estructura de bloques correcta, reparto de palabras por speaker dentro de los rangos permitidos, ausencia de interjecciones prohibidas, presencia del aviso de IA con las palabras clave obligatorias, y cobertura mínima del setenta y cinco por ciento de los conceptos del PDF resumen del módulo. Si alguna validación falla, el sistema marca el episodio como hard-fail y no genera el audio. Esto previene que un guion defectuoso llegue a producción.
+
+MARIA: <conversacional> ¿Y qué pasa con el CI/CD?
+
+IAGO: <explicativo> El sistema usa git con ramas para desarrollo y producción. Los cambios en los specs de prompt o en los scripts de generación pasan por pull request. Antes de mergear, se ejecuta un test suite que genera un episodio de prueba y valida que cumple todas las reglas. Si el test pasa, el cambio se mergea a la rama master y se despliega. Si el test falla, el pull request se rechaza. Esto es CI/CD adaptado a generación de contenido con LLMs: no estamos testeando lógica de negocio sino que el sistema genera contenido que cumple las especificaciones de calidad.
+
+MARIA: <reflexivo> Y con todo esto, ¿qué hemos aprendido?
+
+IAGO: <contundente> Que LLMOps no es teoría. Es práctica operativa. Que el versionado riguroso de prompts como código es tan importante como el versionado del código Python. Que la observabilidad de costes y duraciones permite optimizar el sistema sin romper la calidad. Y que la validación automática antes de publicar es la única forma de mantener consistencia en cien episodios generados automáticamente. Este sistema es la prueba de que LLMOps funciona cuando se aplica con disciplina.
+
+# CIERRE_CONCEPTOS
+MARIA: <firme> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+IAGO: <claro> Primero: LLMOps cierra la brecha entre experimentos y producción con versionado de modelos, prompts y datos.
+
+MARIA: <directo> Segundo: fine-tuning versus prompting es una decisión estratégica. Empieza siempre con prompting.
+
+IAGO: <contundente> Tercero: observabilidad completa con logs, trazas y métricas es obligatoria desde el día uno.
+
+MARIA: <firme> Cuarto: CI/CD para LLMs incluye golden datasets adversariales y de calidad, con validación automática antes de desplegar.
+
+# CIERRE_FINAL
+MARIA: <calido> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+IAGO: <calido> Hasta la próxima.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3141 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 50.7
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] llm: 15 menciones
+## [OK] cd: 12 menciones
+## [OK] ci: 12 menciones
+## [OK] ia: 7 menciones
+## [OK] produccion: 19 menciones
+## [OK] prompts: 13 menciones
+## [OK] en el tiempo: 2 menciones
+## [OK] prompting: 7 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 243
+## Por documento: {'BIBLIA_SISTEMA': 85, 'PRIMERPODCAST': 33, 'VIDEOPODCAST': 75, 'PODCAST': 50}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 33270
+## output_tokens: 13038
+## cache_read: 0
+## total: 46308

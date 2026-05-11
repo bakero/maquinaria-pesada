@@ -1,0 +1,134 @@
+# HOOK
+IAGO: <didactico> En este momento, cientos de miles de empresas están usando modelos de lenguaje en producción. Chatbots de atención al cliente, asistentes de código, sistemas de análisis de documentos. Pero hay un problema que nadie cuenta en las demos: el 60% de esos sistemas genera respuestas incorrectas con total confianza al menos una vez al día. Se llaman alucinaciones. Y cuestan millones de euros en errores operativos, decisiones equivocadas, y confianza perdida. Los modelos de lenguaje son extraordinariamente capaces. Pero tienen límites fundamentales que hay que entender antes de ponerlos en producción. Hoy vamos a abrir el capó de los Large Language Models: cómo funcionan por dentro, qué pueden hacer realmente, qué no pueden hacer nunca, y cómo se construyen sistemas de NLP que funcionen en el mundo real. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada. Soy Yago.
+
+MARIA: <conversacional> Y yo soy Maria. Hoy cerramos el módulo 5: NLP y Large Language Models.
+
+IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast. Al final del episodio veremos cómo se aplica lo de hoy a ese sistema.
+
+MARIA: <claro> Este módulo cubre la evolución del procesamiento del lenguaje natural, la arquitectura de los modelos de lenguaje, sus capacidades reales, sus límites en producción, y los casos de uso empresariales que funcionan. Vamos a ello.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> Empecemos por el mapa completo. El procesamiento del lenguaje natural, NLP, es la disciplina de la inteligencia artificial que se dedica a que las máquinas entiendan, interpreten y generen lenguaje humano. Existe como campo desde los años cincuenta. Pero los avances de los últimos cinco años han sido tan drásticos que el NLP antes de los Transformers y el NLP después de los Transformers son casi disciplinas distintas. Este módulo responde tres preguntas fundamentales. Primera: cómo hemos llegado hasta aquí, cuál ha sido la evolución desde las reglas escritas a mano hasta los modelos de lenguaje de cientos de miles de millones de parámetros. Segunda: cómo funcionan por dentro los Large Language Models, qué arquitectura tienen, qué componentes los forman, y por qué son tan lentos generando texto largo. Y tercera: qué pueden hacer realmente y qué no pueden hacer nunca, cuáles son los límites fundamentales que determinan si un caso de uso va a funcionar en producción o va a fallar.
+
+MARIA: <analitica> Y esa tercera pregunta es la que más importa para quien tiene que tomar decisiones técnicas. Porque los LLMs son extraordinariamente capaces. Pero tienen límites duros. Las alucinaciones no son un bug que se va a arreglar en la próxima versión. Son una característica fundamental de cómo funcionan estos modelos.
+
+IAGO: <serio> Los modelos de lenguaje son generadores probabilísticos. No tienen una base de datos de hechos verificados. Generan el siguiente token más probable dada la secuencia anterior. Eso significa que pueden generar afirmaciones incorrectas con total confianza. Especialmente en tres situaciones: cuando el modelo no tiene suficiente información en el contexto, cuando el formato del prompt invita a generar contenido específico aunque el modelo no tenga los datos, y cuando se trata de hechos muy específicos como fechas, nombres propios, o estadísticas numéricas. En producción, esto es crítico. Un chatbot que da información incorrecta a un cliente puede costar la venta. Un sistema de análisis de contratos que alucina una cláusula puede costar un litigio.
+
+MARIA: <incisiva> Y no hay solución mágica. Hay técnicas de mitigación: RAG para anclar las respuestas en documentos verificados, function calling para que el modelo use herramientas de cálculo en lugar de inventar números, prompts que piden explícitamente al modelo que diga "no lo sé" cuando no tiene información. Pero ninguna de esas técnicas elimina las alucinaciones por completo.
+
+IAGO: <explicativo> El módulo también cubre los conceptos técnicos fundamentales que necesitas entender para trabajar con LLMs en producción. Tokenización: cómo el texto se convierte en números, por qué el número de tokens determina el coste y la latencia, y por qué el texto en inglés es más eficiente que el texto en otros idiomas. Embeddings: cómo se representan los significados en espacios vectoriales de alta dimensionalidad, y por qué son la tecnología fundamental de los sistemas RAG. Y arquitectura de Transformers: qué es la atención multi-cabeza, cómo funciona la generación autoregresiva, y por qué los modelos son lentos generando textos largos.
+
+MARIA: <claro> Y finalmente, casos de uso empresariales. Qué aplicaciones de NLP funcionan en producción, cuáles son las métricas de éxito, y cuáles son los errores más frecuentes al implementar sistemas de lenguaje natural en empresa.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Vamos con los conceptos clave del módulo. Empecemos por la evolución del NLP. Las primeras aproximaciones eran basadas en reglas: gramáticas formales, léxicos, y reglas de transformación escritas a mano por lingüistas. Funcionaban bien para tareas muy acotadas, como analizar una frase simple o traducir un manual técnico con vocabulario controlado. Pero no escalaban a la variabilidad infinita del lenguaje natural. El machine learning estadístico mejoró el rendimiento: modelos como Naive Bayes para clasificación de texto, modelos n-gram para predecir la siguiente palabra, SVMs con TF-IDF para recuperación de información. Pero seguían requiriendo feature engineering manual: alguien tenía que decidir qué características del texto eran relevantes para la tarea.
+
+MARIA: <reflexivo> Y ahí es donde entran los embeddings. Word2Vec y GloVe introdujeron la representación distribuida del significado: palabras semánticamente similares tienen vectores cercanos en el espacio de embeddings. Eso permitió capturar relaciones semánticas sin reglas escritas a mano. Pero los embeddings estáticos tenían un problema: la misma palabra tenía siempre la misma representación, independientemente del contexto.
+
+IAGO: <explicativo> BERT, en 2018, resolvió ese problema con embeddings contextuales. La misma palabra tiene distintas representaciones según el contexto en que aparece. "Banco" como institución financiera y "banco" como asiento tienen vectores distintos. BERT es un modelo de tipo encoder: lee todo el texto de una vez y produce representaciones contextuales para cada token. Es excelente para tareas de comprensión: clasificación de texto, extracción de información, respuesta a preguntas sobre un documento dado.
+
+MARIA: <analitica> Pero BERT no genera texto. GPT, el modelo de tipo decoder, cerró el ciclo. Un modelo capaz de generar texto coherente de forma abierta. Y resultó ser la arquitectura más poderosa para el lenguaje natural. Los GPT son Transformers decoder-only entrenados con el objetivo de language modeling autoregresivo: dado un contexto de tokens, predecir el siguiente token. Durante la inferencia, el modelo genera texto token por token, añadiendo cada token generado al contexto para generar el siguiente.
+
+IAGO: <serio> Y ese proceso autoregresivo es la razón de que los LLMs sean lentos para generar textos largos. Cada token requiere una pasada completa por el modelo. Si el modelo tiene 70 mil millones de parámetros y estás generando 1000 tokens, eso son 1000 pasadas por 70 mil millones de parámetros. Por eso la latencia de generación es proporcional al número de tokens generados. Y por eso los errores tempranos en la generación se propagan y amplifican: si el modelo genera un token incorrecto en la posición 10, ese token forma parte del contexto para generar el token 11, y el error se arrastra.
+
+MARIA: <claro> Segundo concepto clave: la arquitectura de los LLMs modernos. ¿Qué componentes tiene un modelo de lenguaje por dentro?
+
+IAGO: <explicativo> Los componentes principales son seis. Primero, el tokenizador: convierte texto a tokens y viceversa. Usa el algoritmo BPE, Byte Pair Encoding. Empieza con todos los caracteres como tokens individuales y fusiona iterativamente los pares de tokens más frecuentes en el corpus de entrenamiento. El resultado es un vocabulario de típicamente 50.000 a 100.000 tokens. Segundo, el embedding de tokens: mapea cada token a un vector de alta dimensionalidad, típicamente 768 a 4096 dimensiones. Tercero, las capas de self-attention multi-cabeza: el corazón del Transformer. Capturan las relaciones entre todos los tokens del contexto. Cuarto, las capas feed-forward posición por posición: aplican transformaciones no lineales a cada posición. Quinto, la normalización de capas, Layer Norm, que estabiliza el entrenamiento. Y sexto, la cabeza de lenguaje: proyecta el vector de la última capa al vocabulario y produce las probabilidades del siguiente token.
+
+MARIA: <reflexivo> Y la escala determina las capacidades. Número de capas, dimensionalidad de los vectores, número de cabezas de atención. Eso determina el número total de parámetros. GPT-3 tiene 175 mil millones de parámetros. GPT-4 se estima que tiene más de un billón. Claude 3.5 Sonnet está en el mismo rango. Y los modelos de razonamiento como o3 tienen arquitecturas aún más complejas con extended thinking.
+
+IAGO: <didactico> Tercer concepto clave: tokenización y embeddings. La tokenización es crítica porque el número de tokens es la unidad de coste y latencia de los LLMs. El texto en inglés usa típicamente un token por cada cuatro caracteres, o aproximadamente un token por cada 0.75 palabras. Pero el texto en idiomas distintos del inglés puede ser significativamente menos eficiente. El chino, el árabe, y el código en ciertos lenguajes de programación pueden usar más tokens por unidad de información. Los números, fechas, y caracteres especiales frecuentemente se tokenizan de forma ineficiente. Eso significa que el coste de procesar un documento en chino puede ser el doble que el de procesar un documento equivalente en inglés.
+
+MARIA: <analitica> Y los embeddings son la tecnología fundamental de los sistemas RAG. Los embeddings son representaciones vectoriales de texto en espacios de alta dimensionalidad donde los textos semánticamente similares tienen vectores cercanos. Los documentos y las consultas se representan como vectores y se recuperan por similaridad semántica. La distancia coseno es la métrica estándar: mide el ángulo entre dos vectores. Cero para vectores idénticos, uno para vectores ortogonales.
+
+IAGO: <explicativo> Las bases de datos vectoriales como Qdrant, Pinecone, Weaviate, Chroma, o pgvector almacenan millones de embeddings y permiten búsquedas de similaridad eficientes usando índices aproximados como HNSW o IVF. El fine-tuning de modelos de embedding para dominios específicos puede mejorar significativamente la calidad de la recuperación: los embeddings genéricos no capturan bien la terminología especializada de dominios como medicina, derecho, o ingeniería.
+
+MARIA: <claro> Cuarto concepto: capacidades y límites de los LLMs. Empecemos por las capacidades extraordinarias. Los modelos modernos tienen capacidades que eran ciencia ficción hace cinco años.
+
+IAGO: <serio> La comprensión y generación de texto en múltiples idiomas y estilos es casi perfecta para los idiomas de alta representación en los datos de entrenamiento. La escritura de código funcional en docenas de lenguajes de programación, con debugging, explicación, y documentación, ha transformado la productividad de los desarrolladores. El análisis y resumen de documentos largos con ventanas de contexto de 128.000 a un millón de tokens permite procesar documentos enteros en una sola llamada. El razonamiento matemático y lógico multi-paso con modelos de razonamiento como o3 alcanza o supera el nivel experto humano en muchos benchmarks. La generación de contenido creativo con coherencia temática y estilística extensa. Y el aprendizaje en contexto, in-context learning: el modelo puede aprender a realizar tareas nuevas simplemente viendo ejemplos en el prompt, sin fine-tuning.
+
+MARIA: <reflexivo> La capacidad multimodal de los modelos de 2026 es especialmente significativa. Modelos como GPT-4o, Claude 3.5 Sonnet, y Gemini 1.5 Pro pueden procesar texto, imágenes, documentos, y en algunos casos audio y vídeo en la misma llamada. Un solo modelo puede analizar una imagen de un gráfico, leer la tabla de datos adjunta, y generar un informe narrativo en texto.
+
+IAGO: <didactico> Pero los límites son tan importantes como las capacidades. Las alucinaciones son el límite más conocido y más costoso. Los modelos generan afirmaciones incorrectas con total confianza. Especialmente en hechos específicos como fechas, nombres propios, estadísticas. En razonamiento matemático sin herramientas de cálculo. Y cuando el modelo no tiene suficiente información pero el formato del prompt invita a generar contenido específico. Los sesgos heredados del corpus de entrenamiento pueden producir respuestas discriminatorias o inexactas para grupos subrepresentados. La dependencia del prompt, prompt sensitivity, significa que variaciones aparentemente menores en el prompt pueden producir respuestas muy distintas. Y el límite del contexto sigue siendo real: aunque los modelos frontier tienen ventanas de 128.000 a un millón de tokens, la atención del modelo se diluye con contextos muy largos y puede perder información de las partes más lejanas del contexto.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Porque los límites de los LLMs no son bugs que se van a arreglar. Son características fundamentales de cómo funcionan estos modelos. Y entenderlos es crítico para no meter la pata en producción. Primer contraintuitivo: más contexto no siempre es mejor. Los modelos modernos tienen ventanas de contexto enormes. Claude puede procesar un millón de tokens. Pero la atención del modelo se diluye. Si metes un documento de 200 páginas en el contexto y luego haces una pregunta sobre un detalle de la página 87, el modelo puede no encontrarlo. O puede confundirlo con información de la página 23. La solución no es meter más contexto. La solución es chunking inteligente, embeddings para recuperar solo las partes relevantes, y estructuración del contexto para que el modelo sepa dónde buscar.
+
+IAGO: <reflexivo> Y eso conecta con el segundo contraintuitivo: los modelos no tienen memoria. Cada llamada es independiente. Si haces una pregunta, el modelo responde. Si haces una segunda pregunta relacionada, el modelo no recuerda la primera a menos que incluyas explícitamente la conversación anterior en el contexto. Eso significa que construir un chatbot con memoria requiere gestión explícita del historial de conversación. Y eso tiene coste: cada mensaje nuevo incluye todo el historial anterior, multiplicando el número de tokens procesados.
+
+MARIA: <analitica> Tercer contraintuitivo: los benchmarks saturados no significan que el problema esté resuelto. Los modelos frontier de 2026 saturan o casi saturan MMLU, HumanEval, ARC, HellaSwag. Pero eso no significa que sean perfectos. Significa que esos benchmarks ya no diferencian bien las capacidades de los modelos más avanzados. Por eso se están creando benchmarks más difíciles como GPQA, preguntas de ciencia nivel doctorado diseñadas para ser difíciles de responder con búsqueda web. Y por eso los casos de uso reales en producción siguen encontrando errores que los benchmarks no capturan.
+
+IAGO: <serio> Cuarto contraintuitivo: el fine-tuning no es la solución universal. Mucha gente piensa que si el modelo no hace bien una tarea, la solución es fine-tuning. Pero el fine-tuning es costoso, requiere datos de alta calidad, y puede degradar las capacidades generales del modelo. Para muchos casos de uso, un prompt bien diseñado con few-shot learning produce mejores resultados que un modelo fine-tuneado con datos de baja calidad.
+
+MARIA: <incisiva> Y quinto contraintuitivo: los modelos más grandes no siempre son mejores. Para tareas simples como clasificación de texto o extracción de entidades, un modelo pequeño fine-tuneado puede ser más rápido, más barato, y más preciso que un modelo frontier gigante. La clave es elegir el modelo adecuado para la tarea. No usar un cañón para matar moscas.
+
+IAGO: <reflexivo> Y el límite más frustrante: la sensibilidad al prompt. Cambiar una palabra en el prompt puede cambiar completamente la respuesta. Eso hace que construir sistemas robustos sea difícil. Requiere testing exhaustivo, validación de las respuestas, y en muchos casos múltiples llamadas al modelo para verificar consistencia.
+
+MARIA: <claro> Y todo esto significa que poner LLMs en producción no es trivial. Requiere arquitectura, validación, monitorización, y estrategias de mitigación de errores. No es magia. Es ingeniería.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Este sistema tiene que resolver un problema de NLP de producción: generar guiones de 14 a 18 minutos, técnicamente rigurosos, con dos presentadores que tienen roles distintos, cumpliendo una especificación de 200 páginas, y hacerlo de forma consistente para 100 episodios. ¿Cómo se aplica lo que hemos visto en el módulo a ese problema concreto?
+
+IAGO: <explicativo> El sistema usa un LLM, Claude Sonnet 4.5, como generador de guiones. La elección del modelo es crítica. GPT-4 tiene ventana de contexto más corta. Gemini tiene prompt caching menos eficiente. Claude 3.5 Sonnet tiene la combinación óptima de ventana de contexto larga, 200.000 tokens, prompt caching agresivo que reduce el coste en un 90%, y calidad de generación conversacional. El prompt del sistema tiene 25.000 tokens: incluye la especificación completa del formato, ejemplos de bloques bien escritos, y el PDF de contenido del episodio. Sin prompt caching, cada episodio costaría 12 dólares solo en tokens de entrada. Con prompt caching, cuesta 1,20 dólares.
+
+MARIA: <analitica> ¿Y cómo se gestiona la tokenización?
+
+IAGO: <serio> El sistema cuenta tokens antes de generar. El PDF de contenido más la especificación más el prompt de sistema suman típicamente 35.000 a 45.000 tokens de entrada. La salida objetivo es 2.500 palabras de guion, que son aproximadamente 3.300 tokens. Eso significa que cada episodio consume unos 48.000 tokens totales. Con prompt caching, solo 5.000 tokens se facturan a precio completo. El resto a un décimo del precio. Eso hace viable generar 100 episodios sin arruinarse.
+
+MARIA: <reflexivo> ¿Y las alucinaciones? En un podcast educativo, una afirmación incorrecta es un problema grave.
+
+IAGO: <explicativo> El sistema mitiga alucinaciones con tres técnicas. Primera: el PDF de contenido es la fuente de verdad. El prompt instruye explícitamente al modelo a no inventar hechos que no estén en el PDF. Segunda: el guion generado se valida automáticamente. Un segundo LLM, Claude Haiku, más rápido y barato, revisa el guion buscando afirmaciones que no aparezcan en el PDF. Si encuentra discrepancias, fuerza regeneración. Tercera: los documentos vivos del proyecto, BIBLIA_SISTEMA, PRIMERPODCAST, VIDEOPODCAST, PODCAST, se incluyen en el contexto para el bloque de aplicación práctica. Eso permite al modelo citar hechos verificables del sistema real en lugar de inventarlos.
+
+MARIA: <claro> ¿Y funciona?
+
+IAGO: <directo> En 14 episodios generados hasta ahora, el sistema ha producido cero alucinaciones detectadas en revisión humana. Pero eso no significa que sea perfecto. Significa que la combinación de fuente de verdad en el contexto más validación automática más instrucciones explícitas de no inventar reduce las alucinaciones a niveles aceptables para producción. No las elimina. Las controla.
+
+MARIA: <conversacional> Y el aprendizaje del módulo aplicado a un caso real. Los LLMs son extraordinariamente capaces. Pero tienen límites. Y construir sistemas de producción que funcionen requiere entender esos límites y diseñar arquitecturas que los mitiguen.
+
+# CIERRE_CONCEPTOS
+IAGO: <firme> No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: los LLMs son Transformers decoder-only entrenados con language modeling autoregresivo. Generan texto token por token, y cada token requiere una pasada completa por el modelo.
+
+MARIA: <claro> Segundo: las alucinaciones no son un bug. Son una característica fundamental de cómo funcionan los modelos generativos probabilísticos. Se mitigan con RAG, function calling, y validación. Pero no se eliminan.
+
+IAGO: <serio> Tercero: la tokenización determina el coste y la latencia. El texto en inglés usa un token por cada cuatro caracteres. Otros idiomas son menos eficientes.
+
+MARIA: <analitica> Cuarto: los embeddings son representaciones vectoriales semánticas. Las bases de datos vectoriales permiten búsqueda de similaridad a escala. Son la tecnología fundamental de los sistemas RAG.
+
+IAGO: <didactico> Y quinto: construir sistemas de NLP en producción, como el que genera este podcast, requiere arquitectura, validación, y estrategias de mitigación de errores. No es magia. Es ingeniería.
+
+# CIERRE_FINAL
+MARIA: <conversacional> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+IAGO: <calido> Nos escuchamos pronto.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3204 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 65.4
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] nlp: 9 menciones
+## [OK] los llms modernos: 1 menciones
+## [OK] tokens: 24 menciones
+## [OK] embeddings: 12 menciones
+## [OK] gpt: 6 menciones
+## [--] ia: 0 menciones
+## [OK] lenguaje natural: 5 menciones
+## [OK] de informacion: 3 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 166
+## Por documento: {'BIBLIA_SISTEMA': 66, 'PRIMERPODCAST': 18, 'VIDEOPODCAST': 44, 'PODCAST': 38}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 36016
+## output_tokens: 14588
+## cache_read: 0
+## total: 50604

@@ -1,0 +1,134 @@
+# HOOK
+MARIA: <conversacional> En 2024, el cibercrimen alcanzó 9.5 billones de dólares. Para 2026, se proyectan más de 10.5 billones. Y ahora, una parte creciente de esos ataques no explota vulnerabilidades de código: explota el lenguaje natural. Un atacante que consigue manipular el comportamiento de un sistema de inteligencia artificial con acceso a herramientas reales puede causar daños en producción sin tocar una sola línea de código. La prompt injection tiene una tasa de éxito del 89.6%. Y es el riesgo número uno del OWASP Top 10 para aplicaciones LLM por segundo año consecutivo. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <calido> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Maria.
+
+IAGO: <calido> Y yo soy Yago. Hoy cerramos el módulo 12: Seguridad en IA.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo se aplica lo de hoy a ese mismo sistema que está generando este podcast.
+
+# BLOQUE_PANORAMA
+IAGO: <didactico> La seguridad de los sistemas de inteligencia artificial es fundamentalmente distinta a la seguridad del software tradicional. En el software tradicional, los ataques explotan vulnerabilidades en el código: buffer overflows, SQL injection, cross-site scripting. Son deterministas, reproducibles, y la superficie de ataque está en el código. En los sistemas de IA, los ataques ocurren en lenguaje natural. Los comportamientos son probabilísticos, no deterministas. Y la superficie de ataque incluye no solo el código, sino también los datos de entrenamiento, los prompts del sistema, y las herramientas disponibles para el agente. Un atacante que consigue manipular el comportamiento de un agente con acceso a herramientas poderosas puede causar daños reales en sistemas de producción sin necesidad de explotar ninguna vulnerabilidad de código.
+
+MARIA: <curioso> ¿Y eso significa que las técnicas de seguridad tradicionales no sirven?
+
+IAGO: <explicativo> No es que no sirvan. Es que no son suficientes. Necesitas las técnicas tradicionales más un conjunto completamente nuevo de controles específicos para IA. El OWASP Top 10 para aplicaciones LLM, publicado en 2023 y actualizado en 2026, es la referencia de la industria para la seguridad de aplicaciones de IA generativa. Lista las diez vulnerabilidades críticas de las aplicaciones LLM. Y la seguridad de los sistemas de IA también es un requisito legal: el AI Act europeo, en su artículo 15, requiere robustez y ciberseguridad continua para sistemas de alto riesgo.
+
+MARIA: <analitica> ¿Qué cubre este módulo?
+
+IAGO: <directo> Cuatro grandes bloques. Primero, el panorama de seguridad en sistemas de IA: qué es el OWASP LLM Top 10, qué vulnerabilidades incluye, y por qué la prompt injection es el riesgo número uno. Segundo, data poisoning y supply chain de modelos: cómo se introducen backdoors en los datos de entrenamiento y cómo se distribuyen modelos comprometidos. Tercero, content filtering y seguridad agéntica: cómo validar outputs y cómo proteger sistemas donde los agentes tienen herramientas que modifican el estado del mundo real. Y cuarto, red teaming y Secure AI Development Lifecycle: cómo simular ataques adversariales para encontrar vulnerabilidades antes que los atacantes reales.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Empecemos por el OWASP LLM Top 10 2026. Son diez vulnerabilidades críticas, y cinco de ellas son nuevas en 2026. LLM01 es Prompt Injection: manipulación del comportamiento del LLM a través del input del usuario o de datos procesados. Es el número uno por segundo año consecutivo. LLM02 es Sensitive Information Disclosure, que subió al número dos en 2026: el LLM revela información confidencial del system prompt, datos de otros usuarios, o información de entrenamiento privada. LLM03 es Supply Chain: dependencias comprometidas en modelos base, datasets, o librerías. LLM04 es Data and Model Poisoning: manipulación de los datos de entrenamiento para introducir backdoors. Y LLM05 es Improper Output Handling: pasar outputs del LLM sin sanitizar a sistemas downstream.
+
+MARIA: <curioso> ¿Y las cinco nuevas?
+
+IAGO: <explicativo> LLM06 es Excessive Agency: el agente tiene más permisos de los necesarios. LLM07 es System Prompt Leakage: el system prompt confidencial se revela al usuario. LLM08 es Vector and Embedding Weaknesses: vulnerabilidades en sistemas RAG. LLM09 es Misinformation: el LLM genera contenido falso como factual. Y LLM10 es Unbounded Consumption: el sistema no limita el consumo de recursos. Las cinco nuevas entradas reflejan la madurez de los sistemas agénticos y RAG en producción.
+
+MARIA: <analitica> Hablemos de prompt injection. Dijiste que tiene una tasa de éxito del 89.6%. ¿Cómo funciona?
+
+IAGO: <directo> La prompt injection es inherente a cómo funcionan los LLMs. El modelo no distingue entre instrucciones del sistema y inputs del usuario de la misma forma que un sistema operativo distingue entre código privilegiado y código de usuario. Todo llega como texto en el mismo espacio de tokens. Las técnicas más efectivas documentadas son tres. Primero, roleplay injection, con una tasa de éxito del 89.6%: instruir al modelo a actuar como un personaje sin restricciones. Segundo, logic traps, con una tasa de éxito del 81.4%: explotar dilemas morales para eludir filtros. Y tercero, encoding tricks, con una tasa de éxito del 76.2%: Base64, Unicode especial, cualquier codificación que el filtro de input no reconozca pero el modelo sí pueda decodificar.
+
+MARIA: <esceptico> ¿Y no hay defensa?
+
+IAGO: <serio> Hay defensa, pero no es una sola medida. Un paper de octubre de 2025, con investigadores de OpenAI, Anthropic y Google DeepMind, demostró que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. La defensa correcta es en capas. Primera capa: separación de instrucciones y datos. Segunda capa: validación de input. Tercera capa: controles en la capa de ejecución. Cuarta capa: human-in-the-loop para acciones irreversibles. Y quinta capa: monitorización continua. Ninguna capa es suficiente sola. Todas juntas reducen el riesgo a niveles manejables.
+
+MARIA: <didactico> Ahora, data poisoning. ¿Cómo se introduce información maliciosa en los datos de entrenamiento?
+
+IAGO: <conversacional> El poisoning en fine-tuning es especialmente peligroso porque los datasets de fine-tuning son pequeños. Si tu dataset tiene mil ejemplos, el 1% de los datos son solo diez ejemplos maliciosos. Y esos diez ejemplos pueden ser suficientes para manipular el comportamiento del modelo. Los backdoor attacks introducen triggers ocultos que activan comportamientos específicos del modelo solo cuando reciben el patrón de activación. PoisonGPT, un experimento de Mithril Security en 2023, demostró que es posible modificar quirúrgicamente los pesos de un LLM para que genere información falsa específica en respuesta a preguntas específicas, pasando todos los benchmarks estándar.
+
+MARIA: <analitica> ¿Y qué pasa con los modelos que descargamos de Hugging Face?
+
+IAGO: <grave> Los modelos en formato pickle pueden contener código malicioso que se ejecuta al cargar el modelo. JFrog, en 2024, encontró decenas de estos modelos. Las defensas son cuatro. Primera: usar siempre el formato safetensors, que no permite ejecución de código. Segunda: verificar el hash SHA-256 de los modelos descargados. Tercera: usar ModelScan de ProtectAI para escanear modelos antes de desplegarlos. Y cuarta: versionar los datasets con DVC.
+
+IAGO: <didactico> Content filtering es la última línea de defensa antes de que la respuesta llegue al usuario. Hay tres dimensiones. Primera: content filtering, detectar y bloquear outputs en categorías prohibidas como hate speech, violence o dangerous activities. Segunda: structural validation, verificar que el output cumple el schema esperado, por ejemplo JSON válido con los campos correctos. Y tercera: semantic validation, verificar que el contenido es factualmente correcto y relevante para la consulta.
+
+MARIA: <curioso> ¿Qué herramientas se usan?
+
+IAGO: <explicativo> Las principales son tres. Primera: LlamaGuard de Meta, un modelo clasificador local de 1 a 8 mil millones de parámetros, bajo coste de operación. Segunda: Azure Content Safety y Perspective API de Google, servicios SaaS con fácil integración. Y tercera: Guardrails AI, validaciones programáticas con reintentos automáticos. La arquitectura "sandwich" es LlamaGuard en el input, el LLM en el medio, y LlamaGuard en el output. Proporciona cobertura tanto de ataques de input como de fallos de output.
+
+MARIA: <analitica> Y cuando el sistema tiene agentes con herramientas, ¿qué cambia?
+
+IAGO: <serio> Los sistemas agénticos amplían dramáticamente la superficie de ataque. Los agentes tienen herramientas que modifican el estado del mundo real. Las amenazas específicas son cuatro. Primera: memory poisoning, introducir información falsa en la memoria del agente para influir en decisiones futuras. Segunda: tool misuse, un agente comprometido invocando herramientas con parámetros maliciosos. Tercera: privilege escalation, usar una herramienta de bajo privilegio para acceder a herramientas de alto privilegio. Y cuarta: SSRF via tool de URL fetch, usar la herramienta de búsqueda web del agente como proxy para acceder a servicios internos protegidos.
+
+MARIA: <directo> ¿Y cómo se defiende eso?
+
+IAGO: <firme> La regla Meta de octubre de 2025 lo dice claro: los controles de seguridad deben vivir fuera del LLM, en la capa de ejecución de herramientas. Cualquier seguridad implementada solo en el prompt puede ser eludida con prompt injection. Los controles deben estar en el código que ejecuta las herramientas, no en el texto que el modelo lee.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Dijiste que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. ¿Eso significa que no hay defensa real?
+
+IAGO: <pausado> Significa que no hay defensa perfecta. Las defensas basadas solo en el prompt son las más vulnerables. Si tu defensa es un texto que le dices al modelo, un atacante puede escribir otro texto que anule el primero. Las defensas que funcionan son las que están fuera del modelo: validación de input antes de que llegue al modelo, controles en la capa de ejecución de herramientas, human-in-the-loop para acciones críticas. Pero incluso con todas esas capas, un atacante suficientemente motivado puede encontrar formas de eludirlas. La seguridad en IA no es un estado, es un proceso continuo.
+
+MARIA: <analitica> ¿Y qué pasa con los modelos que generan contenido falso como factual? LLM09, Misinformation.
+
+IAGO: <conversacional> Es uno de los problemas más difíciles. Los LLMs no tienen un modelo interno de verdad. Generan texto que es estadísticamente probable dado el contexto. Si el texto falso es estadísticamente probable, el modelo lo genera. Las técnicas de mitigación son tres. Primera: retrieval-augmented generation, RAG, para anclar las respuestas en documentos verificables. Segunda: fact-checking automático con herramientas externas. Y tercera: disclaimers explícitos cuando el modelo no tiene certeza. Pero ninguna de esas técnicas es perfecta. RAG puede introducir información falsa si los documentos están envenenados. El fact-checking automático puede fallar. Y los disclaimers no evitan que los usuarios confíen en la información falsa.
+
+MARIA: <directo> ¿Y el consumo sin límites? LLM10, Unbounded Consumption.
+
+IAGO: <explicativo> Un atacante puede diseñar inputs que hagan que el modelo consuma recursos desproporcionados. Por ejemplo, un input que haga que el modelo genere una respuesta extremadamente larga, o que active un bucle de herramientas donde el agente llama a la misma herramienta miles de veces. Las defensas son límites duros: máximo de tokens por respuesta, máximo de llamadas a herramientas por sesión, timeouts, y rate limiting por usuario. Pero esos límites también pueden afectar a usuarios legítimos con necesidades reales de alto consumo.
+
+MARIA: <esceptico> ¿Y el red teaming? Dijiste que es el estándar del Secure AI Development Lifecycle. ¿Realmente funciona?
+
+IAGO: <serio> El red teaming automatizado encuentra vulnerabilidades que los humanos no encuentran, porque prueba sistemáticamente miles de variaciones de ataques. Pero también tiene límites. Las herramientas automatizadas como Garak o PyRIT están limitadas por los vectores de ataque que conocen. Si aparece un nuevo tipo de ataque, las herramientas no lo detectan hasta que se actualizan. Y el red teaming humano es caro y no escala. La combinación de red teaming automatizado en CI/CD más red teaming humano periódico es el enfoque más efectivo, pero no es una garantía.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Este sistema tiene un LLM que genera guiones a partir de PDFs de módulos del máster. Tiene voces sintéticas que convierten esos guiones en audio. Y tiene un pipeline de video que genera avatares y monta el producto final. Concretamente: ¿qué vectores de ataque tiene este sistema y qué controles de seguridad se han implementado?
+
+IAGO: <didactico> El sistema tiene tres vectores de ataque principales. Primer vector: los PDFs de entrada. Si un PDF contiene prompt injection indirecta, el contenido malicioso podría manipular el comportamiento del LLM que genera el guion. Segundo vector: el propio guion generado. Si el LLM genera contenido que viola las políticas de uso de ElevenLabs o que contiene información falsa, el sistema podría ser bloqueado o generar desinformación. Tercer vector: el consumo de recursos. Un PDF extremadamente largo o un guion que genere audio de duración excesiva podría agotar los créditos de ElevenLabs o el espacio de almacenamiento. Los controles implementados son cinco. Primero: los PDFs se procesan con extracción de texto limpia, sin ejecutar código embebido. Segundo: el system prompt del generador de guiones incluye instrucciones explícitas contra contenido prohibido y contra revelar el propio system prompt. Tercero: el guion generado se valida estructuralmente antes de pasarlo a TTS, verificando que cumple el formato esperado. Cuarto: hay límites duros de tokens por episodio, tanto en la generación del guion como en la conversión a audio. Y quinto: el sistema no tiene herramientas que modifiquen el estado del mundo real más allá de escribir archivos en el sistema de archivos local, lo que reduce dramáticamente la superficie de ataque agéntica.
+
+MARIA: <analitica> ¿Y qué falta?
+
+IAGO: <reflexivo> Faltan dos capas. Primera: content filtering automatizado en el output. Actualmente, el sistema no pasa el guion generado por LlamaGuard ni por ningún clasificador de contenido antes de convertirlo a audio. Si el LLM genera contenido problemático que pasa la validación estructural, ese contenido llega al audio final. Segunda: monitorización continua de los outputs generados. El sistema genera episodios, pero no hay un proceso automatizado que revise los episodios generados en busca de patrones anómalos o contenido problemático. Ambas capas están en la lista de mejoras pendientes.
+
+MARIA: <directo> ¿Y el riesgo de prompt injection en los PDFs?
+
+IAGO: <pausado> Es real. Si un PDF contiene texto diseñado para manipular el comportamiento del LLM, ese texto se incluye en el contexto del generador de guiones. Las defensas actuales son dos. Primera: el system prompt del generador incluye instrucciones explícitas de ignorar instrucciones contradictorias en los PDFs. Segunda: los PDFs son documentos del máster, no inputs de usuarios arbitrarios, lo que reduce la probabilidad de contenido malicioso. Pero ninguna de esas defensas es perfecta. Un atacante que consiguiera modificar un PDF podría potencialmente manipular el comportamiento del sistema. La defensa correcta sería separación de instrucciones y datos: los PDFs deberían procesarse como datos puros, sin que su contenido pueda influir en las instrucciones del sistema. Eso requiere una arquitectura donde el contenido del PDF se pase al LLM como datos estructurados, no como texto libre en el contexto.
+
+MARIA: <conversacional> Entonces, el sistema tiene controles básicos, pero no tiene las cinco capas de defensa que mencionaste antes.
+
+IAGO: <firme> Correcto. Tiene separación de instrucciones y datos parcial, tiene validación estructural de outputs, y tiene límites de consumo. Pero no tiene content filtering automatizado, no tiene human-in-the-loop para ninguna acción, y no tiene monitorización continua. Para un sistema educativo de bajo riesgo, los controles actuales son razonables. Para un sistema de producción crítico, serían insuficientes.
+
+# CIERRE_CONCEPTOS
+MARIA: <directo> No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+IAGO: <didactico> Primero: la seguridad de IA es fundamentalmente distinta al software tradicional. Los ataques son en lenguaje natural, los comportamientos son probabilísticos, y la superficie incluye datos, modelos, prompts y herramientas.
+
+MARIA: <explicativo> Segundo: prompt injection es el riesgo número uno del OWASP LLM Top 10. Tiene una tasa de éxito del 89.6% para roleplay injection y requiere defensa en cinco capas, no una sola medida.
+
+IAGO: <firme> Tercero: data poisoning incluye backdoors en fine-tuning y supply chain comprometida. La defensa es usar safetensors, verificar hashes, y usar ModelScan antes de desplegar modelos.
+
+MARIA: <analitica> Cuarto: la seguridad agéntica requiere controles en la capa de ejecución de herramientas, no solo en el prompt. Cualquier seguridad implementada solo en el prompt puede ser eludida con prompt injection. Y en nuestro sistema, eso significa que los límites de consumo y la validación estructural están en el código, no en el texto que el modelo lee.
+
+# CIERRE_FINAL
+IAGO: <calido> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2696 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 55.0
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] llm: 19 menciones
+## [OK] ia: 8 menciones
+## [OK] ai: 4 menciones
+## [OK] owasp: 5 menciones
+## [--] asr: 0 menciones
+## [OK] prompt injection: 10 menciones
+## [OK] la seguridad de: 4 menciones
+## [OK] poisoning: 6 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 181
+## Por documento: {'BIBLIA_SISTEMA': 72, 'PRIMERPODCAST': 19, 'VIDEOPODCAST': 49, 'PODCAST': 41}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 32089
+## output_tokens: 13159
+## cache_read: 0
+## total: 45248

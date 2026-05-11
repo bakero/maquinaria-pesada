@@ -1,0 +1,174 @@
+# HOOK
+MARIA: <conversacional> El ochenta y ocho por ciento de las organizaciones usa inteligencia artificial en dos mil veintiseis. Pero solo el treinta y tres por ciento ha conseguido escalarla más allá de los proyectos piloto. Esa brecha entre adoptar y transformar es el abismo que separa el hype de la realidad. Y es donde la mayoría de las empresas se están quedando atascadas ahora mismo. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <natural> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Maria.
+
+IAGO: <natural> Y yo soy Yago. Hoy arrancamos el módulo cero del máster: Introducción Estratégica a la IA.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast, y al final del episodio veremos cómo se aplica lo de hoy a ese sistema real.
+
+IAGO: <didactico> Este módulo inaugural tiene una función clara: construir el marco conceptual desde el que vas a abordar el resto del máster. Qué es la IA realmente, cómo ha evolucionado, cuáles son sus límites reales, y qué implica para las organizaciones que la adoptan.
+
+MARIA: <conversacional> Porque sin ese marco, los conocimientos técnicos de los módulos siguientes se pueden aplicar mal o con expectativas equivocadas. Y eso sale caro.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> Empecemos por el territorio completo. Este módulo cubre cinco áreas fundamentales. Primero, el contexto histórico: por qué el momento actual es cualitativamente distinto a cualquier ola anterior de IA. Segundo, la taxonomía técnica: el mapa que va desde IA general hasta machine learning, deep learning y los modelos de lenguaje grande. Tercero, el impacto organizativo: cómo la IA está transformando las empresas y el trabajo del conocimiento. Cuarto, el ecosistema de dos mil veintiseis: proveedores, modelos, plataformas, y las decisiones estratégicas que hay que tomar. Y quinto, los principios para navegar la incertidumbre y seguir aprendiendo en un campo que evoluciona cada semana.
+
+MARIA: <curioso> ¿Por qué arrancamos con historia? La mayoría de la gente quiere ir directo a ChatGPT y empezar a construir.
+
+IAGO: <didactico> Porque la historia de la IA es la historia de promesas, inviernos, y renacimientos. El primer invierno llegó en los setenta cuando los sistemas basados en reglas no pudieron escalar. El segundo invierno llegó en los ochenta cuando las redes neuronales de la época no podían entrenarse con los datos y el poder computacional disponibles. El renacimiento de las redes neuronales profundas a partir de dos mil doce, impulsado por GPUs y datasets masivos de internet, produjo avances espectaculares en visión por computadora y reconocimiento de voz. Y la irrupción de los Transformers en dos mil diecisiete y los modelos de lenguaje grande a partir de dos mil veinte marcaron el inicio de la era actual.
+
+MARIA: <analitica> O sea que hemos estado aquí antes. Con expectativas infladas y caídas.
+
+IAGO: <serio> Pero hay tres factores que hacen que ahora sea diferente. Primero, la escala del poder computacional: los modelos actuales se entrenan con miles de chips GPU durante semanas, algo imposible hace diez años. Segundo, la disponibilidad de datos: internet ha producido cantidades inimaginables de texto, imágenes, código y conversaciones que sirven de corpus de entrenamiento. Tercero, los avances arquitectónicos: la arquitectura Transformer y sus variantes han demostrado capacidades de generalización que superan ampliamente lo que los sistemas anteriores podían hacer.
+
+MARIA: <conversacional> ¿Y qué pueden hacer realmente los modelos actuales?
+
+IAGO: <explicativo> Los modelos de lenguaje grande actuales pueden mantener conversaciones coherentes sobre prácticamente cualquier tema, escribir código funcional en decenas de lenguajes de programación, analizar documentos complejos, generar imágenes y vídeos realistas, razonar sobre problemas matemáticos y lógicos, y con las herramientas adecuadas actuar sobre el mundo digital de forma autónoma. Esta convergencia de capacidades es lo que hace el momento actual diferente.
+
+MARIA: <esceptico> Pero también alucinan, tienen sesgos, no tienen memoria entre conversaciones por defecto, y los sistemas agénticos fallan en el paso cuarenta y siete de un proceso de cincuenta pasos.
+
+IAGO: <firme> Correcto. Y esa es precisamente la competencia más valiosa de cualquier profesional que trabaje con IA en dos mil veintiseis: distinguir entre lo que la IA puede hacer de forma fiable hoy, lo que puede hacer de forma probabilística, y lo que todavía no puede hacer. Este máster está diseñado para desarrollar esa capacidad crítica junto con los conocimientos técnicos.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Vamos ahora con los conceptos núcleo del módulo. Empezamos por la distinción fundamental: IA Estrecha versus IA General. Toda la IA disponible en dos mil veintiseis es IA Estrecha, sistemas optimizados para una tarea o un conjunto de tareas relacionadas que no generalizan bien fuera de su dominio de entrenamiento. Un modelo de lenguaje puede escribir código y analizar contratos, pero no puede conducir un coche o controlar un robot físico directamente. Un sistema de visión por computadora entrenado para detectar tumores en radiografías de tórax no puede usarse directamente para analizar imágenes de satélite.
+
+MARIA: <conversacional> ¿Y la IA General?
+
+IAGO: <explicativo> La IA General, la capacidad de razonar y aprender sobre cualquier dominio con la flexibilidad de la inteligencia humana, sigue siendo objeto de debate sobre cuándo y si llegará. La distinción práctica más relevante para las organizaciones ahora es entre IA discriminativa, modelos que clasifican, predicen o detectan, e IA generativa, modelos que generan nuevo contenido: texto, imágenes, código, audio, vídeo.
+
+MARIA: <analitica> Segundo concepto: la jerarquía técnica. Machine Learning, Deep Learning, y los modelos de lenguaje grande. ¿Cómo se relacionan?
+
+IAGO: <didactico> Machine Learning es la disciplina dentro de la IA que estudia cómo los sistemas aprenden de datos sin ser programados explícitamente. En lugar de escribir reglas, proporcionas ejemplos y el algoritmo infiere las reglas. Deep Learning es un subconjunto del Machine Learning que usa redes neuronales artificiales con muchas capas para aprender representaciones de los datos a múltiples niveles de abstracción. Y los modelos de lenguaje grande son redes neuronales profundas basadas en la arquitectura Transformer, entrenadas sobre cantidades masivas de texto para predecir el siguiente token en una secuencia.
+
+MARIA: <curioso> ¿Y esa capacidad de predecir tokens es lo que produce el razonamiento y la escritura?
+
+IAGO: <explicativo> Sí. Esa capacidad de predicción de tokens, aparentemente simple, emerge en comportamientos complejos: razonamiento, escritura, análisis y conversación. La jerarquía es importante: todo modelo de lenguaje grande es deep learning, todo deep learning es machine learning, y todo machine learning es IA. Pero no toda IA es deep learning, hay sistemas basados en reglas, en lógica simbólica, en algoritmos evolutivos. Y no todo machine learning es deep learning: los algoritmos clásicos como regresión logística, random forests y XGBoost siguen siendo ampliamente usados en producción.
+
+MARIA: <conversacional> Tercer concepto: las modalidades de la IA generativa. Texto, imágenes, código, audio, vídeo.
+
+IAGO: <didactico> La IA generativa en dos mil veintiseis abarca múltiples modalidades. Texto: modelos como GPT-4, Claude, Gemini, Llama. Imágenes: modelos de difusión como DALL-E, Midjourney, Stable Diffusion, Flux. Código: GitHub Copilot, Cursor, Devin. Audio: ElevenLabs para síntesis de voz, Suno para música. Vídeo: Sora de OpenAI, Runway, Kling. Y multimodal: modelos que procesan y generan múltiples tipos de contenido simultáneamente.
+
+MARIA: <analitica> ¿Cuál es la más inmediatamente aplicable?
+
+IAGO: <explicativo> Para las organizaciones, la IA generativa de texto es la más inmediatamente aplicable porque el texto es el formato universal de la comunicación y el conocimiento empresarial. Los documentos, los emails, los informes, los contratos, el código y las conversaciones son todos texto. La capacidad de los modelos de lenguaje para procesar, generar y transformar texto a escala está redefiniendo prácticamente todos los trabajos del conocimiento.
+
+MARIA: <directo> Cuarto concepto: los vectores de impacto en las organizaciones. ¿Cómo transforma la IA a las empresas realmente?
+
+IAGO: <explicativo> La IA impacta a través de cuatro vectores principales. Primero, productividad individual: los trabajadores del conocimiento que usan IA de forma efectiva son significativamente más productivos. En estudios controlados, completan tareas un cuarenta a cincuenta y cinco por ciento más rápido con calidad comparable o superior. Segundo, automatización de procesos: los procesos repetitivos y semi-repetitivos que antes requerían trabajo humano pueden automatizarse parcial o Tercero, mejora de la toma de decisiones: los sistemas de IA pueden analizar cantidades de datos que los humanos no pueden procesar e identificar patrones no obvios. Cuarto, creación de nuevos productos y servicios: la IA habilita propuestas de valor que simplemente no eran posibles antes.
+
+MARIA: <conversacional> ¿Y ese impacto es uniforme?
+
+IAGO: <serio> No. Los sectores con mayor intensidad de trabajo del conocimiento, servicios financieros, consultoría, legal, salud, tecnología, marketing, están experimentando los cambios más profundos. Las funciones más afectadas son las que implican procesamiento de información, generación de texto, análisis de datos y comunicación con clientes.
+
+MARIA: <analitica> Quinto concepto: el modelo de adopción. De experimentos a transformación. ¿Cómo escalan las organizaciones?
+
+IAGO: <didactico> Las organizaciones siguen un modelo en cinco fases. Fase uno, Exploración: herramientas de IA individuales, uso ad-hoc por empleados pioneros, sin estrategia ni gobernanza. Fase dos, Adopción temprana: acceso a herramientas para grupos de usuarios, primeros casos de uso identificados, formación básica. Fase tres, Escalado: casos de uso en producción con impacto medible, estrategia de IA definida, gobernanza básica, equipo de IA en construcción. Fase cuatro, Transformación: la IA integrada en los procesos core del negocio, impacto medible en métricas de negocio. Fase cinco, Reinvención: nuevos modelos de negocio habilitados por la IA, ventaja competitiva estructural.
+
+MARIA: <esceptico> ¿Y dónde está la mayoría de las organizaciones?
+
+IAGO: <contundente> El ochenta y ocho por ciento dice estar en fase uno o dos. Solo el treinta y tres por ciento ha escalado la IA más allá de los pilotos. El treinta y cuatro por ciento reporta impacto financiero medible. Esa brecha entre adopción e impacto es la oportunidad más grande del mercado en los próximos cinco años.
+
+# BLOQUE_LIMITES
+MARIA: <directo> Ahora vamos con lo que falla. Porque todo lo anterior suena muy bien, pero la realidad es más complicada. Primer límite: los modelos de lenguaje alucinan. Inventan hechos con total confianza. ¿Cómo de grave es esto en producción?
+
+IAGO: <serio> Muy grave si no lo gestionas. Un modelo puede generar un informe financiero con cifras inventadas, o un análisis legal citando jurisprudencia que no existe. La solución no es esperar a que los modelos dejen de alucinar, es diseñar sistemas que validen la información crítica contra fuentes verificables.
+
+MARIA: <analitica> Segundo límite: los sesgos heredados de los datos de entrenamiento. Los modelos reproducen los sesgos que existen en internet. Sesgo de género, sesgo racial, sesgo geográfico. ¿Qué implica eso?
+
+IAGO: <explicativo> Que si usas un modelo para filtrar currículums, puede discriminar contra candidatos de ciertos perfiles. Si lo usas para evaluar riesgo crediticio, puede penalizar a grupos vulnerables. Si lo usas para generar contenido de marketing, puede perpetuar estereotipos. La gestión de sesgos no es un tema ético separado de la práctica técnica, es un fallo de ingeniería con consecuencias empresariales reales: sanciones regulatorias, litigios, daño reputacional.
+
+MARIA: <conversacional> Tercer límite: los sistemas agénticos fallan en procesos largos. Tú les das una tarea de cincuenta pasos y se pierden en el paso cuarenta y siete. ¿Por qué?
+
+IAGO: <didactico> Porque los modelos actuales no tienen planificación robusta a largo plazo. Pueden razonar sobre el siguiente paso, pero no pueden mantener un plan coherente durante decenas de pasos con dependencias complejas. Cada paso introduce incertidumbre, y esa incertidumbre se acumula. La solución es descomponer tareas largas en subtareas más cortas con validación intermedia.
+
+MARIA: <esceptico> Cuarto límite: la falta de persistencia de memoria. Los modelos no recuerdan conversaciones anteriores por defecto. Cada interacción es un contexto nuevo. ¿Cómo afecta eso a los casos de uso empresariales?
+
+IAGO: <explicativo> Significa que si construyes un asistente de atención al cliente, no recordará lo que el cliente le dijo ayer a menos que implementes explícitamente un sistema de memoria. Eso requiere almacenar conversaciones, indexarlas, recuperarlas cuando sean relevantes, y gestionar la privacidad de esos datos. No es trivial.
+
+MARIA: <directo> Quinto límite: la dependencia de proveedores externos. Si usas OpenAI o Anthropic, estás enviando tus datos a terceros. Si cambian los precios, cambias tu estructura de costes. Si cambian las políticas de uso, puedes perder acceso. ¿Cómo se gestiona esa dependencia?
+
+IAGO: <serio> Con una estrategia clara. Para casos de uso de alta privacidad o alto volumen, considera modelos open source con despliegue propio. Para casos de uso de alta complejidad con volumen moderado, los modelos propietarios son más prácticos. Y en ambos casos, diseña tu arquitectura de forma que puedas cambiar de proveedor sin reescribir todo el sistema.
+
+MARIA: <analitica> Sexto límite: el coste de inferencia a escala. Generar un millón de tokens con GPT-4 cuesta quince dólares. Si tu caso de uso genera cien millones de tokens al mes, son un millón y medio de dólares al año. ¿Cuántas organizaciones han hecho ese cálculo antes de escalar?
+
+IAGO: <contundente> Muy pocas. Y por eso muchos proyectos piloto que funcionan técnicamente no escalan económicamente. La optimización de costes no es un problema de la fase cinco, es un problema de la fase dos.
+
+MARIA: <conversacional> Y séptimo límite: el factor humano. La resistencia al cambio, el miedo a la obsolescencia, la falta de formación. ¿Cómo de grande es ese obstáculo?
+
+IAGO: <reflexivo> Es el obstáculo más grande. Puedes tener la mejor tecnología del mundo, pero si tus empleados no la usan porque tienen miedo de que les reemplace, o porque no entienden cómo usarla, o porque nadie les ha explicado cómo cambia su rol, la transformación no ocurre. La gestión del cambio para la adopción de IA es tan importante como los aspectos técnicos de la implementación.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. MaquinarIA Pesada es un proyecto que produce catorce episodios de un máster sobre inteligencia artificial usando íntegramente IA generativa. Dos presentadores ficticios, María y Yago, con voces sintetizadas por ElevenLabs. Guiones generados por Claude. Audio ensamblado automáticamente. Video renderizado con avatares y subtítulos. Sin intervención humana en la grabación. Concretamente: ¿cómo se aplican los conceptos de este módulo a un sistema de producción automática de contenido educativo?
+
+IAGO: <didactico> Empecemos por la taxonomía. El sistema usa modelos de lenguaje grande para la generación de guiones, específicamente Claude Sonnet 4.5 de Anthropic. deep learning, arquitectura Transformer, entrenado sobre texto masivo. Usa IA generativa de audio, ElevenLabs con el modelo eleven_v3, para sintetizar las voces de los presentadores. Usa IA generativa de video, Kling de Kuaishou, para crear los avatares que hablan. Y usa modelos de visión-lenguaje multimodal, específicamente Claude con capacidad de analizar imágenes, para validar que los subtítulos coinciden con el audio. Cuatro modalidades de IA generativa trabajando juntas.
+
+MARIA: <curioso> ¿Y qué decisiones estratégicas se tomaron en el diseño?
+
+IAGO: <explicativo> Primera decisión: modelos propietarios versus open source. Se eligió Claude propietario para los guiones porque la calidad de razonamiento y la capacidad de seguir especificaciones complejas es superior a los modelos open source disponibles en dos mil veintiseis. Se eligió ElevenLabs propietario para las voces porque la naturalidad del audio es crítica para un podcast educativo largo. Pero se diseñó el sistema de forma modular: si los costes escalan o aparecen modelos open source competitivos, se puede cambiar de proveedor sin reescribir todo.
+
+MARIA: <analitica> Segunda decisión: ¿cómo se gestionan las alucinaciones del modelo de lenguaje?
+
+IAGO: <serio> Con tres mecanismos. Primero, el sistema lee los PDFs de los módulos del máster como input y extrae conceptos clave antes de generar el guion. Eso ancla el contenido a fuentes verificables. Segundo, el guion incluye una sección de verificaciones al final donde el sistema reporta qué fuentes usó, cuántos tokens procesó, y si cubrió al menos el setenta y cinco por ciento de los conceptos del PDF. Tercero, hay un aviso explícito al inicio de cada episodio diciendo que el contenido lo genera un sistema automático y puede contener errores. No eliminamos las alucinaciones, pero las gestionamos con transparencia y validación.
+
+MARIA: <conversacional> Tercera decisión: ¿cómo se gestiona la memoria y la coherencia entre episodios?
+
+IAGO: <explicativo> El sistema no tiene memoria conversacional entre episodios porque cada episodio es independiente. Pero sí tiene coherencia estructural: todos los episodios siguen la misma especificación, el mismo formato de bloques, las mismas reglas de reparto entre presentadores. Esa coherencia está codificada en un documento de especificación de casi cuatro mil palabras que se pasa como contexto en cada generación. Es memoria procedimental, no memoria episódica.
+
+MARIA: <directo> ¿Y los costes? ¿Cuánto cuesta generar un episodio de dieciséis minutos?
+
+IAGO: <contundente> El guion consume entre ciento cincuenta mil y doscientos mil tokens de input, más unos ocho mil tokens de output. Con Claude Sonnet 4.5 eso son aproximadamente tres dólares por guion. El audio consume unos tres mil caracteres por presentador en ElevenLabs, unos seis mil caracteres totales, que son aproximadamente dos dólares. El video con Kling consume unos treinta segundos de generación por escena, unas diez escenas por episodio, que son aproximadamente diez dólares. Total: quince dólares por episodio de dieciséis minutos. Para catorce episodios son doscientos diez dólares. Escalable.
+
+MARIA: <conversacional> ¿Y qué ha fallado en producción?
+
+IAGO: <reflexivo> Varios límites reales. Primero, los avatares de Kling a veces generan artefactos visuales: manos que se mueven de forma extraña, sincronización labial imperfecta. Segundo, el modelo de lenguaje a veces genera intervenciones demasiado largas para un presentador, rompiendo el ritmo del diálogo. Tercero, la validación de que el guion cubre el setenta y cinco por ciento de los conceptos del PDF es probabilística, no determinista: depende de cómo el modelo interpreta qué es un concepto. Cuarto, el sistema no puede validar automáticamente si el contenido es correcto, solo si es coherente con las fuentes. La corrección requiere revisión humana.
+
+MARIA: <analitica> O sea que el sistema aplica los conceptos del módulo: usa IA generativa de múltiples modalidades, gestiona alucinaciones con validación de fuentes, optimiza costes eligiendo modelos apropiados para cada tarea, y documenta sus límites de forma transparente.
+
+IAGO: <firme> Y aplicación práctica de los principios estratégicos de IA: conocer las capacidades reales de los modelos, diseñar con los límites en mente, y construir sistemas que escalen económicamente.
+
+# CIERRE_CONCEPTOS
+MARIA: <directo> No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: toda la IA actual es IA Estrecha, optimizada para tareas específicas, no generaliza como la inteligencia humana.
+
+IAGO: <didactico> Segundo: la jerarquía técnica, IA contiene machine learning, machine learning contiene deep learning, deep learning contiene los modelos de lenguaje grande.
+
+MARIA: <conversacional> Tercero: la IA generativa abarca múltiples modalidades, texto, imágenes, código, audio, vídeo, y la de texto es la más inmediatamente aplicable a las organizaciones.
+
+IAGO: <explicativo> Cuarto: la IA impacta a las organizaciones a través de cuatro vectores, productividad individual, automatización de procesos, mejora de decisiones, y creación de nuevos productos.
+
+MARIA: <analitica> Y quinto: la brecha entre el ochenta y ocho por ciento de organizaciones que usan IA y el treinta y tres por ciento que la escalan es la oportunidad más grande del mercado. Y cerrarla requiere gestionar los límites reales: alucinaciones, sesgos, costes, y el factor humano.
+
+# CIERRE_FINAL
+IAGO: <natural> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+MARIA: <calido>Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.</calido>
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3184 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 46.1
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] ia: 46 menciones
+## [OK] claude: 6 menciones
+## [OK] la ia generativa: 4 menciones
+## [OK] los sistemas de: 1 menciones
+## [OK] deep learning: 10 menciones
+## [OK] imagenes: 8 menciones
+## [OK] codigo: 8 menciones
+## [OK] gemini: 1 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 179
+## Por documento: {'BIBLIA_SISTEMA': 72, 'PRIMERPODCAST': 21, 'VIDEOPODCAST': 47, 'PODCAST': 39}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 40340
+## output_tokens: 13294
+## cache_read: 0
+## total: 53634

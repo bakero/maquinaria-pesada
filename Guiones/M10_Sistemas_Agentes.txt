@@ -1,0 +1,148 @@
+# HOOK
+MARIA: <conversacional> En 2024, el 79% de las organizaciones reportaban algún nivel de adopción de agentes de IA. Pero solo el 12% había logrado desplegarlos en producción sin supervisión humana constante. La diferencia entre tener un agente y tener un agente que funcione es la diferencia entre una demo impresionante y un sistema que puede causar un desastre irreversible. Los agentes de IA no son chatbots que responden preguntas. Son sistemas que actúan en el mundo real: envían emails, modifican bases de datos, ejecutan código, toman decisiones. Y cuando fallan, fallan haciendo cosas, no diciendo tonterías. El mercado de sistemas agénticos se proyecta en 50 billones de dólares para 2030. Pero la pregunta no es cuánto vale el mercado. La pregunta es: ¿cómo construyes un agente que pueda trabajar solo sin que tengas que rezar cada vez que lo activas? Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <calido> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy María.
+
+IAGO: <calido> Y yo soy Yago. Hoy cerramos el módulo 10 del máster: Sistemas Agénticos y Multi-Agente.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo se aplica lo de hoy a ese sistema, porque el sistema que produce este podcast también es contenido del podcast.
+
+# BLOQUE_PANORAMA
+IAGO: <didactico> Los sistemas agénticos representan el cambio más significativo en inteligencia artificial desde la llegada de los modelos de lenguaje grandes. Durante los primeros años de la era de los LLMs, los sistemas eran fundamentalmente reactivos. El usuario enviaba un mensaje, el modelo respondía, la interacción terminaba. Un agente de IA rompe ese paradigma completamente. Es un sistema basado en un LLM que puede razonar sobre un objetivo, planificar los pasos necesarios para alcanzarlo, ejecutar acciones en el mundo real a través de herramientas, observar los resultados, y ajustar el plan si es necesario. Esta capacidad de actuar de forma autónoma durante múltiples pasos para alcanzar objetivos complejos es cualitativamente distinta de los chatbots convencionales.
+
+MARIA: <curioso> ¿Y qué significa "actuar en el mundo real"?
+
+IAGO: <explicativo> Significa que el agente no solo genera texto. Puede buscar en la web, ejecutar código Python, leer y escribir archivos, llamar a APIs de sistemas empresariales, enviar emails, modificar bases de datos. Cada una de esas acciones es una herramienta que el agente puede invocar. Y la diferencia fundamental es que el agente decide cuándo y cómo usar cada herramienta basándose en su razonamiento sobre el objetivo. No es un script predefinido. Es un sistema que navega hacia objetivos.
+
+IAGO: <contundente> Este módulo cubre cuatro territorios. Primero, la arquitectura de un agente: los cuatro componentes que definen qué es un agente y cómo funciona el ciclo básico de razonamiento y acción. Segundo, los componentes avanzados: herramientas, memoria, y planificación. Cómo los agentes acceden al mundo exterior, cómo mantienen el estado a través de múltiples pasos, y cómo descomponen objetivos complejos en pasos ejecutables. Tercero, los sistemas multi-agente: cómo coordinar múltiples agentes especializados para tareas que ninguno podría resolver solo. Y cuarto, los frameworks de producción: LangGraph, CrewAI, AutoGen, y los SDKs nativos de OpenAI y Anthropic. Herramientas reales para construir sistemas agénticos que funcionen en producción.
+
+MARIA: <analitica> Y las preguntas que responde el módulo son operativas.
+
+IAGO: <firme> ¿Qué diferencia un agente de un chatbot? ¿Cómo funciona el ciclo de razonamiento y acción? ¿Qué es el protocolo MCP y por qué importa para la interoperabilidad? ¿Cómo evalúas un sistema agéntico cuando el output no es una respuesta sino una secuencia de acciones? ¿Cuándo necesitas múltiples agentes en lugar de uno solo? ¿Y cómo implementas human-in-the-loop para acciones de alto riesgo sin destruir la autonomía del sistema?
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Empecemos por la arquitectura. Un agente de IA se define por cuatro capacidades. Percepción: el agente recibe inputs del entorno. Texto, código, resultados de herramientas, imágenes, outputs de otros agentes. Todo lo que le informa del estado actual del mundo y del progreso hacia su objetivo. Razonamiento y planificación: el LLM central analiza el estado actual, evalúa el progreso hacia el objetivo, identifica el próximo paso que maximiza la probabilidad de éxito, y genera la justificación de esa decisión. lo que llamamos el "Thought" en el patrón ReAct. Acción mediante herramientas: el agente ejecuta acciones en el mundo real. Búsqueda web, ejecución de código, llamadas a APIs, lectura y escritura de archivos, interacción con sistemas empresariales. Y memoria: el agente mantiene el estado a través de múltiples pasos. Memoria a corto plazo en el contexto de la conversación. Y potencialmente memoria a largo plazo en bases de datos externas para persistir información entre sesiones.
+
+MARIA: <curioso> ¿Y cómo se conectan esas cuatro capacidades en la práctica?
+
+IAGO: <explicativo> A través del patrón ReAct. Reasoning más Acting. Es el ciclo fundamental de un agente. Thought: el agente razona sobre qué hacer basándose en el estado actual. Action: invoca una herramienta. Observation: procesa el resultado de la herramienta. Y repite hasta que el agente considera el objetivo alcanzado o se alcanza el límite de iteraciones. Este patrón simple pero poderoso es la base de prácticamente todos los sistemas agénticos en producción en 2026.
+
+MARIA: <analitica> Ahora hablemos de herramientas. Porque sin herramientas, un agente es solo un chatbot con delirios de autonomía.
+
+IAGO: <conversacional> Así es.
+
+MARIA: <explicativo> Las herramientas son la forma en que los agentes actúan en el mundo. La implementación técnica es el function calling, también llamado tool calling. El LLM, en lugar de responder con texto, responde con una invocación de función estructurada. Nombre de la herramienta más argumentos en formato JSON. El sistema externo ejecuta la función real y devuelve el resultado al LLM, que lo incorpora en su razonamiento para el próximo paso. Este mecanismo está implementado nativamente en todos los modelos frontier. Y en noviembre de 2024, Anthropic lanzó el protocolo MCP: Model Context Protocol. Se ha convertido en el estándar de la industria para exponer herramientas de forma reutilizable. Más de mil servidores MCP open source están disponibles en 2026 para los sistemas empresariales más comunes.
+
+IAGO: <curioso> ¿Y cómo clasificas las herramientas por nivel de riesgo?
+
+MARIA: <directo> Tres categorías. Herramientas de recuperación: lectura de datos, búsqueda web, consulta de bases de datos. Bajo riesgo. Puedes ejecutarlas autónomamente sin supervisión. Herramientas de ejecución de código: Python sandbox, scripts. Riesgo medio. Las ejecutas en un entorno sandboxed para evitar que el agente comprometa el sistema host. Y herramientas de acción en sistemas externos: enviar emails, modificar bases de datos, hacer pagos. Alto riesgo. Requieren human-in-the-loop para acciones irreversibles o de alto impacto. El principio de mínimo privilegio aplica a las herramientas del agente. Cada agente debe tener acceso solo a las herramientas estrictamente necesarias para su tarea específica.
+
+IAGO: <didactico> El tercer concepto clave es la memoria. Los agentes tienen cuatro tipos de memoria con características distintas. Memoria a corto plazo: el buffer de conversación. El historial de la sesión actual en el contexto del LLM. Es inmediata pero limitada por la ventana de contexto. Memoria episódica: logs de interacciones pasadas almacenados en una base vectorial y recuperados por similaridad a la situación actual. Permite al agente recordar preferencias del usuario y evitar repetir errores. Memoria semántica: conocimiento factual sobre el dominio, el usuario, o la organización. Almacenado en bases de datos estructuradas o en sistemas RAG. Y memoria procedimental: cómo hacer las cosas. Codificada en el system prompt o aprendida a partir de la experiencia.
+
+MARIA: <analitica> ¿Y cuáles son los desafíos de ingeniería en memoria?
+
+IAGO: <explicativo> Dos principales. La gestión del buffer de conversación para evitar que el contexto se sature con información irrelevante. Y la implementación de memoria persistente entre sesiones. Eso requiere decisiones arquitectónicas sobre qué almacenar, cómo indexarlo, y cuándo recuperarlo.
+
+MARIA: <didactico> El cuarto concepto es la planificación. La capacidad de descomponer un objetivo complejo en pasos ejecutables con las herramientas disponibles. Hay dos enfoques principales. Plan and Execute: el agente genera el plan completo antes de ejecutar ningún paso. Es más predecible y auditable pero frágil si las condiciones cambian durante la ejecución. Y ReAct iterativo: el agente decide el siguiente paso en cada iteración basándose en el estado actual. Es más adaptable pero puede perder el hilo del objetivo global si la tarea es muy compleja.
+
+IAGO: <conversacional> ¿Y cómo mejoras la planificación cuando el agente falla?
+
+MARIA: <explicativo> Con la técnica Reflexion. Después de cada fallo, el agente genera una justificación verbal de qué salió mal y produce un plan revisado. Esa capacidad de reflexionar sobre los errores mejora significativamente la tasa de éxito en tareas complejas.
+
+IAGO: <didactico> Y el quinto concepto clave son los sistemas multi-agente. Cuando una tarea es demasiado compleja para un solo agente, coordinas múltiples agentes especializados. El patrón más común es el orquestador-subagentes. Un agente orquestador recibe el objetivo de alto nivel, lo descompone en subtareas, las asigna a subagentes especializados, y sintetiza los resultados. Los subagentes son especialistas en dominios específicos. Análisis financiero, investigación legal, generación de código. Y cada uno tiene su propio conjunto de herramientas. Otros patrones son el pipeline secuencial, donde el output de un agente es el input del siguiente. El debate y verificación, donde múltiples agentes proponen soluciones y un árbitro selecciona la mejor. Y el patrón con handoffs, donde un agente transfiere el control a otro cuando detecta que el nuevo agente es más adecuado para la tarea actual.
+
+MARIA: <curioso> ¿Y cómo se comunican los agentes entre sí?
+
+IAGO: <explicativo> A través del protocolo A2A. Agent-to-Agent. Lo lanzó Google en abril de 2025. Define el estándar para la comunicación entre agentes de distintos frameworks. Junto con MCP para el acceso a herramientas, A2A está construyendo la infraestructura del "internet de los agentes". Un ecosistema donde agentes especializados de distintos proveedores y frameworks pueden colaborar de forma estandarizada sin integración custom.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Porque los agentes de IA suenan impresionantes en las demos y aterradores en producción.
+
+IAGO: <conversacional>
+
+MARIA: <directo> El primer contraintuitivo es que los agentes no son más inteligentes que los LLMs que los alimentan. Son más autónomos, pero no más capaces. Si el LLM base no puede razonar correctamente sobre un problema, el agente tampoco. Y de hecho, puede ser peor. Porque un chatbot que dice una tontería solo genera texto incorrecto. Un agente que razona mal puede ejecutar acciones incorrectas en sistemas reales. La autonomía amplifica tanto los aciertos como los errores. Y cuando un agente falla ejecutando código o modificando bases de datos, el daño es real.
+
+IAGO: <curioso> ¿Y cómo se manifiesta eso en la práctica?
+
+MARIA: <explicativo> En dos formas. Los errores de razonamiento: el agente malinterpreta el objetivo, elige la herramienta equivocada, o ejecuta los pasos en el orden incorrecto. Y los errores de ejecución: la herramienta devuelve un resultado inesperado, el agente no lo maneja correctamente, y entra en un loop infinito intentando resolver el problema. O peor, el agente ejecuta una acción irreversible basándose en información incorrecta. Envía un email a la persona equivocada. Borra datos que no debía borrar. Hace una transacción financiera incorrecta.
+
+MARIA: <analitica> El segundo contraintuitivo es que más herramientas no significa más capacidad. Significa más superficie de fallo. Cada herramienta que añades al agente es una forma adicional en que el agente puede equivocarse. Si le das al agente acceso a diez herramientas, tiene que razonar correctamente sobre cuál usar en cada momento. Y difícil. Los mejores sistemas agénticos en producción tienen conjuntos de herramientas pequeños y muy específicos para la tarea. No catálogos gigantes de funciones que el agente nunca va a necesitar. El principio de mínimo privilegio no es solo seguridad. Es también ingeniería de prompts. Menos opciones significa decisiones más claras.
+
+IAGO: <conversacional> ¿Y qué pasa con la memoria?
+
+MARIA: <directo> El tercer contraintuitivo es que la memoria puede hacer que el agente sea peor, no mejor. Si el agente recuerda información incorrecta de una sesión anterior, va a tomar decisiones incorrectas en la sesión actual. Y si el buffer de conversación se satura con información irrelevante, el agente pierde el hilo del objetivo. La gestión de la memoria es un problema de ingeniería no trivial. Tienes que decidir qué recordar, qué olvidar, y cuándo recuperar información de sesiones anteriores. Y si lo haces mal, el agente se vuelve menos confiable, no más.
+
+MARIA: <esceptico> Y el cuarto contraintuitivo es que los sistemas multi-agente no escalan linealmente. Coordinar dos agentes es más del doble de complejo que tener uno solo. Porque ahora tienes que gestionar la comunicación entre agentes, la sincronización del estado, y los fallos de coordinación. Si un agente falla, ¿cómo lo detecta el orquestador? ¿Cómo se recupera el sistema? ¿Y cómo evitas que los agentes entren en conflicto cuando intentan modificar el mismo recurso? Los sistemas multi-agente son poderosos cuando los necesitas. Pero añaden complejidad arquitectónica real. No es gratis.
+
+IAGO: <curioso> ¿Y cómo evalúas si un agente funciona?
+
+MARIA: <explicativo> Esa es la pregunta clave. Y el último contraintuitivo. Evaluar agentes es más difícil que evaluar LLMs de chat. Porque el output no es una respuesta. Es una secuencia de acciones. Tienes que evaluar no solo si el agente alcanzó el objetivo, sino cómo lo alcanzó. ¿Usó las herramientas correctas? ¿En el orden correcto? ¿Con los argumentos correctos? ¿Y lo hizo de forma eficiente o dio cincuenta vueltas innecesarias? Las métricas principales son: task completion rate, el porcentaje de tareas completadas correctamente. Trajectory evaluation, la evaluación de cada paso de la secuencia, no solo el resultado final. Eficiencia, el número de pasos y tokens por tarea. Y error crítico rate, el porcentaje de fallos que causan daños irreversibles. Esa es la métrica de seguridad más importante.
+
+MARIA: <contundente> Y la realidad es que en 2026, los mejores agentes en los benchmarks públicos resuelven el 40-50% de las tareas de SWE-bench. resolución de issues reales de GitHub. El 40-50%. No el 95%. Los agentes son útiles. Pero no son autónomos en el sentido de "déjalos trabajar y olvídate". Requieren supervisión, evaluación continua, y human-in-the-loop para acciones de alto riesgo.
+
+IAGO: [directo] Eso conecta con lo siguiente.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Porque este episodio no lo grabó un humano. Lo generó un sistema automático que tiene que coordinar múltiples componentes para producir un resultado consistente. Y ese sistema tiene características agénticas. Concretamente: ¿cómo aplicas los conceptos de herramientas, memoria, y planificación cuando tienes que generar cien episodios de podcast con calidad consistente?
+
+IAGO: <didactico> El sistema de producción del podcast es un pipeline multi-etapa con componentes especializados. No es un agente único que hace todo. Es un conjunto de agentes especializados que se coordinan. El primer componente es el generador de guiones. Lee el PDF del módulo, extrae los conceptos clave, y genera el guion completo del episodio siguiendo una especificación de más de mil líneas. Esa especificación es el system prompt. Y define todo: la estructura del episodio, las reglas de reparto entre los dos presentadores, las métricas de calidad, y las restricciones duras que no se pueden violar. El generador tiene acceso a cuatro documentos vivos del proyecto. La biblia del sistema, que documenta la arquitectura técnica. Y tres diarios de producción que registran todas las decisiones, cambios, e incidencias. Esos documentos son la memoria episódica del sistema.
+
+IAGO: <explicativo> El generador extrae de esos documentos el material para el bloque de aplicación práctica. Busca entradas que mencionen los conceptos del módulo actual. Decisiones técnicas relacionadas. Problemas encontrados. Cifras verificables. Y construye internamente una ficha de aplicación con tres elementos: un problema concreto del sistema relacionado con el módulo, una decisión técnica tomada con justificación, y una cifra o dato verificable. Si no encuentra material suficiente, el sistema no genera el episodio. Hace hard-fail y pide intervención humana. Esa regla evita que el generador invente hechos sobre el sistema.
+
+MARIA: <curioso> ¿Y cómo se conecta eso con las herramientas?
+
+IAGO: <directo> El generador no tiene acceso directo a las herramientas del sistema operativo. No puede ejecutar código ni modificar archivos. Eso sería demasiado riesgo para un componente de generación de contenido. Pero sí tiene acceso a herramientas de lectura. Puede leer los PDFs de los módulos. Puede leer los documentos vivos del proyecto. Y puede consultar el glosario unificado de términos técnicos para verificar definiciones. Esas son herramientas de bajo riesgo. Y el principio de mínimo privilegio aplica. El generador solo tiene acceso a las herramientas estrictamente necesarias para su tarea.
+
+IAGO: <explicativo> El segundo componente es el sintetizador de audio. Recibe el guion generado y lo convierte en audio usando ElevenLabs. Pero no es una conversión directa. Tiene que procesar las etiquetas de tono de cada intervención, gestionar los silencios entre intervenciones, y mezclar la música de fondo. Y tiene que validar que el audio generado cumple las restricciones de duración. Si el audio es demasiado corto o demasiado largo, el sistema lo detecta y reporta el fallo. planificación reactiva. El sistema ejecuta un paso, observa el resultado, y ajusta si es necesario.
+
+MARIA: <analitica> ¿Y qué pasa con la memoria entre episodios?
+
+IAGO: <explicativo> Esa es la parte interesante. El sistema mantiene memoria persistente en los documentos vivos. Cada vez que se toma una decisión técnica relevante, se documenta en el diario de producción con una marca de tiempo y una etiqueta. DECISIÓN, CAMBIO, INCIDENCIA, REGLA. Esas entradas son la memoria episódica del sistema. Y cuando el generador produce un nuevo episodio, consulta esas entradas para extraer el material de aplicación práctica. Eso significa que el sistema aprende de su propia experiencia. No en el sentido de actualizar los pesos de un modelo. Sino en el sentido de documentar lo que funciona y lo que falla, y usar esa información para los episodios futuros.
+
+MARIA: <conversacional> Y el aprendizaje es que los sistemas agénticos en producción no son agentes únicos que lo hacen todo. Son pipelines de componentes especializados con herramientas específicas, memoria persistente, y validación en cada etapa. La autonomía real no viene de darle al agente acceso a todo. Viene de diseñar el sistema para que cada componente tenga las capacidades que necesita y nada más.
+
+# CIERRE_CONCEPTOS
+IAGO: <firme> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+MARIA: <directo> Un agente de IA es un LLM que puede razonar, planificar, usar herramientas, y mantener estado para alcanzar objetivos complejos de forma autónoma.
+
+IAGO: <contundente> El patrón ReAct, Thought-Action-Observation, es el ciclo fundamental de todos los sistemas agénticos en producción.
+
+MARIA: <claro> MCP es el protocolo estándar para exponer herramientas de forma reutilizable. Más de mil servidores open source disponibles en 2026.
+
+IAGO: <didactico> Los sistemas multi-agente coordinan agentes especializados. El patrón más común es orquestador-subagentes. Y A2A es el protocolo para comunicación entre agentes de distintos frameworks.
+
+# CIERRE_FINAL
+IAGO: <calido> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+MARIA: <calido> Hasta la próxima.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3173 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 56.7
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] ia: 6 menciones
+## [OK] agente: 57 menciones
+## [OK] llm: 7 menciones
+## [OK] mcp: 5 menciones
+## [OK] herramientas: 31 menciones
+## [OK] langgraph: 1 menciones
+## [OK] agentes: 28 menciones
+## [OK] crewai: 1 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 165
+## Por documento: {'BIBLIA_SISTEMA': 64, 'PRIMERPODCAST': 17, 'VIDEOPODCAST': 45, 'PODCAST': 39}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 33905
+## output_tokens: 13609
+## cache_read: 0
+## total: 47514

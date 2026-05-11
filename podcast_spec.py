@@ -723,7 +723,7 @@ def validate_script_text(
     # ── 10. "Iago" en lugar de "Yago" ────────────────────────────────────────
     spoken_text = " ".join(remove_leading_tag(b["text"]) for b in blocks)
     normalized_spoken = normalize_text_for_match(spoken_text)
-    if "iago" in normalized_spoken:
+    if re.search(r"\biago\b", normalized_spoken):
         issues.append("El texto hablado contiene 'Iago' (debe usarse 'Yago').")
 
     # ── 11. Palabras totales ─────────────────────────────────────────────────
