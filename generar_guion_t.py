@@ -5,7 +5,7 @@ generar_guion_t.py — Generador de guiones T (Tema) para MaquinarIA Pesada.
 Genera guiones de episodios T usando:
   - PDF del tema específico en PDFs/temas/M{n}_T{k}_*.pdf
   - claude-sonnet-4-5 para generación, claude-haiku para conceptos
-  - Estructura: BLOQUE_QUE / BLOQUE_COMO / BLOQUE_LIMITES
+  - Estructura: BLOQUE_PANORAMA / BLOQUE_COMO / BLOQUE_REALIDAD (v5)
 
 Nomenclatura de salida:
   Guiones/M{n}_TX_{topic_name}.txt
@@ -35,18 +35,16 @@ SPEC_PATH = BASE_DIR / "PODCAST_T_SPEC.md"
 
 sys.path.insert(0, str(BASE_DIR))
 from podcast_spec import (
-    load_spec,
-    read_text,
     build_script_stats,
-    count_words,
     extract_theme_concepts,
+    guion_to_ep_code,
+    load_spec,
     normalize_text_for_match,
     opening_speaker,
+    read_text,
     remove_leading_tag,
     validate_script_text,
-    guion_to_ep_code,
 )
-
 
 # ---------------------------------------------------------------------------
 # Uso de tokens Anthropic
@@ -198,21 +196,31 @@ def build_generation_prompt(
 ) -> tuple[str, str]:
     """Construye system + user para el guion T."""
 
-    # Asignación de roles por bloque según T-spec
-    # Yago lidera BLOQUE_QUE, compartido BLOQUE_COMO, Maria lidera BLOQUE_LIMITES
+    # Asignación de roles por bloque según T-spec v5
+    # Yago lidera BLOQUE_PANORAMA, compartido BLOQUE_COMO, Maria lidera BLOQUE_REALIDAD
     rules = spec["script_rules"]
     other = "MARIA" if opener == "IAGO" else "IAGO"
 
+    # Carga fuente de casos empresariales verificados para BLOQUE_REALIDAD
+    casos_path = BASE_DIR / "PDFs" / "auxiliares" / "casos_empresariales_ia.md"
+    casos_text = ""
+    if casos_path.exists():
+        try:
+            casos_text = casos_path.read_text(encoding="utf-8")[:6000]  # primeras 6K chars
+        except Exception:
+            casos_text = ""
+
     system = (
         "Eres el sistema de producción del podcast MaquinarIA Pesada. "
-        "Generas guiones de episodios T (tema): concisos, técnicos y amenos. "
-        "Sigues la especificación PODCAST_T_SPEC.md al pie de la letra. "
+        "Generas guiones de episodios T (tema): formativos, técnicos y amenos. "
+        "Audiencia principal: estudiantes del máster cursando este módulo. "
+        "Sigues la especificación PODCAST_T_SPEC.md v5 al pie de la letra. "
         "Devuelves SOLO el guion. Sin explicaciones, sin markdown adicional. "
         "Todas las intervenciones empiezan por IAGO: o MARIA:. "
         "No incluyas la sección # VERIFICACIONES; el sistema la añade después."
     )
 
-    user = f"""ESPECIFICACION (PODCAST_T_SPEC.md):
+    user = f"""ESPECIFICACION (PODCAST_T_SPEC.md v5):
 {spec_markdown}
 
 PARÁMETROS DEL EPISODIO:
@@ -227,6 +235,9 @@ PDF DEL TEMA (fuente principal):
 CONCEPTOS CLAVE DEL PDF (cubre al menos el 75%):
 {json.dumps(concept_list, ensure_ascii=False)}
 
+FUENTE DE CASOS EMPRESARIALES VERIFICADOS (usar prioritariamente en BLOQUE_REALIDAD):
+{casos_text if casos_text else "(archivo no disponible — usar formulaciones prudentes sin cifras inventadas)"}
+
 INSTRUCCIONES CRÍTICAS:
 1. El hook lo abre {opener}. Cierra exactamente con: {rules['hook_closing_phrase']}
 2. Después del hook: # INTRO_SONIDO  (línea siguiente: {rules['intro_comment']})
@@ -235,44 +246,59 @@ INSTRUCCIONES CRÍTICAS:
    Linea 1 — OPENER: Soy <nombre_opener>.
    Linea 2 — OTRO:   Y yo soy <nombre_otro>.
    Linea 3 — OPENER: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrastalo.
-   HARD-FAIL si: (a) un mismo speaker concatena su nombre y el del otro en la misma linea ("Soy X. Y yo soy Y."), (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
-   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos. NUNCA "Maria Grandury", "Yago Goyoaga", "Iago Goyoaga", "Maria Garcia" ni similares.
-4. Estructura obligatoria en orden:
-   # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_QUE → # BLOQUE_COMO → # BLOQUE_LIMITES → # CIERRE_CONCEPTOS → # CIERRE_FINAL
-5. Secciones PROHIBIDAS (NO generes): BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3
+   HARD-FAIL si: (a) un mismo speaker concatena su nombre y el del otro en la misma linea, (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
+   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos.
+4. Estructura obligatoria en orden (v5):
+   # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_COMO → # BLOQUE_REALIDAD → # CIERRE_CONCEPTOS → # CIERRE_FINAL
+5. Secciones PROHIBIDAS (NO generes): BLOQUE_QUE, BLOQUE_LIMITES, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3
 6. ROLES POR BLOQUE (obligatorio):
-   - BLOQUE_QUE: IAGO lidera (min 65% palabras). MARIA hace 1-2 preguntas de matiz.
-     Explica QUÉ es el concepto: definición precisa, mecanismo, por qué existe.
-   - BLOQUE_COMO: compartido (40-60% cada uno). Líder rota por sub-concepto.
-     Explica CÓMO funciona: implementación, proceso, flujo técnico.
-   - BLOQUE_LIMITES: MARIA lidera (min 65% palabras). IAGO da contexto técnico.
-     Explica LÍMITES: qué falla, cuándo no funciona, contraintuitivos, riesgos.
+   - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤12 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
+   - BLOQUE_COMO: COMPARTIDO (40-60% cada uno). Líder rota por sub-concepto. Si hay 2 sub-conceptos: sub1 lidera IAGO (150-180 palabras), sub2 lidera MARIA (150-180 palabras). Explica CÓMO funciona: mecanismo técnico.
+   - BLOQUE_REALIDAD: MARIA es la VOZ EXPERTA de empresa en este bloque. MARIA presenta los casos reales, datos de adopción y retos empresariales (mínimo 5 intervenciones de desarrollo, cada una con ≥4 frases). IAGO solo aporta contexto técnico breve cuando sea estrictamente necesario (máximo 2 intervenciones, ≤3 frases cada una). Si IAGO habla más que MARIA en este bloque, el guion está INCORRECTO. Usa prioritariamente la FUENTE DE CASOS EMPRESARIALES VERIFICADOS. Incluye al menos 2 de: dato adopción con fuente, caso empresa real con resultado, reto documentado, oportunidad de negocio.
 7. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
 8. # CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
    Exactamente 3 conceptos (ni 2 ni 4 — hard-fail si hay otra cantidad).
    Alternados: líder-apoyo-líder o apoyo-líder-apoyo según paridad del TEMA.
    Cada concepto en una sola frase, no expandidos.
 9. # CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
+   SOLO {other if opener != "IAGO" else "IAGO" if opener == "IAGO" else other} pronuncia el cierre según paridad. El otro speaker NO responde, NO añade nada. El guion termina cuando el closer dice su última frase. HARD-FAIL si hay intervención adicional tras el cierre.
 10. Usa "Yago" en el texto hablado, nunca "Iago".
-11. Objetivo de palabras habladas: {rules['minimum_word_count']}-{rules['maximum_word_count']}.
-12. Intervenciones de desarrollo: mínimo {rules['minimum_sentences_per_intervention']} frases.
-13. Traduce o aterriza cualquier tecnicismo en la misma intervención.
-14. Un solo [tag] al inicio de cada intervención cuando aporte tono.
-    Tags disponibles: {json.dumps(spec['speakers']['IAGO']['allowed_tags'][:10])}, etc.
-15. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE (cuéntalas antes de cerrar cada bloque):
-    - BLOQUE_QUE: IAGO debe tener ≥65% de palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
-    - BLOQUE_COMO: COMPARTIDO. Cada speaker ENTRE 40%-60% del total del bloque. Alterna liderazgo por sub-concepto. Si el bloque tiene 2 sub-conceptos: sub1 lo lidera IAGO (150-180 palabras), sub2 lo lidera MARIA (150-180 palabras). Cada líder hace explicación principal; el otro hace 1-2 preguntas cortas.
-    - BLOQUE_LIMITES: MARIA debe tener ≥65% de palabras. IAGO da contexto técnico en intervenciones medias.
-16. REFERENCIAS TEMPORALES — REGLA DURA:
-    - El podcast se produce en 2026. Cuando hables del ESTADO ACTUAL (mercado, modelos, prácticas, ecosistema), NO cites año: usa "hoy", "actualmente", "en este momento", "ahora mismo".
-    - Solo cita un año cuando esté pegado a una publicación, paper, informe, encuesta o lanzamiento identificable por su nombre propio (ej: "paper de Sennrich de 2016", "estudio de Hugging Face de 2023", "McKinsey State of AI 2025"). En ese caso, conserva el año real del documento.
-    - PROHIBIDO usar "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente.
-17. EJEMPLO COTIDIANO POR CONCEPTO COMPLEJO — REGLA DURA:
-    - Cada concepto técnico del PDF que introduzcas en BLOQUE_QUE o BLOQUE_COMO debe ir acompañado de UNA analogía cotidiana en 1-2 frases, antes (o como parte de) la traslación técnica.
-    - Marcadores recomendados (no obligatorios léxicamente): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
-    - Audiencia: aunque el oyente núcleo es técnico, hay CTOs, CIOs y oyentes curiosos que no deben sentirse expulsados. Es preferible alargar el episodio antes que dejar un concepto sin aterrizar.
-18. CIERRE_CONCEPTOS: cuenta exactamente 3 intervenciones de speaker (sin contar la apertura "No te puedes ir..."). Ni 2, ni 4, ni 5. HARD-FAIL si te desvías.
-19. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Si vas a poner 3 de IAGO, intercala una pregunta corta de MARIA. Y viceversa.
+11. REGLA DE LONGITUD — DURA:
+    El diálogo total NO debe superar {rules['maximum_word_count']} palabras.
+    Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
+    NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
+    Escribe CIERRE_CONCEPTOS en borrador mental ANTES de expandir los bloques centrales.
+12. REGLA CIERRE — PRIMERA:
+    Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3 puntos del CIERRE_CONCEPTOS.
+    Esos puntos deben derivarse directamente de los bloques centrales.
+    Cuando llegues al CIERRE_CONCEPTOS, escribe EXACTAMENTE esos 3 puntos, ni uno más ni uno menos.
+13. REGLA ANALOGÍA — DURA:
+    Cada concepto técnico complejo (>3 sílabas, inglés o compuesto) debe ir precedido de UNA analogía cotidiana en 1-2 frases, ANTES de cualquier explicación técnica.
+    MAL: "Los embeddings son vectores en espacio de alta dimensión."
+    BIEN: "Imagina que cada palabra es una posición en un mapa. Las palabras similares están cerca. Eso son los embeddings."
+    Marcadores válidos: "imagina que", "es como cuando", "piensa en", "el equivalente sería", "igual que".
+14. REGLA AUDIO — LONGITUD DE INTERVENCIÓN:
+    Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
+    Máximo absoluto por intervención: 200 palabras. Si necesitas más, divide en dos.
+    Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
+15. REGLA AUDIO — NÚMEROS EN PALABRAS:
+    TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
+    MAL: "el 3.7% de empresas", "costó $3M", "en Q3 2026".
+    BIEN: "el tres punto siete por ciento", "costó tres millones de dólares", "en el tercer trimestre".
+    Excepción: años de papers donde el año es parte del nombre ("el informe McKinsey 2024").
+16. REGLA TECNICISMO ACELERADO — AUDIO:
+    Todo tecnicismo largo (>3 sílabas, inglés o compuesto) necesita frase introductoria previa.
+    MAL: "backpropagation es el algoritmo que..."
+    BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
+17. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Intercala.
+18. REFERENCIAS TEMPORALES — REGLA DURA:
+    Cuando hables del ESTADO ACTUAL, NO cites año: usa "hoy", "actualmente", "en este momento".
+    Solo cita un año cuando esté pegado a una publicación identificable por nombre propio.
+    PROHIBIDO usar "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente.
+19. BLOQUE_REALIDAD — REGLA ANTI-HALLUCINATION:
+    Para datos y casos empresariales, usa EXCLUSIVAMENTE la FUENTE DE CASOS EMPRESARIALES VERIFICADOS.
+    Si el dato no está en esa fuente, usa "según estudios recientes de [institución conocida]" sin inventar cifras.
+    NUNCA inventes nombres de empresa, estadísticas exactas o citas a estudios que no puedas verificar.
 """
     return system, user
 
@@ -489,7 +515,7 @@ def main() -> None:
     ep_code        = guion_to_ep_code(Path(guion_filename).stem)  # M1_TX_E_T11_limitaciones_llms
 
     print(f"\n{'='*60}")
-    print(f"  GENERADOR GUION T — MaquinarIA Pesada")
+    print("  GENERADOR GUION T — MaquinarIA Pesada")
     print(f"  Módulo   : M{modulo_n} — {topic_display}")
     print(f"  PDF      : {pdf_path.name}")
     print(f"  Salida   : {guion_filename}")
@@ -570,7 +596,7 @@ def main() -> None:
             draft = draft_with_ver
 
     # ── Guardar ──────────────────────────────────────────────────────────────
-    print(f"\n  [3/3] Guardando...")
+    print("\n  [3/3] Guardando...")
     guion_path.parent.mkdir(parents=True, exist_ok=True)
     guion_path.write_text(draft.rstrip() + "\n", encoding="utf-8")
 

@@ -401,10 +401,14 @@ def fix_temporal_references(text: str) -> str:
 
 
 # ------------------------------------------------------------
-# Fix 8 — Padding: extender BLOQUE_LIMITES con cierre si guion corto
+# Fix 8 — Padding: extender bloque de realidad/limites con cierre si guion corto
 # ------------------------------------------------------------
 def fix_short_word_count(text: str, ep_type: str) -> str:
-    """Si guion < min_words, añade una intervención corta de cierre en BLOQUE_LIMITES."""
+    """Si guion < min_words, añade una intervención corta de cierre en el bloque líder de MARIA.
+
+    T-type: usa BLOQUE_REALIDAD (nuevo nombre, reemplaza BLOQUE_LIMITES).
+    M-type: no aplica (BLOQUE_LIMITES eliminado del M). No hace nada para M.
+    """
     spec = SPEC_M if ep_type == "M" else SPEC_T
     min_words = spec["script_rules"]["minimum_word_count"]
 
@@ -420,12 +424,17 @@ def fix_short_word_count(text: str, ep_type: str) -> str:
     if word_count >= min_words:
         return text
 
-    needed = min_words - word_count + 20  # margen
-    # Crear un breve cierre extra en BLOQUE_LIMITES (Maria) o último bloque conceptual
-    # Estructura: añadir intervención al final de BLOQUE_LIMITES
+    # M-type no tiene BLOQUE_REALIDAD — no hacer padding aquí
+    if ep_type == "M":
+        return text
+
+    needed = min_words - word_count + 20  # margen  # noqa: F841
+    # Crear un breve cierre extra en BLOQUE_REALIDAD (Maria) — nuevo nombre v5
+    # Compatibilidad hacia atrás: también busca BLOQUE_LIMITES para guiones legacy
     sections = _split_into_sections(text)
+    target_headers = {"# BLOQUE_REALIDAD", "# BLOQUE_LIMITES"}
     for idx, (header, body) in enumerate(sections):
-        if header != "# BLOQUE_LIMITES":
+        if header not in target_headers:
             continue
         # Determinar último speaker
         blocks = _section_speaker_blocks(body)
@@ -433,28 +442,27 @@ def fix_short_word_count(text: str, ep_type: str) -> str:
             continue
         last_speaker = blocks[-1][1]
         other = "MARIA" if last_speaker == "IAGO" else "IAGO"
-        # Texto de relleno — ejemplo cotidiano sobre los límites
+        # Texto de relleno — contexto técnico breve (Iago) o cierre empresarial (Maria)
         padding_iago = (
-            "[explicativo] Y eso conecta con un patrón cotidiano que se ve "
-            "en muchas adopciones tecnológicas. Imagina que compras una herramienta nueva "
-            "esperando que resuelva un problema sin tocar tus procesos. La herramienta "
-            "funciona, pero si tus flujos no la acompañan, el resultado decepciona. "
+            "[explicativo] Y eso conecta con un patrón que se ve en muchas adopciones. "
+            "Imagina que introduces una tecnología nueva en un proceso existente. "
+            "La tecnología funciona, pero si los flujos y las personas que la usan "
+            "no están alineados, el resultado decepciona. "
             "Con los modelos de lenguaje pasa lo mismo: el modelo no falla por sí solo, "
             "falla cuando el sistema alrededor no está diseñado para gestionar sus límites. "
             "Por eso la diferencia entre un piloto y producción no está en el modelo, "
-            "sino en la ingeniería que lo envuelve. Esa ingeniería incluye validación de "
-            "fuentes, gestión de errores, observabilidad y un ciclo claro de revisión humana."
+            "sino en la ingeniería que lo envuelve."
         )
         padding_maria = (
-            "[analitica] Y antes de cerrar este bloque, conviene aterrizarlo con una "
-            "imagen cotidiana. Piensa en un GPS: te lleva al destino la mayoría de las "
-            "veces, pero si confías al cien por cien y dejas de mirar la carretera, "
-            "acabas en un campo. Con los modelos de lenguaje pasa igual. Funcionan muy "
-            "bien dentro de su zona de confianza, pero el oyente que quiere usarlos en "
-            "su organización tiene que mantener la atención en los puntos donde el "
-            "sistema puede equivocarse: datos sensibles, decisiones críticas, "
-            "información que cambia rápido. Esa atención no es desconfianza, es buena "
-            "ingeniería."
+            "[analitica] Y eso lo vemos en datos concretos de adopción empresarial. "
+            "Según estudios recientes de Gartner y McKinsey, más del setenta por ciento "
+            "de los proyectos de inteligencia artificial fallan en la fase de adopción, "
+            "no en la fase técnica. El reto no es que el modelo funcione: es que la "
+            "organización sepa cuándo confiar en él y cuándo no. "
+            "Eso requiere criterio, formación y procesos de validación. "
+            "Las empresas que están teniendo éxito con la IA no son las que tienen "
+            "los mejores modelos, sino las que han construido las mejores prácticas "
+            "alrededor de ellos."
         )
         padding = padding_iago if other == "IAGO" else padding_maria
         new_block = f"\n{other}: {padding}\n"

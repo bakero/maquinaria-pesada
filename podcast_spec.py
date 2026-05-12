@@ -15,7 +15,6 @@ import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # Rutas por defecto
 # ---------------------------------------------------------------------------
@@ -394,13 +393,16 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que el líder de cada bloque líder tenga >= leader_share_min_percent%.
 
     Hard-fail si qa_rules.hard_fail_on_leader_share_below_min=true.
+    BLOQUE_REALIDAD tiene threshold especial de 60% (leader_share_min_percent_realidad).
     """
     issues: list[str] = []
     rules = spec["script_rules"]
     qa = spec.get("qa_rules", {})
     hard = qa.get("hard_fail_on_leader_share_below_min", False)
     prefix = "" if hard else "[WARN] "
-    min_pct = rules.get("leader_share_min_percent", 65)
+    default_min_pct = rules.get("leader_share_min_percent", 65)
+    # Threshold especial para BLOQUE_REALIDAD (T-type, MARIA voz experta empresa)
+    realidad_min_pct = qa.get("leader_share_min_percent_realidad", rules.get("leader_share_min_percent_realidad", 60))
 
     # Construir mapa {sección: speaker_líder}
     leader_for_section: dict[str, str] = {}
@@ -428,6 +430,8 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
         if total_words == 0:
             continue
         pct = (leader_words * 100.0) / total_words
+        # Usar threshold específico para BLOQUE_REALIDAD
+        min_pct = realidad_min_pct if section == "BLOQUE_REALIDAD" else default_min_pct
         if pct < min_pct:
             issues.append(
                 f"{prefix}{section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
@@ -877,6 +881,59 @@ def validate_script_text(
 
     # ── 20. Input tokens > 0 (hard-fail) ─────────────────────────────────────
     issues.extend(validate_input_tokens(text, spec))
+
+    # ── 21. Intervenciones demasiado largas (WARN — Audio-Regla 2) ────────────
+    max_single = rules.get("target_max_words_per_single_intervention", 0)
+    if max_single and spec.get("qa_rules", {}).get("soft_warn_on_intervention_over_200_words", False):
+        for block in blocks:
+            wc = count_words(remove_leading_tag(block["text"]))
+            if wc > max_single:
+                issues.append(
+                    f"[WARN] Bloque {block['index']} ({block['section']}) tiene {wc} palabras "
+                    f"(max recomendado por intervencion: {max_single}). "
+                    "Riesgo de artefactos TTS a 1.32x velocidad."
+                )
+
+    # ── 22. Numeros en formato digito en dialogo (WARN — Audio-Regla 1) ───────
+    if spec.get("qa_rules", {}).get("soft_warn_on_digit_numbers_in_dialogue", False):
+        digit_patterns = [
+            (re.compile(r"\b\d+[.,]\d+\s*%"), "porcentaje en digitos"),
+            (re.compile(r"\$\s*\d+"), "cifra monetaria en digitos"),
+            (re.compile(r"\b\d+[.,]?\d*\s*[MB](?:illones?)?\b"), "cifra grande en digitos"),
+        ]
+        spoken_lines = [remove_leading_tag(b["text"]) for b in blocks]
+        for line, block in zip(spoken_lines, blocks):
+            for pattern, desc in digit_patterns:
+                if pattern.search(line):
+                    issues.append(
+                        f"[WARN] Bloque {block['index']} ({block['section']}): {desc} en el dialogo. "
+                        "A 1.32x velocidad el TTS puede pronunciarlo mal — escribir en palabras."
+                    )
+                    break  # solo un warn por bloque
+
+    # ── 23. CTA en CIERRE_FINAL (solo M-type, WARN) ───────────────────────────
+    spec_type = spec.get("spec_type", "M")
+    if spec_type == "M" and spec.get("qa_rules", {}).get("soft_warn_on_missing_cta_in_cierre_final", False):
+        cierre_final_blocks = [b for b in blocks if b.get("section") == "CIERRE_FINAL"]
+        if cierre_final_blocks:
+            cierre_text = " ".join(remove_leading_tag(b["text"]) for b in cierre_final_blocks)
+            cta_pattern = re.compile(
+                r"episodio[s]?.{0,30}(m[oó]dulo|disponible|plataforma|escucha)",
+                re.IGNORECASE,
+            )
+            if not cta_pattern.search(cierre_text):
+                issues.append(
+                    "[WARN] CIERRE_FINAL (M-type) no contiene CTA a episodios T del modulo. "
+                    "Agregar mencion natural: 'los episodios del modulo ya estan disponibles'."
+                )
+
+    # ── 24. WARN: media de palabras por intervencion demasiado alta ───────────
+    avg_max = rules.get("target_avg_words_per_intervention_max", 0)
+    if avg_max and stats["avg_words_per_intervention"] > avg_max:
+        issues.append(
+            f"[WARN] Media de palabras por intervencion demasiado alta: "
+            f"{stats['avg_words_per_intervention']:.1f} (maximo recomendado: {avg_max})."
+        )
 
     return issues
 

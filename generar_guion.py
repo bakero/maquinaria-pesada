@@ -295,8 +295,10 @@ def build_generation_prompt(
 
     system = (
         "Eres el sistema de producción del podcast MaquinarIA Pesada. "
-        "Generas guiones de episodios M (módulo): largos, técnicos, rigurosos y amenos. "
-        "Sigues la especificación PODCAST_M_SPEC.md al pie de la letra. "
+        "Generas guiones de episodios M (módulo): piezas de captación/marketing con contenido riguroso. "
+        "Audiencia: oyentes nuevos + profesionales que ya conocen los T del módulo. "
+        "El episodio M cubre los 2-3 conceptos MÁS IMPACTANTES del módulo (no todos). "
+        "Sigues la especificación PODCAST_M_SPEC.md v5 al pie de la letra. "
         "Devuelves SOLO el guion. Sin explicaciones, sin markdown adicional. "
         "Todas las intervenciones empiezan por IAGO: o MARIA:. "
         "No incluyas la sección # VERIFICACIONES; el sistema la añade después."
@@ -308,14 +310,16 @@ def build_generation_prompt(
         f"Material:\n{ficha.get('material_snippet', '(sin material externo verificable)')}"
     )
 
-    user = f"""ESPECIFICACION MAESTRA (PODCAST_M_SPEC.md):
+    rules = spec["script_rules"]
+
+    user = f"""ESPECIFICACION MAESTRA (PODCAST_M_SPEC.md v5):
 {spec_markdown}
 
 PARÁMETROS DEL EPISODIO:
 - Módulo: M{modulo_n}
 - Tema: {topic}
 - Hook abre: {opener} (paridad del módulo)
-- Duración objetivo: {spec['episode_defaults']['duration_minutes']} min
+- Duración objetivo: {spec['episode_defaults']['duration_minutes']} min (rango: {spec['episode_defaults']['duration_range_minutes']})
 
 PDF RESUMEN DEL MÓDULO (fuente primaria para bloques conceptuales):
 {pdf_text[:20000]}
@@ -323,53 +327,75 @@ PDF RESUMEN DEL MÓDULO (fuente primaria para bloques conceptuales):
 CONCEPTOS CLAVE EXTRAÍDOS DEL PDF (cubre al menos el 75%):
 {json.dumps(concept_list, ensure_ascii=False)}
 
-TÉRMINOS DIFÍCILES PARA AUDIO (traduce y aterriza):
+TÉRMINOS DIFÍCILES PARA AUDIO (traduce y aterriza en el guion):
 {json.dumps(hard_audio, ensure_ascii=False)}
 
 MATERIAL DE APLICACION_PRACTICA (extraído de los 4 documentos vivos):
 {ficha_text}
 
 INSTRUCCIONES CRÍTICAS:
-1. El hook lo abre {opener}. Cierra exactamente con: {spec['script_rules']['hook_closing_phrase']}
-2. Después del hook incluye exactamente: # INTRO_SONIDO  (siguiente línea: {spec['script_rules']['intro_comment']})
+1. El hook lo abre {opener}. Cierra exactamente con: {rules['hook_closing_phrase']}
+2. Después del hook incluye exactamente: # INTRO_SONIDO  (siguiente línea: {rules['intro_comment']})
 3. SALUDO_Y_PRESENTACION — FORMATO OBLIGATORIO DE TRES INTERVENCIONES SEPARADAS:
    (siendo OPENER = {opener} y OTRO = {other}; nombres hablados: IAGO->"Yago", MARIA->"Maria")
-   Linea 1 — OPENER: <natural> Bienvenidos a MaquinarIA Pesada... Soy <nombre_opener>.
-   Linea 2 — OTRO:   <natural> Y yo soy <nombre_otro>.
-   Linea 3 — OPENER: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrastalo. El sistema que produce este podcast tambien es contenido del podcast: al final del episodio veremos como se aplica lo de hoy a ese sistema.
-   **HARD-FAIL si**: (a) un mismo speaker concatena su nombre y el del otro en una misma linea ("Soy X. Y yo soy Y."), (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
-   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos. NUNCA "Maria Grandury", "Yago Goyoaga", "Iago Goyoaga", "Maria Garcia" ni similares.
-4. Estructura obligatoria en orden:
-   # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_TEMAS_CLAVE → # BLOQUE_LIMITES → # APLICACION_PRACTICA → # CIERRE_CONCEPTOS → # CIERRE_FINAL
-5. Secciones PROHIBIDAS (no las generes): BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, BLOQUE_QUE, BLOQUE_COMO, INSERCION_1, INSERCION_2, INSERCION_3, INSERCION_EMPRESA
-6. APLICACION_PRACTICA: 3 momentos internos (SIEMPRE así, independiente del opener del hook):
-   - Momento 1 (MARIA plantea, ~45-60s): "Ahora veamos cómo todo esto se aplica en un sistema real..."
-   - Momento 2 (IAGO detalla, ~2-2.5 min): usa el material de los docs vivos. NO inventes hechos.
-     Si el material es escaso, hazlo explícito en el texto ("en nuestro sistema hemos tenido que resolver...").
-   - Momento 3 (cierre conjunto MARIA+IAGO, ~30-45s)
-7. CIERRE_CONCEPTOS abre con: {spec['script_rules']['concepts_closing_phrase']}
+   Linea 1 — OPENER: [natural] Bienvenidos a MaquinarIA Pesada... Soy <nombre_opener>.
+   Linea 2 — OTRO:   [natural] Y yo soy <nombre_otro>.
+   Linea 3 — OPENER: [directo] Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrastalo. El sistema que produce este podcast tambien es contenido del podcast: al final del episodio veremos como se aplica lo de hoy a ese sistema.
+   HARD-FAIL si: (a) un mismo speaker concatena su nombre y el del otro en una misma linea, (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
+   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos.
+4. Estructura obligatoria en orden (v5 — SIN BLOQUE_LIMITES):
+   # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_DESTACADO → # APLICACION_PRACTICA → # CIERRE_CONCEPTOS → # CIERRE_FINAL
+5. Secciones PROHIBIDAS (no las generes): BLOQUE_LIMITES, BLOQUE_TEMAS_CLAVE, BLOQUE_REALIDAD, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, BLOQUE_QUE, BLOQUE_COMO, INSERCION_1, INSERCION_2, INSERCION_3, INSERCION_EMPRESA
+6. BLOQUE_DESTACADO — criterios de selección de conceptos (aplica en este orden):
+   a) El más contraintuitivo del módulo (lo que la mayoría no sabe o cree lo contrario).
+   b) El más relevante para profesionales no técnicos (CTOs, CEOs, directores de área).
+   c) El que mejor conecta con la APLICACION_PRACTICA.
+   Solo 2-3 conceptos (NO todos los del módulo). Liderazgo compartido 40-60% entre ambos speakers.
+   Si hay 2 conceptos: IAGO lidera el primero, MARIA el segundo. Con 3: IAGO-MARIA-IAGO.
+7. APLICACION_PRACTICA: 3 momentos internos SIEMPRE así:
+   - Momento 1 (MARIA plantea, ~45-60s): "Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta es: ¿[pregunta operativa del módulo]?"
+   - Momento 2 (IAGO detalla en HIGH-LEVEL, ~2-2.5 min): IAGO conecta el módulo con el sistema de forma CONCEPTUAL, NO técnica. Patrón: "esto que acabas de aprender es exactamente lo que hace posible que [X del sistema]". NO citar nombres de archivos, funciones, parámetros ni costes específicos. NO dar detalles de implementación. Debe sonar como revelación natural. Usa el material de los docs vivos en nivel conceptual.
+   - Momento 3 (cierre conjunto MARIA+IAGO, ~30-45s): MARIA pregunta o señala el aprendizaje. IAGO lo aterriza. Frase final que conecta de vuelta con el módulo.
+8. CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
    Lista 3-5 conceptos. Al menos uno conectado con APLICACION_PRACTICA.
-8. CIERRE_FINAL incluye exactamente: {spec['script_rules']['final_closing_phrase']}
-9. Interjecciones PROHIBIDAS: {json.dumps(spec['script_rules']['blacklist_validation_interjections'], ensure_ascii=False)}
-10. Usa "Yago" en el texto hablado, nunca "Iago".
-11. Objetivo de palabras habladas (sin headers ni speakers): {spec['script_rules']['minimum_word_count']}-{spec['script_rules']['maximum_word_count']}.
-12. Intervenciones de desarrollo: mínimo {spec['script_rules']['minimum_sentences_per_intervention']} frases.
-13. Traduce o aterriza al castellano cualquier tecnicismo en la misma intervención.
-14. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE (cuéntalas mentalmente antes de pasar al siguiente bloque):
-    - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras del bloque. MARIA hace preguntas cortas (≤12 palabras cada una, máx 3 intervenciones).
-    - BLOQUE_TEMAS_CLAVE: COMPARTIDO. Cada speaker debe tener ENTRE 40% y 60% de las palabras totales del bloque. Alterna el liderazgo por concepto. Si IAGO lleva 2 conceptos seguidos, el siguiente lo lidera MARIA.
-    - BLOQUE_LIMITES: MARIA debe tener ≥65% de las palabras del bloque. IAGO da contexto técnico corto.
-    - En BLOQUE_TEMAS_CLAVE si tienes 4 conceptos: IAGO-MARIA-IAGO-MARIA (150-200 palabras por concepto líder, el otro hace 1-2 preguntas de ≤20 palabras cada una).
-15. REFERENCIAS TEMPORALES — REGLA DURA:
-    - El podcast se produce en 2026. Cuando hables del ESTADO ACTUAL (mercado, modelos, prácticas, ecosistema), NO cites año: usa "hoy", "actualmente", "en este momento", "ahora mismo".
-    - Solo cita un año cuando esté pegado a una publicación, paper, informe, encuesta o lanzamiento identificable por su nombre propio ("paper de Sennrich de 2016", "McKinsey State of AI 2025", "estudio de Hugging Face de 2023", "lanzamiento de GPT-4 en 2023"). En ese caso, conserva el año real del documento.
-    - PROHIBIDO escribir "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente. Si necesitas un año del presente, usa 2026 (excepcional) o reformula sin año.
-16. EJEMPLO COTIDIANO POR CONCEPTO COMPLEJO — REGLA DURA:
-    - Cada concepto técnico del PDF que introduzcas en BLOQUE_PANORAMA o BLOQUE_TEMAS_CLAVE debe ir acompañado de UNA analogía cotidiana en 1-2 frases, antes (o como parte de) la traslación corporativa.
-    - Marcadores recomendados (no obligatorios léxicamente): "imagina que", "es como cuando", "piensa en", "el equivalente sería", "en tu día a día", "igual que", "lo mismo que pasa cuando".
-    - Audiencia: aunque el oyente núcleo es técnico, hay CTOs, CIOs y oyentes curiosos. NINGÚN concepto debe quedar definido solo por su jerga técnica. Prefiere extender duración antes que dejar un concepto sin aterrizar.
-17. CIERRE_CONCEPTOS: ENTRE 3 Y 5 conceptos. NUNCA 6, NUNCA 2. Cuenta exactamente cuántas intervenciones de speaker hay en CIERRE_CONCEPTOS (sin contar la apertura "No te puedes ir de este capitulo...") y verifica que estén entre 3 y 5.
-18. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Si vas a poner 3 de IAGO, intercala una pregunta corta de MARIA. Y viceversa.
+9. CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
+   SOLO {opener} pronuncia el cierre (paridad). {other} NO responde ni añade nada. El guion termina cuando {opener} dice su última frase. HARD-FAIL si hay intervención de {other} tras el cierre.
+   CTA OBLIGATORIA (integrar de forma natural antes de la frase final): mencionar que los episodios del módulo ya están disponibles. Ejemplo: "...y si quieres profundizar en cualquiera de estos conceptos, los episodios del módulo ya están disponibles en nuestras plataformas habituales." Debe sonar natural, no como anuncio.
+10. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
+11. Usa "Yago" en el texto hablado, nunca "Iago".
+12. REGLA DE LONGITUD — DURA:
+    El diálogo total NO debe superar {rules['maximum_word_count']} palabras.
+    Si llegas a APLICACION_PRACTICA habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
+    NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
+    Escribe CIERRE_CONCEPTOS en borrador mental ANTES de expandir los bloques centrales.
+13. REGLA CIERRE — PRIMERA:
+    Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3-5 puntos del CIERRE_CONCEPTOS.
+    Cuando llegues al CIERRE_CONCEPTOS, escribe EXACTAMENTE esos puntos.
+14. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE:
+    - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
+    - BLOQUE_DESTACADO: COMPARTIDO. Cada speaker ENTRE 40%-60% del total. Alterna liderazgo por concepto.
+    - APLICACION_PRACTICA: MARIA 30-40%, IAGO 60-70%.
+15. REGLA ANALOGÍA — DURA:
+    Cada concepto técnico complejo en BLOQUE_PANORAMA o BLOQUE_DESTACADO debe ir precedido de UNA analogía cotidiana en 1-2 frases.
+    MAL: "Los embeddings son vectores en espacio de alta dimensión."
+    BIEN: "Imagina que cada palabra es una posición en un mapa. Las palabras similares están cerca. Eso son los embeddings."
+16. REGLA AUDIO — LONGITUD DE INTERVENCIÓN:
+    Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
+    Máximo absoluto por intervención: 200 palabras (250 en Momento 2 de APLICACION_PRACTICA). Si necesitas más, divide en dos.
+    Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
+17. REGLA AUDIO — NÚMEROS EN PALABRAS:
+    TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
+    MAL: "el 3.7% de empresas", "costó $3M". BIEN: "el tres punto siete por ciento", "costó tres millones".
+    Excepción: años de papers donde el año es parte del nombre ("el informe McKinsey 2024").
+18. REGLA TECNICISMO ACELERADO:
+    Todo tecnicismo largo (>3 sílabas, inglés o compuesto) necesita frase introductoria previa.
+    MAL: "backpropagation es el algoritmo..." BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
+19. REFERENCIAS TEMPORALES — REGLA DURA:
+    Cuando hables del ESTADO ACTUAL, NO cites año: usa "hoy", "actualmente", "en este momento".
+    Solo cita año pegado a publicación identificable por nombre propio.
+    PROHIBIDO: "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente.
+20. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Intercala.
+21. CIERRE_CONCEPTOS: ENTRE 3 Y 5 conceptos. NUNCA 6, NUNCA 2. Cuenta las intervenciones de speaker en el bloque (sin contar la apertura) y verifica que estén entre 3 y 5.
 """
     return system, user
 

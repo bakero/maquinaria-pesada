@@ -6,28 +6,33 @@ los 14 episodios de resumen de módulo que cierran cada bloque de Ts.
 Reemplaza al spec genérico anterior **solo para episodios M**. Los episodios T
 (temas individuales) tienen su propio spec en `PODCAST_T_SPEC.md`.
 
-Versión: 2026-05-12 (v4 — referencias temporales 2026, ampliación de duración, refuerzo de ejemplos cotidianos)
+Versión: 2026-05-12 (v5 — BLOQUE_DESTACADO reemplaza TEMAS_CLAVE, BLOQUE_LIMITES eliminado, word count 2100-2600, APLICACION_PRACTICA tipo B, audio rules)
 Tipo: M
-Duración objetivo: 17-19 minutos (rango 16-20 min)
+Duración objetivo: 17-19 minutos (rango 16-19 min)
 
 ---
 
 ## 1. Filosofía del episodio M
 
-Un episodio M es **el ancla de cada módulo**: pieza más larga que cubre el
-módulo entero a vista de pájaro y aterriza con un ejemplo verificable
-único: el sistema que está generando el podcast. Sirve a:
+Un episodio M es **el ancla de cada módulo**: pieza más larga de carácter
+promocional/marketing que cubre los 2-3 conceptos más impactantes del módulo
+y los conecta con el sistema real que genera el podcast. Sirve a:
 
-- Conversión de oyente curioso a oyente fiel (es la pieza-marca).
+- Captación de oyentes nuevos (pieza-marca multi-plataforma).
 - Construcción de autoridad técnica concreta a través de la propia obra.
 - Diferenciación del corpus respecto al panorama saturado de podcasts IA.
+- **Publicación**: 2 semanas después de desbloquear los T del mismo módulo.
 
 **La diferencia clave con un T:**
 
-Un M no es un T más largo. Es estructuralmente distinto. Un T explica un
-tema. Un M explica un módulo + lo aplica al sistema real. El bloque
-APLICACION_PRACTICA es el que carga el peso de la marca y de la
-diferenciación.
+Un M no es un T más largo. Es estructuralmente distinto. Un T forma sobre
+un tema. Un M selecciona los 2-3 conceptos más impactantes del módulo y los
+conecta con el sistema real. El bloque APLICACION_PRACTICA es el que carga
+el peso de la marca y de la diferenciación — en versión high-level (tipo B),
+sin detalles técnicos de implementación.
+
+**CTA obligatoria en CIERRE_FINAL**: mencionar que los episodios T del módulo
+están disponibles en plataformas. Integrar de forma natural, no como anuncio.
 
 ---
 
@@ -59,25 +64,30 @@ diferenciación.
 2.  # INTRO_SONIDO
 3.  # SALUDO_Y_PRESENTACION
 4.  # BLOQUE_PANORAMA
-5.  # BLOQUE_TEMAS_CLAVE
-6.  # BLOQUE_LIMITES
-7.  # APLICACION_PRACTICA
-8.  # CIERRE_CONCEPTOS
-9.  # CIERRE_FINAL
-10. # VERIFICACIONES
+5.  # BLOQUE_DESTACADO
+6.  # APLICACION_PRACTICA
+7.  # CIERRE_CONCEPTOS
+8.  # CIERRE_FINAL  (con CTA a episodios T)
+9.  # VERIFICACIONES
 ```
 
 **Función de cada bloque:**
 
 - **BLOQUE_PANORAMA** (~3-4 min): qué cubre el módulo, por qué importa, qué
-  preguntas responde. Apertura del módulo entero.
-- **BLOQUE_TEMAS_CLAVE** (~4-5 min): los 3-5 conceptos núcleo del módulo,
-  cómo se relacionan entre sí. Es el cuerpo conceptual.
-- **BLOQUE_LIMITES** (~2-3 min): qué falla, qué no funciona, los
-  contraintuitivos del módulo entero.
+  preguntas responde. Apertura del módulo entero. Lidera Yago (≥65%).
+- **BLOQUE_DESTACADO** (~4-5 min): los **2-3 conceptos más impactantes** del módulo.
+  No exhaustivo. Criterios de selección en orden:
+  1. El más contraintuitivo (lo que la mayoría no sabe)
+  2. El más relevante para profesionales no técnicos (CTOs, CEOs)
+  3. El que mejor conecta con la APLICACION_PRACTICA
+  Compartido 40-60% entre ambos speakers.
 - **APLICACION_PRACTICA** (~3-4 min): el sistema que genera el podcast como
-  caso de uso real del módulo. Detalle en §8.
-- **CIERRE_CONCEPTOS + CIERRE_FINAL**: cierre canónico.
+  caso de uso real del módulo — en formato high-level (tipo B). Ver §8.
+- **CIERRE_CONCEPTOS**: 3-5 conceptos canónicos.
+- **CIERRE_FINAL**: cierre canónico + CTA natural a episodios T del módulo.
+
+**BLOQUE_LIMITES eliminado del M-type.** El M no cubre límites técnicos del
+módulo; eso es territorio del T. El M conecta conceptos con el sistema real.
 
 ---
 
@@ -92,28 +102,27 @@ Idéntico al spec T en filosofía, ajustado al formato M.
 | HOOK | Por paridad del nº de MÓDULO | El otro | M impares Yago, M pares Maria |
 | SALUDO_Y_PRESENTACION | Quien abre | El otro | Aviso de IA enganche dicho por quien abre |
 | **BLOQUE_PANORAMA** | **Yago** | Maria | Mapa del módulo entero: territorio explicador |
-| **BLOQUE_TEMAS_CLAVE** | **Compartido por concepto** | — | Líder rota por concepto, ver §4.2 |
-| **BLOQUE_LIMITES** | **Maria** | Yago | Contraintuitivos del módulo: territorio escéptica |
+| **BLOQUE_DESTACADO** | **Compartido por concepto** | — | Líder rota por concepto, 40-60% global, ver §4.2 |
 | **APLICACION_PRACTICA** | **Maria abre, Yago detalla** | — | Reparto explícito en 3 momentos, ver §8 |
 | CIERRE_CONCEPTOS | Por paridad | El otro | 3-5 conceptos alternando |
-| CIERRE_FINAL | Por paridad | El otro | Cita canónica |
+| CIERRE_FINAL | Por paridad | El otro | Cita canónica + CTA a episodios T |
 
-### 4.2 Cómo funciona "compartido por concepto" en BLOQUE_TEMAS_CLAVE
+### 4.2 Cómo funciona "compartido por concepto" en BLOQUE_DESTACADO
 
-Si el módulo cubre 4 conceptos núcleo, el generador asigna líder por concepto
-alternando para que no se acumulen 3 seguidos del mismo. Ejemplo en M con
-4 conceptos: Yago - Maria - Yago - Maria.
+El M cubre solo 2-3 conceptos (los más impactantes, no todos). El generador
+asigna líder por concepto alternando. Ejemplo con 2 conceptos: Yago - Maria.
+Con 3 conceptos: Yago - Maria - Yago.
 
 Regla: el líder del concepto da la explicación principal (4-8 frases). El
 otro hace 1-2 intervenciones de pregunta o matiz por concepto.
-**Reparto global de BLOQUE_TEMAS_CLAVE debe quedar entre 40% y 60% para cada speaker.**
+**Reparto global de BLOQUE_DESTACADO debe quedar entre 40% y 60% para cada speaker.**
 
 ### 4.3 Perfiles de los presentadores
 
 - **Yago = explicador técnico.** Profundidad, terminología precisa, mecanismo.
-  Lleva BLOQUE_PANORAMA y la parte técnica (momento 2) de APLICACION_PRACTICA.
-- **Maria = oyente exigente.** Cuestiona, tensa, pide aterrizar. Lleva
-  BLOQUE_LIMITES y la apertura/cierre (momentos 1 y 3) de APLICACION_PRACTICA.
+  Lleva BLOQUE_PANORAMA y el detalle high-level (momento 2) de APLICACION_PRACTICA.
+- **Maria = oyente exigente + conductora de marca.** Cuestiona, tensa, pide
+  aterrizar. Abre y cierra APLICACION_PRACTICA (momentos 1 y 3).
   **No es asistente.** No valida, no aplaude, no asiente.
 
 ### 4.4 Lista negra de interjecciones (anti-NotebookLM)
@@ -137,8 +146,7 @@ otro hace 1-2 intervenciones de pregunta o matiz por concepto.
 - Reacciones: máximo 12 palabras, máximo 3 por bloque.
 - **Conteo de palabras por bloque y speaker (hard-fail si se incumple):**
   - BLOQUE_PANORAMA: Yago ≥65%.
-  - BLOQUE_LIMITES: Maria ≥65%.
-  - BLOQUE_TEMAS_CLAVE compartido: 40-60% globalmente.
+  - BLOQUE_DESTACADO compartido: 40-60% globalmente.
   - APLICACION_PRACTICA: Maria 30-40%, Yago 60-70%.
 - **Anti-pingpong:** apoyo máximo 1 cada 3 intervenciones del líder.
 - **Apertura del bloque:** el líder siempre abre.
@@ -355,12 +363,29 @@ Ejemplo en M6 (Prompts):
 > "Si todo esto del prompting es disciplina y no truco, ¿cómo se aplica
 > cuando tienes que generar 100 episodios de podcast con calidad consistente?"
 
-**Momento 2 — Yago detalla (~2-2.5 min).**
+**Momento 2 — Yago detalla en formato high-level (tipo B) (~2-2.5 min).**
 
-Yago describe el mecanismo técnico real. Cómo el sistema lo resolvió. Qué
-decisión concreta se tomó. Cifras si las hay. **Esto se redacta a partir de
-las extracciones de los 4 documentos vivos del proyecto o, si existe, del
-archivo de override manual.**
+Yago conecta los conceptos del módulo con el sistema de forma conceptual,
+NO técnica. El patrón es: "esto que acabas de aprender es exactamente lo que
+hace posible que [X del sistema]". No citar componentes técnicos del pipeline,
+no dar detalles de implementación. Debe sonar como revelación natural, no como
+anuncio técnico ni clase de arquitectura.
+
+**Ejemplos del tono correcto (tipo B):**
+- "Lo que acabas de entender sobre RAG es exactamente lo que permite que
+  los guiones del podcast tengan contexto del módulo completo sin que el
+  LLM lo haya memorizado."
+- "El ajuste fino que describimos antes es el proceso que diferencia que
+  el sistema genere un guion técnico creíble y no texto genérico de IA."
+
+**Lo que NO se hace en Momento 2:**
+- No describir el pipeline paso a paso.
+- No citar nombres de archivos, funciones o parámetros.
+- No detallar costes, tokens ni métricas técnicas específicas.
+
+**Esto se redacta a partir de las extracciones de los 4 documentos vivos
+del proyecto o, si existe, del archivo de override manual, pero siempre
+en nivel conceptual.**
 
 **Momento 3 — Cierre conjunto (~30-45s).**
 
@@ -439,6 +464,18 @@ Debe incluir literalmente:
 > "Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos
 > para nuevos capitulos donde la I.A. crea contenido sobre I.A."
 
+**CTA obligatoria (WARN si falta, no hard-fail):**
+
+El speaker de cierre debe mencionar de forma natural que los episodios del
+módulo están disponibles. Fórmula aceptable (el generador puede adaptar):
+
+> "...y si quieres profundizar en cualquiera de estos conceptos, los episodios
+> del módulo ya están disponibles en nuestras plataformas habituales."
+
+La CTA debe sonar como continuación natural del cierre, nunca como anuncio.
+`enforce_fixed_phrases()` NO gestiona la CTA (demasiado variable para hardcode).
+Validación: regex flexible `episodio[s]?.{0,30}(módulo|disponible|plataforma|escucha)`.
+
 ---
 
 ## 10. Etiquetas TTS
@@ -449,12 +486,60 @@ Debe incluir literalmente:
 
 ---
 
+## 10B. Reglas de producción de audio
+
+Estas reglas afectan la calidad del MP3 final. El guion debe cumplirlas
+antes de enviarse a síntesis (ElevenLabs eleven_v3 a 1.20× + 1.10× post = **1.32× total**).
+
+### Audio-Regla 1 — Números siempre en palabras
+A velocidad 1.32×, cifras como "3.7%" o "$3M" son ininteligibles para el TTS.
+```
+MAL: "el 3.7% de empresas", "en Q3 2026", "costó $3M"
+BIEN: "el tres punto siete por ciento de empresas", "en el tercer trimestre de dos mil veintiséis"
+Excepción: años de papers donde el año es parte del nombre ("el informe McKinsey 2024")
+```
+
+### Audio-Regla 2 — Longitud óptima de intervención
+ElevenLabs sintetiza mejor con intervenciones de 60-120 palabras.
+Intervenciones >200 palabras generan artefactos (saltos tonales).
+```
+Reacción/pregunta: 5-12 palabras (hard-fail si >15)
+Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS
+Máximo absoluto: 200 palabras por intervención (divide en dos si necesitas más)
+Excepción M: APLICACION_PRACTICA puede tener hasta 250 palabras en Momento 2
+```
+
+### Audio-Regla 3 — Tags TTS: guían el estilo de escritura
+Las etiquetas [tag] guían el ESTILO DE ESCRITURA, NO los parámetros de ElevenLabs
+(style=0.0 hardcodeado). El texto debe ser coherente con la etiqueta:
+```
+[ironico]: frases con contraste, preguntas retóricas
+[tenso]: frases cortas, sin adornos, directas
+[reflexivo]: frases más largas con subordinadas, pausas implícitas
+[calido]: vocabulario cercano, contracciones, primera persona
+```
+
+### Audio-Regla 4 — Tecnicismos acelerados: introducción obligatoria
+A 1.32×, palabras técnicas largas pierden claridad sin contexto previo.
+```
+MAL: "backpropagation es el algoritmo que..."
+BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
+Aplica a: cualquier tecnicismo >3 sílabas de origen inglés o compuesto.
+```
+
+### Audio-Regla 5 — INTRO_SONIDO: documentación, no generación
+La línea `[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]` es
+obligatoria en validación pero NO genera audio. El sonido viene de
+`background_bed_path` en la config. No confundir con instrucción generativa.
+
+---
+
 ## 11. Configuración (JSON)
 
 <!-- PODCAST_M_SPEC_JSON_START -->
 ```json
 {
-  "version": "2026-05-12-v4",
+  "version": "2026-05-12-v5",
   "spec_type": "M",
   "project_name": "MaquinarIA Pesada",
   "language": "es",
@@ -488,7 +573,7 @@ Debe incluir literalmente:
     "tone": "divulgativo tecnico, riguroso pero accesible, con momento de ingenieria-real en APLICACION_PRACTICA",
     "hook_style": "menu_3_plantillas",
     "minimum_audio_minutes": 15.5,
-    "maximum_audio_minutes": 23.0
+    "maximum_audio_minutes": 20.0
   },
   "parity_rules": {
     "applies_to": "module_number",
@@ -520,9 +605,9 @@ Debe incluir literalmente:
       "opens_even_modules": false,
       "role": "explicador_tecnico",
       "leads_blocks": ["BLOQUE_PANORAMA"],
-      "shares_blocks": ["BLOQUE_TEMAS_CLAVE"],
-      "supports_blocks": ["BLOQUE_LIMITES"],
-      "aplicacion_role": "detalla_tecnico_momento_2",
+      "shares_blocks": ["BLOQUE_DESTACADO"],
+      "supports_blocks": [],
+      "aplicacion_role": "detalla_highlevel_momento_2_tipo_B",
       "traits": ["grave", "contundente", "tecnico"],
       "allowed_tags": [
         "didactico", "explicativo", "directo", "serio", "firme",
@@ -536,9 +621,9 @@ Debe incluir literalmente:
       "spoken_name": "Maria",
       "opens_odd_modules": false,
       "opens_even_modules": true,
-      "role": "oyente_exigente",
-      "leads_blocks": ["BLOQUE_LIMITES"],
-      "shares_blocks": ["BLOQUE_TEMAS_CLAVE"],
+      "role": "oyente_exigente_y_conductora_marca",
+      "leads_blocks": [],
+      "shares_blocks": ["BLOQUE_DESTACADO"],
       "supports_blocks": ["BLOQUE_PANORAMA"],
       "aplicacion_role": "abre_y_cierra_momentos_1_y_3",
       "traits": ["clara", "analitica", "incisiva"],
@@ -556,8 +641,7 @@ Debe incluir literalmente:
       "INTRO_SONIDO",
       "SALUDO_Y_PRESENTACION",
       "BLOQUE_PANORAMA",
-      "BLOQUE_TEMAS_CLAVE",
-      "BLOQUE_LIMITES",
+      "BLOQUE_DESTACADO",
       "APLICACION_PRACTICA",
       "CIERRE_CONCEPTOS",
       "CIERRE_FINAL",
@@ -565,21 +649,25 @@ Debe incluir literalmente:
     ],
     "forbidden_sections": [
       "BLOQUE_1", "BLOQUE_2", "BLOQUE_3", "BLOQUE_4",
-      "BLOQUE_QUE", "BLOQUE_COMO",
+      "BLOQUE_QUE", "BLOQUE_COMO", "BLOQUE_LIMITES",
+      "BLOQUE_TEMAS_CLAVE", "BLOQUE_REALIDAD",
       "INSERCION_1", "INSERCION_2", "INSERCION_3",
       "INSERCION_EMPRESA"
     ],
     "max_consecutive_blocks_same_speaker": 2,
     "key_concepts_block_count_min": 3,
     "key_concepts_block_count_max": 5,
-    "minimum_word_count": 2400,
-    "maximum_word_count": 3400,
+    "minimum_word_count": 2100,
+    "maximum_word_count": 2600,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 10,
     "reaction_word_limit": 12,
     "max_reactions_per_block": 3,
     "target_avg_words_per_intervention_min": 55,
     "target_avg_words_per_intervention_max": 100,
+    "target_max_words_per_single_intervention": 200,
+    "hard_fail_on_digits_in_dialogue": false,
+    "hard_fail_on_missing_cta_in_final": false,
     "minimum_pdf_coverage_percent": 75,
     "leader_share_min_percent": 65,
     "shared_block_balance_range_percent": [40, 60],
@@ -773,6 +861,9 @@ Debe incluir literalmente:
     "soft_warn_on_module_with_low_live_docs_coverage": true,
     "soft_warn_on_temporal_reference_without_publication_context": true,
     "soft_warn_on_missing_everyday_analogy_after_complex_concept": true,
+    "soft_warn_on_missing_cta_in_cierre_final": true,
+    "soft_warn_on_digit_numbers_in_dialogue": true,
+    "soft_warn_on_intervention_over_200_words": true,
     "hard_fail_on_saludo_collapsed_single_block": true,
     "hard_fail_on_presenter_surname_invented": true,
     "hard_fail_on_shared_block_balance": true
@@ -806,7 +897,7 @@ Debe incluir literalmente:
     "context_window_words": 6
   },
   "everyday_analogy_rule": {
-    "applies_to_blocks": ["BLOQUE_TEMAS_CLAVE", "BLOQUE_PANORAMA"],
+    "applies_to_blocks": ["BLOQUE_DESTACADO", "BLOQUE_PANORAMA"],
     "required_per_complex_concept": 1,
     "max_sentences_per_analogy": 2,
     "marker_phrases": [

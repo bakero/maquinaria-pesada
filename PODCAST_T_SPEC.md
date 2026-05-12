@@ -6,7 +6,7 @@ los ~100 episodios del corpus del máster, uno por tema individual.
 Reemplaza al spec genérico anterior **solo para episodios T**. Los episodios M
 (resúmenes de módulo) tienen su propio spec en `PODCAST_M_SPEC.md`.
 
-Versión: 2026-05-12 (v4 — referencias temporales 2026, refuerzo de ejemplos cotidianos, leve ampliación de duración)
+Versión: 2026-05-12 (v5 — rediseño de bloques: BLOQUE_PANORAMA + BLOQUE_REALIDAD, reglas audio TTS, word count 1400-1800)
 Tipo: T
 Duración objetivo: 11 minutos (rango 10-13 min)
 
@@ -14,12 +14,12 @@ Duración objetivo: 11 minutos (rango 10-13 min)
 
 ## 1. Filosofía del episodio T
 
-Un episodio T es **una pieza divulgativa-técnica corta sobre un tema concreto**
+Un episodio T es **una pieza formativa-técnica corta sobre un tema concreto**
 del máster. Sirve a:
 
-- Aprendizaje propio del autor (objetivo principal).
-- Construcción de un corpus indexable que sostiene la marca.
-- Audiencia técnica (núcleo) que llega por descubrimiento o búsqueda.
+- Estudiantes del máster que cursan ese módulo (audiencia principal).
+- Formación sobre el concepto + aplicación empresarial real documentada.
+- Publicación agrupada por módulo (todos los T de un módulo a la vez).
 
 **Lo que un T NO es:**
 
@@ -27,6 +27,9 @@ del máster. Sirve a:
 - No es una hot take. Tiene cuerpo divulgativo, no solo postura.
 - No es promocional. No habla del sistema que lo genera (eso es trabajo del M).
 - No es genérico. Cada T tiene un ángulo concreto, no es "todo sobre X".
+- **No tiene APLICACION_PRACTICA del sistema generador**: eso es exclusivo del M.
+  El T SÍ tiene aplicación empresarial real (casos de empresa, datos de adopción,
+  retos y oportunidades), pero de la IA en general, no del sistema de producción.
 
 ---
 
@@ -56,9 +59,9 @@ del máster. Sirve a:
 1.  # HOOK
 2.  # INTRO_SONIDO
 3.  # SALUDO_Y_PRESENTACION
-4.  # BLOQUE_QUE
+4.  # BLOQUE_PANORAMA
 5.  # BLOQUE_COMO
-6.  # BLOQUE_LIMITES
+6.  # BLOQUE_REALIDAD
 7.  # CIERRE_CONCEPTOS
 8.  # CIERRE_FINAL
 9.  # VERIFICACIONES
@@ -66,16 +69,22 @@ del máster. Sirve a:
 
 **Tres bloques de contenido, función diferenciada:**
 
-- **BLOQUE_QUE** (~2-2.5 min): qué es el tema, definición operativa, por qué
-  importa. Apertura del aprendizaje.
+- **BLOQUE_PANORAMA** (~2-2.5 min): qué es el tema, definición operativa, por qué
+  importa. Apertura del aprendizaje. Lidera Yago.
 - **BLOQUE_COMO** (~3-4 min): cómo funciona por dentro, el mecanismo. Es el
-  núcleo del episodio.
-- **BLOQUE_LIMITES** (~2-2.5 min): qué falla, qué no funciona, contraintuitivos.
-  Donde el T se diferencia de un tutorial.
+  núcleo del episodio. Compartido 40-60% entre ambos.
+- **BLOQUE_REALIDAD** (~2-3 min): fusiona los límites técnicos del concepto con
+  la aplicación empresarial real documentada. Lidera Maria (≥60%).
+  **Contenido obligatorio** — mínimo 2 de los 4 elementos:
+  1. Dato de adopción de IA con fuente reconocida (Gartner, McKinsey, WEF, IDC, MIT, Stanford)
+  2. Caso real de empresa usando el concepto (nombre de empresa + resultado concreto)
+  3. Reto documentado que enfrentan las empresas con este concepto
+  4. Oportunidad concreta de negocio derivada del concepto
+  **Fuente obligatoria**: usar prioritariamente `PDFs/auxiliares/casos_empresariales_ia.md`.
+  **Regla de datos**: solo citar fuentes verificables; si no hay certeza, usar
+  "según estudios recientes de [institución]" sin inventar cifras exactas.
 
-No hay BLOQUE_4 ni INSERCION. Si un caso de empresa es genuinamente potente
-para el tema y existe en el PDF, se integra dentro de BLOQUE_LIMITES como
-ejemplo, no como bloque aparte.
+No hay BLOQUE_4 ni INSERCION. No hay APLICACION_PRACTICA (prohibido en T).
 
 ---
 
@@ -90,9 +99,9 @@ asignado por bloque.
 |---|---|---|---|
 | HOOK | Por paridad del nº de TEMA | El otro | T impares Yago, T pares Maria |
 | SALUDO_Y_PRESENTACION | Quien abre | El otro | Aviso de IA dicho por quien abre |
-| **BLOQUE_QUE** | **Yago** | Maria | Mapa, definición, contexto: territorio explicador |
+| **BLOQUE_PANORAMA** | **Yago** | Maria | Mapa, definición, contexto: territorio explicador |
 | **BLOQUE_COMO** | **Compartido por subtema** | — | Líder rota por subtema, ver §4.2 |
-| **BLOQUE_LIMITES** | **Maria** | Yago | Qué falla, contraintuitivos: territorio escéptica |
+| **BLOQUE_REALIDAD** | **Maria** | Yago | Casos empresa, datos adopción, retos: territorio escéptica experta |
 | CIERRE_CONCEPTOS | Por paridad | El otro | 3 conceptos, alternando 1-a-1 entre ambos |
 | CIERRE_FINAL | Por paridad | El otro | Cita canónica |
 
@@ -112,9 +121,13 @@ El otro hace 1-2 intervenciones de pregunta o matiz dentro del subtema.
 ### 4.3 Perfiles de los presentadores
 
 - **Yago = explicador técnico.** Profundidad, terminología precisa, mecanismo.
-  Lleva la mayor parte del peso conceptual de BLOQUE_QUE y BLOQUE_COMO.
-- **Maria = oyente exigente.** Cuestiona, tensa, pide aterrizar, hace de
-  proxy del oyente que pregunta lo incómodo. Lleva BLOQUE_LIMITES.
+  Lleva la mayor parte del peso conceptual de BLOQUE_PANORAMA y BLOQUE_COMO.
+- **Maria = voz experta de empresa + oyente exigente.** En BLOQUE_REALIDAD,
+  Maria es la voz principal: presenta casos reales, datos de adopción y retos
+  documentados (mínimo 5 intervenciones de desarrollo, ≥4 frases cada una).
+  Yago aporta contexto técnico breve cuando sea necesario (máximo 2 intervenciones,
+  ≤3 frases cada una). Si Yago habla más que Maria en BLOQUE_REALIDAD, el guion
+  está incorrecto. En otros bloques cuestiona, tensa, pide aterrizar.
   **No es asistente.** No valida, no aplaude, no asiente.
 
 ### 4.4 Lista negra de interjecciones (anti-NotebookLM)
@@ -142,8 +155,8 @@ de ángulo. La lista negra es solo para validación-coro.
   BLOQUE_LIMITES.
 - Intervenciones de reacción o pregunta: máximo 12 palabras, máximo 3 por bloque.
 - **Conteo de palabras por bloque y speaker (hard-fail si se incumple):**
-  - En BLOQUE_QUE: Yago ≥65% de palabras del bloque.
-  - En BLOQUE_LIMITES: Maria ≥65% de palabras del bloque.
+  - En BLOQUE_PANORAMA: Yago ≥65% de palabras del bloque.
+  - En BLOQUE_REALIDAD: Maria ≥60% de palabras del bloque.
   - En BLOQUE_COMO: cada uno entre 40-60% globalmente.
 - **Anti-pingpong:** dentro de bloque liderado por uno, intervenciones del apoyo
   máximo 1 cada 3 intervenciones del líder.
@@ -342,12 +355,59 @@ Debe incluir literalmente:
 
 ---
 
+## 9B. Reglas de producción de audio
+
+Estas reglas afectan la calidad del MP3 final. El guion debe cumplirlas
+antes de enviarse a síntesis (ElevenLabs eleven_v3 a 1.20× + 1.10× post = **1.32× total**).
+
+### Audio-Regla 1 — Números siempre en palabras
+A velocidad 1.32×, cifras como "3.7%" o "$3M" son ininteligibles para el TTS.
+```
+MAL: "el 3.7% de empresas", "en Q3 2026", "costó $3M"
+BIEN: "el tres punto siete por ciento de empresas", "en el tercer trimestre de dos mil veintiséis"
+Excepción: años de papers donde el año es parte del nombre ("el informe McKinsey 2024")
+```
+
+### Audio-Regla 2 — Longitud óptima de intervención
+ElevenLabs sintetiza mejor con intervenciones de 60-120 palabras.
+Intervenciones >200 palabras generan artefactos (saltos tonales).
+```
+Reacción/pregunta: 5-12 palabras (hard-fail si >15)
+Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS
+Máximo absoluto: 200 palabras por intervención (divide en dos si necesitas más)
+```
+
+### Audio-Regla 3 — Tags TTS: guían el estilo de escritura
+Las etiquetas [tag] guían el ESTILO DE ESCRITURA, NO los parámetros de ElevenLabs
+(style=0.0 hardcodeado). El texto debe ser coherente con la etiqueta:
+```
+[ironico]: frases con contraste, preguntas retóricas
+[tenso]: frases cortas, sin adornos, directas
+[reflexivo]: frases más largas con subordinadas, pausas implícitas
+[calido]: vocabulario cercano, contracciones, primera persona
+```
+
+### Audio-Regla 4 — Tecnicismos acelerados: introducción obligatoria
+A 1.32×, palabras técnicas largas pierden claridad sin contexto previo.
+```
+MAL: "backpropagation es el algoritmo que..."
+BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
+Aplica a: cualquier tecnicismo >3 sílabas de origen inglés o compuesto.
+```
+
+### Audio-Regla 5 — INTRO_SONIDO: documentación, no generación
+La línea `[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]` es
+obligatoria en validación pero NO genera audio. El sonido viene de
+`background_bed_path` en la config. No confundir con instrucción generativa.
+
+---
+
 ## 10. Configuración (JSON)
 
 <!-- PODCAST_T_SPEC_JSON_START -->
 ```json
 {
-  "version": "2026-05-12-v4",
+  "version": "2026-05-12-v5",
   "spec_type": "T",
   "project_name": "MaquinarIA Pesada",
   "language": "es",
@@ -401,9 +461,9 @@ Debe incluir literalmente:
       "opens_odd_temas": true,
       "opens_even_temas": false,
       "role": "explicador_tecnico",
-      "leads_blocks": ["BLOQUE_QUE"],
+      "leads_blocks": ["BLOQUE_PANORAMA"],
       "shares_blocks": ["BLOQUE_COMO"],
-      "supports_blocks": ["BLOQUE_LIMITES"],
+      "supports_blocks": ["BLOQUE_REALIDAD"],
       "traits": ["grave", "contundente", "tecnico"],
       "allowed_tags": [
         "didactico", "explicativo", "directo", "serio", "firme",
@@ -417,10 +477,10 @@ Debe incluir literalmente:
       "spoken_name": "Maria",
       "opens_odd_temas": false,
       "opens_even_temas": true,
-      "role": "oyente_exigente",
-      "leads_blocks": ["BLOQUE_LIMITES"],
+      "role": "voz_experta_empresa_y_oyente_exigente",
+      "leads_blocks": ["BLOQUE_REALIDAD"],
       "shares_blocks": ["BLOQUE_COMO"],
-      "supports_blocks": ["BLOQUE_QUE"],
+      "supports_blocks": ["BLOQUE_PANORAMA"],
       "traits": ["clara", "analitica", "incisiva"],
       "allowed_tags": [
         "didactico", "explicativo", "directo", "serio", "firme",
@@ -435,16 +495,16 @@ Debe incluir literalmente:
       "HOOK",
       "INTRO_SONIDO",
       "SALUDO_Y_PRESENTACION",
-      "BLOQUE_QUE",
+      "BLOQUE_PANORAMA",
       "BLOQUE_COMO",
-      "BLOQUE_LIMITES",
+      "BLOQUE_REALIDAD",
       "CIERRE_CONCEPTOS",
       "CIERRE_FINAL",
       "VERIFICACIONES"
     ],
     "forbidden_sections": [
       "BLOQUE_1", "BLOQUE_2", "BLOQUE_3", "BLOQUE_4",
-      "BLOQUE_PANORAMA", "BLOQUE_TEMAS_CLAVE",
+      "BLOQUE_QUE", "BLOQUE_LIMITES", "BLOQUE_TEMAS_CLAVE", "BLOQUE_DESTACADO",
       "INSERCION_1", "INSERCION_2", "INSERCION_3",
       "INSERCION_EMPRESA",
       "APLICACION_PRACTICA"
@@ -452,13 +512,15 @@ Debe incluir literalmente:
     "max_consecutive_blocks_same_speaker": 2,
     "key_concepts_block_count_exact": 3,
     "minimum_word_count": 1400,
-    "maximum_word_count": 1900,
+    "maximum_word_count": 1800,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 8,
     "reaction_word_limit": 12,
     "max_reactions_per_block": 3,
     "target_avg_words_per_intervention_min": 50,
     "target_avg_words_per_intervention_max": 90,
+    "target_max_words_per_single_intervention": 200,
+    "hard_fail_on_digits_in_dialogue": false,
     "minimum_pdf_coverage_percent": 75,
     "leader_share_min_percent": 65,
     "shared_block_balance_range_percent": [40, 60],
@@ -508,6 +570,12 @@ Debe incluir literalmente:
           "path": "PDFs/auxiliares/glosario_unificado.md",
           "required": true,
           "rule": "respect_canonical_definitions"
+        },
+        "casos_empresariales": {
+          "path": "PDFs/auxiliares/casos_empresariales_ia.md",
+          "required": true,
+          "rule": "use_prioritarily_in_BLOQUE_REALIDAD",
+          "note": "Fuente obligatoria para BLOQUE_REALIDAD. Usar antes que inventar datos."
         },
         "benchmarks": {
           "path": "PDFs/auxiliares/benchmarks_academicos.md",
@@ -587,7 +655,12 @@ Debe incluir literalmente:
     "soft_warn_on_missing_everyday_analogy_after_complex_concept": true,
     "hard_fail_on_saludo_collapsed_single_block": true,
     "hard_fail_on_presenter_surname_invented": true,
-    "hard_fail_on_shared_block_balance": true
+    "hard_fail_on_shared_block_balance": true,
+    "hard_fail_on_missing_cta_in_final": false,
+    "soft_warn_on_digit_numbers_in_dialogue": true,
+    "soft_warn_on_intervention_over_200_words": true,
+    "soft_warn_on_missing_empresa_case_in_realidad": true,
+    "leader_share_min_percent_realidad": 60
   },
   "saludo_format": {
     "min_blocks": 3,
@@ -618,7 +691,7 @@ Debe incluir literalmente:
     "context_window_words": 6
   },
   "everyday_analogy_rule": {
-    "applies_to_blocks": ["BLOQUE_QUE", "BLOQUE_COMO"],
+    "applies_to_blocks": ["BLOQUE_PANORAMA", "BLOQUE_COMO"],
     "required_per_complex_concept": 1,
     "max_sentences_per_analogy": 2,
     "marker_phrases": [
