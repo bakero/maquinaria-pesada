@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 Category = Literal["service", "pipeline", "source"]
 
@@ -60,10 +60,16 @@ class ServiceConnector(Connector):
 
     def status(self) -> Status:
         import os
-        from cockpit.core import paths
-        from dotenv import dotenv_values
 
-        env = dotenv_values(paths.env_file()) if paths.env_file().exists() else {}
+        from cockpit.core import paths
+
+        env: dict = {}
+        if paths.env_file().exists():
+            try:
+                from dotenv import dotenv_values
+                env = dotenv_values(paths.env_file()) or {}
+            except ImportError:
+                env = {}
         merged = {**env, **os.environ}
         missing = [k for k in self.env_keys if not merged.get(k)]
         if missing:
@@ -72,10 +78,17 @@ class ServiceConnector(Connector):
 
     def render_config(self) -> None:
         import streamlit as st
-        from cockpit.core import paths
-        from dotenv import dotenv_values
 
-        env = dotenv_values(paths.env_file()) if paths.env_file().exists() else {}
+        from cockpit.core import paths
+
+        env: dict = {}
+        if paths.env_file().exists():
+            try:
+                from dotenv import dotenv_values
+                env = dotenv_values(paths.env_file()) or {}
+            except ImportError:
+                env = {}
+
         if not self.env_keys:
             st.info("Sin variables de entorno asociadas.")
             return
@@ -104,6 +117,18 @@ class PipelineConnector(Connector):
             cwd=prompt_builder.default_cwd(),
             header=f"Codex prompt — {self.label}",
         )
+
+    def _flag_pairs(self, values: dict[str, Any]) -> list[tuple[str, Any]]:
+        return [(f.flag, values.get(f.flag)) for f in self.fields]
+
+    def stream(self, values: dict[str, Any]):
+        """Yields líneas de stdout y un RunResult final."""
+        from cockpit.core import runner
+        yield from runner.stream_pipeline(self.script, self._flag_pairs(values))
+
+    def preview(self, values: dict[str, Any]) -> str:
+        from cockpit.core import runner
+        return runner.preview_command(self.script, self._flag_pairs(values))
 
     def render_config(self) -> None:
         import streamlit as st

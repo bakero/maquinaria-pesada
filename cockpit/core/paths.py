@@ -55,6 +55,14 @@ def env_file() -> Path:
     return p(".env")
 
 
+def logs_dir() -> Path:
+    return p("logs")
+
+
+def ai_usage_log() -> Path:
+    return logs_dir() / "ai_usage.jsonl"
+
+
 def master_spec_md() -> Path:
     return p("PODCAST_MASTER_SPEC.md")
 

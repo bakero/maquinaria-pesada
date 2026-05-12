@@ -1,0 +1,32 @@
+[project]
+name = "maquinaria-pesada"
+version = "0.1.0"
+description = "Sistema de generación automática de podcasts/vídeos con IA."
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "_archivo",
+    "Guiones",
+    "PDFs",
+    "Videos",
+    "RRSS",
+    "episodios",
+    "escaletas",
+    "Logos",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",  # line-too-long: scripts antiguos con strings largos
+    "E402",  # module-level-import-not-at-top: sys.path hacks en Streamlit
+    "B008",  # function call in argument defaults: argparse / typer
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra --tb=short"

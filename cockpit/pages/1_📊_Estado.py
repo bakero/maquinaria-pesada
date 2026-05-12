@@ -12,6 +12,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import log_parser, state  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Estado", page_icon="📊", layout="wide")
 inject_theme()
@@ -122,7 +123,9 @@ for s in states:
     row[0].markdown(f"**{s.module}**")
     flags = [s.pdf_ok, s.guion_ok, s.audio_ok, s.video_ok, s.log_ok]
     files_per_cat = [s.pdf, s.guion, s.audio, s.video, s.log]
-    for i, ((cat_id, _), ok, files) in enumerate(zip(CATEGORIES, flags, files_per_cat)):
+    for i, ((cat_id, _), ok, files) in enumerate(
+        zip(CATEGORIES, flags, files_per_cat, strict=False)
+    ):
         icon = "✅" if ok else "❌"
         label = icon if len(files) <= 1 else f"{icon} ×{len(files)}"
         if row[i + 1].button(
@@ -146,3 +149,18 @@ with st.expander("Detalle por módulo (paths)"):
         "video": [str(p) for p in s.video],
         "log": [str(p) for p in s.log],
     })
+
+
+render_improve_block(
+    source="page:estado",
+    context=(
+        "Vista de estado por módulo (M0-M14). Para cada módulo muestra si hay "
+        "PDF fuente, guion, audio, vídeo y log, con ✅/❌. Permite abrir el "
+        "resumen de validaciones de la última ejecución."
+    ),
+    default_prompt=(
+        "Propón mejoras a la vista de estado: nuevos indicadores, ordenación, "
+        "alertas cuando algo lleva mucho tiempo bloqueado."
+    ),
+    kind="update",
+)

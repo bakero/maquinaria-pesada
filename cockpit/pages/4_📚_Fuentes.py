@@ -13,6 +13,7 @@ from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import SourceConnector  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Fuentes", page_icon="📚", layout="wide")
 inject_theme()
@@ -38,7 +39,7 @@ st.caption(src.description)
 
 items = src.list_items()
 if not items:
-    st.info(f"Sin items en este tipo. Verifica que las rutas existen en el repo.")
+    st.info("Sin items en este tipo. Verifica que las rutas existen en el repo.")
     st.stop()
 
 filter_text = st.text_input("Filtrar por nombre (substring)", "")
@@ -54,3 +55,17 @@ picked = next(p for p in filtered if p.name == picked_name)
 
 st.divider()
 src.render_viewer(picked)
+
+render_improve_block(
+    source=f"source:{src.id}:{picked.name}",
+    context=(
+        f"Fuente «{src.label}» ({src.id}). Item seleccionado: {picked.name}. "
+        f"Ruta: {picked}. Tamaño: {picked.stat().st_size} bytes."
+    ),
+    title=f"✨ Mejorar / analizar {picked.name}",
+    default_prompt=(
+        "Analiza este fichero y sugiere 3 mejoras concretas (estructura, "
+        "metadata, naming, contenido)."
+    ),
+    kind="improvement",
+)
