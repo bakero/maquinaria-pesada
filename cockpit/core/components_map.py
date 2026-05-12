@@ -110,7 +110,7 @@ def _default_map() -> ComponentsMap:
         Node("pipe-guion", "generar_guion.py", "system", "PDF → guion .txt"),
         Node("pipe-episodio", "generar_episodio_v2.py", "system", "guion → audio MP3"),
         Node("pipe-validar", "validar_episodio.py", "system", "QA del episodio"),
-        Node("pipe-escaleta", "escaleta_generator.py", "system", "guion → escaleta de escenas"),
+        Node("pipe-escaleta", "generate_escaleta.py", "system", "guion → escaleta de escenas"),
         Node("pipe-video", "video_compositor.py", "system", "ensambla vídeo final"),
         Node("cockpit", "Cockpit Streamlit", "system", "centro de control"),
         # Generados
