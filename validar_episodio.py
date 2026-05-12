@@ -213,11 +213,21 @@ def check_log_completion(log_path: Path) -> Tuple[CheckResult, Optional[str]]:
     return CheckResult(name, "OK", "OK"), text
 
 
+BLOCK_LINE_RE = re.compile(r"^\s*\[\d{3,}\]\s+(IAGO|MARIA)\s*:")
+
+
 def check_log_no_errors(log_text: Optional[str]) -> CheckResult:
     name = "Log sin errores criticos"
     if log_text is None:
         return CheckResult(name, "ERROR", "Log no disponible")
-    hits = [l.strip() for l in iter_lines(log_text) if CRITICAL_RE.search(l)][:3]
+    # Excluir lineas que son citas de contenido del guion ([NNN] SPEAKER: ...)
+    # — esas pueden contener "error" o "falla" como parte del texto hablado, no
+    # como error real del pipeline.
+    hits = [
+        l.strip()
+        for l in iter_lines(log_text)
+        if CRITICAL_RE.search(l) and not BLOCK_LINE_RE.match(l)
+    ][:3]
     if hits:
         return CheckResult(name, "ERROR", " | ".join(hits))
     return CheckResult(name, "OK", "Sin ERROR/FAILED/Exception")
