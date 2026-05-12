@@ -45,6 +45,12 @@ with col3:
 st.markdown(
     """
     ### Páginas
+    - **🎓 Master** — estado por módulo (Listo / En curso % / Sin empezar).
+    - **🎬 Módulo** — detalle de un módulo: episodios M + Tn con su estado.
+    - **📼 Episodio** — vista única por episodio: guion, PDF, escaleta, audio,
+      logs, verificaciones y botón **🛠️ Arreglar con Claude** si hay errores.
+    - **🎨 Pizarra** — generador visual: esferas = componentes, cuadrados =
+      contenidos, flechas entre ellos. Click en componente → ver código.
     - **📊 Estado** — inventario por módulo (M0–M14). *Mejorar-con-IA.*
     - **🔌 Conectores** — servicios, pipelines, fuentes. *Mejorar por conector.*
     - **📝 Generar Prompt** — formularios + **ejecutor en vivo**.
