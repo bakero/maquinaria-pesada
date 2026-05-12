@@ -12,6 +12,7 @@ import streamlit as st  # noqa: E402
 from cockpit import connectors  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Conectores", page_icon="🔌", layout="wide")
 inject_theme()
@@ -42,4 +43,17 @@ for cat, title in CATEGORIES:
                 c.render_card()
                 with st.expander("Configuración"):
                     c.render_config()
+                render_improve_block(
+                    source=f"connector:{c.id}",
+                    context=(
+                        f"Conector «{c.label}» (id={c.id}, categoría={c.category}). "
+                        f"Descripción: {c.description}"
+                    ),
+                    title="✨ Mejorar este conector",
+                    default_prompt=(
+                        "Sugiere cambios concretos: nuevos campos, validaciones, "
+                        "flags útiles que faltan, documentación a añadir."
+                    ),
+                    kind="update",
+                )
     st.divider()

@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff pytest python-dotenv pip-audit
+
+      - name: Verify .env.example is committed
+        run: test -f .env.example
+
+      - name: Verify CLAUDE.md is committed
+        run: test -f CLAUDE.md
+
+      - name: Ruff lint (cockpit + tests)
+        run: ruff check cockpit/ tests/
+
+      - name: Run tests
+        run: pytest tests/ -q
+
+      - name: Audit cockpit dependencies (non-blocking)
+        run: pip-audit --requirement requirements-cockpit.txt --strict || true
+        continue-on-error: true

@@ -1,0 +1,100 @@
+{
+  "eval_id": "2026-05-12_15-30",
+  "previous_eval_id": "2026-05-12_14-30",
+  "repos": ["/home/user/maquinaria-pesada"],
+  "stack": {
+    "language": "python",
+    "frameworks": ["streamlit"],
+    "package_manager": "pip",
+    "ai_providers": ["anthropic", "openai", "openai-whisper", "elevenlabs", "kling"],
+    "lines_of_code": 18119,
+    "files_over_300_lines": 19,
+    "is_web_app": false,
+    "is_cli_pipeline": true,
+    "total_tests": 139,
+    "test_execution_time_s": 0.33
+  },
+  "scores": {
+    "code_quality": 7,
+    "patterns": 7,
+    "tests": 7,
+    "frontend": null,
+    "database": null,
+    "security": 7,
+    "cicd": 7,
+    "documentation": 7,
+    "dependencies": 7,
+    "observability": 7,
+    "ai_systems": 7,
+    "global": 7.2
+  },
+  "semaphores": {
+    "code_quality": "green",
+    "patterns": "green",
+    "tests": "green",
+    "frontend": "na",
+    "database": "na",
+    "security": "green",
+    "cicd": "green",
+    "documentation": "green",
+    "dependencies": "green",
+    "observability": "green",
+    "ai_systems": "green",
+    "global": "green"
+  },
+  "deltas_vs_previous": {
+    "code_quality": "+2.0",
+    "patterns": "+1.0",
+    "tests": "+7.0",
+    "security": "0.0",
+    "cicd": "+5.0",
+    "documentation": "+1.0",
+    "dependencies": "+2.0",
+    "observability": "+4.0",
+    "ai_systems": "+1.0",
+    "global": "+2.7"
+  },
+  "critical_count": 0,
+  "improvable_count": 0,
+  "correct_count": 9,
+  "na_count": 2,
+  "changes_since_previous": [
+    "CLAUDE.md + LICENSE + docs/architecture/overview.md (5 ADRs)",
+    ".github/dependabot.yml semanal agrupado",
+    ".pre-commit-config.yaml con ruff+pytest+anti-env",
+    "requirements-cockpit.lock con pinning estricto",
+    "pip-audit non-blocking en CI",
+    "cockpit/core/logger.py JSON estructurado con correlation_id",
+    "Hook PostToolUse .claude/scripts/posttool_check.sh activo",
+    "Tests subieron de 0 a 139 (cobertura completa de cockpit/core/ y runlog)"
+  ],
+  "automated_quality_gate": {
+    "hook_active": true,
+    "hook_path": ".claude/scripts/posttool_check.sh",
+    "blocks_on_ruff_fail": true,
+    "blocks_on_pytest_fail": true,
+    "verified_in_session": true,
+    "verified_block_examples": [
+      "B039 ContextVar mutable default",
+      "TypeError multiple values for argument 'phase'"
+    ]
+  },
+  "top_actions_for_8_plus": [
+    "Tests sobre pipelines top-level (validar_episodio, normalizar_guiones, podcast_spec)",
+    "Migración 428 print() → runlog/logger en pipelines",
+    "Modularizar archivos >500 LOC",
+    "Branch protection en master (GitHub Settings)",
+    "DPA proveedores IA → docs/legal/data-processing-register.md"
+  ],
+  "ai_systems_status": {
+    "detected": true,
+    "providers": ["anthropic", "openai", "openai-whisper", "elevenlabs", "kling"],
+    "abstraction_layer": true,
+    "retry_backoff": true,
+    "streaming_visible": true,
+    "tracking_jsonl": true,
+    "sandbox_active": true,
+    "ai_act_classification": "minimal_or_limited",
+    "documented_in_architecture": true
+  }
+}
