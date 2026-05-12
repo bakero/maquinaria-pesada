@@ -1,0 +1,131 @@
+# HOOK
+IAGO: <didactico> El ochenta y ocho por ciento de las empresas ya usa inteligencia artificial en producción. Pero solo el treinta y tres por ciento ha conseguido escalarla más allá de proyectos piloto. ¿Cuál es el problema? En la mayoría de casos, el modelo alucina cuando le preguntas sobre tus propios datos. Le pides información sobre el contrato de un cliente específico y te inventa cláusulas que no existen. Le preguntas por el procedimiento interno de tu empresa y mezcla versiones antiguas con las actuales. El modelo es brillante para razonar, pero no tiene ni idea de tu conocimiento corporativo. Y reentrenarlo cada vez que cambias un documento es inviable. La solución se llama RAG: Retrieval-Augmented Generation. Un sistema que busca los documentos relevantes en tu base de conocimiento y se los pone al modelo en el contexto para que genere la respuesta. Conocimiento actualizable, respuestas verificables, y cero alucinaciones inventadas. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+MARIA: <conversacional> Y yo soy Maria. Hoy cerramos el módulo siete del máster: Sistemas RAG y Gestión del Conocimiento.
+
+IAGO: <serio> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast. Al final del episodio veremos cómo se aplica lo de hoy a ese sistema.
+
+MARIA: <directo> Y hoy toca hablar de la arquitectura que ha convertido los modelos de lenguaje en herramientas útiles para la empresa. Porque un modelo brillante que se inventa datos no sirve para nada.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> Empecemos por el panorama completo. Este módulo cubre la arquitectura RAG de principio a fin. Desde el problema que resuelve hasta las técnicas avanzadas que se usan en producción. Y la pregunta fundamental es: ¿cómo convertimos un modelo de lenguaje que solo sabe lo que aprendió durante su entrenamiento en un sistema que puede responder preguntas sobre tus documentos corporativos actualizados esta mañana?
+
+MARIA: <curioso> Porque el problema es real. Un modelo entrenado en dos mil veintitrés no sabe nada de lo que pasó en dos mil veintiseis.
+
+IAGO: <contundente> Y no solo es la fecha de corte del entrenamiento. Es que el modelo no tiene acceso a tu conocimiento interno. No ha visto tus contratos, tus procedimientos, tu documentación técnica. Y cuando le preguntas por algo que no sabe, no te dice "no lo sé". Te inventa una respuesta que suena perfectamente plausible pero es completamente falsa. lo que llamamos alucinación. RAG resuelve ambos problemas con una arquitectura elegante. En lugar de depender del conocimiento paramétrico del modelo, recupera los documentos relevantes de una base de conocimiento actualizable y los pone en el contexto del modelo para que genere la respuesta. El modelo sigue siendo el mismo, pero ahora trabaja con información verificable que tú controlas. El módulo se estructura en dos grandes bloques. Primero, la arquitectura básica: cómo funciona la indexación de documentos, cómo se dividen en fragmentos, cómo se convierten en vectores, y cómo se recuperan los más relevantes para cada consulta. Segundo, las técnicas avanzadas que se usan en sistemas de producción: búsqueda híbrida que combina similaridad semántica con coincidencia exacta de términos, re-ranking con modelos más precisos, estrategias sofisticadas de chunking, y evaluación rigurosa con RAGAS.
+
+MARIA: <analitica> ¿Y por qué importa tanto la estrategia de chunking? Parece un detalle técnico.
+
+IAGO: <firme> Porque es uno de los determinantes más importantes de la calidad del sistema. Si divides los documentos en fragmentos demasiado pequeños, pierdes contexto. Si los haces demasiado grandes, recuperas mucho ruido junto con la información relevante. Y si no respetas la estructura semántica del documento, puedes partir una explicación importante por la mitad. El tamaño y la estrategia de chunking son hiperparámetros críticos que hay que optimizar con evaluación rigurosa.
+
+IAGO: <explicativo> Las preguntas que responde este módulo son muy concretas. ¿Cómo se indexan millones de documentos para que la búsqueda sea eficiente? ¿Cómo se combina búsqueda semántica con búsqueda por palabras clave? ¿Cómo se evalúa si el sistema está recuperando los documentos correctos y generando respuestas fieles a esos documentos? Y sobre todo: ¿cómo se pasa de un prototipo que funciona en el portátil de un ingeniero a un sistema en producción que sirve mil consultas por segundo sin degradar la calidad?
+
+MARIA: [directo] De acuerdo. Sigamos.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Vamos con los conceptos núcleo del módulo. Primero: la arquitectura básica de RAG. Un sistema RAG tiene dos fases completamente separadas. La fase de indexación es offline. Tomas tus documentos, extraes el texto de PDFs o Word o HTML, los divides en chunks de tamaño manejable, conviertes cada chunk en un embedding vectorial usando un modelo de embedding, y los almacenas en una base de datos vectorial junto con los metadatos de cada chunk. Fuente, título, sección, fecha.
+
+MARIA: <curioso> ¿Y qué es un embedding?
+
+IAGO: <explicativo> Es una representación numérica del significado del texto. Un vector de setecientos sesenta y ocho dimensiones, por ejemplo, donde cada dimensión captura algún aspecto semántico del contenido. Dos textos con significado similar tienen embeddings similares. lo que permite la búsqueda semántica: buscas vectores cercanos en ese espacio de alta dimensión.
+
+IAGO: <contundente> La segunda fase es online: recuperación y generación. Cuando llega una consulta del usuario, la conviertes en un embedding usando el mismo modelo que usaste para indexar. Buscas los chunks más similares en la base de datos vectorial por similaridad coseno. Los chunks recuperados se añaden al contexto del modelo junto con la consulta original. Y el modelo genera la respuesta basándose en los chunks que le has proporcionado.
+
+MARIA: <esceptico> Suena simple. ¿Funciona?
+
+IAGO: <directo> Para muchos casos de uso, sorprendentemente bien. Pero tiene limitaciones importantes que las técnicas avanzadas resuelven.
+
+MARIA: <analitica> Segundo concepto: estrategias de chunking. Porque no es trivial decidir cómo dividir un documento en fragmentos. La estrategia más simple es chunking por tamaño fijo: cada quinientos tokens, con un overlap de cincuenta tokens entre chunks consecutivos para no partir frases importantes. Pero no respeta la estructura del documento.
+
+IAGO: <reflexivo> Claro. Puedes partir una lista numerada por la mitad, o cortar una explicación técnica justo en el momento crítico.
+
+MARIA: <explicativo> Por eso existen estrategias más sofisticadas. Chunking por estructura semántica: divides por párrafos, secciones, o títulos. Produces chunks más cohesivos semánticamente pero de tamaño variable. Recursive chunking: usas una jerarquía de divisores. Primero intentas dividir por doble salto de línea. Si el fragmento sigue siendo demasiado grande, divides por salto de línea. Si sigue grande, divides por frase. Hasta alcanzar el tamaño objetivo.
+
+MARIA: <didactico> Y luego está parent-child chunking. Mantienes chunks pequeños para la recuperación, porque cada chunk es sobre un tema muy específico. Pero cuando pasas el contexto al modelo, no le das el chunk pequeño. Le das el chunk padre más grande que lo contiene. Mayor precisión en la búsqueda, mayor contexto para la generación.
+
+IAGO: <contundente> Tercer concepto: búsqueda híbrida. La búsqueda puramente vectorial tiene un problema. Falla con términos técnicos específicos, acrónimos, nombres propios. El embedding puede no capturar bien semánticamente que "JWT" es lo que el usuario está buscando. La búsqueda keyword, BM25, el algoritmo estándar de los motores de búsqueda, captura esos términos exactos. Pero no captura similaridad semántica.
+
+MARIA: <curioso> ¿Y la solución es combinar ambas?
+
+IAGO: <explicativo> Búsqueda híbrida. Recuperas candidatos con búsqueda vectorial para similitud semántica. Recuperas candidatos con búsqueda keyword para coincidencia exacta de términos. Y usas un algoritmo de re-ranking, RRF o Reciprocal Rank Fusion, o un cross-encoder, para combinar y ordenar los resultados. La búsqueda híbrida produce consistentemente mejores resultados que cualquiera de los dos enfoques por separado. Especialmente para documentos técnicos y dominios especializados.
+
+MARIA: <analitica> Cuarto concepto: re-ranking. Los cross-encoders son modelos que toman el par consulta más documento como input y producen un score de relevancia. Son significativamente más precisos que los bi-encoders que codifican consulta y documento por separado. Pero son demasiado lentos para buscar sobre millones de documentos.
+
+IAGO: <directo> La solución es la pipeline retrieve-then-rerank. Usas búsqueda eficiente, vectorial o híbrida, para obtener los veinte o cincuenta candidatos más relevantes. Y luego usas el cross-encoder para reordenar esos candidatos y seleccionar los tres o cinco mejores para el modelo.
+
+MARIA: <explicativo> Y quinto concepto: evaluación con RAGAS. RAGAS es el framework estándar de evaluación de sistemas RAG. Define cuatro métricas principales. Faithfulness: qué porcentaje de las afirmaciones de la respuesta están fundamentadas en los chunks recuperados. Answer Relevancy: qué tan relevante es la respuesta para la pregunta del usuario. Context Precision: qué porcentaje de los chunks recuperados son realmente relevantes para la pregunta. Context Recall: qué porcentaje de la información relevante disponible fue recuperada.
+
+IAGO: <contundente> Estas métricas se calculan automáticamente usando un modelo de lenguaje como evaluador. Eso permite evaluar la calidad del sistema RAG a escala sin evaluación humana costosa. Y lo más importante: permite optimizar los hiperparámetros del sistema, tamaño de chunk, estrategia de búsqueda, número de documentos recuperados, con datos objetivos en lugar de intuición.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Porque RAG no es mágico. Tiene limitaciones muy concretas. Primera limitación: la calidad de la recuperación depende completamente de que la consulta y los documentos relevantes tengan embeddings similares. Y eso falla más de lo que parece.
+
+IAGO: <reflexivo> ¿En qué casos falla?
+
+MARIA: <analitica> Desajuste semántico. El usuario pregunta "¿Cuál es el procedimiento para solicitar vacaciones?" usando lenguaje coloquial. Pero el documento relevante está titulado "Protocolo de Tramitación de Ausencias Laborales Planificadas" usando lenguaje corporativo formal. Los embeddings pueden no capturar que ambos se refieren a lo mismo. Vocabulario técnico, acrónimos, variaciones lingüísticas. Todo eso rompe la similaridad semántica. Segunda limitación: cuando los documentos relevantes están dispersos en múltiples chunks que individualmente no son suficientemente relevantes. Imagina que la respuesta completa requiere información de cinco documentos diferentes. Cada documento por separado no tiene suficiente similaridad con la consulta como para aparecer en el top cinco de la búsqueda. Pero juntos contienen la respuesta completa. El sistema RAG básico falla en ese caso. Tercera limitación: cuando la consulta requiere razonamiento sobre múltiples documentos de forma conjunta. No es recuperar información y copiarla. Es sintetizar información de fuentes contradictorias, o comparar datos de diferentes períodos, o inferir conclusiones que no están explícitas en ningún documento individual. RAG básico no está diseñado para eso.
+
+IAGO: <curioso> ¿Y cómo se resuelven esas limitaciones?
+
+MARIA: <explicativo> Con las técnicas avanzadas que hemos visto. HyDE resuelve el desajuste semántico generando un documento hipotético de respuesta y buscando por el embedding de ese documento en lugar del embedding de la consulta. GraphRAG resuelve el problema de información dispersa representando el conocimiento como un grafo donde los nodos son entidades y las aristas son relaciones, y luego haciendo búsqueda sobre ese grafo. Y los cross-encoders en re-ranking mejoran la precisión de la recuperación cuando los bi-encoders fallan.
+
+MARIA: <contundente> Pero ninguna técnica resuelve todos los problemas. RAG es fundamentalmente un sistema de recuperación más generación. Si la información no está en los documentos indexados, el sistema no puede inventarla. Y si la recuperación falla, la generación falla. La calidad del sistema está limitada por la calidad de la base de conocimiento y la calidad de la recuperación.
+
+IAGO: [explicativo] Y eso conecta con un patrón cotidiano que se ve en muchas adopciones tecnológicas. Imagina que compras una herramienta nueva esperando que resuelva un problema sin tocar tus procesos. La herramienta funciona, pero si tus flujos no la acompañan, el resultado decepciona. Con los modelos de lenguaje pasa lo mismo: el modelo no falla por sí solo, falla cuando el sistema alrededor no está diseñado para gestionar sus límites. Por eso la diferencia entre un piloto y producción no está en el modelo, sino en la ingeniería que lo envuelve. Esa ingeniería incluye validación de fuentes, gestión de errores, observabilidad y un ciclo claro de revisión humana.
+# APLICACION_PRACTICA
+MARIA: <directo> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: ¿cómo se garantiza que el sistema genere guiones técnicamente precisos sobre cien temas diferentes sin inventarse conceptos ni mezclar información de módulos distintos?
+
+IAGO: <explicativo> El sistema tiene una arquitectura RAG específica para generación de guiones. La fase de indexación procesa los catorce PDFs de resumen de módulo y los documentos vivos del proyecto. Cada PDF se divide usando recursive chunking con tamaño objetivo de quinientos tokens y overlap de cincuenta tokens. Los chunks se convierten en embeddings usando el modelo de OpenAI text-embedding-3-large y se almacenan en una base vectorial local con metadatos de módulo, sección, y tipo de documento. La fase de recuperación usa búsqueda híbrida. Cuando el generador va a escribir un episodio del módulo siete sobre RAG, hace dos búsquedas en paralelo. Búsqueda vectorial sobre el embedding de la consulta "sistemas RAG arquitectura chunking búsqueda híbrida". Y búsqueda keyword con BM25 sobre los términos exactos "RAG", "chunking", "RAGAS", "cross-encoder". Los resultados se combinan con RRF y se seleccionan los diez chunks más relevantes. Pero hay una decisión técnica crítica. Los documentos vivos del proyecto, BIBLIA_SISTEMA, PODCAST, PRIMERPODCAST, VIDEOPODCAST, no se indexan en la base vectorial general. Se procesan con extracción estructurada buscando marcas específicas: DECISIÓN, CAMBIO, INCIDENCIA, REGLA. Solo las entradas marcadas que mencionan conceptos del módulo se pasan al contexto del generador. Eso evita contaminar el guion con información operativa irrelevante.
+
+MARIA: <analitica> ¿Y cómo se mide la calidad de la recuperación?
+
+IAGO: <explicativo> Con una métrica simplificada de Context Precision. Para cada episodio generado, el sistema verifica qué porcentaje de los chunks recuperados fueron realmente citados o usados en el guion final. Si la precisión cae por debajo del setenta y cinco por ciento, se ajusta el número de chunks recuperados o el umbral de similaridad. Es evaluación automática sin intervención humana.
+
+MARIA: <reflexivo> O sea, el sistema usa RAG para generar contenido sobre RAG. Y la calidad del contenido depende de que la recuperación sea precisa.
+
+IAGO: <contundente> Si la recuperación falla, el guion mezcla conceptos de módulos diferentes o inventa técnicas que no están en el PDF. Por eso la búsqueda híbrida y la extracción estructurada de los documentos vivos son críticas. No es un detalle de implementación. Es lo que garantiza que cada episodio sea técnicamente verificable.
+
+# CIERRE_CONCEPTOS
+IAGO: <firme> No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+MARIA: <directo> Primero: RAG resuelve conocimiento desactualizado y alucinaciones combinando recuperación de información con generación de lenguaje natural.
+
+IAGO: <contundente> Segundo: la arquitectura básica tiene dos fases separadas, indexación offline y recuperación-generación online.
+
+MARIA: <explicativo> Tercero: búsqueda híbrida vectorial más keyword produce mejores resultados que cualquier enfoque por separado.
+
+IAGO: <didactico> Cuarto: el tamaño y la estrategia de chunking son hiperparámetros críticos que se optimizan con evaluación RAGAS.
+
+# CIERRE_FINAL
+IAGO: <conversacional> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2379 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 44.9
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] rag: 20 menciones
+## [--] llm: 0 menciones
+## [OK] ragas: 5 menciones
+## [OK] que porcentaje de: 4 menciones
+## [OK] busqueda hibrida: 9 menciones
+## [OK] la consulta y: 1 menciones
+## [OK] recuperacion: 13 menciones
+## [OK] indexacion: 4 menciones
+## Cobertura total: 88% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 19
+## Por documento: {'BIBLIA_SISTEMA': 3, 'PRIMERPODCAST': 1, 'VIDEOPODCAST': 5, 'PODCAST': 10}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 31739
+## output_tokens: 11194
+## cache_read: 0
+## total: 42933

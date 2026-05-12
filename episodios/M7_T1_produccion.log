@@ -1,0 +1,119 @@
+========================================
+LOG DE PRODUCCION - M7_T1
+========================================
+Fecha:              2026-05-12 09:06:08
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    35
+Bloques generados:  35
+Bloques fallidos:   0
+Duracion total:     10.3 minutos (620s)
+Tiempo generacion:  2.4 minutos
+Archivo final:      episodios\M7_T1.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 9809
+Creditos estimados: 9809
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [35]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     IAGO #001 [contundente]
+  00:46  [SINTONIA — inicio]
+  00:55  [SINTONIA — fin]
+  00:57  SALUDO_Y_PRESENTACION    IAGO #002
+  00:59  SALUDO_Y_PRESENTACION    MARIA #003
+  01:00  SALUDO_Y_PRESENTACION    IAGO #004 [serio]
+  01:10  SALUDO_Y_PRESENTACION    MARIA #005
+  01:24  BLOQUE_QUE               IAGO #006 [didactico]
+  02:04  BLOQUE_QUE               MARIA #007
+  02:10  BLOQUE_QUE               IAGO #008 [explicativo]
+  02:44  BLOQUE_QUE               MARIA #009
+  02:48  BLOQUE_QUE               IAGO #010 [conversacional]
+  03:19  BLOQUE_QUE               MARIA #011
+  03:22  BLOQUE_QUE               IAGO #012 [firme]
+  03:46  BLOQUE_COMO              IAGO #013 [explicativo]
+  04:02  BLOQUE_COMO              MARIA #014 [analitica]
+  04:25  BLOQUE_COMO              MARIA #015
+  04:26  BLOQUE_COMO              IAGO #016
+  04:54  BLOQUE_COMO              MARIA #017 [curioso]
+  05:00  BLOQUE_COMO              IAGO #018
+  05:15  BLOQUE_COMO              MARIA #019 [analitica]
+  05:34  BLOQUE_COMO              MARIA #020 [analitica]
+  06:04  BLOQUE_COMO              IAGO #021
+  06:20  BLOQUE_COMO              MARIA #022 [directo]
+  06:24  BLOQUE_COMO              IAGO #023
+  06:50  BLOQUE_LIMITES           MARIA #024 [esceptico]
+  07:07  BLOQUE_LIMITES           IAGO #025
+  07:16  BLOQUE_LIMITES           MARIA #026 [analitica]
+  07:30  BLOQUE_LIMITES           MARIA #027 [firme]
+  07:58  BLOQUE_LIMITES           IAGO #028 [reflexivo]
+  08:18  BLOQUE_LIMITES           MARIA #029 [tenso]
+  09:01  BLOQUE_LIMITES           IAGO #030
+  09:23  BLOQUE_LIMITES           MARIA #031 [directo]
+  09:47  CIERRE_CONCEPTOS         IAGO #032 [serio]
+  09:50  CIERRE_CONCEPTOS         IAGO #033
+  09:59  CIERRE_CONCEPTOS         MARIA #034
+  10:11  CIERRE_FINAL             IAGO #035 [calido]
+
+BLOQUES GENERADOS
+-----------------
+[001] IAGO: [contundente] El 97% de los bufetes del Am Law 100 usan sistemas RAG en producci...
+[002] IAGO: Soy Yago.
+[003] MARIA: Y yo Maria.
+[004] IAGO: [serio] Antes de empezar, el aviso de siempre: este episodio lo genera un sistem...
+[005] MARIA: Hoy hablamos de RAG: Retrieval-Augmented Generation. La arquitectura que conecta...
+[006] IAGO: [didactico] RAG es el acrónimo de Retrieval-Augmented Generation. Traducido: gen...
+[007] MARIA: ¿Y por qué no modificar el modelo directamente? ¿Por qué no hacer fine-tuning co...
+[008] IAGO: [explicativo] Porque fine-tuning y RAG resuelven problemas diferentes. Imagina q...
+[009] MARIA: ¿Y cuál es la metáfora más clara para entender RAG?
+[010] IAGO: [conversacional] La diferencia entre un examen de memoria cerrado y un examen co...
+[011] MARIA: Eso cambia completamente la trazabilidad de la respuesta.
+[012] IAGO: [firme] En el caso Mata versus Avianca, un abogado presentó citas judiciales alu...
+[013] IAGO: [explicativo] El flujo técnico de RAG tiene cuatro etapas. Primera: ingesta. Los...
+[014] MARIA: [analitica] Cuando llega una consulta del usuario, se genera su embedding y se b...
+[015] MARIA: ¿Qué es un chunk ?
+[016] IAGO: Un fragmento de texto. Imagina que tienes un manual de 200 páginas. No puedes me...
+[017] MARIA: [curioso] Y esos chunks, ¿cómo se almacenan? Porque no es una base de datos SQL ...
+[018] IAGO: No. Es una base de datos vectorial. Almacena embeddings e indexa para búsqueda e...
+[019] MARIA: [analitica] Weaviate, que es open source con versión cloud, buen balance. Milvus...
+[020] MARIA: [analitica] Entonces el sistema tiene cinco componentes técnicos reales. Primero...
+[021] IAGO: Completamente. Y cada componente tiene sus propias decisiones técnicas. El tamañ...
+[022] MARIA: [directo] ¿Y qué pasa con los modelos de embedding? Porque no todos son iguales.
+[023] IAGO: No. Los modelos de embedding genéricos tienen peor rendimiento en dominios espec...
+[024] MARIA: [esceptico] Vamos a lo que falla. Porque RAG no es mágico. Primer error común: c...
+[025] IAGO: Porque el diseño del sistema depende del tipo de preguntas. El tamaño de chunk ó...
+[026] MARIA: [analitica] El modelo de embedding que funciona bien para documentos técnicos pu...
+[027] MARIA: [firme] Segundo error: asumir que RAG elimina las alucinaciones. No es verdad. R...
+[028] IAGO: [reflexivo] Y hay un tercer error técnico que destruye proyectos: usar el mismo ...
+[029] MARIA: [tenso] Y luego está el gap prototipo-producción. Hacer un demo de RAG es fácil....
+[030] IAGO: Morgan Stanley Wealth Management indexó 100.000 documentos de research financier...
+[031] MARIA: [directo] Y un último contraintuitivo: más contexto no siempre es mejor. Si recu...
+[032] IAGO: [serio] No te puedes ir de este capítulo sin haber entendido estos conceptos.
+[033] IAGO: RAG es generación aumentada con recuperación: el LLM consulta una base de conoci...
+[034] MARIA: El flujo técnico tiene cuatro etapas: ingesta con chunking y embedding, recupera...
+[035] IAGO: [calido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos...
+
+Produccion completada.

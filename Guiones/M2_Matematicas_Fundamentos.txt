@@ -1,0 +1,172 @@
+# HOOK
+MARIA: <conversacional> En 2017, un paper de Google cambió para siempre el procesamiento de lenguaje natural. Se llamaba "Attention Is All You Need" y presentaba una arquitectura que procesaba todas las palabras de una frase en paralelo, no una tras otra como se había hecho durante décadas. Hoy, esa arquitectura — el Transformer — es la base de ChatGPT, Claude, Gemini y prácticamente todos los sistemas de IA generativa que usas. Pero aquí va lo contraintuitivo: el mecanismo de atención que lo hace posible es matemáticamente elegante y conceptualmente sencillo. Es álgebra lineal, cálculo y probabilidad aplicados de forma brillante. Y entender esas matemáticas es la diferencia entre usar la IA como caja negra y entender realmente qué está pasando dentro. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <calido> Bienvenidos a MaquinarIA Pesada. Soy Maria.
+
+IAGO: <calido> Y yo soy Yago. Este es el episodio del módulo 2: Matemáticas y Fundamentos Técnicos de la IA.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast — al final del episodio veremos cómo aplica las matemáticas de las que vamos a hablar.
+
+IAGO: <didactico> Hoy vamos a cubrir el territorio matemático que sostiene toda la IA moderna. Álgebra lineal, cálculo diferencial, estadística, probabilidad, arquitecturas de redes neuronales y métricas de evaluación. No es un curso de matemáticas completo. Es un mapa de los conceptos que necesitas entender para dejar de usar la IA como caja negra.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> Empecemos por el panorama completo. Existe una línea divisoria clara en el campo de la IA. Por un lado están los practicantes que entienden las matemáticas subyacentes a las técnicas que usan. Por el otro, los que las usan como cajas negras. Los primeros pueden diagnosticar por qué un modelo no converge durante el entrenamiento. Pueden elegir la función de pérdida correcta para su problema. Entienden por qué un hiperparámetro concreto afecta al comportamiento del modelo de la forma en que lo hace. Los segundos aplican técnicas incorrectamente, tienen dificultades para diagnosticar problemas, y pueden ser engañados por métricas que parecen buenas pero ocultan problemas reales.
+
+MARIA: <curioso> ¿Y qué matemáticas concretas marcan esa diferencia?
+
+IAGO: <didactico> Tres ramas fundamentales. Primera: álgebra lineal. Es literalmente la lengua en la que se escribe el código de todas las redes neuronales. Los inputs de un modelo son vectores. Los parámetros del modelo son matrices. El proceso de calcular un output dado un input — lo que llamamos forward pass — es una secuencia de multiplicaciones de matrices. Sin álgebra lineal no hay forma de entender qué está ocurriendo dentro de una red neuronal. Segunda rama: cálculo diferencial. Es la herramienta matemática que permite a los algoritmos aprender. El entrenamiento de una red neuronal es un proceso de optimización que minimiza una función de pérdida ajustando los parámetros del modelo. Esa minimización se hace mediante el descenso del gradiente, que requiere calcular derivadas. La regla de la cadena del cálculo es la base matemática del algoritmo de backpropagation, que es cómo se calculan esos gradientes eficientemente en redes con millones o miles de millones de parámetros.
+
+IAGO: <explicativo> Tercera rama: estadística y probabilidad. El machine learning es fundamentalmente estadística aplicada a grandes datos con algoritmos eficientes. Los modelos de ML son estimadores estadísticos: aprenden una función que describe la relación entre inputs y outputs a partir de datos de entrenamiento, con la esperanza de que esa relación se generalice a datos nuevos. Conceptos como sesgo y varianza, sobreajuste y subajuste, validación cruzada, son tan relevantes para el ML como el álgebra lineal y el cálculo. Y la probabilidad proporciona el marco formal para razonar bajo incertidumbre. Los LLMs generan texto muestreando de una distribución de probabilidad sobre los posibles tokens siguientes. Los modelos de clasificación producen probabilidades de pertenecer a cada clase. Entender la probabilidad es entender cómo los modelos representan y comunican la incertidumbre.
+
+MARIA: <analitica> O sea, que estas tres ramas no son opcionales. Son el lenguaje base del campo.
+
+IAGO: <contundente> Y este módulo cubre también la evolución de las arquitecturas de redes neuronales — desde el perceptrón básico hasta los Transformers que revolucionaron el campo en 2017 — y las métricas de evaluación, que es cómo medimos si un modelo funciona o no. Porque puedes tener las matemáticas claras, pero si no sabes medir correctamente el rendimiento, no sabes si tu sistema funciona.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Vamos a los conceptos núcleo. Empecemos por el álgebra lineal. Un vector es una lista ordenada de números. En IA, los vectores representan datos: una imagen es un vector de píxeles, una frase es un vector de embeddings, un usuario es un vector de características.
+
+MARIA: [analitica] Una matriz es una tabla rectangular de números. En IA, las matrices representan los parámetros de un modelo: los pesos de una red neuronal son matrices. La operación fundamental de las redes neuronales es la multiplicación de matrices. Cuando un modelo procesa un input, lo que está haciendo matemáticamente es multiplicar el vector de input por una matriz de pesos, aplicar una función de activación no lineal, y repetir ese proceso capa tras capa.
+
+MARIA: [directo] De acuerdo. Sigamos.
+
+IAGO: <explicativo> Los autovectores y autovalores son conceptos más avanzados pero cruciales para técnicas como el análisis de componentes principales, PCA, que se usa para reducir la dimensionalidad de los datos. Y la descomposición en valores singulares — SVD — es la base matemática de técnicas modernas como LoRA, que es el método más usado para hacer fine-tuning eficiente de modelos grandes. LoRA descompone las matrices de pesos en matrices de rango bajo, lo que permite ajustar el modelo con mucho menos memoria y cómputo.
+
+MARIA: <curioso> Pasemos al cálculo. ¿Qué es el descenso del gradiente?
+
+IAGO: <didactico> Es el algoritmo de optimización que entrena las redes neuronales. Imagina que tienes una función de pérdida que mide qué tan mal lo está haciendo tu modelo. Esa función tiene millones de parámetros — los pesos del modelo — y queremos encontrar los valores de esos parámetros que minimizan la pérdida.
+
+MARIA: [analitica] El descenso del gradiente calcula el gradiente de la función de pérdida — es decir, las derivadas parciales con respecto a todos los parámetros — y ajusta los parámetros en la dirección opuesta al gradiente. Es como estar en una montaña con niebla y querer bajar al valle: no ves el valle, pero puedes sentir la pendiente bajo tus pies. Vas dando pasos en la dirección de mayor descenso. el descenso del gradiente.
+
+IAGO: <explicativo> El algoritmo de backpropagation es cómo se calcula ese gradiente eficientemente. Usa la regla de la cadena del cálculo para propagar el error desde la salida del modelo hacia atrás, capa por capa, calculando las derivadas de cada parámetro. Sin backpropagation, entrenar redes neuronales profundas sería computacionalmente inviable. Y en la práctica no se usa el descenso del gradiente puro, sino variantes estocásticas como Adam o AdamW, que ajustan la tasa de aprendizaje automáticamente y son más robustas.
+
+MARIA: <analitica> Ahora estadística y probabilidad. Mencionaste el dilema sesgo-varianza. ¿Qué es?
+
+IAGO: <didactico> Es uno de los conceptos más fundamentales del machine learning. Un modelo con alto sesgo tiene suposiciones demasiado simplistas sobre los datos. Produce underfitting: funciona mal tanto en los datos de entrenamiento como en los nuevos datos. Un modelo con alta varianza es demasiado sensible a los datos de entrenamiento específicos.
+
+MARIA: [analitica] Produce overfitting: funciona bien en los datos de entrenamiento pero mal en los nuevos datos. El objetivo es encontrar el equilibrio entre sesgo y varianza que maximice la generalización. En el contexto de los LLMs, la temperatura controla indirectamente este equilibrio. Temperatura baja produce alta consistencia pero menor creatividad. Temperatura alta produce mayor creatividad pero respuestas menos fiables.
+
+MARIA: <curioso> Y las distribuciones de probabilidad, ¿cuáles son las más relevantes?
+
+IAGO: <explicativo> La distribución Normal o Gaussiana aparece en la inicialización de parámetros, en las suposiciones de muchos modelos estadísticos, y en el análisis de los errores. La distribución Bernoulli y la Binomial modelan el resultado de experimentos binarios, como la clasificación binaria. La distribución Categórica es la generalización a múltiples categorías.
+
+MARIA: [analitica] Y la distribución Softmax es la que convierte las salidas brutas de una red neuronal — los logits — en probabilidades que suman uno. Es la distribución que usan los LLMs para decidir qué token generar a continuación. La temperatura que mencioné antes es directamente un parámetro que controla la forma de esa distribución softmax: temperatura baja concentra la probabilidad en los tokens más probables, temperatura alta la distribuye más uniformemente.
+
+MARIA: <analitica> Pasemos a las arquitecturas. ¿Cómo llegamos de las redes neuronales básicas a los Transformers?
+
+IAGO: <didactico> La unidad básica es el neurón artificial o perceptrón. Toma múltiples inputs, los pondera multiplicando por pesos, suma los resultados, aplica una función de activación no lineal, y produce un output. Las funciones de activación son el ingrediente que da a las redes neuronales su capacidad de modelar relaciones no lineales.
+
+MARIA: [analitica] Sin ellas, una red neuronal de múltiples capas sería equivalente a una red de una sola capa. Las funciones más importantes son ReLU, sigmoid, tanh, y GELU, que es la más usada en los LLMs modernos. Una red neuronal feedforward organiza estos neuronas en capas: una capa de input, una o más capas ocultas, y una capa de output.
+
+IAGO: <explicativo> Durante años, las redes recurrentes — RNN, LSTM, GRU — fueron el estándar para el procesamiento de secuencias porque tienen una memoria interna que les permite procesar secuencias de longitud variable. Pero las RNN sufren el problema del desvanecimiento del gradiente: durante el entrenamiento, los gradientes se vuelven extremadamente pequeños cuando se propagan hacia atrás a través de secuencias largas, lo que impide al modelo aprender dependencias de largo alcance. Las LSTM y las GRU mitigan esto con mecanismos de compuertas, pero siguen teniendo limitaciones fundamentales.
+
+MARIA: <curioso> Y ahí es donde entran los Transformers.
+
+IAGO: <contundente> La arquitectura Transformer, introducida por Vaswani y otros en Google Brain en 2017, representó un cambio de paradigma. En lugar de procesar los tokens secuencialmente como las RNN, los Transformers procesan todos los tokens en paralelo usando el mecanismo de self-attention. Cada token presta atención a todos los demás tokens en la secuencia, aprendiendo qué tokens son más relevantes para interpretar su significado en el contexto dado.
+
+MARIA: [analitica] Para cada token, el Transformer calcula tres vectores: Query, que es qué busca este token; Key, que es qué ofrece este token a otros; y Value, que es qué información aporta este token. La atención de un token sobre todos los demás se calcula como el producto escalar entre su Query y los Keys de todos los demás tokens, normalizado con softmax, ponderado por los Values. El resultado es que tokens con alta afinidad semántica se atienden mutuamente con mayor intensidad.
+
+IAGO: <explicativo> La atención multi-cabeza ejecuta múltiples mecanismos de atención en paralelo, capturando distintos tipos de relaciones semánticas simultáneamente. Y los LLMs son Transformers que se han escalado a enormes tamaños — desde cientos de millones hasta billones de parámetros — y entrenados sobre cantidades masivas de texto.
+
+MARIA: [analitica] El paper de OpenAI de 2020, "Scaling Laws for Neural Language Models", estableció que el rendimiento de los LLMs mejora de forma predecible con el tamaño del modelo, la cantidad de datos de entrenamiento, y el poder computacional, siguiendo leyes de potencia. Eso proporcionó la justificación teórica para invertir en modelos cada vez más grandes.
+
+MARIA: <analitica> Y las capacidades emergentes son el fenómeno más sorprendente de ese escalado.
+
+IAGO: <reflexivo> Sí. Capacidades que no están presentes en modelos pequeños aparecen súbitamente cuando los modelos superan cierto umbral de tamaño. El razonamiento multi-paso, la resolución de analogías, la capacidad de seguir instrucciones complejas, el aprendizaje in-context — todas son capacidades que emergieron en modelos suficientemente grandes. La naturaleza de estas emergencias, si son realmente discontinuidades o artefactos de las métricas usadas para medirlas, es objeto de investigación activa. Pero el hecho es que los LLMs grandes pueden hacer cosas que los LLMs pequeños no pueden, y esas capacidades no se programaron explícitamente: emergieron del escalado.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora los límites. Porque todo esto suena muy potente, pero hay cosas que fallan. Empecemos por las métricas de evaluación. ¿Qué es lo que no funciona?
+
+IAGO: <directo> Evaluar los LLMs es significativamente más difícil que evaluar los modelos de clasificación clásicos porque los outputs son texto libre, no categorías predefinidas. Las métricas automáticas para texto tienen problemas serios.
+
+MARIA: [analitica] BLEU y ROUGE, que se usaron originalmente para traducción automática y resumen, son fáciles de calcular pero correlacionan mal con la calidad percibida por humanos. Miden la similaridad de n-gramas entre el texto generado y el de referencia, pero no capturan la calidad semántica real. Puedes tener una puntuación BLEU alta con texto que suena mal, y una puntuación BLEU baja con texto que es perfectamente correcto pero usa palabras distintas.
+
+MARIA: <analitica> ¿Y las métricas más modernas?
+
+IAGO: <explicativo> BERTScore usa embeddings de BERT para medir la similaridad semántica entre el texto generado y el de referencia. Tiene mejor correlación con el juicio humano, pero sigue siendo imperfecta.
+
+MARIA: [analitica] Y las métricas RAGAS — Faithfulness, Answer Relevancy, Context Precision, Context Recall — son específicas para sistemas RAG, pero también tienen limitaciones. La realidad es que ninguna métrica automática captura completamente la calidad de un texto generado. Por eso cada vez se usa más LLM-as-judge: usar un LLM, frecuentemente un modelo frontier como GPT-4 o Claude Opus, para evaluar la calidad de las respuestas de otro LLM.
+
+MARIA: <esceptico> Pero eso tiene sus propios sesgos, ¿no?
+
+IAGO: <contundente> Los LLMs tienden a preferir sus propias respuestas y las respuestas más largas. Con el diseño correcto de las rúbricas de evaluación y el prompting adecuado, puede proporcionar evaluaciones de calidad comparable a la evaluación humana a una fracción del coste. Pero no es perfecto. Es un compromiso.
+
+MARIA: <analitica> Otro límite: el dilema sesgo-varianza. Dijiste que es fundamental, pero en la práctica, ¿cómo sabes dónde estás en ese espectro?
+
+IAGO: <reflexivo> Esa es la pregunta del millón. La respuesta clásica es usar validación cruzada: dividir los datos en conjuntos de entrenamiento, validación y prueba, y medir el rendimiento en cada uno. Si el modelo funciona bien en entrenamiento pero mal en validación, tienes overfitting — alta varianza.
+
+MARIA: [analitica] Si funciona mal en ambos, tienes underfitting — alto sesgo. Pero con los LLMs modernos, que se entrenan sobre billones de tokens, la validación cruzada tradicional no siempre es práctica. Y además, los LLMs pueden memorizar partes de los datos de entrenamiento, lo que complica la interpretación de las métricas. Es un problema abierto.
+
+MARIA: <esceptico> Y el problema del desvanecimiento del gradiente en las RNN. Dijiste que las LSTM y las GRU lo mitigan, pero no lo resuelven completamente. ¿Por qué?
+
+IAGO: <explicativo> Porque las LSTM y las GRU siguen procesando las secuencias token por token, de forma secuencial.
+
+MARIA: [analitica] Eso significa que para capturar una dependencia entre el primer token y el último token de una secuencia larga, la información tiene que propagarse a través de todos los pasos intermedios. Las compuertas de las LSTM ayudan a mantener esa información, pero no eliminan completamente el problema. Los Transformers lo resuelven procesando todos los tokens en paralelo, de forma que cualquier token puede atender directamente a cualquier otro token sin pasos intermedios. Pero los Transformers tienen su propio límite: la complejidad computacional del mecanismo de atención es cuadrática con la longitud de la secuencia. Eso significa que procesar secuencias muy largas — decenas de miles de tokens — es computacionalmente costoso. Y las capacidades emergentes. Dijiste que la naturaleza de esas emergencias es objeto de investigación activa. ¿Qué es lo que no entendemos?
+
+IAGO: <reflexivo> No está claro si las capacidades emergentes son realmente discontinuidades — es decir, que aparecen súbitamente en un umbral de tamaño — o si son artefactos de las métricas que usamos para medirlas. Algunos investigadores argumentan que si usas métricas más suaves, las capacidades aparecen de forma gradual, no súbita. Otros argumentan que hay evidencia de verdaderas discontinuidades.
+
+MARIA: [analitica] La realidad es que no tenemos una teoría completa de por qué los LLMs grandes pueden hacer cosas que los LLMs pequeños no pueden. Sabemos que el escalado funciona, pero no entendemos completamente por qué. Es uno de los misterios centrales del campo.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Este sistema tiene que producir 14 episodios de videopodcast — módulos M0 a M14 — con dos presentadores ficticios, María y Yago, usando voces de ElevenLabs. El sistema genera los guiones con un LLM, convierte esos guiones en audio con TTS, y monta el audio final con música de fondo. La pregunta operativa es: ¿dónde aparecen las matemáticas de este módulo en ese pipeline?
+
+IAGO: <didactico> Aparecen en cada etapa. Empecemos por la generación de guiones. El sistema usa Claude Sonnet 4.5 de Anthropic para generar los guiones a partir de los PDFs de resumen de cada módulo. Claude es un Transformer — la arquitectura que acabamos de explicar. Cuando el sistema le pasa el PDF de resumen y le pide que genere un guion, Claude está calculando la atención entre todos los tokens del prompt — el PDF, las instrucciones del sistema, los ejemplos de episodios anteriores — y generando el guion token por token, muestreando de la distribución softmax sobre su vocabulario. La temperatura que usa el sistema es 0.7, que es un equilibrio entre consistencia y creatividad. Si usara temperatura 0.1, los guiones serían muy consistentes pero repetitivos. Si usara temperatura 1.5, serían muy creativos pero podrían desviarse del contenido del PDF.
+
+IAGO: <explicativo> La generación de cada token implica multiplicaciones de matrices masivas. Claude Sonnet tiene decenas de miles de millones de parámetros — matrices de pesos — y para generar cada token, el modelo multiplica el estado actual por esas matrices, aplica funciones de activación GELU, calcula la atención multi-cabeza, y repite ese proceso a través de múltiples capas. Todo álgebra lineal pura. Y el modelo fue entrenado con backpropagation: durante el entrenamiento, Anthropic calculó los gradientes de la función de pérdida con respecto a todos esos miles de millones de parámetros, usando la regla de la cadena, y ajustó los pesos con una variante de descenso del gradiente estocástico, probablemente AdamW.
+
+MARIA: <curioso> ¿Y en la síntesis de voz?
+
+IAGO: <explicativo> ElevenLabs usa modelos de difusión para la síntesis de voz. Los modelos de difusión son una clase de modelos generativos que aprenden a revertir un proceso de difusión — añadir ruido gradualmente a los datos — para generar nuevos datos. Matemáticamente, los modelos de difusión están basados en procesos estocásticos y ecuaciones diferenciales estocásticas. El modelo aprende a predecir el ruido que se añadió en cada paso del proceso de difusión, y luego usa esas predicciones para generar audio nuevo partiendo de ruido puro. El entrenamiento de esos modelos también usa backpropagation y descenso del gradiente. Y el audio generado se muestrea de una distribución de probabilidad sobre las posibles formas de onda. La calidad de las voces de ElevenLabs — el hecho de que suenen naturales y expresivas — es el resultado de haber entrenado esos modelos sobre decenas de miles de horas de audio con anotaciones de estilo y emoción.
+
+IAGO: <didactico> Y el montaje final del audio usa pydub y ffmpeg. Pydub manipula las formas de onda del audio — que son vectores de números — para añadir silencios, mezclar las voces con la música de fondo, y normalizar el volumen. La normalización usa estadística: el sistema calcula la media y la desviación estándar de la amplitud del audio y ajusta el volumen para que el audio final tenga un nivel consistente. Y ffmpeg codifica el audio final en MP3 usando algoritmos de compresión con pérdida que están basados en modelos psicoacústicos — modelos de cómo los humanos percibimos el sonido — que a su vez están basados en estadística y teoría de la información.
+
+MARIA: <analitica> O sea, que desde la generación del guion hasta la codificación final del MP3, cada paso del pipeline usa las matemáticas de este módulo.
+
+IAGO: <contundente> Álgebra lineal para las multiplicaciones de matrices en el Transformer. Cálculo para el entrenamiento por backpropagation. Probabilidad para el muestreo de tokens y la síntesis de voz. Estadística para la normalización del audio. Y arquitecturas de redes neuronales — Transformers para el LLM, modelos de difusión para el TTS — que son la aplicación de esas matemáticas a problemas concretos. El sistema que está generando este episodio es una demostración en vivo de todo lo que hemos explicado.
+
+MARIA: <reflexivo> Y el hecho de que funcione — que estés escuchando este episodio ahora mismo — es la prueba de que esas matemáticas funcionan en la práctica.
+
+# CIERRE_CONCEPTOS
+MARIA: <directo> No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: el álgebra lineal es la lengua de las redes neuronales. Vectores, matrices, multiplicación de matrices. Sin álgebra lineal no hay forma de entender qué está pasando dentro de un modelo.
+
+IAGO: <contundente> Segundo: el cálculo diferencial es la base del entrenamiento. Gradientes, regla de la cadena, backpropagation. El descenso del gradiente es cómo los modelos aprenden.
+
+MARIA: <analitica> Tercero: la estadística y la probabilidad proporcionan el marco para razonar sobre la incertidumbre. Distribuciones de probabilidad, sesgo-varianza, métricas de evaluación. Los modelos de ML son estimadores estadísticos.
+
+IAGO: <didactico> Cuarto: la arquitectura Transformer revolucionó el procesamiento de secuencias con el mecanismo de self-attention. Procesar todos los tokens en paralelo, no secuencialmente. Es la base de todos los LLMs modernos.
+
+MARIA: <reflexivo> Y quinto: las capacidades emergentes son el fenómeno más sorprendente del escalado de LLMs. Capacidades que aparecen súbitamente en modelos suficientemente grandes. El sistema que genera este podcast es un ejemplo de esas capacidades en acción.
+
+# CIERRE_FINAL
+IAGO: <calido> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+MARIA: <calido> Nos escuchamos pronto.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 3586 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 64.0
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] ia: 8 menciones
+## [OK] ml: 3 menciones
+## [OK] las redes neuronales: 6 menciones
+## [OK] llm: 5 menciones
+## [OK] rnn: 4 menciones
+## [OK] la arquitectura transformer: 2 menciones
+## [OK] estadistica y probabilidad: 2 menciones
+## [OK] las metricas automaticas: 1 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 170
+## Por documento: {'BIBLIA_SISTEMA': 70, 'PRIMERPODCAST': 17, 'VIDEOPODCAST': 45, 'PODCAST': 38}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 37303
+## output_tokens: 13277
+## cache_read: 0
+## total: 50580

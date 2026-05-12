@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "media_by_concept": {
+    "golden_dataset": [
+      {
+        "title": "Golden lion tamarin",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Leontopithecus_rosalia_-_Copenhagen_Zoo_-_DSC09082.JPG/960px-Leontopithecus_rosalia_-_Copenhagen_Zoo_-_DSC09082.JPG",
+        "page_url": "https://en.wikipedia.org/wiki/Golden_lion_tamarin",
+        "source": "wikipedia.en",
+        "license_hint": "Wikipedia / probablemente CC-BY-SA o dominio publico",
+        "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\media\\golden_dataset\\golden_lion_tamarin.jpg",
+        "size": 406614
+      }
+    ],
+    "overfitting": [
+      {
+        "title": "Overfitting",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Overfitting.svg/960px-Overfitting.svg.png",
+        "page_url": "https://en.wikipedia.org/wiki/Overfitting",
+        "source": "wikipedia.en",
+        "license_hint": "Wikipedia / probablemente CC-BY-SA o dominio publico",
+        "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\media\\overfitting\\overfitting.png",
+        "size": 109240
+      }
+    ]
+  }
+}

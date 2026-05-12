@@ -1,0 +1,42 @@
+============================================================
+EPISODIO : M11_E_Automatizacion
+GUION    : C:\Users\Asus\maquinaria_pesada\Guiones\M11_Automatizacion.txt
+COMANDO  : C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe C:\Users\Asus\maquinaria_pesada\generar_episodio_v2.py --guion Guiones\M11_Automatizacion.txt --ep M11_E_Automatizacion
+INICIO   : 2026-05-10 23:56:13
+FIN      : 2026-05-10 23:56:16
+EXIT     : 1 (FALLO)
+============================================================
+
+--- STDOUT ---
+
+Leyendo guion: Guiones\M11_Automatizacion.txt
+[WARN] Problemas de calidad detectados en el guion (no fatales):
+  - [WARN] El aviso de IA no contiene ninguna frase de enganche recomendada.
+  - [WARN] El guion tiene 3096 palabras (maximo recomendado: 2800).
+  - [WARN] Bloque 6 (BLOQUE_PANORAMA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 9 (BLOQUE_PANORAMA) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 11 (BLOQUE_TEMAS_CLAVE) tiene 12 frases (maximo: 10).
+  - [WARN] Bloque 12 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 16 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 17 (BLOQUE_TEMAS_CLAVE) tiene 11 frases (maximo: 10).
+  - [WARN] Bloque 18 (BLOQUE_TEMAS_CLAVE) tiene 14 frases (maximo: 10).
+  - [WARN] Bloque 19 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 21 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 23 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 36 (APLICACION_PRACTICA) tiene 15 frases (maximo: 10).
+  - [WARN] Bloque 37 (APLICACION_PRACTICA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 41 (APLICACION_PRACTICA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 42 (APLICACION_PRACTICA) tiene 12 frases (maximo: 10).
+   52 bloques encontrados
+   Tokens audio: no aplica (ElevenLabs usa creditos/caracteres)
+Antes de generar creditos ElevenLabs restantes: desconocido (API no disponible)
+
+Generando audio con ElevenLabs eleven_v3...
+  [001] IAGO - generando... (intento 1)
+
+
+--- STDERR ---
+
+ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+Comprueba que ELEVENLABS_API_KEY en el fichero .env es válida y está activa.
+

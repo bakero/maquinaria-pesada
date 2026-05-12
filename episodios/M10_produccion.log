@@ -1,0 +1,160 @@
+========================================
+LOG DE PRODUCCION - M10
+========================================
+Fecha:              2026-05-12 09:19:57
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    56
+Bloques generados:  55
+Bloques fallidos:   1
+Duracion total:     21.1 minutos (1265s)
+Tiempo generacion:  5.1 minutos
+Archivo final:      episodios\M10.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 20441
+Creditos estimados: 20441
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- Solo se generaron 55/56 bloques.
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [55]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001
+  01:00  [SINTONIA — inicio]
+  01:09  [SINTONIA — fin]
+  01:11  SALUDO_Y_PRESENTACION    MARIA #002
+  01:19  SALUDO_Y_PRESENTACION    IAGO #003
+  01:25  SALUDO_Y_PRESENTACION    MARIA #004
+  01:43  BLOQUE_PANORAMA          IAGO #005
+  02:30  BLOQUE_PANORAMA          MARIA #006
+  02:33  BLOQUE_PANORAMA          IAGO #007
+  03:01  BLOQUE_PANORAMA          IAGO #008
+  03:49  BLOQUE_PANORAMA          MARIA #009
+  03:52  BLOQUE_PANORAMA          IAGO #010
+  04:18  BLOQUE_TEMAS_CLAVE       IAGO #011
+  05:19  BLOQUE_TEMAS_CLAVE       MARIA #012
+  05:23  BLOQUE_TEMAS_CLAVE       IAGO #013
+  05:55  BLOQUE_TEMAS_CLAVE       MARIA #014
+  06:01  BLOQUE_TEMAS_CLAVE       IAGO #015
+  06:02  BLOQUE_TEMAS_CLAVE       MARIA #016
+  06:55  BLOQUE_TEMAS_CLAVE       IAGO #017
+  06:58  BLOQUE_TEMAS_CLAVE       MARIA #018
+  07:47  BLOQUE_TEMAS_CLAVE       IAGO #019
+  08:34  BLOQUE_TEMAS_CLAVE       MARIA #020
+  08:38  BLOQUE_TEMAS_CLAVE       IAGO #021
+  08:53  BLOQUE_TEMAS_CLAVE       MARIA #022
+  09:31  BLOQUE_TEMAS_CLAVE       IAGO #023
+  09:34  BLOQUE_TEMAS_CLAVE       MARIA #024
+  09:50  BLOQUE_TEMAS_CLAVE       IAGO #025
+  10:43  BLOQUE_TEMAS_CLAVE       MARIA #026
+  10:46  BLOQUE_TEMAS_CLAVE       IAGO #027
+  11:12  BLOQUE_LIMITES           MARIA #028
+  11:20  BLOQUE_LIMITES           MARIA #030
+  11:57  BLOQUE_LIMITES           IAGO #031
+  11:59  BLOQUE_LIMITES           MARIA #032
+  12:33  BLOQUE_LIMITES           MARIA #033
+  13:17  BLOQUE_LIMITES           IAGO #034
+  13:18  BLOQUE_LIMITES           MARIA #035
+  13:53  BLOQUE_LIMITES           MARIA #036
+  14:29  BLOQUE_LIMITES           IAGO #037
+  14:32  BLOQUE_LIMITES           MARIA #038
+  15:24  BLOQUE_LIMITES           MARIA #039
+  15:55  BLOQUE_LIMITES           IAGO #040 [directo]
+  15:57  APLICACION_PRACTICA      MARIA #041
+  16:29  APLICACION_PRACTICA      IAGO #042
+  17:16  APLICACION_PRACTICA      IAGO #043
+  17:54  APLICACION_PRACTICA      MARIA #044
+  17:56  APLICACION_PRACTICA      IAGO #045
+  18:30  APLICACION_PRACTICA      IAGO #046
+  19:04  APLICACION_PRACTICA      MARIA #047
+  19:07  APLICACION_PRACTICA      IAGO #048
+  19:47  APLICACION_PRACTICA      MARIA #049
+  20:10  CIERRE_CONCEPTOS         IAGO #050
+  20:14  CIERRE_CONCEPTOS         MARIA #051
+  20:25  CIERRE_CONCEPTOS         IAGO #052
+  20:32  CIERRE_CONCEPTOS         MARIA #053
+  20:41  CIERRE_CONCEPTOS         IAGO #054
+  20:53  CIERRE_FINAL             IAGO #055
+  21:00  CIERRE_FINAL             MARIA #056
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: <conversacional> Hoy, el 79% de las organizaciones reporta algún nivel de adopci...
+[002] MARIA: <calido> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artif...
+[003] IAGO: <calido> Y yo soy Yago. Hoy cerramos el módulo 10 del máster: Sistemas Agénticos...
+[004] MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <didactico> Los sistemas agénticos representan el cambio más significativo en in...
+[006] MARIA: <curioso> ¿Y qué significa "actuar en el mundo real"?
+[007] IAGO: <explicativo> Significa que el agente no solo genera texto. Puede buscar en la w...
+[008] IAGO: <contundente> Este módulo cubre cuatro territorios. Primero, la arquitectura de ...
+[009] MARIA: <analitica> Y las preguntas que responde el módulo son operativas.
+[010] IAGO: <firme> ¿Qué diferencia un agente de un chatbot? ¿Cómo funciona el ciclo de razo...
+[011] IAGO: <didactico> Empecemos por la arquitectura. Un agente de IA se define por cuatro ...
+[012] MARIA: <curioso> ¿Y cómo se conectan esas cuatro capacidades en la práctica?
+[013] IAGO: <explicativo> A través del patrón ReAct. Reasoning más Acting. Es el ciclo funda...
+[014] MARIA: <analitica> Ahora hablemos de herramientas. Porque sin herramientas, un agente e...
+[015] IAGO: <conversacional> Así es.
+[016] MARIA: <explicativo> Las herramientas son la forma en que los agentes actúan en el mund...
+[017] IAGO: <curioso> ¿Y cómo clasificas las herramientas por nivel de riesgo?
+[018] MARIA: <directo> Tres categorías. Herramientas de recuperación: lectura de datos, búsqu...
+[019] IAGO: <didactico> El tercer concepto clave es la memoria. Los agentes tienen cuatro ti...
+[020] MARIA: <analitica> ¿Y cuáles son los desafíos de ingeniería en memoria?
+[021] IAGO: <explicativo> Dos principales. La gestión del buffer de conversación para evitar...
+[022] MARIA: <didactico> El cuarto concepto es la planificación. La capacidad de descomponer ...
+[023] IAGO: <conversacional> ¿Y cómo mejoras la planificación cuando el agente falla?
+[024] MARIA: <explicativo> Con la técnica Reflexion. Después de cada fallo, el agente genera ...
+[025] IAGO: <didactico> Y el quinto concepto clave son los sistemas multi-agente. Cuando una...
+[026] MARIA: <curioso> ¿Y cómo se comunican los agentes entre sí?
+[027] IAGO: <explicativo> A través del protocolo A2A. Agent-to-Agent. Lo lanzó Google en abr...
+[028] MARIA: <esceptico> Ahora hablemos de lo que falla. Porque los agentes de IA suenan impr...
+[029] IAGO: <conversacional>
+[030] MARIA: <directo> El primer contraintuitivo es que los agentes no son más inteligentes q...
+[031] IAGO: <curioso> ¿Y cómo se manifiesta eso en la práctica?
+[032] MARIA: <explicativo> En dos formas. Los errores de razonamiento: el agente malinterpret...
+[033] MARIA: <analitica> El segundo contraintuitivo es que más herramientas no significa más ...
+[034] IAGO: <conversacional> ¿Y qué pasa con la memoria?
+[035] MARIA: <directo> El tercer contraintuitivo es que la memoria puede hacer que el agente ...
+[036] MARIA: <esceptico> Y el cuarto contraintuitivo es que los sistemas multi-agente no esca...
+[037] IAGO: <curioso> ¿Y cómo evalúas si un agente funciona?
+[038] MARIA: <explicativo> Esa es la pregunta clave. Y el último contraintuitivo. Evaluar age...
+[039] MARIA: <contundente> Y la realidad es que en 2026, los mejores agentes en los benchmark...
+[040] IAGO: [directo] Eso conecta con lo siguiente.
+[041] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[042] IAGO: <didactico> El sistema de producción del podcast es un pipeline multi-etapa con ...
+[043] IAGO: <explicativo> El generador extrae de esos documentos el material para el bloque ...
+[044] MARIA: <curioso> ¿Y cómo se conecta eso con las herramientas?
+[045] IAGO: <directo> El generador no tiene acceso directo a las herramientas del sistema op...
+[046] IAGO: <explicativo> El segundo componente es el sintetizador de audio. Recibe el guion...
+[047] MARIA: <analitica> ¿Y qué pasa con la memoria entre episodios?
+[048] IAGO: <explicativo> Esa es la parte interesante. El sistema mantiene memoria persisten...
+[049] MARIA: <conversacional> Y el aprendizaje es que los sistemas agénticos en producción no...
+[050] IAGO: <firme> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+[051] MARIA: <directo> Un agente de IA es un LLM que puede razonar, planificar, usar herramie...
+[052] IAGO: <contundente> El patrón ReAct, Thought-Action-Observation, es el ciclo fundament...
+[053] MARIA: <claro> MCP es el protocolo estándar para exponer herramientas de forma reutiliz...
+[054] IAGO: <didactico> Los sistemas multi-agente coordinan agentes especializados. El patró...
+[055] IAGO: <calido> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos...
+[056] MARIA: <calido> Hasta la próxima.
+
+Produccion completada.

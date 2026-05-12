@@ -133,6 +133,7 @@ class LumaGenerator:
 
     def _download_video(self, url: str, dest: Path) -> Path:
         import requests
+        Path(dest).parent.mkdir(parents=True, exist_ok=True)
         with requests.get(url, stream=True, timeout=120) as r:
             r.raise_for_status()
             with open(dest, "wb") as f:

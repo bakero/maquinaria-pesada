@@ -1,0 +1,101 @@
+# HOOK
+IAGO: [grave] El 85% de los proyectos de inteligencia artificial fracasan antes de llegar a producción. Gartner lo confirma en sus informes de 2024. Y el problema no es técnico. Es operativo. Los equipos construyen modelos que funcionan perfectamente en el notebook, los despliegan sin infraestructura de monitorización, y descubren los fallos cuando los usuarios ya están protestando. Hoy hablamos del ciclo de vida de los modelos de lenguaje en producción: las cuatro fases que separan un prototipo de un sistema que realmente funciona, los cinco pilares de observabilidad que necesitas implementar, y por qué versionar tus prompts es tan crítico como versionar tu código. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: Soy Yago.
+
+MARIA: Y yo Maria.
+
+IAGO: Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo.
+
+MARIA: Hoy vamos a hablar de algo que suena aburrido pero que decide si tu sistema de IA funciona o explota en producción.
+
+IAGO: LLMOps. Large Language Model Operations. El conjunto de prácticas, herramientas y procesos que hacen que un modelo de lenguaje funcione de forma fiable, escalable y mejorable cuando ya no está en tu portátil.
+
+# BLOQUE_QUE
+IAGO: [didactico] Empecemos por lo básico. LLMOps es una especialización de MLOps, que es el conjunto de prácticas para poner modelos de machine learning en producción. Pero los modelos de lenguaje tienen características únicas que hacen que necesites herramientas y procesos distintos. Primera característica: comportamiento no determinista. El mismo input puede producir outputs diferentes cada vez que lo ejecutas, porque el modelo usa sampling. Imagina que le preguntas a un empleado cómo resolver un problema y cada día te da una respuesta ligeramente distinta, aunque todas sean correctas. un LLM. Segunda característica: outputs difíciles de evaluar automáticamente. No puedes medir la calidad de un texto generado con una sola métrica como harías con un clasificador binario. Tercera característica: coste basado en tokens. Cada consulta tiene un coste que varía según la longitud del input y del output. Cuarta característica: vulnerabilidades específicas. Prompt injection, alucinaciones, sesgos. Un estudio de 2025 estimó que las alucinaciones de los LLMs costaron a las empresas más de 67 billones de dólares en pérdidas durante el año anterior.
+
+MARIA: Espera. 67 billones de dólares. ¿Cómo se llega a esa cifra?
+
+IAGO: Decisiones empresariales tomadas sobre información incorrecta que el modelo generó con confianza. Un sistema de análisis financiero que alucina datos de mercado. Un chatbot de soporte que da instrucciones incorrectas a miles de usuarios. Un sistema de clasificación de documentos legales que categoriza mal contratos críticos. Cuando multiplicas el coste de cada error por el volumen de consultas que procesan estos sistemas, los números escalan rápido.
+
+MARIA: [esceptico] Y ahí es donde entra LLMOps. Para evitar que esos 67 billones se conviertan en 100.
+
+IAGO: LLMOps es el sistema de control que detecta cuándo el modelo está empezando a degradarse, cuándo está produciendo outputs incorrectos, cuándo el coste se está disparando, y te da las herramientas para actuar antes de que el problema afecte a todos tus usuarios. Es como tener sensores en una planta industrial que te avisan cuando una máquina empieza a vibrar de forma anómala, antes de que se rompa.
+
+# BLOQUE_COMO
+IAGO: [explicativo] El ciclo de vida de un sistema LLM tiene cuatro fases. Fase uno: diseño y selección del modelo. Aquí defines los requisitos del sistema. Qué tareas debe resolver, qué latencia es aceptable, cuál es el presupuesto de coste por consulta, cuáles son los requisitos de privacidad y compliance, qué volumen de consultas esperas.
+
+MARIA: [analitica] Con esos requisitos, seleccionas el modelo base. Modelo frontier vía API como GPT-4 o Claude, o modelo open source autohosteado como Llama. Defines el enfoque de adaptación: prompting directo, RAG, fine-tuning, o una combinación. Y eliges el stack tecnológico.
+
+MARIA: Esa fase suena a decisiones de arquitectura clásica. ¿Qué tiene de específico para LLMs?
+
+IAGO: La diferencia está en los trade-offs. Con un modelo vía API, pagas por token pero no gestionas infraestructura. Con un modelo autohosteado, tienes coste fijo de GPUs pero control total sobre latencia y privacidad. Y la elección entre prompting, RAG o fine-tuning depende de si necesitas adaptar el comportamiento del modelo sin reentrenar, si necesitas acceso a información privada actualizada, o si necesitas cambiar el estilo de salida de forma profunda.
+
+MARIA: [conversacional] Vale. Fase dos.
+
+IAGO: Fase dos: desarrollo y evaluación. Aquí construyes el sistema. Diseñas el prompt o el pipeline RAG. Construyes el golden dataset de evaluación: entre 50 y 500 casos representativos de las tareas que el sistema debe resolver. Si haces fine-tuning, lo ejecutas aquí. Y evalúas rigurosamente el sistema sobre el golden dataset con métricas apropiadas para tu caso de uso. Esta fase debe producir una línea base de rendimiento documentada. Ese baseline es tu referencia para detectar regresiones en producción.
+
+MARIA: [directo] El golden dataset es crítico. Si no tienes una forma de medir si el sistema está mejorando o empeorando, estás volando a ciegas.
+
+IAGO: Correcto. Y ahí es donde muchos equipos fallan. Construyen el sistema, lo prueban manualmente con 10 ejemplos, y lo despliegan. Sin golden dataset, no tienes forma de saber si un cambio en el prompt mejoró o empeoró el rendimiento global.
+
+MARIA: [explicativo] Fase tres: despliegue. Aquí es donde el sistema sale del notebook y entra en producción. Pero no lo haces de golpe. Configuras el servidor de inferencia: vLLM, Text Generation Inference, o la API del proveedor. Configuras el entorno de producción: variables de entorno, secretos, rate limiting. Y despliegas de forma gradual. Canary deployment: mandas el 5% del tráfico al nuevo sistema, comparas métricas con el sistema actual durante una semana, y si todo funciona bien, escalas al 100%. Si algo falla, haces rollback inmediato.
+
+IAGO: El canary deployment es el estándar mínimo. Si despliegas al 100% del tráfico inmediatamente, eliminas tu capacidad de detectar problemas antes de que afecten a todos los usuarios.
+
+MARIA: Y fase cuatro: monitorización y mejora continua. Esta es la fase más larga y la más crítica. El sistema ya está en producción. Ahora necesitas logging de todas las interacciones: inputs, outputs, latencia, coste. Evaluación continua de calidad: muestreas el 5-10% de las consultas y las evalúas con métricas automáticas o con LLM-as-judge. Detectas drift: cambios en la distribución de inputs o degradación de la calidad de los outputs. Configuras alertas basadas en umbrales de SLO. Y ejecutas el ciclo de mejora: identificas los casos de peor rendimiento, iteras el prompt o el sistema, evalúas el impacto en el golden dataset, y redespliega.
+
+IAGO: [reflexivo] Ese ciclo de mejora es lo que diferencia un sistema que se degrada silenciosamente durante meses de un sistema que mejora de forma continua. Cada semana o cada mes, dependiendo de la criticidad del sistema, revisas los últimos mil outputs, filtras los 50 con peor rating, agrupas por tipo de problema, identificas si el problema está en el retrieval, en el prompt o en el modelo, defines una acción correctiva específica, y evalúas el impacto antes de desplegar.
+
+MARIA: Es como mantenimiento preventivo industrial. No esperas a que la máquina se rompa. Revisas los sensores cada semana y actúas cuando detectas anomalías.
+
+# BLOQUE_LIMITES
+MARIA: [esceptico] Ahora hablemos de lo que falla. Porque todo esto suena muy ordenado en teoría, pero en la práctica hay tres errores que veo una y otra vez. Error uno: no versionar los prompts junto con el código. Un cambio de prompt es un cambio de sistema que puede mejorar o degradar el rendimiento de forma dramática. Si no versionas tus prompts en Git con hash de commit, es imposible reproducir el estado del sistema en cualquier momento histórico. No puedes hacer rollback a una versión específica del prompt. No puedes correlacionar cambios en las métricas con cambios en el prompt. Estás operando sin red.
+
+IAGO: Y el problema es que muchos equipos tratan los prompts como configuración, no como código. Los guardan en un archivo de texto, los editan manualmente, y pierden la trazabilidad.
+
+MARIA: Error dos: monitorizar solo la latencia y el coste, no la calidad. Los dashboards técnicos de latencia y disponibilidad no capturan si el sistema está produciendo respuestas útiles o correctas. Puedes tener un sistema con latencia P99 de 2 segundos, disponibilidad del 99.9%, y estar produciendo outputs incorrectos en el 20% de las consultas. Sin monitorización de calidad con métricas semánticas, el sistema puede degradarse silenciosamente durante semanas antes de que los usuarios se quejen.
+
+IAGO: [grave] Y cuando los usuarios se quejan, ya es tarde. Ya has perdido confianza.
+
+MARIA: Error tres: despliegue big-bang en lugar de gradual. Desplegar un cambio al 100% del tráfico inmediatamente elimina tu capacidad de detectar problemas antes de que afecten a todos los usuarios. He visto casos reales donde una actualización del modelo base de GPT-4 a una versión más nueva provocó una degradación del 8% en la métrica de faithfulness de un sistema RAG financiero. El sistema de monitorización detectó la degradación en 4 horas. Hicieron rollback al modelo anterior en 15 minutos. Análisis post-mortem: el nuevo modelo seguía las instrucciones de un prompt de formato específico de forma distinta. Tuvieron que actualizar el prompt antes de volver a desplegar el nuevo modelo.
+
+IAGO: Ese caso es perfecto porque muestra dos cosas. Primero, que incluso modelos del mismo proveedor pueden comportarse de forma distinta en tareas específicas. Segundo, que sin monitorización continua y sin capacidad de rollback rápido, ese 8% de degradación habría afectado a todos los usuarios durante días o semanas.
+
+MARIA: [firme] Y ahí está el punto. LLMOps no es burocracia. Es la diferencia entre un sistema que funciona y un sistema que explota en silencio mientras tú crees que todo va bien.
+
+# CIERRE_CONCEPTOS
+IAGO: No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+IAGO: [didactico] Primero: el ciclo de vida de un sistema LLM tiene cuatro fases obligatorias: diseño y selección, desarrollo y evaluación con golden dataset, despliegue gradual con canary, y monitorización continua con ciclo de mejora.
+
+MARIA: Segundo: los cinco pilares de observabilidad LLM son evaluación continua de outputs, tracing distribuido del pipeline, versionado de prompts como código, monitorización específica de RAG con métricas de faithfulness, y gestión del ciclo de vida con capacidad de rollback.
+
+# CIERRE_FINAL
+IAGO: Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 1718 (objetivo: 1400-1900)
+## MEDIA PALABRAS/INTERVENCION : 49.1
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] llm: 5 menciones
+## [OK] rag: 6 menciones
+## [FALTA] seccion: 0 menciones
+## [OK] ciclo de vida: 4 menciones
+## [OK] despliegue: 3 menciones
+## [OK] continua: 6 menciones
+## [OK] latencia: 7 menciones
+## [OK] prompt: 10 menciones
+## Cobertura: 88% (objetivo: 75%)
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 29367
+## output_tokens: 7409
+## cache_read: 0
+## total: 36776

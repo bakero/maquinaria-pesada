@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "scenes": {
+    "studio_maria_solo_v1": {
+      "slug": "studio_maria_solo_v1",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v1.mp4",
+      "duration": 21.167318,
+      "prompt": "A single woman with dark wavy hair sitting at a yellow podcast table with a blue microphone, blue headphones around her neck, wearing dark blazer. She talks calmly to camera with a serene neutral expression. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Maria sola, plano medio frontal. She talks calmly to camera with a serene neutral expression",
+      "tags": [
+        "estudio",
+        "maria",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-parallel",
+      "created": "2026-05-08 23:59:09"
+    },
+    "studio_maria_solo_v2": {
+      "slug": "studio_maria_solo_v2",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v2.mp4",
+      "duration": 21.167318,
+      "prompt": "A single woman with dark wavy hair sitting at a yellow podcast table with a blue microphone, blue headphones around her neck, wearing dark blazer. She talks while gesturing softly with her right hand to explain a point. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Maria sola, plano medio frontal. She talks while gesturing softly with her right hand to explain a point",
+      "tags": [
+        "estudio",
+        "maria",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-parallel",
+      "created": "2026-05-08 23:59:19"
+    },
+    "studio_maria_solo_v3": {
+      "slug": "studio_maria_solo_v3",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v3.mp4",
+      "duration": 21.167318,
+      "prompt": "A single woman with dark wavy hair sitting at a yellow podcast table with a blue microphone, blue headphones around her neck, wearing dark blazer. She talks emphatically, slightly leaning forward, raising her eyebrows to underline a key idea. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Maria sola, plano medio frontal. She talks emphatically, slightly leaning forward, raising her eyebrows to underline a key idea",
+      "tags": [
+        "estudio",
+        "maria",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-parallel",
+      "created": "2026-05-08 23:59:30"
+    },
+    "studio_maria_solo_v4": {
+      "slug": "studio_maria_solo_v4",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v4.mp4",
+      "duration": 21.167318,
+      "prompt": "A single woman with dark wavy hair sitting at a yellow podcast table with a blue microphone, blue headphones around her neck, wearing dark blazer. She talks with a warm complicit smile, brief soft laugh, relaxed and friendly tone. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Maria sola, plano medio frontal. She talks with a warm complicit smile, brief soft laugh, relaxed and friendly tone",
+      "tags": [
+        "estudio",
+        "maria",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-parallel",
+      "created": "2026-05-08 23:59:37"
+    },
+    "studio_yago_solo_v1": {
+      "slug": "studio_yago_solo_v1",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v1.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Yago solo, recuperado de task huerfana, solo 10s",
+      "tags": [],
+      "modulo": null,
+      "source": "kling-recovered-base10s",
+      "created": "2026-05-09 08:58:47"
+    }
+  }
+}

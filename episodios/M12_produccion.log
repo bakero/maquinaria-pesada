@@ -1,0 +1,163 @@
+========================================
+LOG DE PRODUCCION - M12
+========================================
+Fecha:              2026-05-12 09:36:36
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    57
+Bloques generados:  57
+Bloques fallidos:   0
+Duracion total:     19.1 minutos (1144s)
+Tiempo generacion:  4.6 minutos
+Archivo final:      episodios\M12.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 17774
+Creditos estimados: 17774
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [57]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001
+  00:45  [SINTONIA — inicio]
+  00:54  [SINTONIA — fin]
+  00:56  SALUDO_Y_PRESENTACION    MARIA #002
+  01:04  SALUDO_Y_PRESENTACION    IAGO #003
+  01:08  SALUDO_Y_PRESENTACION    MARIA #004
+  01:25  BLOQUE_PANORAMA          IAGO #005
+  02:13  BLOQUE_PANORAMA          MARIA #006
+  02:18  BLOQUE_PANORAMA          IAGO #007
+  02:55  BLOQUE_PANORAMA          MARIA #008
+  02:56  BLOQUE_PANORAMA          IAGO #009
+  03:39  BLOQUE_TEMAS_CLAVE       IAGO #010
+  04:02  BLOQUE_TEMAS_CLAVE       MARIA #011 [analitica]
+  04:42  BLOQUE_TEMAS_CLAVE       MARIA #012
+  04:43  BLOQUE_TEMAS_CLAVE       IAGO #013
+  05:23  BLOQUE_TEMAS_CLAVE       MARIA #014
+  05:31  BLOQUE_TEMAS_CLAVE       IAGO #015
+  05:49  BLOQUE_TEMAS_CLAVE       MARIA #016 [analitica]
+  06:26  BLOQUE_TEMAS_CLAVE       MARIA #017
+  06:27  BLOQUE_TEMAS_CLAVE       IAGO #018
+  06:50  BLOQUE_TEMAS_CLAVE       MARIA #019 [analitica]
+  07:06  BLOQUE_TEMAS_CLAVE       MARIA #020
+  07:13  BLOQUE_TEMAS_CLAVE       IAGO #021
+  07:25  BLOQUE_TEMAS_CLAVE       MARIA #022 [analitica]
+  07:57  BLOQUE_TEMAS_CLAVE       MARIA #023
+  08:00  BLOQUE_TEMAS_CLAVE       IAGO #024
+  08:33  BLOQUE_TEMAS_CLAVE       IAGO #025
+  09:04  BLOQUE_TEMAS_CLAVE       MARIA #026
+  09:06  BLOQUE_TEMAS_CLAVE       IAGO #027
+  09:37  BLOQUE_TEMAS_CLAVE       MARIA #028
+  09:41  BLOQUE_TEMAS_CLAVE       IAGO #029
+  09:52  BLOQUE_TEMAS_CLAVE       MARIA #030 [analitica]
+  10:25  BLOQUE_TEMAS_CLAVE       MARIA #031
+  10:27  BLOQUE_TEMAS_CLAVE       IAGO #032
+  10:46  BLOQUE_LIMITES           MARIA #033
+  10:57  BLOQUE_LIMITES           IAGO #034
+  11:10  BLOQUE_LIMITES           MARIA #035 [analitica]
+  11:33  BLOQUE_LIMITES           MARIA #036
+  11:42  BLOQUE_LIMITES           IAGO #037
+  11:51  BLOQUE_LIMITES           MARIA #038 [analitica]
+  12:35  BLOQUE_LIMITES           IAGO #039
+  12:50  BLOQUE_LIMITES           MARIA #040 [analitica]
+  13:06  BLOQUE_LIMITES           MARIA #041
+  13:13  BLOQUE_LIMITES           IAGO #042
+  13:29  BLOQUE_LIMITES           MARIA #043 [analitica]
+  13:47  APLICACION_PRACTICA      MARIA #044
+  14:15  APLICACION_PRACTICA      IAGO #045
+  15:40  APLICACION_PRACTICA      MARIA #046
+  15:41  APLICACION_PRACTICA      IAGO #047
+  16:17  APLICACION_PRACTICA      MARIA #048
+  16:21  APLICACION_PRACTICA      IAGO #049
+  17:18  APLICACION_PRACTICA      MARIA #050
+  17:24  APLICACION_PRACTICA      IAGO #051
+  17:46  CIERRE_CONCEPTOS         MARIA #052
+  17:50  CIERRE_CONCEPTOS         IAGO #053
+  18:04  CIERRE_CONCEPTOS         MARIA #054
+  18:19  CIERRE_CONCEPTOS         IAGO #055
+  18:31  CIERRE_CONCEPTOS         MARIA #056
+  18:53  CIERRE_FINAL             IAGO #057
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: <conversacional> Hoy, el cibercrimen mueve 9.5 billones de dólares al año y la t...
+[002] MARIA: <calido> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artif...
+[003] IAGO: <calido> Y yo soy Yago. Hoy cerramos el módulo 12: Seguridad en IA.
+[004] MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <didactico> La seguridad de los sistemas de inteligencia artificial es fundament...
+[006] MARIA: <curioso> ¿Y eso significa que las técnicas de seguridad tradicionales no sirven...
+[007] IAGO: <explicativo> No es que no sirvan. Es que no son suficientes. Necesitas las técn...
+[008] MARIA: <analitica> ¿Qué cubre este módulo?
+[009] IAGO: <directo> Cuatro grandes bloques. Primero, el panorama de seguridad en sistemas ...
+[010] IAGO: <didactico> Empecemos por el OWASP LLM Top 10 2026. Son diez vulnerabilidades cr...
+[011] MARIA: [analitica] LLM02 es Sensitive Information Disclosure, que subió al número dos e...
+[012] MARIA: <curioso> ¿Y las cinco nuevas?
+[013] IAGO: <explicativo> LLM06 es Excessive Agency: el agente tiene más permisos de los nec...
+[014] MARIA: <analitica> Hablemos de prompt injection. Dijiste que tiene una tasa de éxito de...
+[015] IAGO: <directo> La prompt injection es inherente a cómo funcionan los LLMs. El modelo ...
+[016] MARIA: [analitica] Las técnicas más efectivas documentadas son tres. Primero, roleplay ...
+[017] MARIA: <esceptico> ¿Y no hay defensa?
+[018] IAGO: <serio> Hay defensa, pero no es una sola medida. Un paper de octubre de 2025, co...
+[019] MARIA: [analitica] Tercera capa: controles en la capa de ejecución. Cuarta capa: human-...
+[020] MARIA: <didactico> Ahora, data poisoning. ¿Cómo se introduce información maliciosa en l...
+[021] IAGO: <conversacional> El poisoning en fine-tuning es especialmente peligroso porque l...
+[022] MARIA: [analitica] Y esos diez ejemplos pueden ser suficientes para manipular el compor...
+[023] MARIA: <analitica> ¿Y qué pasa con los modelos que descargamos de Hugging Face?
+[024] IAGO: <grave> Los modelos en formato pickle pueden contener código malicioso que se ej...
+[025] IAGO: <didactico> Content filtering es la última línea de defensa antes de que la resp...
+[026] MARIA: <curioso> ¿Qué herramientas se usan?
+[027] IAGO: <explicativo> Las principales son tres. Primera: LlamaGuard de Meta, un modelo c...
+[028] MARIA: <analitica> Y cuando el sistema tiene agentes con herramientas, ¿qué cambia?
+[029] IAGO: <serio> Los sistemas agénticos amplían dramáticamente la superficie de ataque. L...
+[030] MARIA: [analitica] Primera: memory poisoning, introducir información falsa en la memori...
+[031] MARIA: <directo> ¿Y cómo se defiende eso?
+[032] IAGO: <firme> La regla Meta de octubre de 2025 lo dice claro: los controles de segurid...
+[033] MARIA: <esceptico> Ahora hablemos de lo que falla. Dijiste que el 90% de las defensas p...
+[034] IAGO: <pausado> Significa que no hay defensa perfecta. Las defensas basadas solo en el...
+[035] MARIA: [analitica] Las defensas que funcionan son las que están fuera del modelo: valid...
+[036] MARIA: <analitica> ¿Y qué pasa con los modelos que generan contenido falso como factual...
+[037] IAGO: <conversacional> Es uno de los problemas más difíciles. Los LLMs no tienen un mo...
+[038] MARIA: [analitica] Si el texto falso es estadísticamente probable, el modelo lo genera....
+[039] IAGO: <explicativo> Un atacante puede diseñar inputs que hagan que el modelo consuma r...
+[040] MARIA: [analitica] Las defensas son límites duros: máximo de tokens por respuesta, máxi...
+[041] MARIA: <esceptico> ¿Y el red teaming? Dijiste que es el estándar del Secure AI Developm...
+[042] IAGO: <serio> El red teaming automatizado encuentra vulnerabilidades que los humanos n...
+[043] MARIA: [analitica] Si aparece un nuevo tipo de ataque, las herramientas no lo detectan ...
+[044] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[045] IAGO: <didactico> El sistema tiene tres vectores de ataque principales. Primer vector:...
+[046] MARIA: <analitica> ¿Y qué falta?
+[047] IAGO: <reflexivo> Faltan dos capas. Primera: content filtering automatizado en el outp...
+[048] MARIA: <directo> ¿Y el riesgo de prompt injection en los PDFs?
+[049] IAGO: <pausado> Es real. Si un PDF contiene texto diseñado para manipular el comportam...
+[050] MARIA: <conversacional> Entonces, el sistema tiene controles básicos, pero no tiene las...
+[051] IAGO: <firme> Correcto. Tiene separación de instrucciones y datos parcial, tiene valid...
+[052] MARIA: <directo> No te puedes ir de este capitulo sin haber entendido estos conceptos.
+[053] IAGO: <didactico> Primero: la seguridad de IA es fundamentalmente distinta al software...
+[054] MARIA: <explicativo> Segundo: prompt injection es el riesgo número uno del OWASP LLM To...
+[055] IAGO: <firme> Tercero: data poisoning incluye backdoors en fine-tuning y supply chain ...
+[056] MARIA: <analitica> Cuarto: la seguridad agéntica requiere controles en la capa de ejecu...
+[057] IAGO: <calido> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos...
+
+Produccion completada.

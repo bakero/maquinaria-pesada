@@ -1,0 +1,132 @@
+# HOOK
+IAGO: <didactico> Hoy, el 88% de las empresas tecnológicas dice estar usando inteligencia artificial en producción. Pero solo el 33% reconoce haber escalado esos sistemas más allá de proyectos piloto. ¿Qué pasó con el otro 55%? Se estrellaron contra un problema que nadie les había explicado: los modelos de lenguaje no razonan como humanos, alucinan con confianza, y lo que funciona en un prompt puede fallar completamente con una variación mínima del input. Este módulo responde a la pregunta más incómoda de la IA generativa: ¿qué es lo que realmente saben estos sistemas, y cuándo puedes confiar en ellos? Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+MARIA: <conversacional> Y yo soy Maria. Este es el módulo 1: Fundamentos Ontológicos y Razonamiento en IA.
+
+IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast — al final del episodio veremos cómo se aplica lo de hoy a ese sistema.
+
+# BLOQUE_PANORAMA
+IAGO: <explicativo> Este módulo cubre las preguntas más fundamentales sobre cómo funcionan los modelos de lenguaje por dentro. No es un módulo de herramientas ni de frameworks. Es el módulo que te explica qué está pasando realmente cuando un LLM genera una respuesta, por qué falla de formas predecibles, y cuándo puedes confiar en él. Vamos a responder cuatro preguntas centrales. Primera: ¿qué es el conocimiento en un LLM? Segunda: ¿razonan estos modelos o solo predicen tokens? Tercera: ¿cómo se representan el conocimiento y la incertidumbre en un sistema estocástico? Y cuarta: ¿por qué alucinan, y cómo puedes mitigarlo en producción?
+
+MARIA: <curioso> ¿Por qué estas preguntas importan para alguien que simplemente quiere construir un sistema que funcione?
+
+IAGO: <contundente> Porque los profesionales que no entienden los límites epistémicos de los LLMs cometen errores costosos en producción. Construyen sistemas que alucinan con confianza. Aplican la técnica de razonamiento incorrecta para el problema. Diseñan prompts que producen resultados inconsistentes bajo variaciones mínimas del input. Y cuando el sistema falla, no saben por qué falló ni cómo arreglarlo. Este módulo te da el mapa conceptual para entender cuándo un LLM es la herramienta correcta, cuándo no lo es, y cómo diseñar alrededor de sus límites fundamentales.
+
+MARIA: <analitica> Entonces no es un módulo teórico. Es el módulo que te evita estrellarte en producción.
+
+IAGO: <firme> La teoría aquí tiene consecuencias directas sobre fiabilidad, seguridad, y escalabilidad de sistemas reales.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <explicativo> Primer concepto clave: la naturaleza del conocimiento en los LLMs. Los modelos de lenguaje no tienen conocimiento en el sentido humano. No tienen una base de datos de hechos que pueden consultar.
+
+MARIA: [analitica] Lo que tienen es una compresión estadística masiva del texto humano: patrones de co-ocurrencia de palabras y conceptos que, cuando se combinan con la predicción del siguiente token, producen respuestas que parecen conocimiento pero son inferencias estadísticas sobre qué texto sería plausible dado el contexto. Esta distinción es crítica para entender las alucinaciones. Cuando un LLM genera un hecho incorrecto con total confianza, no está mintiendo. Está produciendo el texto estadísticamente más plausible dado su contexto de entrenamiento, y ese texto resulta ser incorrecto.
+
+MARIA: <esceptico> ¿Y el modelo sabe cuándo está inventando?
+
+IAGO: <grave> No. El modelo no tiene un mecanismo interno que le diga "esto es un hecho verificado" versus "esto es algo que parece plausible estadísticamente". La calibración, que es la correlación entre la confianza expresada y la corrección real, es una propiedad que se puede medir y mejorar, pero ningún modelo actual está perfectamente calibrado.
+
+MARIA: <analitica> Segundo concepto: razonamiento versus predicción de tokens. Este es el debate fundamental del campo, ¿verdad?
+
+IAGO: <reflexivo> Así es. La postura que considera que los LLMs solo predicen tokens señala que los modelos pueden fallar en problemas de razonamiento trivialmente simples que cualquier humano resolvería. Que su rendimiento en tareas de razonamiento es muy sensible a la formulación del problema: variaciones aparentemente superficiales en el prompt pueden producir respuestas completamente distintas. Y que los errores que cometen frecuentemente no tienen el patrón de errores de razonamiento humanos sino el de errores estadísticos.
+
+MARIA: <curioso> Pero los modelos grandes sí muestran capacidades de razonamiento que los pequeños no tienen.
+
+IAGO: <didactico> Correcto. La postura alternativa señala que los modelos más grandes demuestran capacidades emergentes de razonamiento. Que las técnicas de prompting como Chain of Thought mejoran significativamente el rendimiento en tareas de razonamiento. Y que los modelos de razonamiento como o3 de OpenAI, que generan un scratchpad de razonamiento antes de producir la respuesta, demuestran capacidades de resolución de problemas muy superiores a los modelos estándar. La verdad parece ser que los LLMs tienen algo funcionalmente similar al razonamiento sin ser idéntico al razonamiento humano.
+
+IAGO: <explicativo> Tercer concepto: las técnicas de razonamiento avanzado. Chain of Thought fue introducido formalmente por Wei y su equipo en Google Brain en 2022.
+
+MARIA: [analitica] La idea es simple pero poderosa: en lugar de pedir al modelo que produzca directamente la respuesta a un problema complejo, se le pide que razone paso a paso antes de dar la respuesta. El resultado es un aumento significativo en la corrección de las respuestas para tareas de razonamiento matemático, lógico, y común. El mecanismo por el que Chain of Thought mejora el rendimiento tiene que ver con la forma en que los modelos generan texto: cada token generado se convierte en parte del contexto que informa los tokens siguientes.
+
+MARIA: <curioso> ¿Y Tree of Thoughts?
+
+IAGO: <didactico> Tree of Thoughts extiende Chain of Thought generando múltiples cadenas de razonamiento en paralelo y evaluando cuál es más prometedora. En lugar de seguir un solo camino de razonamiento hasta el final, Tree of Thoughts explora el árbol de posibles razonamientos, selecciona los nodos más prometedores, y eventualmente converge en la solución más robusta. Es especialmente efectivo para problemas de planificación, puzzles complejos, y situaciones donde la solución requiere explorar múltiples hipótesis. La implementación requiere múltiples llamadas al LLM, lo que lo hace más costoso y lento que Chain of Thought simple.
+
+MARIA: <analitica> Cuarto concepto: ReAct, que combina razonamiento y acción. Este es el patrón de prompting que combina el razonamiento de Chain of Thought con la ejecución de acciones externas: búsqueda web, ejecución de código, consulta de APIs. El modelo alterna entre pasos de Thought, que es razonamiento sobre qué hacer a continuación, Action, que es invocación de una herramienta externa, y Observation, que es procesamiento del resultado de la herramienta. Este patrón es la base de la mayoría de los sistemas agénticos actuales.
+
+IAGO: <firme> El valor de ReAct sobre Chain of Thought puro es que permite al modelo actualizar su razonamiento basándose en información real del mundo externo, en lugar de confiar únicamente en lo que sabe de su entrenamiento.
+
+MARIA: <explicativo> Quinto concepto: conocimiento paramétrico versus conocimiento en contexto. Los LLMs tienen dos formas de saber cosas. El conocimiento paramétrico es lo que está codificado en los pesos del modelo, resultado del entrenamiento. Es estático, no cambia sin reentrenamiento o fine-tuning, puede estar desactualizado porque el modelo tiene una fecha de corte de conocimiento, y puede ser incorrecto porque el modelo aprendió información incorrecta de los datos de entrenamiento. El conocimiento en contexto es lo que está en el prompt actual, que el modelo puede usar para razonar aunque no esté en sus pesos. Es dinámico, puede actualizarse en cada llamada al modelo, siempre actual si proporcionamos la información correcta, y verificable porque podemos controlar qué información proporcionamos.
+
+IAGO: <contundente> Esta distinción es la base del patrón RAG, Retrieval-Augmented Generation. En lugar de confiar en el conocimiento paramétrico potencialmente desactualizado o incorrecto, RAG recupera los documentos relevantes para la consulta del usuario y los pone en el contexto del LLM, que entonces usa ese conocimiento contextual para generar la respuesta.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora hablemos de lo que falla. Las alucinaciones son el elefante en la habitación de los LLMs. No son bugs que se pueden corregir con un parche. Son una consecuencia estructural de cómo funcionan estos sistemas. Un sistema entrenado para predecir el texto más plausible producirá texto plausible aunque no sea correcto. Las alucinaciones incluyen hechos incorrectos presentados con confianza: fechas erróneas, referencias bibliográficas inventadas, estadísticas fabricadas. Incluyen incoherencias internas en respuestas largas: el modelo contradice en el párrafo cinco lo que dijo en el párrafo dos. Y en sistemas RAG, incluyen faithfulness failures: el modelo genera texto que no está fundamentado en los documentos recuperados.
+
+IAGO: <reflexivo> ¿Qué factores aumentan la probabilidad de alucinaciones?
+
+MARIA: <analitica> Temperatura alta, que significa mayor aleatoriedad en la generación. Preguntas sobre hechos específicos que el modelo no conoce bien: fechas exactas, nombres propios oscuros, estadísticas específicas. Instrucciones de producir contenido en un formato específico cuando el contenido real no existe: el modelo puede inventar para cumplir el formato. Y context length extrema: la atención del modelo se diluye con contextos muy largos, aumentando la probabilidad de incoherencias.
+
+IAGO: <curioso> ¿Y las estrategias de mitigación?
+
+MARIA: <firme> RAG es la primera línea de defensa: proporcionar al modelo los documentos relevantes reduce su necesidad de depender de su conocimiento paramétrico potencialmente incorrecto. Grounding explícito: instruir al modelo a fundamentar sus respuestas exclusivamente en los documentos proporcionados y a indicar cuando la información no está disponible. Self-consistency: generar múltiples respuestas y seleccionar la más consistente reduce la varianza de las alucinaciones. Y fact-checking automático: un segundo LLM verifica las afirmaciones del primero contra las fuentes proporcionadas. Ninguna estrategia elimina completamente las alucinaciones.
+
+IAGO: <grave> Entonces el objetivo en producción no es cero alucinaciones.
+
+MARIA: <contundente> No. El objetivo es mantener la tasa de alucinaciones dentro de un rango aceptable para el caso de uso específico, y cuando las alucinaciones ocurren, detectarlas y manejarlas apropiadamente antes de que causen daño.
+
+MARIA: <esceptico> Segundo límite: el problema de la calibración. Un sistema bien calibrado expresa confianza alta cuando es correcto y confianza baja cuando es incorrecto. Los LLMs actuales están notoriamente mal calibrados. Expresan alta confianza en afirmaciones incorrectas, que son las alucinaciones, y a veces expresan dudas innecesarias sobre afirmaciones que son perfectamente correctas. Esta mala calibración hace que las respuestas del LLM no sean directamente interpretables como indicadores de su corrección.
+
+IAGO: <reflexivo> ¿Y cómo se mejora la calibración?
+
+MARIA: <analitica> Self-consistency es una técnica: generar múltiples respuestas al mismo prompt con temperatura mayor que cero y seleccionar la que tiene mayor acuerdo entre las muestras. Verbal uncertainty quantification: pedir al modelo que exprese explícitamente su nivel de confianza en un formato estructurado. Y factual checking: comparar las afirmaciones del modelo contra fuentes verificables. Ninguna de estas técnicas resuelve el problema completamente, pero combinadas producen sistemas más fiables.
+
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. El sistema que estás escuchando ahora mismo tiene que resolver un problema de razonamiento en cada episodio: generar guiones de 15 a 17 minutos que sean técnicamente rigurosos, didácticamente efectivos, y conversacionalmente naturales. Y tiene que hacerlo de forma consistente para 100 episodios. ¿Cómo se aplican los fundamentos de razonamiento que hemos cubierto en este módulo a ese problema concreto?
+
+IAGO: <explicativo> El sistema usa una combinación de Chain of Thought implícito y conocimiento en contexto estructurado. Cada guion se genera a partir de tres fuentes de conocimiento en contexto. Primera fuente: el PDF resumen del módulo, que contiene los conceptos clave, los datos numéricos, y los casos con nombre propio. Segunda fuente: la especificación maestra del formato del podcast, que es un documento de 2000 líneas que define la estructura obligatoria de cada episodio, las reglas de reparto de bloques entre los dos presentadores, las técnicas de prompting permitidas, y las validaciones que el guion debe pasar. Tercera fuente: los cuatro documentos vivos del proyecto, que son la Biblia del Sistema, el diario de producción de audio, el diario de producción de video, y el diario operativo unificado. Estos documentos contienen las decisiones técnicas tomadas, los problemas encontrados, y las cifras verificables del sistema real.
+
+IAGO: <didactico> El proceso de generación del guion es un proceso de razonamiento multi-paso. El modelo primero lee el PDF resumen del módulo y extrae internamente una tabla de pre-escritura: cuatro datos numéricos con cifra concreta, tres casos con nombre propio, una frase-fuerza del resumen ejecutivo, y tres contraintuitivos del módulo. Segundo paso: el modelo consulta los cuatro documentos vivos del proyecto y extrae material relevante para el bloque de aplicación práctica: un problema concreto del sistema relacionado con el módulo, una decisión técnica tomada con justificación, y una cifra o dato verificable del sistema. Tercer paso: el modelo genera el guion siguiendo la estructura obligatoria de 10 bloques, aplicando las reglas de reparto de bloques entre los dos presentadores, y usando el material extraído en los pasos anteriores. Cuarto paso: el sistema valida el guion generado contra 25 reglas de validación: reglas de estructura, reglas de contenido, reglas de reparto, y reglas de calidad. Si el guion falla alguna validación hard, el sistema no lo acepta.
+
+MARIA: <curioso> ¿Qué técnicas de mitigación de alucinaciones usa el sistema?
+
+IAGO: <contundente> Tres técnicas principales. Primera: grounding explícito en los PDFs y documentos vivos. El modelo tiene instrucciones explícitas de fundamentar sus afirmaciones en las fuentes proporcionadas y de no inventar hechos. Segunda: validación estructural automática. El sistema verifica que el guion cumple las reglas de estructura, que los conceptos clave del PDF están cubiertos en al menos el 75%, y que el reparto de palabras entre los dos presentadores está dentro de los rangos permitidos. Tercera: fallback en caso de material insuficiente. Si el sistema no encuentra en los documentos vivos el material necesario para el bloque de aplicación práctica, hace hard-fail y pide intervención humana en lugar de inventar contenido.
+
+MARIA: <reflexivo> Entonces el sistema no elimina las alucinaciones, pero las mantiene dentro de un rango controlado.
+
+IAGO: <firme> Correcto. El objetivo no es cero alucinaciones. El objetivo es que las alucinaciones, cuando ocurren, sean detectables y no causen daño al oyente. Y que el sistema sea transparente sobre sus límites: el aviso de que el episodio lo genera un sistema automático y puede contener errores no es solo un disclaimer legal. Es una aplicación directa del principio de calibración: el sistema expresa explícitamente su nivel de confianza en su propio output.
+
+# CIERRE_CONCEPTOS
+IAGO: <directo> No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+MARIA: <claro> Primero: los LLMs no tienen conocimiento en el sentido humano. Tienen compresión estadística de texto que produce inferencias plausibles.
+
+IAGO: <firme> Segundo: Chain of Thought, Tree of Thoughts, y ReAct son técnicas de razonamiento avanzado que mejoran significativamente el rendimiento en tareas de razonamiento.
+
+MARIA: <contundente> Tercero: la distinción entre conocimiento paramétrico y conocimiento en contexto es la base del patrón RAG.
+
+IAGO: <grave> Cuarto: las alucinaciones son estructurales, no bugs corregibles. Se mitigan con RAG, grounding, y self-consistency, pero no se eliminan completamente.
+
+# CIERRE_FINAL
+IAGO: <conversacional> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2512 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 53.4
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] llm: 8 menciones
+## [OK] ia: 2 menciones
+## [OK] rag: 6 menciones
+## [OK] chain of thought: 9 menciones
+## [OK] tree of thoughts: 4 menciones
+## [OK] alucinaciones: 15 menciones
+## [OK] razonamiento: 26 menciones
+## [OK] respuesta: 5 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 173
+## Por documento: {'BIBLIA_SISTEMA': 67, 'PRIMERPODCAST': 19, 'VIDEOPODCAST': 45, 'PODCAST': 42}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 38343
+## output_tokens: 11184
+## cache_read: 0
+## total: 49527

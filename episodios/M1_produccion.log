@@ -1,0 +1,145 @@
+========================================
+LOG DE PRODUCCION - M1
+========================================
+Fecha:              2026-05-12 09:55:47
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    48
+Bloques generados:  48
+Bloques fallidos:   0
+Duracion total:     16.7 minutos (1001s)
+Tiempo generacion:  3.9 minutos
+Archivo final:      episodios\M1.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 16680
+Creditos estimados: 16680
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [48]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     IAGO #001
+  00:42  [SINTONIA — inicio]
+  00:52  [SINTONIA — fin]
+  00:53  SALUDO_Y_PRESENTACION    IAGO #002
+  01:01  SALUDO_Y_PRESENTACION    MARIA #003
+  01:07  SALUDO_Y_PRESENTACION    IAGO #004
+  01:24  BLOQUE_PANORAMA          IAGO #005
+  02:04  BLOQUE_PANORAMA          MARIA #006
+  02:10  BLOQUE_PANORAMA          IAGO #007
+  02:44  BLOQUE_PANORAMA          MARIA #008
+  02:50  BLOQUE_PANORAMA          IAGO #009
+  02:56  BLOQUE_TEMAS_CLAVE       IAGO #010
+  03:08  BLOQUE_TEMAS_CLAVE       MARIA #011 [analitica]
+  03:44  BLOQUE_TEMAS_CLAVE       MARIA #012
+  03:47  BLOQUE_TEMAS_CLAVE       IAGO #013
+  04:06  BLOQUE_TEMAS_CLAVE       MARIA #014
+  04:14  BLOQUE_TEMAS_CLAVE       IAGO #015
+  04:43  BLOQUE_TEMAS_CLAVE       MARIA #016
+  04:49  BLOQUE_TEMAS_CLAVE       IAGO #017
+  05:21  BLOQUE_TEMAS_CLAVE       IAGO #018
+  05:32  BLOQUE_TEMAS_CLAVE       MARIA #019 [analitica]
+  06:03  BLOQUE_TEMAS_CLAVE       MARIA #020
+  06:05  BLOQUE_TEMAS_CLAVE       IAGO #021
+  06:41  BLOQUE_TEMAS_CLAVE       MARIA #022
+  07:12  BLOQUE_TEMAS_CLAVE       IAGO #023
+  07:23  BLOQUE_TEMAS_CLAVE       MARIA #024
+  08:13  BLOQUE_TEMAS_CLAVE       IAGO #025
+  08:35  BLOQUE_LIMITES           MARIA #026
+  09:19  BLOQUE_LIMITES           IAGO #027
+  09:23  BLOQUE_LIMITES           MARIA #028
+  09:53  BLOQUE_LIMITES           IAGO #029
+  09:55  BLOQUE_LIMITES           MARIA #030
+  10:38  BLOQUE_LIMITES           IAGO #031
+  10:41  BLOQUE_LIMITES           MARIA #032
+  10:54  BLOQUE_LIMITES           MARIA #033
+  11:28  BLOQUE_LIMITES           IAGO #034
+  11:30  BLOQUE_LIMITES           MARIA #035
+  12:02  APLICACION_PRACTICA      MARIA #036
+  12:33  APLICACION_PRACTICA      IAGO #037
+  13:27  APLICACION_PRACTICA      IAGO #038
+  14:30  APLICACION_PRACTICA      MARIA #039
+  14:34  APLICACION_PRACTICA      IAGO #040
+  15:19  APLICACION_PRACTICA      MARIA #041
+  15:25  APLICACION_PRACTICA      IAGO #042
+  15:50  CIERRE_CONCEPTOS         IAGO #043
+  15:54  CIERRE_CONCEPTOS         MARIA #044
+  16:03  CIERRE_CONCEPTOS         IAGO #045
+  16:13  CIERRE_CONCEPTOS         MARIA #046
+  16:21  CIERRE_CONCEPTOS         IAGO #047
+  16:31  CIERRE_FINAL             IAGO #048
+
+BLOQUES GENERADOS
+-----------------
+[001] IAGO: <didactico> Hoy, el 88% de las empresas tecnológicas dice estar usando inteligen...
+[002] IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligenc...
+[003] MARIA: <conversacional> Y yo soy Maria. Este es el módulo 1: Fundamentos Ontológicos y ...
+[004] IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <explicativo> Este módulo cubre las preguntas más fundamentales sobre cómo funci...
+[006] MARIA: <curioso> ¿Por qué estas preguntas importan para alguien que simplemente quiere ...
+[007] IAGO: <contundente> Porque los profesionales que no entienden los límites epistémicos ...
+[008] MARIA: <analitica> Entonces no es un módulo teórico. Es el módulo que te evita estrella...
+[009] IAGO: <firme> La teoría aquí tiene consecuencias directas sobre fiabilidad, seguridad,...
+[010] IAGO: <explicativo> Primer concepto clave: la naturaleza del conocimiento en los LLMs....
+[011] MARIA: [analitica] Lo que tienen es una compresión estadística masiva del texto humano:...
+[012] MARIA: <esceptico> ¿Y el modelo sabe cuándo está inventando?
+[013] IAGO: <grave> No. El modelo no tiene un mecanismo interno que le diga "esto es un hech...
+[014] MARIA: <analitica> Segundo concepto: razonamiento versus predicción de tokens. Este es ...
+[015] IAGO: <reflexivo> Así es. La postura que considera que los LLMs solo predicen tokens s...
+[016] MARIA: <curioso> Pero los modelos grandes sí muestran capacidades de razonamiento que l...
+[017] IAGO: <didactico> Correcto. La postura alternativa señala que los modelos más grandes ...
+[018] IAGO: <explicativo> Tercer concepto: las técnicas de razonamiento avanzado. Chain of T...
+[019] MARIA: [analitica] La idea es simple pero poderosa: en lugar de pedir al modelo que pro...
+[020] MARIA: <curioso> ¿Y Tree of Thoughts?
+[021] IAGO: <didactico> Tree of Thoughts extiende Chain of Thought generando múltiples caden...
+[022] MARIA: <analitica> Cuarto concepto: ReAct, que combina razonamiento y acción. Este es e...
+[023] IAGO: <firme> El valor de ReAct sobre Chain of Thought puro es que permite al modelo a...
+[024] MARIA: <explicativo> Quinto concepto: conocimiento paramétrico versus conocimiento en c...
+[025] IAGO: <contundente> Esta distinción es la base del patrón RAG, Retrieval-Augmented Gen...
+[026] MARIA: <esceptico> Ahora hablemos de lo que falla. Las alucinaciones son el elefante en...
+[027] IAGO: <reflexivo> ¿Qué factores aumentan la probabilidad de alucinaciones?
+[028] MARIA: <analitica> Temperatura alta, que significa mayor aleatoriedad en la generación....
+[029] IAGO: <curioso> ¿Y las estrategias de mitigación?
+[030] MARIA: <firme> RAG es la primera línea de defensa: proporcionar al modelo los documento...
+[031] IAGO: <grave> Entonces el objetivo en producción no es cero alucinaciones.
+[032] MARIA: <contundente> No. El objetivo es mantener la tasa de alucinaciones dentro de un ...
+[033] MARIA: <esceptico> Segundo límite: el problema de la calibración. Un sistema bien calib...
+[034] IAGO: <reflexivo> ¿Y cómo se mejora la calibración?
+[035] MARIA: <analitica> Self-consistency es una técnica: generar múltiples respuestas al mis...
+[036] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[037] IAGO: <explicativo> El sistema usa una combinación de Chain of Thought implícito y con...
+[038] IAGO: <didactico> El proceso de generación del guion es un proceso de razonamiento mul...
+[039] MARIA: <curioso> ¿Qué técnicas de mitigación de alucinaciones usa el sistema?
+[040] IAGO: <contundente> Tres técnicas principales. Primera: grounding explícito en los PDF...
+[041] MARIA: <reflexivo> Entonces el sistema no elimina las alucinaciones, pero las mantiene ...
+[042] IAGO: <firme> Correcto. El objetivo no es cero alucinaciones. El objetivo es que las a...
+[043] IAGO: <directo> No te puedes ir de este capitulo sin haber entendido estos conceptos.
+[044] MARIA: <claro> Primero: los LLMs no tienen conocimiento en el sentido humano. Tienen co...
+[045] IAGO: <firme> Segundo: Chain of Thought, Tree of Thoughts, y ReAct son técnicas de raz...
+[046] MARIA: <contundente> Tercero: la distinción entre conocimiento paramétrico y conocimien...
+[047] IAGO: <grave> Cuarto: las alucinaciones son estructurales, no bugs corregibles. Se mit...
+[048] IAGO: <conversacional> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. ...
+
+Produccion completada.

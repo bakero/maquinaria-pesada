@@ -1,0 +1,57 @@
+============================================================
+EPISODIO : M10_E_Sistemas_Agentes
+GUION    : C:\Users\Asus\maquinaria_pesada\Guiones\M10_Sistemas_Agentes.txt
+COMANDO  : C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe C:\Users\Asus\maquinaria_pesada\generar_episodio_v2.py --guion Guiones\M10_Sistemas_Agentes.txt --ep M10_E_Sistemas_Agentes
+INICIO   : 2026-05-10 23:56:11
+FIN      : 2026-05-10 23:56:12
+EXIT     : 1 (FALLO)
+============================================================
+
+--- STDOUT ---
+
+Leyendo guion: Guiones\M10_Sistemas_Agentes.txt
+[WARN] Problemas de calidad detectados en el guion (no fatales):
+  - [WARN] El aviso de IA no contiene ninguna frase de enganche recomendada.
+  - [WARN] El guion tiene 3041 palabras (maximo recomendado: 2800).
+  - [WARN] Bloque 6 (BLOQUE_PANORAMA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 9 (BLOQUE_PANORAMA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 11 (BLOQUE_TEMAS_CLAVE) tiene 15 frases (maximo: 10).
+  - [WARN] Bloque 12 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 14 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 15 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 16 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 18 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 20 (BLOQUE_TEMAS_CLAVE) tiene 12 frases (maximo: 10).
+  - [WARN] Bloque 21 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 22 (BLOQUE_TEMAS_CLAVE) tiene 14 frases (maximo: 10).
+  - [WARN] Bloque 23 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 26 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 28 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 30 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 33 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 36 (BLOQUE_LIMITES) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 37 (BLOQUE_LIMITES) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 38 (BLOQUE_LIMITES) tiene 15 frases (maximo: 10).
+  - [WARN] Bloque 40 (BLOQUE_LIMITES) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 42 (BLOQUE_LIMITES) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 44 (BLOQUE_LIMITES) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 46 (BLOQUE_LIMITES) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 48 (APLICACION_PRACTICA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 49 (APLICACION_PRACTICA) tiene 23 frases (maximo: 10).
+  - [WARN] Bloque 50 (APLICACION_PRACTICA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 52 (APLICACION_PRACTICA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 54 (APLICACION_PRACTICA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Media de palabras por intervencion demasiado baja: 52.4 (minimo: 55).
+   58 bloques encontrados
+   Tokens audio: no aplica (ElevenLabs usa creditos/caracteres)
+Antes de generar creditos ElevenLabs restantes: desconocido (API no disponible)
+
+Generando audio con ElevenLabs eleven_v3...
+  [001] MARIA - generando... (intento 1)
+
+
+--- STDERR ---
+
+ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+Comprueba que ELEVENLABS_API_KEY en el fichero .env es válida y está activa.
+

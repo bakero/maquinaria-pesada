@@ -43,15 +43,9 @@ def _format_timestamp(seconds: float) -> str:
 
 
 def _highlight(text: str, keywords: list[str], color: str = "#F5C400") -> str:
-    if not keywords:
-        return text
-    out = text
-    for kw in sorted(keywords, key=len, reverse=True):
-        if not kw or len(kw) < 2:
-            continue
-        pattern = re.compile(r"(?<!\w)(" + re.escape(kw) + r")(?!\w)", re.IGNORECASE)
-        out = pattern.sub(rf'<font color="{color}">\1</font>', out)
-    return out
+    """Sin highlights: el usuario quiere subtitulos 100% blancos.
+    Conservamos la firma para compatibilidad con el resto del pipeline."""
+    return text
 
 
 # ─── Alineacion guion <-> Whisper ─────────────────────────────────────────
@@ -265,36 +259,77 @@ def generate_srt(transcription: dict, content: dict,
         return str(srt_path)
 
     keywords = content.get("keywords", [])
-    interventions = _flatten_interventions(content)
-    if not interventions:
-        log.warning("Sin intervenciones en el guion; SRT vacio.")
+
+    # NUEVO ENFOQUE (sincronizacion exacta):
+    # Usar directamente las palabras de Whisper (con sus timestamps reales)
+    # agrupadas en chunks de ~7 palabras o ~3s, omitiendo el rango de la
+    # sintonia para evitar superpoponer subtitulos sobre el intro_video.
+    words = transcription.get("words", [])
+    if not words:
+        log.warning("Whisper sin palabras; SRT vacio.")
         srt_path.write_text("", encoding="utf-8")
         return str(srt_path)
 
-    content_start = (audio_structure or {}).get("content_start") or 0.0
-    content_end = (audio_structure or {}).get("content_end")
+    sintonia_start = (audio_structure or {}).get("sintonia_start")
+    sintonia_end = (audio_structure or {}).get("sintonia_end")
 
-    aligned = _align_interventions_with_whisper(
-        interventions, transcription.get("words", []),
-        content_start=content_start, content_end=content_end,
-        audio_structure=audio_structure,
-    )
+    def _in_sintonia(t: float) -> bool:
+        return (sintonia_start is not None and sintonia_end is not None
+                and sintonia_start <= t <= sintonia_end)
 
-    # Generar chunks SRT
+    chunks = []
+    current = []
+    chunk_start = None
+    for w in words:
+        # Skip palabras que caen dentro de la sintonia (el intro_video manda)
+        if _in_sintonia((w["start"] + w["end"]) / 2):
+            if current:
+                chunks.append({
+                    "start": chunk_start, "end": current[-1]["end"],
+                    "text": " ".join(c["word"].strip() for c in current),
+                })
+                current = []
+                chunk_start = None
+            continue
+
+        if chunk_start is None:
+            chunk_start = w["start"]
+        current.append(w)
+
+        # Cierre de chunk si:
+        #  a) llegamos al limite de palabras
+        #  b) el chunk dura mas de max_duration
+        #  c) la palabra termina en . ? !
+        text_w = w["word"].strip()
+        chunk_dur = w["end"] - chunk_start
+        ends_punct = text_w.endswith((".", "?", "!"))
+        if (len(current) >= max_words
+                or chunk_dur >= max_duration
+                or ends_punct):
+            chunks.append({
+                "start": chunk_start, "end": w["end"],
+                "text": " ".join(c["word"].strip() for c in current),
+            })
+            current = []
+            chunk_start = None
+
+    if current:
+        chunks.append({
+            "start": chunk_start, "end": current[-1]["end"],
+            "text": " ".join(c["word"].strip() for c in current),
+        })
+
+    # Escribir SRT
     lines = []
-    idx = 1
-    for iv in aligned:
-        chunks = _split_intervention_into_chunks(
-            iv["text"], iv["start"], iv["end"],
-            max_words=max_words, max_dur=max_duration,
-        )
-        for ck in chunks:
-            lines.append(str(idx))
-            lines.append(f"{_format_timestamp(ck['start'])} --> {_format_timestamp(ck['end'])}")
-            lines.append(_highlight(ck["text"], keywords))
-            lines.append("")
-            idx += 1
+    for idx, ck in enumerate(chunks, start=1):
+        text_clean = ck["text"].strip()
+        if not text_clean:
+            continue
+        lines.append(str(idx))
+        lines.append(f"{_format_timestamp(ck['start'])} --> {_format_timestamp(ck['end'])}")
+        lines.append(_highlight(text_clean, keywords))
+        lines.append("")
 
     srt_path.write_text("\n".join(lines), encoding="utf-8")
-    log.info(f"SRT generado: {idx - 1} bloques desde {len(aligned)} intervenciones del guion -> {srt_path.name}")
+    log.info(f"SRT generado: {len(chunks)} chunks desde Whisper word-level -> {srt_path.name}")
     return str(srt_path)

@@ -1,0 +1,107 @@
+========================================
+LOG DE PRODUCCION - M1_T10
+========================================
+Fecha:              2026-05-12 09:02:55
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    29
+Bloques generados:  29
+Bloques fallidos:   0
+Duracion total:     10.2 minutos (612s)
+Tiempo generacion:  2.4 minutos
+Archivo final:      episodios\M1_T10.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 9607
+Creditos estimados: 9607
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [29]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001 [conversacional]
+  00:47  [SINTONIA — inicio]
+  00:56  [SINTONIA — fin]
+  00:58  SALUDO_Y_PRESENTACION    MARIA #002
+  00:59  SALUDO_Y_PRESENTACION    IAGO #003
+  01:01  SALUDO_Y_PRESENTACION    MARIA #004 [directo]
+  01:11  SALUDO_Y_PRESENTACION    IAGO #005
+  01:19  BLOQUE_QUE               IAGO #006 [didactico]
+  02:00  BLOQUE_QUE               MARIA #007
+  02:03  BLOQUE_QUE               IAGO #008 [explicativo]
+  02:51  BLOQUE_QUE               MARIA #009
+  02:56  BLOQUE_QUE               IAGO #010
+  03:20  BLOQUE_COMO              IAGO #011 [explicativo]
+  03:47  BLOQUE_COMO              MARIA #012 [analitica]
+  03:50  BLOQUE_COMO              IAGO #013 [didactico]
+  03:56  BLOQUE_COMO              MARIA #014 [analitica]
+  04:11  BLOQUE_COMO              MARIA #015 [reflexivo]
+  04:30  BLOQUE_COMO              IAGO #016 [explicativo]
+  05:00  BLOQUE_COMO              MARIA #017 [analitica]
+  05:20  BLOQUE_COMO              IAGO #018 [directo]
+  05:24  BLOQUE_LIMITES           MARIA #019 [contundente]
+  06:04  BLOQUE_LIMITES           IAGO #020
+  06:21  BLOQUE_LIMITES           MARIA #021 [firme]
+  07:05  BLOQUE_LIMITES           IAGO #022
+  07:34  BLOQUE_LIMITES           MARIA #023 [esceptico]
+  08:13  BLOQUE_LIMITES           IAGO #024
+  08:40  BLOQUE_LIMITES           MARIA #025 [directo]
+  09:09  CIERRE_CONCEPTOS         MARIA #026 [claro]
+  09:34  CIERRE_CONCEPTOS         IAGO #027
+  09:45  CIERRE_CONCEPTOS         MARIA #028
+  10:02  CIERRE_FINAL             IAGO #029 [natural]
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: [conversacional] Los LLMs de OpenAI facturan por tokens. GPT-4o cobra cinco dóla...
+[002] MARIA: Soy Maria.
+[003] IAGO: Y yo soy Yago.
+[004] MARIA: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sist...
+[005] IAGO: Hoy hablamos de tokenización. De cómo los modelos de lenguaje convierten texto e...
+[006] IAGO: [didactico] Empecemos por lo básico. Un LLM no lee texto como un humano. No ve p...
+[007] MARIA: ¿Y cómo decide el tokenizador dónde cortar el texto?
+[008] IAGO: [explicativo] Ahí está la clave. No corta por palabras ni por morfemas lingüísti...
+[009] MARIA: Entonces las palabras comunes en inglés son tokens únicos porque aparecen mucho ...
+[010] IAGO: "The", "and", "is" son tokens únicos. Palabras menos frecuentes como "tokenizati...
+[011] IAGO: [explicativo] Veamos cómo funciona esto en la práctica. Tienes texto crudo. El t...
+[012] MARIA: [analitica] ¿Y cómo decide el modelo qué token devolver?
+[013] IAGO: [didactico] Al final, el modelo produce una distribución de probabilidad sobre t...
+[014] MARIA: [analitica] Es decir: elige el ID más probable, lo decodifica de vuelta a texto,...
+[015] MARIA: [reflexivo] Pero aquí viene lo interesante: el tokenizador no es reversible de f...
+[016] IAGO: [explicativo] Correcto. Y hay otro detalle técnico importante: los tokenizadores...
+[017] MARIA: [analitica] Entonces el coste de procesar texto no es lineal con el número de ca...
+[018] IAGO: [directo] Y eso nos lleva directamente a los problemas prácticos de la tokenizac...
+[019] MARIA: [contundente] Hablemos de lo que falla. Primer problema: los LLMs no pueden cont...
+[020] IAGO: Y ese problema se extiende a los números. Si "12345" se tokeniza como un único t...
+[021] MARIA: [firme] Segundo problema: el sesgo de idioma. Los tokenizadores de GPT-4, Claude...
+[022] IAGO: Hay datos concretos sobre esto. Un estudio de Hugging Face en dos mil veintitrés...
+[023] MARIA: [esceptico] Y aquí viene el tercer problema: la optimización de vocabulario no e...
+[024] IAGO: Un ejemplo concreto: vocabulario médico. Si entrenas un tokenizador sobre texto ...
+[025] MARIA: [directo] Y el cuarto problema: el impacto en el razonamiento. Hay evidencia de ...
+[026] MARIA: [claro] No te puedes ir de este capitulo sin haber entendido estos conceptos. Pr...
+[027] IAGO: Segundo: los tokens son la unidad de facturación en APIs, y el mismo contenido e...
+[028] MARIA: Tercero: los modelos no pueden contar letras ni operar sobre dígitos dentro de u...
+[029] IAGO: [natural] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Sigueno...
+
+Produccion completada.

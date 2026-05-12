@@ -1,0 +1,115 @@
+
+============================================================
+INICIO SESION : 2026-05-10 23:55:30
+Episodios     : 22
+============================================================
+[2026-05-10 23:55:30] FALLO | M0_E_Introduccion_Estrategica | log: M0_E_Introduccion_Estrategica_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:30] FALLO | M10_E_Sistemas_Agentes | log: M10_E_Sistemas_Agentes_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:30] FALLO | M10_TX_E_T5_tool_use_function_calling | log: M10_TX_E_T5_tool_use_function_calling_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M11_E_Automatizacion | log: M11_E_Automatizacion_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M12_E_Seguridad_IA | log: M12_E_Seguridad_IA_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M12_TX_E_T2_prompt_injection | log: M12_TX_E_T2_prompt_injection_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M13_E_Gobernanza_Etica | log: M13_E_Gobernanza_Etica_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M14_E_Estrategia_Empresa | log: M14_E_Estrategia_Empresa_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:31] FALLO | M1_E_Fundamentos_Razonamiento | log: M1_E_Fundamentos_Razonamiento_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:32] FALLO | M1_TX_E_T10_tokenizacion | log: M1_TX_E_T10_tokenizacion_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:32] FALLO | M1_TX_E_T11_limitaciones_llms | log: M1_TX_E_T11_limitaciones_llms_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:32] FALLO | M2_E_Matematicas_Fundamentos | log: M2_E_Matematicas_Fundamentos_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:32] FALLO | M3_E_Machine_Learning_Clasico | log: M3_E_Machine_Learning_Clasico_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:32] FALLO | M3_TX_E_T2_modelos_clasicos | log: M3_TX_E_T2_modelos_clasicos_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M4_E_Deep_Learning | log: M4_E_Deep_Learning_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M5_E_NLP_LLMs | log: M5_E_NLP_LLMs_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M6_E_Ingenieria_Prompts | log: M6_E_Ingenieria_Prompts_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M7_E_Sistemas_RAG | log: M7_E_Sistemas_RAG_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M7_TX_E_T1_que_es_rag | log: M7_TX_E_T1_que_es_rag_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:33] FALLO | M8_E_Ingenieria_LLMOps | log: M8_E_Ingenieria_LLMOps_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:34] FALLO | M8_TX_E_T1_ciclo_vida_modelos_llm | log: M8_TX_E_T1_ciclo_vida_modelos_llm_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+[2026-05-10 23:55:34] FALLO | M9_E_Infraestructura_Despliegue | log: M9_E_Infraestructura_Despliegue_cmd.log
+              error: ImportError: cannot import name 'DEFAULT_SPEC_PATH' from 'podcast_spec' (C:\Users\Asus\maquinaria_pesada\podcast_spec.py). Did you mean: 'DEFAULT_M_SPEC_PATH'?
+FIN SESION    : 2026-05-10 23:55:34
+OK (0): --
+FALLO (22): M0_E_Introduccion_Estrategica, M10_E_Sistemas_Agentes, M10_TX_E_T5_tool_use_function_calling, M11_E_Automatizacion, M12_E_Seguridad_IA, M12_TX_E_T2_prompt_injection, M13_E_Gobernanza_Etica, M14_E_Estrategia_Empresa, M1_E_Fundamentos_Razonamiento, M1_TX_E_T10_tokenizacion, M1_TX_E_T11_limitaciones_llms, M2_E_Matematicas_Fundamentos, M3_E_Machine_Learning_Clasico, M3_TX_E_T2_modelos_clasicos, M4_E_Deep_Learning, M5_E_NLP_LLMs, M6_E_Ingenieria_Prompts, M7_E_Sistemas_RAG, M7_TX_E_T1_que_es_rag, M8_E_Ingenieria_LLMOps, M8_TX_E_T1_ciclo_vida_modelos_llm, M9_E_Infraestructura_Despliegue
+------------------------------------------------------------
+
+============================================================
+INICIO SESION : 2026-05-10 23:56:07
+Episodios     : 22
+============================================================
+[2026-05-10 23:56:11] FALLO | M0_E_Introduccion_Estrategica | log: M0_E_Introduccion_Estrategica_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:12] FALLO | M10_E_Sistemas_Agentes | log: M10_E_Sistemas_Agentes_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:13] FALLO | M10_TX_E_T5_tool_use_function_calling | log: M10_TX_E_T5_tool_use_function_calling_cmd.log
+              error: Leyendo guion: Guiones\M10_TX_T5_tool_use_function_calling.txt
+[2026-05-10 23:56:16] FALLO | M11_E_Automatizacion | log: M11_E_Automatizacion_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:18] FALLO | M12_E_Seguridad_IA | log: M12_E_Seguridad_IA_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:19] FALLO | M12_TX_E_T2_prompt_injection | log: M12_TX_E_T2_prompt_injection_cmd.log
+              error: Leyendo guion: Guiones\M12_TX_T2_prompt_injection.txt
+[2026-05-10 23:56:20] FALLO | M13_E_Gobernanza_Etica | log: M13_E_Gobernanza_Etica_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:22] FALLO | M14_E_Estrategia_Empresa | log: M14_E_Estrategia_Empresa_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:24] FALLO | M1_E_Fundamentos_Razonamiento | log: M1_E_Fundamentos_Razonamiento_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:25] FALLO | M1_TX_E_T10_tokenizacion | log: M1_TX_E_T10_tokenizacion_cmd.log
+              error: Leyendo guion: Guiones\M1_TX_T10_tokenizacion.txt
+[2026-05-10 23:56:26] FALLO | M1_TX_E_T11_limitaciones_llms | log: M1_TX_E_T11_limitaciones_llms_cmd.log
+              error: Leyendo guion: Guiones\M1_TX_T11_limitaciones_llms.txt
+[2026-05-10 23:56:27] FALLO | M2_E_Matematicas_Fundamentos | log: M2_E_Matematicas_Fundamentos_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:29] FALLO | M3_E_Machine_Learning_Clasico | log: M3_E_Machine_Learning_Clasico_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:29] FALLO | M3_TX_E_T2_modelos_clasicos | log: M3_TX_E_T2_modelos_clasicos_cmd.log
+              error: Leyendo guion: Guiones\M3_TX_T2_modelos_clasicos.txt
+[2026-05-10 23:56:31] FALLO | M4_E_Deep_Learning | log: M4_E_Deep_Learning_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:33] FALLO | M5_E_NLP_LLMs | log: M5_E_NLP_LLMs_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:34] FALLO | M6_E_Ingenieria_Prompts | log: M6_E_Ingenieria_Prompts_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:36] FALLO | M7_E_Sistemas_RAG | log: M7_E_Sistemas_RAG_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:37] FALLO | M7_TX_E_T1_que_es_rag | log: M7_TX_E_T1_que_es_rag_cmd.log
+              error: Leyendo guion: Guiones\M7_TX_T1_que_es_rag.txt
+[2026-05-10 23:56:38] FALLO | M8_E_Ingenieria_LLMOps | log: M8_E_Ingenieria_LLMOps_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+[2026-05-10 23:56:39] FALLO | M8_TX_E_T1_ciclo_vida_modelos_llm | log: M8_TX_E_T1_ciclo_vida_modelos_llm_cmd.log
+              error: Leyendo guion: Guiones\M8_TX_T1_ciclo_vida_modelos_llm.txt
+[2026-05-10 23:56:41] FALLO | M9_E_Infraestructura_Despliegue | log: M9_E_Infraestructura_Despliegue_cmd.log
+              error: ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+FIN SESION    : 2026-05-10 23:56:41
+OK (0): --
+FALLO (22): M0_E_Introduccion_Estrategica, M10_E_Sistemas_Agentes, M10_TX_E_T5_tool_use_function_calling, M11_E_Automatizacion, M12_E_Seguridad_IA, M12_TX_E_T2_prompt_injection, M13_E_Gobernanza_Etica, M14_E_Estrategia_Empresa, M1_E_Fundamentos_Razonamiento, M1_TX_E_T10_tokenizacion, M1_TX_E_T11_limitaciones_llms, M2_E_Matematicas_Fundamentos, M3_E_Machine_Learning_Clasico, M3_TX_E_T2_modelos_clasicos, M4_E_Deep_Learning, M5_E_NLP_LLMs, M6_E_Ingenieria_Prompts, M7_E_Sistemas_RAG, M7_TX_E_T1_que_es_rag, M8_E_Ingenieria_LLMOps, M8_TX_E_T1_ciclo_vida_modelos_llm, M9_E_Infraestructura_Despliegue
+------------------------------------------------------------
+
+============================================================
+INICIO SESION : 2026-05-12 09:13:13
+Episodios     : 22
+============================================================
+FIN SESION    : 2026-05-12 09:13:13
+OK (22): M0_E_Introduccion_Estrategica, M10_E_Sistemas_Agentes, M10_TX_E_T5_tool_use_function_calling, M11_E_Automatizacion, M12_E_Seguridad_IA, M12_TX_E_T2_prompt_injection, M13_E_Gobernanza_Etica, M14_E_Estrategia_Empresa, M1_E_Fundamentos_Razonamiento, M1_TX_E_T10_tokenizacion, M1_TX_E_T11_limitaciones_llms, M2_E_Matematicas_Fundamentos, M3_E_Machine_Learning_Clasico, M3_TX_E_T2_modelos_clasicos, M4_E_Deep_Learning, M5_E_NLP_LLMs, M6_E_Ingenieria_Prompts, M7_E_Sistemas_RAG, M7_TX_E_T1_que_es_rag, M8_E_Ingenieria_LLMOps, M8_TX_E_T1_ciclo_vida_modelos_llm, M9_E_Infraestructura_Despliegue
+FALLO (0): --
+------------------------------------------------------------

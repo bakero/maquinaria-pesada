@@ -1,0 +1,121 @@
+========================================
+LOG DE PRODUCCION - M10_T5
+========================================
+Fecha:              2026-05-12 09:23:51
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    36
+Bloques generados:  36
+Bloques fallidos:   0
+Duracion total:     16.6 minutos (997s)
+Tiempo generacion:  3.2 minutos
+Archivo final:      episodios\M10_T5.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 10536
+Creditos estimados: 10536
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- La duracion final es demasiado larga: 16.61 min.
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [36]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     IAGO #001 [directo]
+  00:35  [SINTONIA — inicio]
+  00:44  [SINTONIA — fin]
+  00:46  SALUDO_Y_PRESENTACION    IAGO #002
+  00:47  SALUDO_Y_PRESENTACION    MARIA #003
+  00:49  SALUDO_Y_PRESENTACION    IAGO #004
+  00:59  SALUDO_Y_PRESENTACION    MARIA #005
+  01:06  BLOQUE_QUE               IAGO #006 [didactico]
+  01:46  BLOQUE_QUE               MARIA #007
+  01:49  BLOQUE_QUE               IAGO #008 [explicativo]
+  02:24  BLOQUE_QUE               MARIA #009
+  02:28  BLOQUE_QUE               IAGO #010 [claro]
+  02:49  BLOQUE_QUE               IAGO #011 [firme]
+  03:24  BLOQUE_QUE               MARIA #012
+  03:27  BLOQUE_QUE               IAGO #013 [contundente]
+  06:22  BLOQUE_COMO              IAGO #014 [explicativo]
+  06:30  BLOQUE_COMO              MARIA #015 [analitica]
+  07:04  BLOQUE_COMO              MARIA #016
+  07:09  BLOQUE_COMO              IAGO #017
+  07:23  BLOQUE_COMO              MARIA #018 [conversacional]
+  07:58  BLOQUE_COMO              IAGO #019
+  08:00  BLOQUE_COMO              MARIA #020 [claro]
+  11:47  BLOQUE_COMO              IAGO #021 [serio]
+  12:22  BLOQUE_COMO              MARIA #022
+  12:25  BLOQUE_COMO              IAGO #023 [grave]
+  12:54  BLOQUE_LIMITES           MARIA #024 [esceptico]
+  13:27  BLOQUE_LIMITES           IAGO #025
+  13:28  BLOQUE_LIMITES           MARIA #026 [firme]
+  14:00  BLOQUE_LIMITES           MARIA #027 [tenso]
+  14:33  BLOQUE_LIMITES           IAGO #028
+  14:36  BLOQUE_LIMITES           MARIA #029 [grave]
+  15:10  BLOQUE_LIMITES           IAGO #030 [explicativo]
+  15:45  BLOQUE_LIMITES           MARIA #031
+  15:47  BLOQUE_LIMITES           IAGO #032
+  16:08  CIERRE_CONCEPTOS         IAGO #033
+  16:12  CIERRE_CONCEPTOS         MARIA #034 [directo]
+  16:15  CIERRE_CONCEPTOS         IAGO #035 [claro]
+  16:26  CIERRE_FINAL             MARIA #036
+
+BLOQUES GENERADOS
+-----------------
+[001] IAGO: [directo] En este momento, más del 70% de los sistemas agénticos que se desplieg...
+[002] IAGO: Soy Yago.
+[003] MARIA: Y yo soy Maria.
+[004] IAGO: Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automa...
+[005] MARIA: Hoy tocamos Tool Use y Function Calling, del módulo de sistemas agénticos. Entra...
+[006] IAGO: [didactico] Vamos a establecer primero qué es function calling, porque el términ...
+[007] MARIA: ¿Y por qué JSON estructurado en lugar de texto libre?
+[008] IAGO: [explicativo] Porque el parsing de texto libre es un infierno de errores. Si el ...
+[009] MARIA: ¿Y qué pasa si el modelo decide no usar ninguna herramienta?
+[010] IAGO: [claro] Entonces simplemente genera texto. El ciclo de function calling es opcio...
+[011] IAGO: [firme] Ahora, las herramientas. Una herramienta es cualquier función que el age...
+[012] MARIA: Dame un ejemplo de una herramienta mal diseñada.
+[013] IAGO: [contundente] Una herramienta llamada "fetch_data" con la descripción "obtiene d...
+[014] IAGO: [explicativo] Vamos al mecanismo técnico. El ciclo de function calling tiene cua...
+[015] MARIA: [analitica] Segundo: envías el mensaje del usuario junto con la lista de herrami...
+[016] MARIA: ¿Y si el modelo necesita usar varias herramientas para responder una sola pregun...
+[017] IAGO: Ahí entra el bucle. El modelo puede hacer múltiples llamadas secuenciales: llama...
+[018] MARIA: [conversacional] Parallel tool calling. Los modelos actuales pueden llamar a múl...
+[019] IAGO: ¿Qué modelos soportan esto?
+[020] MARIA: [claro] GPT-4, Claude 3.5 en adelante, Gemini Pro. Es una capacidad relativament...
+[021] IAGO: [serio] Ahora hablemos de herramientas con estado versus sin estado, porque aquí...
+[022] MARIA: ¿Y cuál es el problema con las stateful?
+[023] IAGO: [grave] Que el agente puede llamarlas repetidamente si no controlas el flujo. Si...
+[024] MARIA: [esceptico] Vamos a lo que falla. Primero: tool hallucination. El modelo puede a...
+[025] IAGO: ¿Cómo se mitiga?
+[026] MARIA: [firme] Schemas JSON estrictos. El structured output del modelo verifica que los...
+[027] MARIA: [tenso] Segundo límite: demasiadas herramientas. Un agente con 50 herramientas d...
+[028] IAGO: ¿Y qué pasa con la ejecución de código arbitrario?
+[029] MARIA: [grave] Ese es el límite más peligroso. Permitir que un agente ejecute código Py...
+[030] IAGO: [explicativo] La solución es el sandbox. Un sandbox de código aísla la ejecución...
+[031] MARIA: ¿Y cuándo vale la pena el riesgo?
+[032] IAGO: Cuando la capacidad lo justifica. Un agente de análisis de datos que puede escri...
+[033] IAGO: No te puedes ir de este capitulo sin haber entendido estos conceptos.
+[034] MARIA: [directo] De acuerdo. Sigamos.
+[035] IAGO: [claro] Function calling es el mecanismo que permite a un LLM expresar de forma ...
+[036] MARIA: Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nue...
+
+Produccion completada.

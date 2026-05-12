@@ -11,9 +11,14 @@ import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import PipelineConnector  # noqa: E402
+from cockpit.theme import inject_theme, render_logo  # noqa: E402
+from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(page_title="Generar prompt", page_icon="📝", layout="wide")
-st.title("📝 Generar prompt para Codex")
+inject_theme()
+render_logo()
+render_status_sidebar()
+st.title("GENERAR PROMPT PARA CODEX")
 st.caption("Rellena el formulario y copia el comando resultante a Codex. La cockpit no ejecuta nada.")
 
 pipelines = [c for c in connectors.by_category("pipeline") if isinstance(c, PipelineConnector)]
