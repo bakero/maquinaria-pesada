@@ -32,6 +32,8 @@ maquinaria_pesada_pipeline/outputs/
 *.m4a
 *.srt
 !intro_placeholder.example.mp4
+!episodios/*.mp3
+!episodios/*.log
 
 # ─── Imágenes generadas ─────────────────────────────────────
 maquinaria_pesada_pipeline/outputs/frames_cache/

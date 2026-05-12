@@ -378,7 +378,7 @@ Debe incluir literalmente:
     "tone": "divulgativo tecnico, riguroso pero accesible",
     "hook_style": "menu_3_plantillas",
     "minimum_audio_minutes": 9.5,
-    "maximum_audio_minutes": 13.5
+    "maximum_audio_minutes": 15.0
   },
   "parity_rules": {
     "applies_to": "tema_number",

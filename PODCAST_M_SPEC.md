@@ -488,7 +488,7 @@ Debe incluir literalmente:
     "tone": "divulgativo tecnico, riguroso pero accesible, con momento de ingenieria-real en APLICACION_PRACTICA",
     "hook_style": "menu_3_plantillas",
     "minimum_audio_minutes": 15.5,
-    "maximum_audio_minutes": 20.5
+    "maximum_audio_minutes": 23.0
   },
   "parity_rules": {
     "applies_to": "module_number",
