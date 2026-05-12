@@ -1,4 +1,4 @@
-"""Página Economics: recargas y saldos por proveedor IA."""
+"""Página Economics: recargas, gastos manuales y suscripciones por proveedor IA."""
 from __future__ import annotations
 
 import sys
@@ -20,18 +20,55 @@ inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("ECONOMICS — RECARGAS Y SALDOS")
+st.title("ECONOMICS · RECARGAS, GASTOS Y SUSCRIPCIONES")
 st.caption(
-    "El gasto se calcula desde `ai_usage.jsonl`. Las recargas se introducen "
-    "manualmente (los proveedores no exponen saldo en API pública o requieren "
-    "scraping de la consola)."
+    "Saldo = topups − (gastos manuales + ai_usage.jsonl). Las suscripciones "
+    "(Claude Max, ElevenLabs Starter…) se contabilizan aparte como tarifa plana."
 )
 
-summary = economics.summary()
+# ----- Métricas globales -----
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Topups totales", f"${economics.total_topped_up():.2f}")
+c2.metric("Gasto total", f"${economics.total_spent():.2f}")
+c3.metric("Saldo global", f"${economics.total_balance():.2f}")
+c4.metric("Suscripciones / mes", f"${economics.total_subscription_monthly():.2f}")
 
+st.divider()
+
+# ----- Snapshot real -----
+state = economics.load()
+if not state.topups and not state.spends and not state.subscriptions:
+    st.info(
+        "📥 No hay datos. Puedes cargar el **snapshot real 2026-05-12** "
+        "(Anthropic + ElevenLabs + Kling) verificado contra los paneles "
+        "de cada proveedor."
+    )
+    if st.button("📥 Cargar snapshot 2026-05-12", type="primary"):
+        economics.seed_snapshot()
+        st.rerun()
+else:
+    with st.expander("📥 Cargar snapshot real (datos verificados)", expanded=False):
+        st.caption(
+            "Carga los datos reales de billing recogidos el 2026-05-12: "
+            "Anthropic ($54.45 topups, $29.62 consumidos), ElevenLabs "
+            "($48.40 topups + Starter, $48.40 gastados), Kling ($62.68 en 4 "
+            "Trial Packages, todos consumidos), Claude Max + ElevenLabs Starter."
+        )
+        col_a, col_b = st.columns(2)
+        if col_a.button("➕ Añadir snapshot al estado actual"):
+            economics.seed_snapshot(replace=False)
+            st.rerun()
+        if col_b.button("♻️ Reemplazar con snapshot (borra lo anterior)"):
+            economics.seed_snapshot(replace=True)
+            st.rerun()
+
+st.divider()
+
+# ----- Saldo por proveedor -----
+summary = economics.summary()
 st.subheader("Saldo por proveedor")
 if not summary:
-    st.info("Sin datos. Añade una recarga abajo o lanza alguna llamada IA.")
+    st.caption("Sin movimientos todavía.")
 else:
     cols = st.columns(len(summary))
     for col, (prov, data) in zip(cols, sorted(summary.items()), strict=False):
@@ -39,53 +76,147 @@ else:
             balance = data["balance"]
             badge = "🟢" if balance > 0 else "🔴" if balance < 0 else "⚪"
             st.markdown(f"### {badge} {prov}")
-            st.metric("Saldo USD", f"${balance:.4f}")
+            st.metric("Saldo USD", f"${balance:.2f}")
             st.caption(
-                f"Recargado: ${data['topped_up']:.4f} · Gastado: ${data['spent']:.4f}"
+                f"Topups: ${data['topped_up']:.2f}  ·  "
+                f"Gasto: ${data['spent']:.2f}"
             )
-            st.caption(f"Llamadas: {int(data['calls'])}")
-
-st.metric("**Saldo global**", f"${economics.total_balance():.4f}")
-
-st.divider()
-st.subheader("Añadir recarga")
-with st.form("topup_form"):
-    c1, c2, c3 = st.columns(3)
-    provider = c1.selectbox("Proveedor", ["anthropic", "openai", "elevenlabs", "kling", "otro"])
-    amount = c2.number_input("Importe USD", min_value=0.01, value=10.0, step=1.0)
-    note = c3.text_input("Nota (opcional)", placeholder="Recarga mensual…")
-    if st.form_submit_button("💳 Registrar recarga"):
-        economics.add_topup(provider, amount, note)
-        st.success(f"Registrada recarga de ${amount:.2f} en {provider}.")
-        st.rerun()
+            if data["spent_manual"] and data["spent_tracked"]:
+                st.caption(
+                    f"  manual: ${data['spent_manual']:.2f}  ·  "
+                    f"tracked: ${data['spent_tracked']:.2f}"
+                )
+            st.caption(f"Llamadas IA registradas: {int(data['calls'])}")
+            if data["subscription_monthly"]:
+                st.caption(
+                    f"🔁 Suscripción: ${data['subscription_monthly']:.2f}/mes "
+                    f"({int(data['subscriptions'])})"
+                )
 
 st.divider()
-st.subheader("Histórico de recargas")
-state = economics.load()
-if not state.topups:
-    st.caption("Sin recargas todavía.")
-else:
-    for i, t in enumerate(reversed(state.topups)):
-        idx = len(state.topups) - 1 - i
-        cols = st.columns([2, 2, 1, 4, 1])
-        cols[0].text(t.timestamp)
-        cols[1].text(t.provider)
-        cols[2].text(f"${t.amount_usd:.2f}")
-        cols[3].text(t.note or "—")
-        if cols[4].button("🗑", key=f"_del_topup_{idx}"):
-            economics.remove_topup(idx)
+
+# ----- Tabs de gestión -----
+tab_top, tab_spend, tab_sub = st.tabs(
+    ["💳 Recargas (Topups)", "💸 Gastos manuales", "🔁 Suscripciones"]
+)
+
+with tab_top:
+    st.markdown("Registra una recarga pay-as-you-go (cargo en el panel del proveedor).")
+    with st.form("topup_form"):
+        c1, c2, c3, c4 = st.columns([2, 2, 2, 4])
+        provider = c1.selectbox(
+            "Proveedor", ["anthropic", "openai", "elevenlabs", "kling", "otro"],
+            key="topup_provider",
+        )
+        amount = c2.number_input("Importe USD", min_value=0.01, value=10.0, step=1.0,
+                                  key="topup_amount")
+        date_str = c3.text_input("Fecha (YYYY-MM-DD)", value="",
+                                 placeholder="opcional", key="topup_date")
+        note = c4.text_input("Nota", placeholder="Recarga manual…", key="topup_note")
+        if st.form_submit_button("💳 Registrar recarga"):
+            economics.add_topup(provider, amount, note, timestamp=date_str or None)
+            st.success(f"Registrada recarga de ${amount:.2f} en {provider}.")
             st.rerun()
+
+    state = economics.load()
+    if state.topups:
+        st.markdown("**Histórico:**")
+        for i, t in enumerate(reversed(state.topups)):
+            idx = len(state.topups) - 1 - i
+            cols = st.columns([2, 2, 1, 5, 1])
+            cols[0].text(t.timestamp)
+            cols[1].text(t.provider)
+            cols[2].text(f"${t.amount_usd:.2f}")
+            cols[3].text(t.note or "—")
+            if cols[4].button("🗑", key=f"_del_top_{idx}"):
+                economics.remove_topup(idx)
+                st.rerun()
+
+with tab_spend:
+    st.markdown(
+        "Gasto manual: importes que NO vienen de `ai_usage.jsonl` (consumos "
+        "históricos antes del tracker, facturas externas, etc.)."
+    )
+    with st.form("spend_form"):
+        c1, c2, c3, c4 = st.columns([2, 2, 2, 4])
+        provider = c1.selectbox(
+            "Proveedor", ["anthropic", "openai", "elevenlabs", "kling", "otro"],
+            key="spend_provider",
+        )
+        amount = c2.number_input("Importe USD", min_value=0.01, value=10.0, step=1.0,
+                                  key="spend_amount")
+        date_str = c3.text_input("Fecha (YYYY-MM-DD)", value="",
+                                 placeholder="opcional", key="spend_date")
+        note = c4.text_input("Nota", placeholder="Generación M0…", key="spend_note")
+        if st.form_submit_button("💸 Registrar gasto"):
+            economics.add_spend(provider, amount, note, timestamp=date_str or None)
+            st.success(f"Registrado gasto de ${amount:.2f} en {provider}.")
+            st.rerun()
+
+    state = economics.load()
+    if state.spends:
+        st.markdown("**Histórico:**")
+        for i, s in enumerate(reversed(state.spends)):
+            idx = len(state.spends) - 1 - i
+            cols = st.columns([2, 2, 1, 5, 1])
+            cols[0].text(s.timestamp)
+            cols[1].text(s.provider)
+            cols[2].text(f"${s.amount_usd:.2f}")
+            cols[3].text(s.note or "—")
+            if cols[4].button("🗑", key=f"_del_sp_{idx}"):
+                economics.remove_spend(idx)
+                st.rerun()
+
+with tab_sub:
+    st.markdown("Suscripciones (tarifa plana mensual). No descuentan saldo de topups.")
+    with st.form("sub_form"):
+        c1, c2, c3 = st.columns([3, 2, 2])
+        name = c1.text_input("Nombre del plan", placeholder="Claude Max",
+                              key="sub_name")
+        provider = c2.selectbox(
+            "Proveedor", ["anthropic", "openai", "elevenlabs", "kling", "otro"],
+            key="sub_provider",
+        )
+        monthly = c3.number_input("USD / mes", min_value=0.01, value=10.0, step=1.0,
+                                   key="sub_monthly")
+        c4, c5 = st.columns([2, 4])
+        started = c4.text_input("Desde (YYYY-MM)", value="",
+                                placeholder="2026-05", key="sub_started")
+        note = c5.text_input("Nota", placeholder="Plan Max 5×, etc.",
+                              key="sub_note")
+        if st.form_submit_button("🔁 Registrar suscripción"):
+            economics.add_subscription(name or provider, provider, monthly,
+                                       started_on=started, note=note)
+            st.success(f"Registrada suscripción «{name}» (${monthly:.2f}/mes).")
+            st.rerun()
+
+    state = economics.load()
+    if state.subscriptions:
+        st.markdown("**Suscripciones activas:**")
+        for i, sub in enumerate(reversed(state.subscriptions)):
+            idx = len(state.subscriptions) - 1 - i
+            cols = st.columns([3, 2, 2, 4, 1])
+            cols[0].text(sub.name)
+            cols[1].text(sub.provider)
+            cols[2].text(f"${sub.monthly_usd:.2f}/mes")
+            cols[3].text(sub.note or sub.started_on or "—")
+            if cols[4].button("🗑", key=f"_del_sub_{idx}"):
+                economics.remove_subscription(idx)
+                st.rerun()
+
+st.divider()
 
 render_improve_block(
     source="page:economics",
     context=(
-        "Página que gestiona recargas manuales por proveedor IA y calcula saldo "
-        "restante usando ai_usage.jsonl. No hay alertas automáticas ni "
-        "proyecciones de agotamiento."
+        "Página de economics: topups + gastos manuales + suscripciones por "
+        "proveedor IA. Calcula saldo restante por proveedor y global, contabiliza "
+        "ai_usage.jsonl automáticamente. No tiene proyección de agotamiento "
+        "ni alertas de umbral."
     ),
     default_prompt=(
-        "Propón mejoras: alertas cuando saldo < X, proyección de días restantes "
-        "según consumo medio, exportación a Excel para contabilidad."
+        "Propón mejoras: alertas saldo < umbral, proyección días restantes según "
+        "consumo medio diario, exportar a CSV/Excel, gráfica de evolución mensual."
     ),
     kind="update",
 )
