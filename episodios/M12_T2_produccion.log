@@ -1,0 +1,115 @@
+========================================
+LOG DE PRODUCCION - M12_T2
+========================================
+Fecha:              2026-05-12 09:39:36
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    33
+Bloques generados:  33
+Bloques fallidos:   0
+Duracion total:     10.4 minutos (626s)
+Tiempo generacion:  2.5 minutos
+Archivo final:      episodios\M12_T2.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 9634
+Creditos estimados: 9634
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [33]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001 [directo]
+  00:30  [SINTONIA — inicio]
+  00:39  [SINTONIA — fin]
+  00:41  SALUDO_Y_PRESENTACION    MARIA #002
+  00:43  SALUDO_Y_PRESENTACION    IAGO #003
+  00:44  SALUDO_Y_PRESENTACION    MARIA #004 [serio]
+  00:54  SALUDO_Y_PRESENTACION    IAGO #005
+  00:58  BLOQUE_QUE               IAGO #006 [didactico]
+  01:25  BLOQUE_QUE               MARIA #007
+  01:28  BLOQUE_QUE               IAGO #008 [contundente]
+  01:57  BLOQUE_QUE               MARIA #009
+  02:00  BLOQUE_QUE               IAGO #010 [grave]
+  02:29  BLOQUE_COMO              MARIA #011 [conversacional]
+  02:32  BLOQUE_COMO              IAGO #012 [explicativo]
+  03:12  BLOQUE_COMO              MARIA #013 [analitica]
+  03:51  BLOQUE_COMO              IAGO #014
+  04:01  BLOQUE_COMO              MARIA #015 [firme]
+  04:08  BLOQUE_COMO              IAGO #016 [didactico]
+  04:36  BLOQUE_COMO              MARIA #017 [conversacional]
+  05:13  BLOQUE_COMO              IAGO #018 [contundente]
+  05:50  BLOQUE_COMO              MARIA #019
+  06:04  BLOQUE_LIMITES           MARIA #020 [esceptico]
+  06:13  BLOQUE_LIMITES           IAGO #021
+  06:20  BLOQUE_LIMITES           MARIA #022 [analitica]
+  06:55  BLOQUE_LIMITES           IAGO #023
+  06:59  BLOQUE_LIMITES           MARIA #024 [firme]
+  07:48  BLOQUE_LIMITES           IAGO #025
+  07:50  BLOQUE_LIMITES           MARIA #026 [contundente]
+  08:24  BLOQUE_LIMITES           IAGO #027
+  08:34  BLOQUE_LIMITES           MARIA #028 [grave]
+  09:16  BLOQUE_LIMITES           IAGO #029 [explicativo]
+  09:52  CIERRE_CONCEPTOS         MARIA #030 [directo]
+  09:56  CIERRE_CONCEPTOS         IAGO #031
+  10:04  CIERRE_CONCEPTOS         MARIA #032
+  10:15  CIERRE_FINAL             MARIA #033 [calido]
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: [directo] Un estudio de octubre 2025 evaluó doce defensas contra prompt injectio...
+[002] MARIA: Soy Maria.
+[003] IAGO: Y yo Yago.
+[004] MARIA: [serio] Antes de empezar, el aviso de siempre: este episodio lo genera un sistem...
+[005] IAGO: Hoy hablamos de prompt injection, ataques y defensas.
+[006] IAGO: [didactico] Prompt injection es inherente a cómo funcionan los modelos de lengua...
+[007] MARIA: ¿Y por qué es la vulnerabilidad número uno?
+[008] IAGO: [contundente] Porque es explotable en casi cualquier sistema que use LLMs en pro...
+[009] MARIA: Mencionas agentes. ¿Es peor ahí?
+[010] IAGO: [grave] Mucho peor. En sistemas multi-agente, la inyección se propaga. El Agente...
+[011] MARIA: [conversacional] Vamos a los tipos de ataque. Directa versus indirecta.
+[012] IAGO: [explicativo] Inyección directa: el usuario envía input que contiene instruccion...
+[013] MARIA: [analitica] La inyección indirecta es distinta. El atacante no interactúa direct...
+[014] IAGO: Y ahí está el problema de escala. Con inyección directa, atacas un sistema cada ...
+[015] MARIA: [firme] Pasemos a defensas. Porque si el 90% de las defensas fallan con ataques ...
+[016] IAGO: [didactico] Defensa en capas. Primera capa: separación clara de instrucciones y ...
+[017] MARIA: [conversacional] Segunda capa: validación y sanitización de inputs antes de pasa...
+[018] IAGO: [contundente] Tercera capa, y esta es la crítica: controles a nivel de herramien...
+[019] MARIA: Cuarta capa: human-in-the-loop para acciones de alto impacto. Enviar emails, mod...
+[020] MARIA: [esceptico] Ahora los fallos. Porque las empresas están implementando estas defe...
+[021] IAGO: El error más común: asumir que instrucciones del system prompt más instrucciones...
+[022] MARIA: [analitica] Y no lo es. Un caso real de 2024: un chatbot empresarial tenía en su...
+[023] IAGO: Otro fallo: no testear con ataques adaptativos.
+[024] MARIA: [firme] Testear solo con los jailbreaks conocidos y publicados produce una falsa...
+[025] IAGO: ¿Y el tercer fallo?
+[026] MARIA: [contundente] Implementar seguridad solo a nivel de prompt, ignorando la capa de...
+[027] IAGO: La guía de red teaming de OWASP Gen AI de enero 2026 lo dice explícitamente: no ...
+[028] MARIA: [grave] Eso no significa que las defensas sean inútiles. Significa que la defens...
+[029] IAGO: [explicativo] Y eso conecta con un patrón cotidiano que se ve en muchas adopcion...
+[030] MARIA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos.
+[031] IAGO: Prompt injection es inherente a la arquitectura de los LLMs porque no distinguen...
+[032] MARIA: La defensa correcta es en capas: separación de inputs, validación, controles en ...
+[033] MARIA: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos...
+
+Produccion completada.

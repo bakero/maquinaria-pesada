@@ -1,0 +1,147 @@
+========================================
+LOG DE PRODUCCION - M14
+========================================
+Fecha:              2026-05-12 09:51:07
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    49
+Bloques generados:  49
+Bloques fallidos:   0
+Duracion total:     23.6 minutos (1419s)
+Tiempo generacion:  5.3 minutos
+Archivo final:      episodios\M14.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 22367
+Creditos estimados: 22367
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- La duracion final es demasiado larga: 23.65 min.
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [48]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001
+  00:57  [SINTONIA — inicio]
+  01:06  [SINTONIA — fin]
+  01:08  SALUDO_Y_PRESENTACION    MARIA #002
+  01:11  SALUDO_Y_PRESENTACION    IAGO #003
+  01:16  SALUDO_Y_PRESENTACION    MARIA #004
+  01:40  SALUDO_Y_PRESENTACION    IAGO #005
+  01:52  BLOQUE_PANORAMA          IAGO #006
+  03:24  BLOQUE_PANORAMA          MARIA #007
+  03:28  BLOQUE_PANORAMA          IAGO #008
+  03:54  BLOQUE_PANORAMA          IAGO #009
+  04:12  BLOQUE_PANORAMA          MARIA #010 [directo]
+  04:14  BLOQUE_TEMAS_CLAVE       IAGO #011
+  05:29  BLOQUE_TEMAS_CLAVE       MARIA #012
+  05:37  BLOQUE_TEMAS_CLAVE       IAGO #013
+  06:06  BLOQUE_TEMAS_CLAVE       MARIA #014
+  06:09  BLOQUE_TEMAS_CLAVE       IAGO #015
+  06:24  BLOQUE_TEMAS_CLAVE       MARIA #016
+  07:36  BLOQUE_TEMAS_CLAVE       IAGO #017
+  07:39  BLOQUE_TEMAS_CLAVE       MARIA #018
+  08:16  BLOQUE_TEMAS_CLAVE       IAGO #019
+  09:27  BLOQUE_TEMAS_CLAVE       MARIA #020
+  09:32  BLOQUE_TEMAS_CLAVE       IAGO #021
+  09:59  BLOQUE_TEMAS_CLAVE       MARIA #022
+  11:00  BLOQUE_TEMAS_CLAVE       IAGO #023
+  11:02  BLOQUE_TEMAS_CLAVE       MARIA #024
+  11:34  BLOQUE_TEMAS_CLAVE       IAGO #025
+  12:40  BLOQUE_TEMAS_CLAVE       MARIA #026
+  13:52  BLOQUE_LIMITES           MARIA #027
+  15:01  BLOQUE_LIMITES           IAGO #028
+  15:07  BLOQUE_LIMITES           MARIA #029
+  15:37  BLOQUE_LIMITES           MARIA #030
+  16:20  BLOQUE_LIMITES           IAGO #031
+  16:25  BLOQUE_LIMITES           MARIA #032
+  17:01  BLOQUE_LIMITES           MARIA #033
+  17:30  BLOQUE_LIMITES           IAGO #034 [reflexivo]
+  17:32  APLICACION_PRACTICA      MARIA #035
+  17:47  APLICACION_PRACTICA      MARIA #036
+  18:12  APLICACION_PRACTICA      IAGO #037
+  20:10  APLICACION_PRACTICA      MARIA #038
+  20:14  APLICACION_PRACTICA      IAGO #039
+  21:24  APLICACION_PRACTICA      MARIA #040
+  21:30  APLICACION_PRACTICA      IAGO #041
+  22:13  APLICACION_PRACTICA      MARIA #042
+  22:29  CIERRE_CONCEPTOS         MARIA #043
+  22:33  CIERRE_CONCEPTOS         IAGO #044
+  22:45  CIERRE_CONCEPTOS         MARIA #045
+  22:56  CIERRE_CONCEPTOS         IAGO #046
+  23:12  CIERRE_CONCEPTOS         MARIA #047
+  23:26  CIERRE_FINAL             MARIA #048
+  23:34  CIERRE_FINAL             IAGO #049
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: <conversacional> El ochenta y ocho por ciento de las empresas usa inteligencia a...
+[002] MARIA: <calido> Bienvenidos a MaquinarIA Pesada. Soy María.
+[003] IAGO: <calido> Y yo soy Yago. Este es el episodio catorce. El último módulo del máster...
+[004] MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <serio> Hoy hablamos de estrategia empresarial de inteligencia artificial. No de...
+[006] IAGO: <didactico> Empecemos por el mapa completo. Este módulo sintetiza todos los ante...
+[007] MARIA: <curioso> ¿Y por qué este módulo ahora? ¿Por qué no al principio?
+[008] IAGO: <reflexivo> Porque la estrategia sin fundamentos técnicos es humo. Si no entiend...
+[009] IAGO: <contundente> Y el dato clave del módulo es ese que abrió el episodio. Ochenta y...
+[010] MARIA: [directo] De acuerdo. Sigamos.
+[011] IAGO: <didactico> Vamos a los conceptos núcleo del módulo. Primero: la matriz de oport...
+[012] MARIA: <analitica> ¿Y cómo se hace esa evaluación en la práctica? Porque suena a que ca...
+[013] IAGO: <firme> Por eso existe el AI Opportunity Workshop. Es un taller estructurado de ...
+[014] MARIA: <directo> O sea, negocio primero, tecnología segundo.
+[015] IAGO: <contundente> Ese es el principio número uno de la transformación sostenible con...
+[016] MARIA: <conversacional> Segundo concepto: el business case. Porque una cosa es identifi...
+[017] IAGO: <curioso> ¿Qué tiene que tener el análisis de sensibilidad?
+[018] MARIA: <didactico> Tres escenarios. Optimista: todo sale como esperas. Realista: los be...
+[019] IAGO: <conversacional> Tercer concepto: el roadmap de tres horizontes. Porque no puede...
+[020] MARIA: <analitica> ¿Y cómo se gestiona el roadmap? Porque en doce meses puede cambiar t...
+[021] IAGO: <firme> Por eso la gobernanza del roadmap requiere cuatro cosas. Primera: un AI ...
+[022] MARIA: <conversacional> Cuarto concepto: la gestión del cambio organizativo. Porque la ...
+[023] IAGO: <curioso> ¿Y cómo se gestiona el miedo?
+[024] MARIA: <serio> Con transparencia y con apoyos concretos. El setenta y cinco por ciento ...
+[025] IAGO: <conversacional> Quinto concepto: talento y equipo. Porque sin las personas corr...
+[026] MARIA: <analitica> Y sexto concepto: gobernanza empresarial de IA. Porque sin gobernanz...
+[027] MARIA: <esceptico> Ahora vamos a lo que falla. Porque este módulo puede sonar a manual ...
+[028] IAGO: <curioso> ¿Y qué pasa con las organizaciones que tienen estrategias de IA muy am...
+[029] MARIA: <ironico> Que tienen el problema contrario. Visión sin ejecución. IBM Watson Hea...
+[030] MARIA: <serio> Tercer contraintuitivo: el patrocinio ejecutivo es más importante que la...
+[031] IAGO: <reflexivo> O sea, sin CEO o CFO que entienda y defienda la IA, no hay transform...
+[032] MARIA: <contundente> Y cuarto contraintuitivo: la gobernanza no frena la innovación. La...
+[033] MARIA: <esceptico> Y quinto contraintuitivo: el ROI de la IA no es inmediato. Las organ...
+[034] IAGO: [reflexivo] Buen punto antes de seguir.
+[035] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[036] MARIA: <directo> El sistema MaquinarIA Pesada es un pipeline automático que produce cat...
+[037] IAGO: <explicativo> Primera decisión estratégica: definir el caso de uso con restricci...
+[038] MARIA: <analitica> ¿Y qué problemas concretos aparecieron que obligaron a cambiar la es...
+[039] IAGO: <reflexivo> Problema uno: los guiones iniciales no pasaban las verificaciones de...
+[040] MARIA: <conversacional> O sea, el sistema aplica los cinco principios de transformación...
+[041] IAGO: <didactico> Principio uno: negocio primero, tecnología segundo. El sistema resue...
+[042] MARIA: <serio> Y el aprendizaje clave es que la estrategia de IA funciona cuando se bas...
+[043] MARIA: <firme> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+[044] IAGO: <didactico> Primero: la matriz de oportunidades de IA evalúa impacto de negocio ...
+[045] MARIA: <serio> Segundo: el business case riguroso incluye análisis de sensibilidad con ...
+[046] IAGO: <contundente> Tercero: el roadmap de tres horizontes organiza las iniciativas en...
+[047] MARIA: <firme> Cuarto: la IA es veinte por ciento algoritmos y ochenta por ciento reorg...
+[048] MARIA: <calido> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos...
+[049] IAGO: <calido> Nos escuchamos pronto.
+
+Produccion completada.

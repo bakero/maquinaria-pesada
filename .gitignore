@@ -56,6 +56,8 @@ env/
 # ─── Logs ───────────────────────────────────────────────────
 *.log
 logs/
+!episodios/*.log
+!episodios/*_produccion.log
 
 # ─── Whisper / modelos descargados ──────────────────────────
 ~/.cache/whisper/

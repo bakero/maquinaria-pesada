@@ -1,0 +1,44 @@
+============================================================
+EPISODIO : M0_E_Introduccion_Estrategica
+GUION    : C:\Users\Asus\maquinaria_pesada\Guiones\M0_Introduccion_Estrategica.txt
+COMANDO  : C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe C:\Users\Asus\maquinaria_pesada\generar_episodio_v2.py --guion Guiones\M0_Introduccion_Estrategica.txt --ep M0_E_Introduccion_Estrategica
+INICIO   : 2026-05-10 23:56:07
+FIN      : 2026-05-10 23:56:11
+EXIT     : 1 (FALLO)
+============================================================
+
+--- STDOUT ---
+
+Leyendo guion: Guiones\M0_Introduccion_Estrategica.txt
+[WARN] Problemas de calidad detectados en el guion (no fatales):
+  - [WARN] El guion tiene 3120 palabras (maximo recomendado: 2800).
+  - [WARN] Bloque 6 (BLOQUE_PANORAMA) tiene 15 frases (maximo: 10).
+  - [WARN] Bloque 7 (BLOQUE_PANORAMA) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 9 (BLOQUE_PANORAMA) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 12 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 16 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 20 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 21 (BLOQUE_TEMAS_CLAVE) tiene 11 frases (maximo: 10).
+  - [WARN] Bloque 22 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 25 (BLOQUE_TEMAS_CLAVE) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 28 (BLOQUE_LIMITES) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 31 (BLOQUE_LIMITES) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 32 (BLOQUE_LIMITES) tiene 11 frases (maximo: 10).
+  - [WARN] Bloque 33 (BLOQUE_LIMITES) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 35 (APLICACION_PRACTICA) tiene 12 frases (maximo: 10).
+  - [WARN] Bloque 37 (APLICACION_PRACTICA) tiene 12 frases (maximo: 10).
+  - [WARN] Bloque 38 (APLICACION_PRACTICA) tiene 13 frases (maximo: 10).
+  - [WARN] Bloque 39 (APLICACION_PRACTICA) tiene 14 frases (maximo: 10).
+   41 bloques encontrados
+   Tokens audio: no aplica (ElevenLabs usa creditos/caracteres)
+Antes de generar creditos ElevenLabs restantes: desconocido (API no disponible)
+
+Generando audio con ElevenLabs eleven_v3...
+  [001] MARIA - generando... (intento 1)
+
+
+--- STDERR ---
+
+ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+Comprueba que ELEVENLABS_API_KEY en el fichero .env es válida y está activa.
+
