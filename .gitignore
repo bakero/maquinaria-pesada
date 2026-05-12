@@ -1,3 +1,9 @@
+# ─── Web build artifacts ────────────────────────────────────
+web/dist/
+vite_app/node_modules/
+vite_app/dist/
+*.tsbuildinfo
+
 # ─── Secretos ────────────────────────────────────────────────
 .env
 .env.*
