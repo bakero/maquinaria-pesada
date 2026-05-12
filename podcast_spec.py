@@ -509,6 +509,75 @@ def validate_aviso_speaker(text: str, ep_code: str, spec: dict) -> list[str]:
     return issues
 
 
+def validate_saludo_format(text: str, ep_code: str, spec: dict) -> list[str]:
+    """Hard-fail si SALUDO_Y_PRESENTACION colapsa los dos nombres en una sola
+    intervencion (ej: "Soy Maria. Y yo soy Yago.") o si falta el bloque
+    separado del segundo speaker presentandose.
+    """
+    issues: list[str] = []
+    qa = spec.get("qa_rules", {})
+    if not qa.get("hard_fail_on_saludo_collapsed_single_block", False):
+        return issues
+
+    blocks = parse_script_blocks(text, spec)
+    saludo_blocks = [b for b in blocks if b.get("section") == "SALUDO_Y_PRESENTACION"]
+    if not saludo_blocks:
+        return issues
+
+    # Patron prohibido dentro de un mismo bloque (normalizando acentos)
+    bad_patterns = [
+        re.compile(r"\bsoy\s+maria\b.*\by\s+yo\s+soy\s+yago\b", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\bsoy\s+yago\b.*\by\s+yo\s+soy\s+maria\b", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\bsoy\s+iago\b.*\by\s+yo\s+soy\s+maria\b", re.IGNORECASE | re.DOTALL),
+    ]
+    for b in saludo_blocks:
+        body_norm = normalize_text_for_match(b["text"])
+        for pat in bad_patterns:
+            if pat.search(body_norm):
+                issues.append(
+                    f"SALUDO colapsado en bloque {b['index']}: un mismo speaker "
+                    f"contiene 'Soy X. Y yo soy Y.'. Debe ir en bloques separados."
+                )
+                break
+
+    # Verifica que haya al menos 1 bloque por cada speaker en SALUDO
+    speakers_in_saludo = {b["speaker"] for b in saludo_blocks}
+    if len(saludo_blocks) >= 2 and len(speakers_in_saludo) < 2:
+        issues.append(
+            "SALUDO_Y_PRESENTACION solo tiene intervenciones de un speaker; "
+            "se requiere al menos una de cada (IAGO y MARIA)."
+        )
+    return issues
+
+
+def validate_no_surnames(text: str, spec: dict) -> list[str]:
+    """Hard-fail si aparece "Maria Apellido" o "Yago Apellido" / "Iago Apellido"
+    en texto hablado (los presentadores no tienen apellidos).
+    """
+    issues: list[str] = []
+    qa = spec.get("qa_rules", {})
+    if not qa.get("hard_fail_on_presenter_surname_invented", False):
+        return issues
+    blocks = parse_script_blocks(text, spec)
+    spoken = " ".join(remove_leading_tag(b["text"]) for b in blocks)
+    # Apellidos: nombre seguido por palabra con mayuscula inicial que no este en una lista corta
+    # de palabras inofensivas (ej: "Maria que..." no, porque "que" es minuscula)
+    pat = re.compile(
+        r"\b(Maria|Yago|Iago)\s+([A-ZÁÉÍÓÚÑ][a-zñáéíóú]{2,})\b"
+    )
+    # Lista de palabras-stop que pueden seguir legitimamente (raras pero posibles)
+    stopwords = {"En", "Y", "O", "Pero", "Si", "No", "Pues", "Que", "Cuando", "Donde", "Como", "Esto", "Eso"}
+    for m in pat.finditer(spoken):
+        name, follow = m.group(1), m.group(2)
+        if follow in stopwords:
+            continue
+        issues.append(
+            f"Apellido inventado detectado: '{name} {follow}'. Los presentadores "
+            f"se llaman solo Maria y Yago, sin apellido."
+        )
+    return issues
+
+
 def validate_concepts_count(blocks: list[dict], spec: dict) -> list[str]:
     """Valida el número de bloques hablados en CIERRE_CONCEPTOS.
 
@@ -719,6 +788,12 @@ def validate_script_text(
 
     # ── 9. Aviso dicho por el opener correcto ────────────────────────────────
     issues.extend(validate_aviso_speaker(text, ep_code, spec))
+
+    # ── 9b. SALUDO con formato de 3 bloques separados ────────────────────────
+    issues.extend(validate_saludo_format(text, ep_code, spec))
+
+    # ── 9c. Sin apellidos inventados para los presentadores ──────────────────
+    issues.extend(validate_no_surnames(text, spec))
 
     # ── 10. "Iago" en lugar de "Yago" ────────────────────────────────────────
     spoken_text = " ".join(remove_leading_tag(b["text"]) for b in blocks)

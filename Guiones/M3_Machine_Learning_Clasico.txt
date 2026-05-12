@@ -5,7 +5,11 @@ IAGO: <didactico> En el año 2012, un equipo de Google entrenó una red neuronal
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
 
 # SALUDO_Y_PRESENTACION
-IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago. Y yo soy María. Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Al final del episodio veremos cómo se aplica lo de hoy a ese mismo sistema que está generando este audio. Hoy cerramos el módulo tres del máster: Machine Learning Clásico. Regresión, árboles de decisión, XGBoost, validación cruzada, overfitting, y SHAP. Los algoritmos que llevaban décadas funcionando antes de que llegaran los transformers y los modelos de lenguaje.
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+MARIA: <natural> Y yo soy Maria.
+
+IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Al final del episodio veremos cómo se aplica lo de hoy a ese mismo sistema que está generando este audio. Hoy cerramos el módulo tres del máster: Machine Learning Clásico. Regresión, árboles de decisión, XGBoost, validación cruzada, overfitting, y SHAP. Los algoritmos que llevaban décadas funcionando antes de que llegaran los transformers y los modelos de lenguaje.
 
 MARIA: <conversacional> Y que siguen funcionando mejor que los LLMs para muchísimos problemas reales.
 

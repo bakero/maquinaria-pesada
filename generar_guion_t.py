@@ -201,6 +201,7 @@ def build_generation_prompt(
     # Asignación de roles por bloque según T-spec
     # Yago lidera BLOQUE_QUE, compartido BLOQUE_COMO, Maria lidera BLOQUE_LIMITES
     rules = spec["script_rules"]
+    other = "MARIA" if opener == "IAGO" else "IAGO"
 
     system = (
         "Eres el sistema de producción del podcast MaquinarIA Pesada. "
@@ -229,8 +230,13 @@ CONCEPTOS CLAVE DEL PDF (cubre al menos el 75%):
 INSTRUCCIONES CRÍTICAS:
 1. El hook lo abre {opener}. Cierra exactamente con: {rules['hook_closing_phrase']}
 2. Después del hook: # INTRO_SONIDO  (línea siguiente: {rules['intro_comment']})
-3. Aviso de IA en # SALUDO_Y_PRESENTACION, dicho por {opener}.
-   Debe contener EXACTAMENTE: "sistema automatico" y "puede contener errores".
+3. SALUDO_Y_PRESENTACION — FORMATO OBLIGATORIO DE TRES INTERVENCIONES SEPARADAS:
+   (siendo OPENER = {opener} y OTRO = {other}; nombres hablados: IAGO->"Yago", MARIA->"Maria")
+   Linea 1 — OPENER: Soy <nombre_opener>.
+   Linea 2 — OTRO:   Y yo soy <nombre_otro>.
+   Linea 3 — OPENER: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrastalo.
+   HARD-FAIL si: (a) un mismo speaker concatena su nombre y el del otro en la misma linea ("Soy X. Y yo soy Y."), (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
+   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos. NUNCA "Maria Grandury", "Yago Goyoaga", "Iago Goyoaga", "Maria Garcia" ni similares.
 4. Estructura obligatoria en orden:
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_QUE → # BLOQUE_COMO → # BLOQUE_LIMITES → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (NO generes): BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3

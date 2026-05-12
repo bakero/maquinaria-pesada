@@ -5,7 +5,11 @@ MARIA: [conversacional] En las competiciones de Kaggle con datos tabulares, XGBo
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
 
 # SALUDO_Y_PRESENTACION
-MARIA: Soy Maria. Y yo soy Yago. Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Hoy hablamos de modelos clásicos de Machine Learning: regresión logística, árboles de decisión, Random Forest, y los reyes del dato tabular, XGBoost y LightGBM.
+MARIA: Soy Maria.
+
+IAGO: Y yo soy Yago.
+
+MARIA: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Hoy hablamos de modelos clásicos de Machine Learning: regresión logística, árboles de decisión, Random Forest, y los reyes del dato tabular, XGBoost y LightGBM.
 
 # BLOQUE_QUE
 IAGO: [didactico] Cuando hablamos de modelos clásicos de Machine Learning, nos referimos al arsenal de algoritmos que resuelve la mayoría de los problemas de predicción sobre datos estructurados en empresa. Regresión lineal y logística, árboles de decisión, Random Forest, y los métodos de gradient boosting como XGBoost o LightGBM. Estos modelos son interpretables, baratos de entrenar, rápidos en inferencia, y están completamente maduros en producción. Antes de plantear cualquier solución con redes neuronales profundas o modelos de lenguaje sobre datos tabulares, estos algoritmos deben ser tu baseline obligatorio.

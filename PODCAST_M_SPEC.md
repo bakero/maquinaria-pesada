@@ -174,6 +174,20 @@ escala") porque el episodio cubre más territorio.
 **Dentro de SALUDO_Y_PRESENTACION**, justo después de la presentación. Lo
 dice **el mismo speaker que abrió el HOOK por paridad del módulo**.
 
+### 6.0 Formato obligatorio del SALUDO_Y_PRESENTACION
+
+El bloque debe tener **mínimo 3 intervenciones separadas**, en este orden:
+
+1. `{opener}: [tag] Bienvenidos/Hola/etc. + Soy {opener_name}.`
+2. `{otro}: [tag] Y yo soy {otro_name}.`
+3. `{opener}: [tag] Antes de empezar, lo de siempre... {aviso completo}`
+
+**Hard-fail si**:
+- Una sola intervención contiene los dos nombres ("Soy Maria. Y yo soy Yago.") — el segundo nombre debe estar en una intervención del otro speaker.
+- El aviso lo dice cualquier speaker distinto del opener.
+
+**Prohibido: apellidos**. Los presentadores se llaman **Maria** y **Yago**, sin apellidos. No se inventan "Maria Grandury", "Yago Goyoaga" ni ningún apellido. Hard-fail si aparecen palabras tras "Maria" o "Yago" que parezcan apellido (regex de fail: `\b(Maria|Yago)\s+[A-ZÁÉÍÓÚÑ][a-zñáéíóú]+\b`).
+
 ### Forma para episodios M (versión enganche, 18-25s)
 
 > "Antes de empezar, lo de siempre: este episodio lo genera un sistema
@@ -758,7 +772,24 @@ Debe incluir literalmente:
     "soft_warn_on_live_docs_vs_resumen_conflict": true,
     "soft_warn_on_module_with_low_live_docs_coverage": true,
     "soft_warn_on_temporal_reference_without_publication_context": true,
-    "soft_warn_on_missing_everyday_analogy_after_complex_concept": true
+    "soft_warn_on_missing_everyday_analogy_after_complex_concept": true,
+    "hard_fail_on_saludo_collapsed_single_block": true,
+    "hard_fail_on_presenter_surname_invented": true
+  },
+  "saludo_format": {
+    "min_blocks": 3,
+    "block_1": "opener_intro_with_own_name",
+    "block_2": "other_intro_with_own_name",
+    "block_3": "opener_aviso_ia",
+    "forbidden_patterns": [
+      "soy maria.*y yo soy yago",
+      "soy yago.*y yo soy maria"
+    ]
+  },
+  "presenter_names": {
+    "allow_only": ["Maria", "Yago"],
+    "forbid_surnames": true,
+    "forbidden_surname_regex": "\\b(Maria|Yago)\\s+[A-ZÁÉÍÓÚÑ][a-zñáéíóú]+"
   },
   "temporal_references": {
     "default_year": 2026,

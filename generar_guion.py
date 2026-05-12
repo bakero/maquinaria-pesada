@@ -332,11 +332,13 @@ MATERIAL DE APLICACION_PRACTICA (extraído de los 4 documentos vivos):
 INSTRUCCIONES CRÍTICAS:
 1. El hook lo abre {opener}. Cierra exactamente con: {spec['script_rules']['hook_closing_phrase']}
 2. Después del hook incluye exactamente: # INTRO_SONIDO  (siguiente línea: {spec['script_rules']['intro_comment']})
-3. AVISO DE IA — REGLA DURA: va en # SALUDO_Y_PRESENTACION, 18-25s.
-   **HARD-FAIL si lo dice cualquier speaker que NO sea {opener}**.
-   El bloque del aviso DEBE empezar exactamente con "{opener}:" (mismo speaker que abrió el HOOK por paridad del módulo). NO {other} bajo ningún concepto.
-   Debe contener EXACTAMENTE las palabras: "sistema automatico" y "puede contener errores".
-   Añade una frase que conecte con APLICACION_PRACTICA (ej: "al final del episodio veremos cómo se aplica lo de hoy a ese sistema").
+3. SALUDO_Y_PRESENTACION — FORMATO OBLIGATORIO DE TRES INTERVENCIONES SEPARADAS:
+   (siendo OPENER = {opener} y OTRO = {other}; nombres hablados: IAGO->"Yago", MARIA->"Maria")
+   Linea 1 — OPENER: <natural> Bienvenidos a MaquinarIA Pesada... Soy <nombre_opener>.
+   Linea 2 — OTRO:   <natural> Y yo soy <nombre_otro>.
+   Linea 3 — OPENER: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrastalo. El sistema que produce este podcast tambien es contenido del podcast: al final del episodio veremos como se aplica lo de hoy a ese sistema.
+   **HARD-FAIL si**: (a) un mismo speaker concatena su nombre y el del otro en una misma linea ("Soy X. Y yo soy Y."), (b) el aviso lo dice cualquiera que no sea {opener}, (c) faltan "sistema automatico" o "puede contener errores".
+   PROHIBIDO: apellidos. Los presentadores se llaman Maria y Yago, sin apellidos. NUNCA "Maria Grandury", "Yago Goyoaga", "Iago Goyoaga", "Maria Garcia" ni similares.
 4. Estructura obligatoria en orden:
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_TEMAS_CLAVE → # BLOQUE_LIMITES → # APLICACION_PRACTICA → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (no las generes): BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, BLOQUE_QUE, BLOQUE_COMO, INSERCION_1, INSERCION_2, INSERCION_3, INSERCION_EMPRESA

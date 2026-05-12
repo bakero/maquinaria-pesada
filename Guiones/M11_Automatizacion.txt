@@ -5,7 +5,11 @@ IAGO: <didactico> El ochenta y ocho por ciento de las empresas usan IA en 2026. 
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
 
 # SALUDO_Y_PRESENTACION
-IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago. Y yo soy María. Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast, y al final del episodio veremos cómo se aplica todo lo de hoy a ese sistema real. Hoy cerramos el módulo once del máster: Automatización y Sistemas Inteligentes. Vamos a cubrir la convergencia entre IA y RPA, los tres patrones de integración que dominan el mercado, el diseño de workflows inteligentes, la autonomía graduada, y cómo medir el impacto real de la automatización.
+IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+MARIA: <natural> Y yo soy Maria.
+
+IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast, y al final del episodio veremos cómo se aplica todo lo de hoy a ese sistema real. Hoy cerramos el módulo once del máster: Automatización y Sistemas Inteligentes. Vamos a cubrir la convergencia entre IA y RPA, los tres patrones de integración que dominan el mercado, el diseño de workflows inteligentes, la autonomía graduada, y cómo medir el impacto real de la automatización.
 
 MARIA: <firme> Y vamos a aterrizar todo esto en un caso concreto: el sistema que está generando este episodio. Porque automatizar IA no es teoría. Es ingeniería.
 

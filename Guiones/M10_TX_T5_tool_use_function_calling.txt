@@ -5,9 +5,9 @@ IAGO: [directo] En este momento, más del 70% de los sistemas agénticos que se 
 [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
 
 # SALUDO_Y_PRESENTACION
-IAGO: Soy Yago Goyoaga.
+IAGO: Soy Yago.
 
-MARIA: Y yo María Grandury.
+MARIA: Y yo soy Maria.
 
 IAGO: Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo.
 
