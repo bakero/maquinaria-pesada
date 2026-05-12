@@ -1,0 +1,40 @@
+============================================================
+EPISODIO : M4_E_Deep_Learning
+GUION    : C:\Users\Asus\maquinaria_pesada\Guiones\M4_Deep_Learning.txt
+COMANDO  : C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe C:\Users\Asus\maquinaria_pesada\generar_episodio_v2.py --guion Guiones\M4_Deep_Learning.txt --ep M4_E_Deep_Learning
+INICIO   : 2026-05-10 23:56:29
+FIN      : 2026-05-10 23:56:31
+EXIT     : 1 (FALLO)
+============================================================
+
+--- STDOUT ---
+
+Leyendo guion: Guiones\M4_Deep_Learning.txt
+[WARN] Problemas de calidad detectados en el guion (no fatales):
+  - [WARN] El aviso de IA no contiene ninguna frase de enganche recomendada.
+  - [WARN] Bloque 6 (BLOQUE_PANORAMA) tiene solo 2 frase(s) (minimo: 4).
+  - [WARN] Bloque 9 (BLOQUE_PANORAMA) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 10 (BLOQUE_PANORAMA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 12 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 15 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 16 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 19 (BLOQUE_TEMAS_CLAVE) tiene solo 1 frase(s) (minimo: 4).
+  - [WARN] Bloque 22 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 24 (BLOQUE_TEMAS_CLAVE) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 26 (BLOQUE_LIMITES) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 27 (BLOQUE_LIMITES) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 31 (APLICACION_PRACTICA) tiene solo 3 frase(s) (minimo: 4).
+  - [WARN] Bloque 35 (APLICACION_PRACTICA) tiene solo 1 frase(s) (minimo: 4).
+   40 bloques encontrados
+   Tokens audio: no aplica (ElevenLabs usa creditos/caracteres)
+Antes de generar creditos ElevenLabs restantes: desconocido (API no disponible)
+
+Generando audio con ElevenLabs eleven_v3...
+  [001] MARIA - generando... (intento 1)
+
+
+--- STDERR ---
+
+ERROR FATAL: ElevenLabs rechazó la autenticación (401).
+Comprueba que ELEVENLABS_API_KEY en el fichero .env es válida y está activa.
+

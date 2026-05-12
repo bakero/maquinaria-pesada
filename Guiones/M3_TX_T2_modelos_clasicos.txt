@@ -1,0 +1,127 @@
+# HOOK
+MARIA: [conversacional] En las competiciones de Kaggle con datos tabulares, XGBoost y LightGBM dominan el podio desde hace años. En producción empresarial real, el ochenta por ciento de los proyectos de Machine Learning usan estos mismos modelos clásicos. Y cuando un banco tiene que explicar por qué te denegó un crédito, vuelve a la regresión logística de toda la vida. Hoy vamos a explicar por qué estos algoritmos, que algunos consideran antiguos, siguen siendo el caballo de batalla de la IA empresarial. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: Soy Maria.
+
+IAGO: Y yo soy Yago.
+
+MARIA: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Hoy hablamos de modelos clásicos de Machine Learning: regresión logística, árboles de decisión, Random Forest, y los reyes del dato tabular, XGBoost y LightGBM.
+
+# BLOQUE_QUE
+IAGO: [didactico] Cuando hablamos de modelos clásicos de Machine Learning, nos referimos al arsenal de algoritmos que resuelve la mayoría de los problemas de predicción sobre datos estructurados en empresa. Regresión lineal y logística, árboles de decisión, Random Forest, y los métodos de gradient boosting como XGBoost o LightGBM. Estos modelos son interpretables, baratos de entrenar, rápidos en inferencia, y están completamente maduros en producción. Antes de plantear cualquier solución con redes neuronales profundas o modelos de lenguaje sobre datos tabulares, estos algoritmos deben ser tu baseline obligatorio.
+
+MARIA: ¿Por qué obligatorio?
+
+IAGO: [firme] Porque en benchmarks sistemáticos, XGBoost y LightGBM superan a las redes neuronales en la mayoría de datasets tabulares de tamaño medio. Un paper de revisión de IBM Research comparó XGBoost, LightGBM y CatBoost en cuatro datasets a gran escala. Los tres fueron competitivos, pero XGBoost y LightGBM quedaron consistentemente en el top tanto en precisión como en velocidad. Para datos estructurados con filas y columnas, estos modelos son el estado del arte.
+
+MARIA: ¿Y qué pasa en sectores regulados?
+
+IAGO: [explicativo] Ahí la regresión logística sigue siendo el modelo de referencia. FICO Score, los modelos de elegibilidad crediticia de los bancos europeos, los sistemas de riesgo de seguros: la mayoría son regresiones logísticas o variantes muy próximas. La razón es la interpretabilidad perfecta. La regresión logística produce coeficientes que tienen interpretación matemática directa: por cada unidad de aumento en la variable ratio deuda-ingresos, la probabilidad de impago aumenta en tanto. auditable, es explicable a un regulador, y cumple con GDPR. Un modelo de caja negra no puede hacer eso.
+
+MARIA: O sea, no es que sean antiguos. Es que son los únicos que puedes usar en ciertos contextos.
+
+IAGO: [contundente] Correcto. Y en contextos donde no hay restricción regulatoria, siguen siendo competitivos. XGBoost con menos de un milisegundo de latencia de inferencia y AUC-ROC por encima de cero noventa y nueve es el estándar en detección de fraude en pagos. PayPal y Stripe usan gradient boosting para procesar millones de transacciones por segundo. No usan redes neuronales porque no las necesitan.
+
+# BLOQUE_COMO
+IAGO: [didactico] Vamos al mecanismo. Empiezo por la regresión logística porque es la más sencilla de entender.
+
+MARIA: [analitica] La regresión lineal predice un valor continuo como combinación lineal de las variables de entrada: y igual a beta cero más beta uno por x uno más beta dos por x dos, y así sucesivamente. Los coeficientes beta tienen interpretación directa. Imagina que predices el precio de una casa: si beta uno es cincuenta mil y x uno es el número de habitaciones, cada habitación adicional añade cincuenta mil euros al precio estimado, manteniendo todo lo demás constante.
+
+MARIA: ¿Y la regresión logística?
+
+IAGO: [explicativo] Aplica una función sigmoide sobre esa combinación lineal para producir una probabilidad entre cero y uno. La fórmula es P de y igual a uno dado x, igual a uno dividido uno más e elevado a menos beta por x.
+
+MARIA: [analitica] Esa función sigmoide convierte cualquier valor real en un número entre cero y uno, que puedes interpretar como probabilidad. Si el modelo te da cero setenta, significa que tiene un setenta por ciento de confianza en que el cliente va a hacer impago, o va a comprar el producto, o lo que sea que estés prediciendo.
+
+MARIA: [conversacional] Vale. Ahora los árboles de decisión. Esos son los que dividen el espacio en regiones, ¿no?
+
+IAGO: Sí. Un árbol de decisión divide iterativamente el espacio de variables en regiones cada vez más homogéneas respecto al target. Cada nodo interno aplica una condición: por ejemplo, edad mayor que treinta y cinco. Si es verdad, vas por la rama izquierda. Si es falso, por la derecha. Sigues bajando hasta llegar a una hoja, que te da la predicción final. Los árboles son completamente interpretables: puedes visualizarlos, puedes leerlos como un diagrama de flujo. No requieren normalización de los datos, manejan variables categóricas de forma nativa, y capturan automáticamente interacciones entre variables.
+
+MARIA: [reflexivo] Pero un solo árbol sobreajusta fácil, ¿no? Pequeños cambios en los datos de entrenamiento producen árboles muy distintos.
+
+IAGO: [firme] Esa es la varianza alta de los árboles individuales. Y eso se resuelve con los métodos de ensemble. Random Forest y Gradient Boosting.
+
+MARIA: [didactico] Random Forest es el más directo. Entrenas muchos árboles de forma independiente sobre muestras aleatorias de los datos y características, y combinas sus predicciones por votación o promedio. Es como cuando le preguntas a diez expertos y haces la media de sus respuestas. El promedio de muchos árboles con alta varianza produce un modelo con varianza mucho menor, manteniendo el sesgo bajo. El resultado es un modelo robusto que generaliza bien incluso con pocas tunificaciones.
+
+IAGO: ¿Y Gradient Boosting?
+
+MARIA: [explicativo] Gradient Boosting construye los árboles de forma secuencial. Cada árbol nuevo corrige los errores del ensemble anterior. Es como si tuvieras un equipo de correctores: el primero hace su trabajo, el segundo corrige los errores del primero, el tercero corrige los errores del segundo, y así. Cada árbol se ajusta a los residuos, que son los errores que el modelo actual comete. El resultado es un modelo de alta precisión que suele superar a Random Forest en benchmarks tabulares, a cambio de más hiperparámetros que ajustar y algo más de tiempo de entrenamiento.
+
+IAGO: [conversacional] Y dentro de Gradient Boosting, XGBoost y LightGBM son las implementaciones que dominan.
+
+MARIA: Cuéntame qué añaden.
+
+IAGO: [didactico] XGBoost añade regularización L1 y L2 en el objetivo para evitar sobreajuste, procesamiento paralelo para entrenamiento rápido, manejo nativo de valores nulos, que es clave porque aprende automáticamente la mejor dirección para los datos faltantes, y soporte para GPU. LightGBM usa histogramas para aproximar los splits óptimos, lo que lo hace mucho más rápido en datasets grandes, y crecimiento leaf-wise en lugar de level-wise. Eso produce árboles más profundos y precisos, pero más propensos a sobreajustar si no aplicas regularización adecuada.
+
+MARIA: ¿Y CatBoost?
+
+IAGO: [explicativo] CatBoost destaca en el manejo nativo de variables categóricas sin one-hot encoding. Si tienes una columna con nombres de ciudades, CatBoost la procesa directamente sin convertirla en cientos de columnas binarias. útil en datasets con muchas categóricas de alta cardinalidad.
+
+MARIA: [conversacional] Vale. Y los hiperparámetros más importantes en estos modelos, ¿cuáles son?
+
+IAGO: [firme] Los cinco críticos: n_estimators, que es el número de árboles, más es mejor si hay regularización; learning_rate, que suele estar entre cero coma cero uno y cero coma uno, valores menores requieren más árboles; max_depth, que controla la profundidad máxima de cada árbol, típicamente entre tres y ocho, más profundidad significa más complejidad y más riesgo de sobreajuste; subsample, que es el porcentaje de datos que usa cada árbol, entre cero coma siete y cero coma nueve, reduce varianza; y los parámetros de regularización, reg_alpha y reg_lambda.
+
+MARIA: [analitica] Un tuning básico con Optuna sobre estos parámetros puede mejorar el AUC-ROC entre un dos y un cinco por ciento respecto a los valores por defecto.
+
+# BLOQUE_LIMITES
+MARIA: [esceptico] Vale. Ahora lo que falla. Primer error que veo constantemente: equipos que saltan directamente a deep learning o a usar LLMs para datos tabulares sin haber comparado con XGBoost.
+
+IAGO: ¿Y qué pasa cuando lo comparas?
+
+MARIA: [contundente] Que en la mayoría de casos XGBoost gana. Un estudio de Grinsztajn y otros, publicado en NeurIPS, comparó XGBoost y LightGBM contra redes neuronales en múltiples datasets tabulares de tamaño medio. Los modelos de gradient boosting superaron a las redes neuronales en la mayoría de casos. Para datos estructurados, XGBoost es el baseline que tienes que superar antes de justificar la complejidad de una red neuronal. Si no puedes superar a XGBoost, no tienes justificación para usar algo más complejo.
+
+IAGO: [reflexivo] O sea, la carga de la prueba está en el modelo complejo.
+
+MARIA: [firme] Segundo error: no hacer feature engineering básico antes de entrenar. Los modelos de gradient boosting aprenden bien las interacciones entre variables, pero algunas transformaciones básicas pueden mejorar el rendimiento significativamente. Aplicar logaritmo a variables con distribución sesgada, crear ratios entre variables relacionadas, descomponer fechas en día, mes, hora. Eso no añade complejidad al modelo, pero puede darte varios puntos de AUC-ROC.
+
+IAGO: ¿Y el tercer error?
+
+MARIA: [esceptico] Usar la feature importance nativa de XGBoost directamente para explicabilidad. La feature importance que te da XGBoost por defecto cuenta el número de veces que una variable aparece en un split. inestable y puede ser engañoso en presencia de variables correlacionadas. Si tienes dos variables muy correlacionadas, el modelo puede usar una en unos árboles y la otra en otros árboles, y la importancia se reparte entre las dos de forma arbitraria. Eso no te dice cuál es realmente importante.
+
+IAGO: [explicativo] La solución son los SHAP values. SHAP, que viene de SHapley Additive exPlanations, calcula la contribución de cada variable a cada predicción usando teoría de juegos. Es significativamente más fiable que la feature importance nativa y es el estándar en producción para explicabilidad de modelos tabulares.
+
+MARIA: [conversacional] Cuarto error: no entender cuándo estos modelos no funcionan bien. ¿Cuándo fallan?
+
+IAGO: [didactico] Fallan en datos con estructura espacial o temporal compleja donde las relaciones no son locales. Por ejemplo, en series temporales largas con dependencias a largo plazo, una red recurrente o un transformer puede capturar patrones que un árbol no ve. En imágenes, un árbol no tiene sentido porque no captura la estructura espacial.
+
+MARIA: [analitica] Y en texto, antes de los transformers se usaban SVM con buenos resultados, pero actualmente los modelos de lenguaje los superan ampliamente. Los modelos clásicos son para datos tabulares. Punto.
+
+MARIA: [reflexivo] O sea, el límite no es de capacidad. Es de tipo de dato.
+
+IAGO: Correcto.
+
+# CIERRE_CONCEPTOS
+MARIA: [conversacional] No te puedes ir de este capitulo sin haber entendido estos conceptos.
+
+IAGO: [firme] Primero: XGBoost y LightGBM son el baseline obligatorio para cualquier problema de datos tabulares antes de plantear deep learning.
+
+MARIA: [claro] Segundo: la regresión logística sigue siendo el estándar en sectores regulados porque sus coeficientes son directamente interpretables y auditables.
+
+# CIERRE_FINAL
+MARIA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 1783 (objetivo: 1400-1900)
+## MEDIA PALABRAS/INTERVENCION : 39.6
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [FALTA] seccion: 0 menciones
+## [OK] xgboost y lightgbm: 7 menciones
+## [OK] shap: 3 menciones
+## [OK] auc: 3 menciones
+## [OK] roc: 3 menciones
+## [OK] arboles de decision: 3 menciones
+## [OK] random forest: 5 menciones
+## [OK] svm: 1 menciones
+## Cobertura: 88% (objetivo: 75%)
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 30378
+## output_tokens: 7953
+## cache_read: 0
+## total: 38331

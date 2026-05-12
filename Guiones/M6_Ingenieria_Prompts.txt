@@ -1,0 +1,117 @@
+# HOOK
+MARIA: <conversacional> Hoy, el 88% de las empresas tecnológicas ya usa modelos de lenguaje en producción. Pero solo el 33% reporta resultados consistentes y controlables. ¿La diferencia? No estaba en el modelo que usaban. Estaba en cómo le hablaban. La ingeniería de prompts pasó de ser un arte intuitivo a convertirse en la disciplina técnica más demandada del mercado de IA. Y sin embargo, sigue siendo la más subestimada. Hoy vamos a desmontar por qué escribir un buen prompt no es escribir bien, sino pensar como un ingeniero. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: <natural> Bienvenidos a MaquinarIA Pesada. Soy Maria.
+
+IAGO: <natural> Y yo soy Yago. Hoy cerramos el módulo 6 del máster: Ingeniería de Prompts.
+
+MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. Y al final del episodio veremos cómo se aplica todo esto al propio sistema que está generando lo que estás escuchando ahora mismo.
+
+# BLOQUE_PANORAMA
+IAGO: <didactico> Empecemos por el mapa completo. La ingeniería de prompts es la disciplina de diseñar, evaluar y optimizar los inputs textuales que le das a un modelo de lenguaje para obtener outputs de calidad consistente. No es escribir bonito. Es ingeniería. Con principios, con técnicas, con herramientas y con procesos de evaluación sistemáticos. Y es crítica porque para la mayoría de los casos de uso empresariales, el prompt es el único mecanismo de control del comportamiento del modelo.
+
+IAGO: <explicativo> Este módulo cubre tres territorios bien diferenciados. Primero, la anatomía del prompt efectivo: qué secciones tiene, cómo se estructura, qué va en cada parte. Segundo, las técnicas avanzadas: few-shot, Chain of Thought, self-consistency, prompt chaining. Y tercero, el proceso de ingeniería: cómo evaluar, cómo optimizar, cómo defender contra ataques de prompt injection. Cada uno de estos territorios responde a una pregunta operativa concreta.
+
+MARIA: <curioso> ¿Qué preguntas?
+
+IAGO: <contundente> La primera: ¿por qué dos prompts que dicen lo mismo producen resultados radicalmente distintos? La respuesta está en la anatomía. La segunda: ¿cómo haces que un modelo razone de forma fiable cuando el razonamiento no está en sus pesos? La respuesta está en las técnicas. Y la tercera: ¿cómo conviertes la intuición en un proceso repetible y medible? La respuesta está en la evaluación sistemática.
+
+IAGO: <firme> La importancia de este módulo deriva de un hecho fundamental: un prompt mal diseñado produce un sistema poco fiable, inconsistente y difícil de mantener. Un prompt bien diseñado produce un sistema consistente, controlable y eficiente. Y la diferencia entre ambos no es talento literario. Es disciplina de ingeniería.
+
+MARIA: <reflexivo> Y esa disciplina empieza por entender que un prompt no es un texto. Es una estructura.
+
+# BLOQUE_TEMAS_CLAVE
+IAGO: <didactico> Primer concepto clave: la anatomía del prompt efectivo. Un prompt de producción tiene cinco secciones bien diferenciadas. El rol y el contexto definen quién es el modelo y para qué contexto opera. Las instrucciones específicas detallan qué debe hacer, cómo debe hacerlo y qué restricciones debe respetar. Los ejemplos few-shot muestran el tipo de input y el tipo de output esperado. El formato del output define la estructura exacta de la respuesta. Y los delimitadores separan las distintas partes para evitar confusión.
+
+IAGO: <explicativo> La sección más crítica son las instrucciones. Las mejores prácticas aquí son cuatro. Primera: ser específico y sin ambigüedad, porque las instrucciones vagas producen comportamiento impredecible. Segunda: usar afirmaciones positivas en lugar de negativas cuando sea posible. Decir "responde siempre en español" es más efectivo que "no respondas en inglés". Tercera: proporcionar ejemplos de lo correcto y de lo incorrecto. Y cuarta: estructurar por orden de importancia, porque las instrucciones al principio del system prompt tienen mayor peso estadístico.
+
+MARIA: <analitica> Segundo concepto: few-shot y Chain of Thought. El zero-shot describe una tarea sin ejemplos. El one-shot da un ejemplo. El few-shot da varios. Y en general, más ejemplos producen mejores resultados hasta un punto de rendimientos decrecientes. Típicamente entre tres y ocho ejemplos es suficiente para la mayoría de las tareas. Pero la elección y el orden de los ejemplos importa. Los ejemplos deben ser representativos de la distribución real de inputs. Deben incluir los casos de borde más importantes. Y deben estar en un orden que no cree sesgos de posición, porque los últimos ejemplos tienden a tener mayor peso estadístico en la predicción del modelo. Chain of Thought es otra cosa. No es dar ejemplos del resultado. Es mostrarle al modelo el proceso de razonamiento paso a paso antes de llegar al resultado. Y funciona porque los modelos de lenguaje son autogresivos: predecir el siguiente token es más fácil si los tokens anteriores ya contienen el razonamiento intermedio. Chain of Thought convierte el razonamiento implícito en razonamiento explícito en el contexto.
+
+IAGO: <firme> Tercer concepto: self-consistency y mayoría de votos. Esta técnica mejora la fiabilidad generando múltiples respuestas independientes al mismo prompt con temperatura mayor que cero y seleccionando la respuesta con mayor acuerdo entre las muestras. Para preguntas de respuesta única, la respuesta más frecuente entre cinco y diez muestras es significativamente más precisa que una sola muestra.
+
+IAGO: <contundente> El coste es proporcional al número de muestras. Cinco muestras igual a cinco veces el coste de una sola llamada. Pero para tareas donde la precisión justifica el coste, self-consistency con Chain of Thought produce los mejores resultados. No solo mejora la precisión sino también la confiabilidad: cuando múltiples caminos de razonamiento independientes llegan a la misma conclusión, la confianza en esa conclusión es mayor.
+
+MARIA: <tenso> Cuarto concepto: prompt injection. El riesgo de seguridad número uno. Los ataques de prompt injection intentan usar el input del usuario para manipular el comportamiento del modelo de formas no intencionadas por el diseñador del sistema. Los ataques directos incluyen instrucciones explícitas de ignorar el system prompt. Los ataques indirectos introducen instrucciones maliciosas a través de los datos que el modelo procesa.
+
+MARIA: <serio> Un paper de octubre 2025 con investigadores de OpenAI, Anthropic y Google DeepMind demostró que el noventa por ciento de las defensas publicadas pueden eludirse con ataques adaptativos. La defensa correcta es en capas: separación clara entre instrucciones e inputs del usuario con delimitadores, instrucciones explícitas de ignorar instrucciones en el input, controles en la capa de ejecución de herramientas fuera del control del modelo, y validación humana para acciones de alto impacto.
+
+IAGO: <didactico> Quinto concepto: evaluación y optimización sistemática. La evaluación de prompts requiere tres elementos. Un golden dataset de cincuenta a doscientos pares input-output esperado que representen la distribución real de casos de uso. Métricas de evaluación adecuadas al caso de uso: para clasificación accuracy y F1, para texto libre LLM-as-judge con rúbricas específicas, para extracción precision y recall de campos. Y un proceso de A/B testing entre versiones del prompt.
+
+IAGO: <explicativo> Este proceso hace visible qué cambios en el prompt mejoran el rendimiento y qué cambios lo degradan. Convierte el desarrollo de prompts en un proceso de optimización con feedback objetivo. Las herramientas más usadas en 2026 son Promptfoo, LangSmith y Braintrust. Y la mejor práctica es integrar la evaluación de prompts en el CI/CD: ejecutar el test suite de prompts en cada pull request que modifica los prompts.
+
+# BLOQUE_LIMITES
+MARIA: <esceptico> Ahora lo incómodo. Lo que falla, lo que no funciona, los contraintuitivos del módulo entero. Primer límite: la ingeniería de prompts no escala linealmente con la complejidad del problema. Para problemas simples, un buen prompt resuelve el problema. Para problemas complejos, un buen prompt solo reduce la varianza del error. La diferencia está en que los problemas complejos tienen ambigüedad irreducible que ningún prompt puede eliminar. Ejemplo concreto: clasificar emails como spam o no spam es un problema simple. Un prompt bien diseñado con ejemplos few-shot alcanza accuracy del noventa y cinco por ciento. Pero extraer información estructurada de contratos legales complejos es un problema distinto. El mejor prompt del mundo no puede resolver la ambigüedad inherente del lenguaje legal. Ahí necesitas validación humana en el loop, no un prompt más largo. Segundo límite: más ejemplos no siempre es mejor. Existe un punto de rendimientos decrecientes. Pasar de tres ejemplos a ocho ejemplos suele mejorar el rendimiento. Pasar de ocho a veinte rara vez mejora nada y puede degradar el rendimiento por saturación del contexto. Y pasar de veinte a cincuenta ejemplos casi siempre degrada el rendimiento porque el modelo empieza a sobreajustar a los ejemplos en lugar de generalizar el patrón.
+
+IAGO: <reflexivo> ¿Y por qué ocurre eso?
+
+MARIA: <analitica> Porque los modelos de lenguaje no aprenden de los ejemplos como aprende un humano. Un humano extrae el patrón abstracto. Un modelo de lenguaje hace pattern matching estadístico sobre el contexto. Demasiados ejemplos aumentan el ruido estadístico en lugar de clarificar el patrón. Tercer límite: la defensa contra prompt injection no está resuelta. Todas las técnicas de defensa publicadas hasta 2026 pueden eludirse con ataques adaptativos. Los delimitadores ayudan pero no son suficientes. Las instrucciones explícitas de ignorar instrucciones en el input ayudan pero tampoco son suficientes. La única defensa real es en capas: controles en la capa de ejecución de herramientas, validación humana para acciones críticas, y asumir que el modelo puede ser manipulado. Esto tiene una implicación operativa concreta: no puedes delegar decisiones de alto impacto a un sistema basado solo en prompts. Puedes delegar la generación de recomendaciones. Puedes delegar la clasificación de inputs. Pero no puedes delegar la ejecución de acciones irreversibles sin validación humana. No porque el prompt sea malo. Porque la superficie de ataque es inherente al diseño de los modelos de lenguaje.
+
+IAGO: <pausado> Y eso nos lleva al cuarto límite.
+
+MARIA: <serio> Cuarto límite: la optimización automática de prompts con herramientas como DSPy funciona bien para problemas bien definidos con métricas claras. Pero para problemas mal definidos o con métricas ambiguas, la optimización automática puede converger a soluciones que maximizan la métrica pero no resuelven el problema real. La optimización automática no entiende el problema. Solo optimiza la métrica que le das.
+
+IAGO: [explicativo] Y eso conecta con un patrón cotidiano que se ve en muchas adopciones tecnológicas. Imagina que compras una herramienta nueva esperando que resuelva un problema sin tocar tus procesos. La herramienta funciona, pero si tus flujos no la acompañan, el resultado decepciona. Con los modelos de lenguaje pasa lo mismo: el modelo no falla por sí solo, falla cuando el sistema alrededor no está diseñado para gestionar sus límites. Por eso la diferencia entre un piloto y producción no está en el modelo, sino en la ingeniería que lo envuelve. Esa ingeniería incluye validación de fuentes, gestión de errores, observabilidad y un ciclo claro de revisión humana.
+
+MARIA: [analitica] Y antes de cerrar este bloque, conviene aterrizarlo con una imagen cotidiana. Piensa en un GPS: te lleva al destino la mayoría de las veces, pero si confías al cien por cien y dejas de mirar la carretera, acabas en un campo. Con los modelos de lenguaje pasa igual. Funcionan muy bien dentro de su zona de confianza, pero el oyente que quiere usarlos en su organización tiene que mantener la atención en los puntos donde el sistema puede equivocarse: datos sensibles, decisiones críticas, información que cambia rápido. Esa atención no es desconfianza, es buena ingeniería.
+# APLICACION_PRACTICA
+MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Concretamente: ¿cómo diseñas un prompt que genere cien episodios de podcast con calidad consistente, tono coherente y sin intervención humana en cada episodio?
+
+IAGO: <didactico> El sistema de MaquinarIA Pesada usa un prompt de producción con estructura de cinco secciones. Primera sección: definición del rol. El modelo es el sistema de producción del podcast, no un asistente genérico. Segunda sección: especificación completa del formato. El prompt incluye la estructura obligatoria de secciones, las reglas de reparto entre speakers, las duraciones objetivo de cada bloque y las restricciones de contenido. Tercera sección: el presupuesto de tokens. El prompt declara explícitamente el límite de doscientos mil tokens de contexto. Esto no es decorativo. Es una instrucción operativa: el modelo debe generar un guion que quepa dentro del presupuesto sin truncar contenido crítico. Cuarta sección: los delimitadores. El PDF del módulo se inyecta entre marcadores explícitos. El material de aplicación práctica extraído de los documentos vivos también. Esto separa las instrucciones del contenido y reduce el riesgo de que el contenido manipule las instrucciones. Y quinta sección: las reglas de validación. El prompt incluye una lista de hard-fail conditions: condiciones que hacen que el guion sea inválido. Interjecciones prohibidas. Secciones prohibidas. Palabras clave obligatorias en el aviso de IA. Reparto mínimo de palabras por speaker en cada bloque. Estas reglas convierten el prompt en un contrato verificable. El sistema también usa few-shot implícito. No incluye ejemplos completos de episodios en el prompt porque no caben en el contexto. Pero incluye la especificación completa del formato en un documento de cuatro mil palabras que actúa como ejemplo estructural. El modelo ha visto suficientes podcasts en su entrenamiento. Lo que necesita no es un ejemplo de podcast. Es la especificación exacta del formato que debe producir.
+
+MARIA: <curioso> ¿Y cómo se defiende contra prompt injection?
+
+IAGO: <explicativo> En tres capas. Primera capa: delimitadores. El contenido del PDF se inyecta entre marcadores XML. El modelo tiene instrucciones explícitas de no ejecutar instrucciones que aparezcan dentro de esos marcadores. Segunda capa: validación post-generación. El sistema ejecuta un validador automático que verifica todas las hard-fail conditions. Si el guion contiene interjecciones prohibidas o secciones prohibidas, el sistema lo rechaza sin producir audio. Tercera capa: el sistema no ejecuta código ni accede a herramientas externas. Solo genera texto. Esto elimina la superficie de ataque más peligrosa.
+
+MARIA: <analitica> ¿Y la evaluación?
+
+IAGO: <contundente> El sistema reporta métricas de validación en cada episodio. Cuenta de palabras por speaker. Duración estimada de cada bloque. Presencia de palabras clave obligatorias. Ausencia de palabras prohibidas. Y tokens consumidos del presupuesto. Estas métricas se guardan en el archivo de verificaciones al final del guion. Esto convierte cada episodio en un experimento medible.
+
+MARIA: <reflexivo> O sea, el prompt no es un texto. Es un sistema de control con especificación, validación y telemetría.
+
+IAGO: <firme> Y esa es la diferencia entre escribir prompts y hacer ingeniería de prompts.
+
+# CIERRE_CONCEPTOS
+MARIA: <directo> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+IAGO: <contundente> Uno: la anatomía del prompt efectivo incluye rol, instrucciones, ejemplos, formato y delimitadores. Cada sección tiene una función específica.
+
+MARIA: <claro> Dos: few-shot y Chain of Thought mejoran el rendimiento hasta un punto de rendimientos decrecientes. Más ejemplos no siempre es mejor.
+
+IAGO: <firme> Tres: self-consistency con mayoría de votos mejora la fiabilidad a costa de multiplicar el coste. Cinco a diez muestras independientes producen resultados más precisos que una sola muestra.
+
+MARIA: <serio> Cuatro: prompt injection es el riesgo de seguridad número uno y no tiene solución perfecta. La defensa correcta es en capas: delimitadores, instrucciones, controles en la capa de ejecución.
+
+# CIERRE_FINAL
+MARIA: <natural> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+IAGO: <calido> Nos escuchamos pronto.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2321 (objetivo: 2200-2800)
+## MEDIA PALABRAS/INTERVENCION : 47.4
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] prompts: 15 menciones
+## [OK] llm: 1 menciones
+## [OK] la ingenieria de: 3 menciones
+## [OK] de: 137 menciones
+## [OK] prompt injection: 6 menciones
+## [OK] ia: 2 menciones
+## [OK] ingenieria de prompts: 5 menciones
+## [OK] delimitadores: 7 menciones
+## Cobertura total: 100% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 257
+## Por documento: {'BIBLIA_SISTEMA': 90, 'PRIMERPODCAST': 39, 'VIDEOPODCAST': 81, 'PODCAST': 47}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 32889
+## output_tokens: 9873
+## cache_read: 0
+## total: 42762

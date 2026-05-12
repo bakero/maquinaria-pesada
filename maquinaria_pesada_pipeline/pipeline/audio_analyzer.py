@@ -115,6 +115,34 @@ def analyze_episode_audio(audio_path: str | Path,
     intro_dur = get_audio_duration(intro_video_path) if intro_video_path else 0.0
     log.info(f"  duracion_audio={duration:.2f}s · duracion_intro_video={intro_dur:.2f}s")
 
+    # Deteccion robusta de la sintonia por correlacion cruzada con el
+    # archivo Sintonia Maquinaria pesada.mp3 (mucho mas precisa que
+    # silencedetect cuando hay musica de fondo durante el contenido).
+    sintonia_range_correlation = None
+    try:
+        from .sintonia_detector import detect_sintonia_range
+        sintonia_candidates = [
+            Path(r"C:\Users\Asus\maquinaria_pesada\Música\Sintonia Maquinaria pesada.mp3"),
+        ]
+        if intro_video_path:
+            iv = Path(intro_video_path)
+            for name in ("Sintonia Maquinaria pesada.mp3", "sintonia.mp3"):
+                cand = iv.parent.parent / "Música" / name
+                if cand.exists():
+                    sintonia_candidates.insert(0, cand)
+        for sint in sintonia_candidates:
+            if sint.exists():
+                sintonia_range_correlation = detect_sintonia_range(
+                    audio_path, sint, min_confidence=0.3
+                )
+                if sintonia_range_correlation:
+                    log.info(f"  sintonia detectada por correlacion: "
+                             f"{sintonia_range_correlation[0]:.3f}-"
+                             f"{sintonia_range_correlation[1]:.3f}s")
+                break
+    except Exception as exc:
+        log.debug(f"  cross-correlacion fallo: {exc}")
+
     structure = {
         "audio_duration":   round(duration, 3),
         "intro_video_duration": round(intro_dur, 3),
@@ -178,26 +206,10 @@ def analyze_episode_audio(audio_path: str | Path,
         structure["sintonia_end"] = round(sintonia_start + intro_dur, 3) if intro_dur else None
         structure["content_start"] = round(structure["sintonia_end"] or sintonia_start, 3)
 
-    # Si conocemos la duracion del intro_video, garantizamos que la sintonia
-    # cubre AL MENOS esa duracion (puede solapar con el silencio post, mejor
-    # que cortar el video de la sintonia).
-    if intro_dur > 0 and structure.get("sintonia_start") is not None:
-        min_sintonia_end = structure["sintonia_start"] + intro_dur
-        if structure.get("sintonia_end", 0) < min_sintonia_end:
-            log.info(f"  Extiendo sintonia_end a {min_sintonia_end:.2f}s "
-                     f"para cubrir el intro_video completo ({intro_dur:.1f}s)")
-            structure["sintonia_end"] = round(min_sintonia_end, 3)
-            # content_start se desplaza si el silencio post-sintonia queda solapado
-            if structure.get("content_start", 0) < structure["sintonia_end"]:
-                # Si hay silencio detectado tras min_sintonia_end, usarlo
-                next_silence = next(
-                    (s for s in silences if s["start"] >= structure["sintonia_end"]),
-                    None,
-                )
-                if next_silence:
-                    structure["content_start"] = round(next_silence["end"], 3)
-                else:
-                    structure["content_start"] = round(structure["sintonia_end"] + 0.5, 3)
+    # NO extendemos sintonia_end mas alla del rango detectado en el audio:
+    # si lo extendieramos, el intro_video se mostraria mientras el audio ya
+    # esta en silencio (desfase visual/audio). El compositor recortara el
+    # intro_video al sintonia_dur real con `-t`.
 
     # 4) Content end: si hay silencio final largo (>2s), excluirlo
     if silences and silences[-1]["end"] >= duration - 0.5 and silences[-1]["duration"] >= 2.0:
@@ -208,6 +220,38 @@ def analyze_episode_audio(audio_path: str | Path,
         f"sintonia=[{structure['sintonia_start']},{structure['sintonia_end']}] · "
         f"contenido=[{structure['content_start']},{structure['content_end']}]"
     )
+
+    # OVERRIDE: si la correlacion cruzada detecto sintonia con confianza,
+    # sustituye los valores de silencedetect (mas precisos). Reajusta
+    # hook_end y content_start consecuentemente.
+    if sintonia_range_correlation:
+        new_start, new_end = sintonia_range_correlation
+        structure["sintonia_start"] = round(new_start, 3)
+        structure["sintonia_end"] = round(new_end, 3)
+        # hook_end queda justo antes de la nueva sintonia_start
+        if structure.get("hook_end") is None or structure["hook_end"] > new_start:
+            structure["hook_end"] = round(new_start, 3)
+        # content_start: primer silencio detectado que SOLAPE O sea posterior
+        # al final de la sintonia, pero ANTES del silencio final del audio.
+        content_end_value = structure.get("content_end") or duration
+        next_silence = next(
+            (s for s in silences
+             if (s["end"] >= new_end - 0.5  # solapa o esta despues
+                 and s["start"] < content_end_value - 30)  # no es el silencio final
+             ),
+            None,
+        )
+        if next_silence:
+            structure["content_start"] = round(max(next_silence["end"], new_end), 3)
+        else:
+            structure["content_start"] = round(new_end + 0.3, 3)
+        # Sanity: content_start nunca puede pasarse de content_end
+        if structure["content_start"] >= structure.get("content_end", duration):
+            structure["content_start"] = round(new_end + 0.3, 3)
+        log.info(f"  sintonia override por correlacion: "
+                 f"sintonia=[{structure['sintonia_start']:.3f},"
+                 f"{structure['sintonia_end']:.3f}] "
+                 f"content_start={structure['content_start']:.3f}")
 
     cache.write_text(json.dumps(structure, indent=2, ensure_ascii=False),
                      encoding="utf-8")

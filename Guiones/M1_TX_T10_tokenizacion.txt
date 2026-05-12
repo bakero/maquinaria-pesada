@@ -1,0 +1,89 @@
+# HOOK
+MARIA: [conversacional] Los LLMs de OpenAI facturan por tokens. GPT-4o cobra cinco dólares por millón de tokens de entrada. Un documento de diez páginas en español tiene veinticinco mil tokens. Procesa diez mil documentos al mes y pagas mil doscientos cincuenta dólares solo en entrada. Ahora cambia el idioma a inglés: el mismo contenido cuesta un veinte por ciento menos. ¿Por qué? Porque los modelos no leen palabras. Leen tokens. Y la forma en que el texto se convierte en tokens determina tu factura, la capacidad real de tu ventana de contexto, y por qué GPT-4 no puede contar las letras de "strawberry" sin razonamiento extendido. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+MARIA: Soy Maria.
+
+IAGO: Y yo soy Yago.
+
+MARIA: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera un sistema automatico de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo.
+
+IAGO: Hoy hablamos de tokenización. De cómo los modelos de lenguaje convierten texto en números y por qué eso importa más de lo que parece.
+
+# BLOQUE_QUE
+IAGO: [didactico] Empecemos por lo básico. Un LLM no lee texto como un humano. No ve palabras ni letras. Ve una secuencia de enteros. Esos enteros son tokens. Cada token tiene un ID único en el vocabulario del modelo. El tokenizador toma tu texto crudo, lo parte en fragmentos, y asigna a cada fragmento un número entre cero y el tamaño del vocabulario. GPT-4 usa un vocabulario de cien mil tokens. GPT-4o usa doscientos mil. Esos números son lo único que el modelo procesa. Los convierte en vectores, los pasa por el Transformer, y genera probabilidades sobre qué número viene después. Cuando el modelo te responde, está eligiendo IDs de tokens, no palabras.
+
+MARIA: ¿Y cómo decide el tokenizador dónde cortar el texto?
+
+IAGO: [explicativo] Ahí está la clave. No corta por palabras ni por morfemas lingüísticos. Corta por frecuencia estadística en el corpus de entrenamiento. El algoritmo dominante se llama Byte-Pair Encoding, BPE. Fue originalmente un algoritmo de compresión de datos de mil novecientos noventa y cuatro, adaptado para procesamiento de lenguaje natural en dos mil dieciséis por Sennrich y su equipo. BPE empieza con un vocabulario de todos los bytes individuales, doscientos cincuenta y seis en total. Luego busca el par de tokens adyacentes más frecuente en todo el corpus de entrenamiento y los fusiona en un nuevo token. Repite esa operación decenas de miles de veces hasta alcanzar el tamaño de vocabulario objetivo. GPT-2 hizo cincuenta mil fusiones. GPT-4o hizo doscientas mil.
+
+MARIA: Entonces las palabras comunes en inglés son tokens únicos porque aparecen mucho en el corpus.
+
+IAGO: "The", "and", "is" son tokens únicos. Palabras menos frecuentes como "tokenization" se dividen en dos o tres fragmentos: "token" más "ization". Palabras raras o en idiomas poco representados se dividen hasta llegar a bytes individuales si es necesario. Eso garantiza que cualquier texto puede tokenizarse sin tokens desconocidos. Zero unknown tokens.
+
+# BLOQUE_COMO
+IAGO: [explicativo] Veamos cómo funciona esto en la práctica. Tienes texto crudo. El tokenizador lo convierte en una lista de IDs. Esos IDs entran al modelo como índices en una tabla de embeddings. Cada ID se mapea a un vector de alta dimensión, por ejemplo setecientas sesenta y ocho dimensiones en GPT-2, doce mil doscientas ochenta y ocho en GPT-4. Esos vectores pasan por las capas del Transformer: atención, normalización, feed-forward.
+
+MARIA: [analitica] ¿Y cómo decide el modelo qué token devolver?
+
+IAGO: [didactico] Al final, el modelo produce una distribución de probabilidad sobre todos los IDs del vocabulario para el siguiente token.
+
+MARIA: [analitica] Es decir: elige el ID más probable, lo decodifica de vuelta a texto, y lo añade a la secuencia. Repite hasta completar la respuesta o alcanzar un token de fin. Y el proceso inverso, de ID a texto, es la decodificación.
+
+MARIA: [reflexivo] Pero aquí viene lo interesante: el tokenizador no es reversible de forma perfecta. Hay casos donde múltiples textos distintos pueden producir la misma secuencia de tokens si el tokenizador tiene ambigüedades en su tabla de fusiones. Es raro, pero técnicamente posible dependiendo de cómo se entrenó el vocabulario.
+
+IAGO: [explicativo] Correcto. Y hay otro detalle técnico importante: los tokenizadores modernos como el de GPT-4 usan byte-level BPE. Eso significa que en lugar de empezar con caracteres Unicode, empiezan con bytes UTF-8. Esto tiene una ventaja: cualquier texto en cualquier idioma se puede representar como bytes, así que el tokenizador nunca falla. Pero tiene una consecuencia: caracteres especiales, emojis, y símbolos matemáticos pueden consumir múltiples tokens porque se codifican en múltiples bytes UTF-8.
+
+MARIA: [analitica] Entonces el coste de procesar texto no es lineal con el número de caracteres. Depende de cómo se codifican esos caracteres en bytes y de cuántos de esos bytes se fusionaron durante el entrenamiento del vocabulario. Un emoji puede costar cuatro tokens. Un carácter chino puede costar dos o tres tokens. Una palabra común en inglés cuesta uno.
+
+IAGO: [directo] Y eso nos lleva directamente a los problemas prácticos de la tokenización.
+
+# BLOQUE_LIMITES
+MARIA: [contundente] Hablemos de lo que falla. Primer problema: los LLMs no pueden contar letras dentro de un token. Si "strawberry" se tokeniza como un único ID, el modelo ve un número entero, no las letras S-T-R-A-W-B-E-R-R-Y. Cuando le preguntas cuántas "r" tiene la palabra, el modelo no puede contarlas porque no tiene acceso a la estructura interna del token. Solo tiene el ID. Este problema es famoso. La solución es forzar al modelo a descomponer la palabra letra por letra antes de contar, o usar razonamiento extendido para que el modelo infiera la estructura interna. Pero eso no siempre funciona.
+
+IAGO: Y ese problema se extiende a los números. Si "12345" se tokeniza como un único token, el modelo no "ve" los dígitos individuales. Por eso los LLMs cometen errores aritméticos básicos: no están operando sobre dígitos, están operando sobre tokens.
+
+MARIA: [firme] Segundo problema: el sesgo de idioma. Los tokenizadores de GPT-4, Claude, Llama, todos están entrenados principalmente sobre texto en inglés. El resultado es que el mismo contenido en español, árabe, chino o hindi requiere entre uno punto cinco y tres veces más tokens que en inglés. Eso se traduce directamente en tres cosas: primero, mayor coste por API call. Segundo, ventana de contexto efectivamente más pequeña. Si tienes ciento veintiocho mil tokens de ventana en inglés, en español tienes el equivalente a cien mil tokens de información real. Tercero, mayor latencia, porque el modelo tiene que procesar más tokens para la misma cantidad de información.
+
+IAGO: Hay datos concretos sobre esto. Un estudio de Hugging Face en dos mil veintitrés midió la eficiencia de tokenización de GPT-4 en cincuenta idiomas. El inglés fue el más eficiente: uno punto cero tokens por palabra. El español: uno punto dos tokens por palabra. El árabe: dos punto uno tokens por palabra. El tailandés: tres punto cuatro tokens por palabra. Esto no es un bug. Es consecuencia directa de entrenar el vocabulario sobre un corpus dominado por inglés.
+
+MARIA: [esceptico] Y aquí viene el tercer problema: la optimización de vocabulario no es transparente. Los proveedores de modelos no publican cómo entrenaron sus tokenizadores ni qué corpus usaron. GPT-4o tiene un vocabulario de doscientos mil tokens, pero OpenAI no ha publicado la lista completa de fusiones ni el corpus de entrenamiento. Eso significa que no puedes predecir con certeza cómo se va a tokenizar un texto específico sin probarlo. Y si tu dominio tiene terminología técnica que no estaba en el corpus de entrenamiento del tokenizador, esa terminología se va a dividir en múltiples tokens, aumentando el coste y reduciendo la eficiencia del modelo.
+
+IAGO: Un ejemplo concreto: vocabulario médico. Si entrenas un tokenizador sobre texto general y luego lo usas para procesar historiales clínicos, términos como "acetaminophen" o "electrocardiogram" se van a dividir en tres o cuatro tokens porque no eran suficientemente frecuentes en el corpus de entrenamiento. Hay proyectos de tokenizadores especializados para dominios médicos, legales, y científicos, pero no están integrados en los modelos comerciales principales.
+
+MARIA: [directo] Y el cuarto problema: el impacto en el razonamiento. Hay evidencia de que la forma en que se tokeniza un problema afecta a la capacidad del modelo para resolverlo. Si un número se tokeniza como un único token, el modelo tiene que inferir su estructura interna para operar sobre él. Si se tokeniza dígito por dígito, el modelo puede operar directamente sobre los dígitos. Esto no es consistente entre tokenizadores ni entre modelos. Y no hay forma de controlarlo desde el prompt.
+
+# CIERRE_CONCEPTOS
+MARIA: [claro] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: los LLMs no leen palabras ni caracteres, procesan secuencias de IDs de tokens generados por un algoritmo de frecuencia estadística llamado Byte-Pair Encoding. Es como cuando tu móvil agrupa sílabas que tecleas mucho en un solo atajo: el modelo hace lo mismo con el texto.
+
+IAGO: Segundo: los tokens son la unidad de facturación en APIs, y el mismo contenido en español cuesta entre un quince y un veinticinco por ciento más que en inglés porque requiere más tokens.
+
+MARIA: Tercero: los modelos no pueden contar letras ni operar sobre dígitos dentro de un token porque solo tienen acceso al ID entero, no a su estructura interna. Imagina que te dan un sobre cerrado con un número dentro: puedes manejar el sobre, pero no ver los dígitos uno a uno.
+
+# CIERRE_FINAL
+IAGO: [natural] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 1486 (objetivo: 1300-1700)
+## MEDIA PALABRAS/INTERVENCION : 55.0
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] tokens: 32 menciones
+## [FALTA] seccion: 0 menciones
+## [OK] bpe: 3 menciones
+## [OK] gpt: 12 menciones
+## [OK] tokenizacion: 3 menciones
+## [OK] en ingles: 6 menciones
+## [OK] id: 7 menciones
+## [OK] los tokens son: 1 menciones
+## Cobertura: 88% (objetivo: 75%)
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 25646
+## output_tokens: 6002
+## cache_read: 0
+## total: 31648

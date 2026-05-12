@@ -1,0 +1,131 @@
+========================================
+LOG DE PRODUCCION - M6
+========================================
+Fecha:              2026-05-12 08:59:46
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    41
+Bloques generados:  41
+Bloques fallidos:   0
+Duracion total:     17.1 minutos (1028s)
+Tiempo generacion:  3.7 minutos
+Archivo final:      episodios\M6.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 16247
+Creditos estimados: 16247
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [40]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     MARIA #001
+  00:39  [SINTONIA — inicio]
+  00:49  [SINTONIA — fin]
+  00:50  SALUDO_Y_PRESENTACION    MARIA #002
+  00:53  SALUDO_Y_PRESENTACION    IAGO #003
+  00:59  SALUDO_Y_PRESENTACION    MARIA #004
+  01:16  BLOQUE_PANORAMA          IAGO #005
+  01:44  BLOQUE_PANORAMA          IAGO #006
+  02:15  BLOQUE_PANORAMA          MARIA #007
+  02:17  BLOQUE_PANORAMA          IAGO #008
+  02:44  BLOQUE_PANORAMA          IAGO #009
+  03:04  BLOQUE_PANORAMA          MARIA #010
+  03:10  BLOQUE_TEMAS_CLAVE       IAGO #011
+  03:41  BLOQUE_TEMAS_CLAVE       IAGO #012
+  04:18  BLOQUE_TEMAS_CLAVE       MARIA #013
+  05:30  BLOQUE_TEMAS_CLAVE       IAGO #014
+  05:53  BLOQUE_TEMAS_CLAVE       IAGO #015
+  06:19  BLOQUE_TEMAS_CLAVE       MARIA #016
+  06:46  BLOQUE_TEMAS_CLAVE       MARIA #017
+  07:17  BLOQUE_TEMAS_CLAVE       IAGO #018
+  07:49  BLOQUE_TEMAS_CLAVE       IAGO #019
+  08:15  BLOQUE_LIMITES           MARIA #020
+  09:39  BLOQUE_LIMITES           IAGO #021
+  09:41  BLOQUE_LIMITES           MARIA #022
+  10:57  BLOQUE_LIMITES           IAGO #023
+  10:59  BLOQUE_LIMITES           MARIA #024
+  11:25  BLOQUE_LIMITES           IAGO #025 [explicativo]
+  12:01  BLOQUE_LIMITES           MARIA #026 [analitica]
+  12:38  APLICACION_PRACTICA      MARIA #027
+  12:55  APLICACION_PRACTICA      IAGO #028
+  14:47  APLICACION_PRACTICA      MARIA #029
+  14:50  APLICACION_PRACTICA      IAGO #030
+  15:30  APLICACION_PRACTICA      MARIA #031
+  15:32  APLICACION_PRACTICA      IAGO #032
+  15:52  APLICACION_PRACTICA      MARIA #033
+  16:00  APLICACION_PRACTICA      IAGO #034
+  16:04  CIERRE_CONCEPTOS         MARIA #035
+  16:09  CIERRE_CONCEPTOS         IAGO #036
+  16:20  CIERRE_CONCEPTOS         MARIA #037
+  16:31  CIERRE_CONCEPTOS         IAGO #038
+  16:42  CIERRE_CONCEPTOS         MARIA #039
+  16:55  CIERRE_FINAL             MARIA #040
+  17:03  CIERRE_FINAL             IAGO #041
+
+BLOQUES GENERADOS
+-----------------
+[001] MARIA: <conversacional> Hoy, el 88% de las empresas tecnológicas ya usa modelos de leng...
+[002] MARIA: <natural> Bienvenidos a MaquinarIA Pesada. Soy Maria.
+[003] IAGO: <natural> Y yo soy Yago. Hoy cerramos el módulo 6 del máster: Ingeniería de Prom...
+[004] MARIA: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <didactico> Empecemos por el mapa completo. La ingeniería de prompts es la disci...
+[006] IAGO: <explicativo> Este módulo cubre tres territorios bien diferenciados. Primero, la...
+[007] MARIA: <curioso> ¿Qué preguntas?
+[008] IAGO: <contundente> La primera: ¿por qué dos prompts que dicen lo mismo producen resul...
+[009] IAGO: <firme> La importancia de este módulo deriva de un hecho fundamental: un prompt ...
+[010] MARIA: <reflexivo> Y esa disciplina empieza por entender que un prompt no es un texto. ...
+[011] IAGO: <didactico> Primer concepto clave: la anatomía del prompt efectivo. Un prompt de...
+[012] IAGO: <explicativo> La sección más crítica son las instrucciones. Las mejores práctica...
+[013] MARIA: <analitica> Segundo concepto: few-shot y Chain of Thought. El zero-shot describe...
+[014] IAGO: <firme> Tercer concepto: self-consistency y mayoría de votos. Esta técnica mejor...
+[015] IAGO: <contundente> El coste es proporcional al número de muestras. Cinco muestras igu...
+[016] MARIA: <tenso> Cuarto concepto: prompt injection. El riesgo de seguridad número uno. Lo...
+[017] MARIA: <serio> Un paper de octubre 2025 con investigadores de OpenAI, Anthropic y Googl...
+[018] IAGO: <didactico> Quinto concepto: evaluación y optimización sistemática. La evaluació...
+[019] IAGO: <explicativo> Este proceso hace visible qué cambios en el prompt mejoran el rend...
+[020] MARIA: <esceptico> Ahora lo incómodo. Lo que falla, lo que no funciona, los contraintui...
+[021] IAGO: <reflexivo> ¿Y por qué ocurre eso?
+[022] MARIA: <analitica> Porque los modelos de lenguaje no aprenden de los ejemplos como apre...
+[023] IAGO: <pausado> Y eso nos lleva al cuarto límite.
+[024] MARIA: <serio> Cuarto límite: la optimización automática de prompts con herramientas co...
+[025] IAGO: [explicativo] Y eso conecta con un patrón cotidiano que se ve en muchas adopcion...
+[026] MARIA: [analitica] Y antes de cerrar este bloque, conviene aterrizarlo con una imagen c...
+[027] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[028] IAGO: <didactico> El sistema de MaquinarIA Pesada usa un prompt de producción con estr...
+[029] MARIA: <curioso> ¿Y cómo se defiende contra prompt injection?
+[030] IAGO: <explicativo> En tres capas. Primera capa: delimitadores. El contenido del PDF s...
+[031] MARIA: <analitica> ¿Y la evaluación?
+[032] IAGO: <contundente> El sistema reporta métricas de validación en cada episodio. Cuenta...
+[033] MARIA: <reflexivo> O sea, el prompt no es un texto. Es un sistema de control con especi...
+[034] IAGO: <firme> Y esa es la diferencia entre escribir prompts y hacer ingeniería de prom...
+[035] MARIA: <directo> No te puedes ir de este capítulo sin haber entendido estos conceptos.
+[036] IAGO: <contundente> Uno: la anatomía del prompt efectivo incluye rol, instrucciones, e...
+[037] MARIA: <claro> Dos: few-shot y Chain of Thought mejoran el rendimiento hasta un punto d...
+[038] IAGO: <firme> Tres: self-consistency con mayoría de votos mejora la fiabilidad a costa...
+[039] MARIA: <serio> Cuatro: prompt injection es el riesgo de seguridad número uno y no tiene...
+[040] MARIA: <natural> Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Sígueno...
+[041] IAGO: <calido> Nos escuchamos pronto.
+
+Produccion completada.

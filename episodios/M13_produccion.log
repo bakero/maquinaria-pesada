@@ -1,0 +1,167 @@
+========================================
+LOG DE PRODUCCION - M13
+========================================
+Fecha:              2026-05-12 09:44:52
+Modelo audio:       eleven_v3
+Voz IAGO:           CdAqYBLnsNjmTqYgD5Ha
+  speed=1.2 stability=0.65
+Voz MARIA:          gD1IexrzCvsXPHUuT0s3
+  speed=1.2 stability=0.68
+Musica de fondo:    si
+Post speed final:   x1.1
+
+RESULTADOS
+----------
+Bloques totales:    59
+Bloques generados:  59
+Bloques fallidos:   0
+Duracion total:     18.8 minutos (1126s)
+Tiempo generacion:  4.5 minutos
+Archivo final:      episodios\M13.mp3
+
+CONSUMO
+-------
+Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)
+Caracteres totales: 17629
+Creditos estimados: 17629
+Creditos consumidos reales: desconocido (API no disponible)
+Creditos restantes reales: desconocido (API no disponible)
+
+VALIDACION FINAL
+----------------
+- OK
+
+VERIFICACION DE ASSETS
+----------------------
+  MUSICA DE FONDO: base podcast.mp3 (1191.8s) - OK
+  SINTONIA:       Sintonia Maquinaria pesada.mp3 (10.0s) - OK
+  BLOQUES CON I.A. (verificar pronunciacion en audio): [58]
+
+ESCALETA
+--------
+  00:00  [INICIO]
+  00:01  HOOK                     IAGO #001
+  00:58  [SINTONIA — inicio]
+  01:07  [SINTONIA — fin]
+  01:09  SALUDO_Y_PRESENTACION    IAGO #002
+  01:16  SALUDO_Y_PRESENTACION    MARIA #003
+  01:22  SALUDO_Y_PRESENTACION    IAGO #004
+  01:38  BLOQUE_PANORAMA          IAGO #005
+  02:10  BLOQUE_PANORAMA          MARIA #006
+  02:17  BLOQUE_PANORAMA          IAGO #007
+  02:54  BLOQUE_PANORAMA          MARIA #008
+  02:57  BLOQUE_PANORAMA          IAGO #009
+  03:28  BLOQUE_PANORAMA          MARIA #010
+  03:32  BLOQUE_PANORAMA          IAGO #011
+  04:16  BLOQUE_TEMAS_CLAVE       IAGO #012
+  04:32  BLOQUE_TEMAS_CLAVE       MARIA #013 [analitica]
+  05:06  BLOQUE_TEMAS_CLAVE       MARIA #014
+  05:13  BLOQUE_TEMAS_CLAVE       IAGO #015
+  05:42  BLOQUE_TEMAS_CLAVE       MARIA #016
+  05:47  BLOQUE_TEMAS_CLAVE       IAGO #017
+  06:07  BLOQUE_TEMAS_CLAVE       MARIA #018 [analitica]
+  06:27  BLOQUE_TEMAS_CLAVE       MARIA #019
+  06:37  BLOQUE_TEMAS_CLAVE       IAGO #020
+  06:55  BLOQUE_TEMAS_CLAVE       MARIA #021 [analitica]
+  07:15  BLOQUE_TEMAS_CLAVE       MARIA #022
+  07:18  BLOQUE_TEMAS_CLAVE       IAGO #023
+  07:52  BLOQUE_TEMAS_CLAVE       IAGO #024
+  08:11  BLOQUE_TEMAS_CLAVE       MARIA #025 [analitica]
+  08:44  BLOQUE_TEMAS_CLAVE       MARIA #026
+  08:47  BLOQUE_TEMAS_CLAVE       IAGO #027
+  09:25  BLOQUE_TEMAS_CLAVE       MARIA #028
+  09:31  BLOQUE_TEMAS_CLAVE       IAGO #029
+  09:56  BLOQUE_TEMAS_CLAVE       MARIA #030 [analitica]
+  10:27  BLOQUE_LIMITES           MARIA #031
+  10:40  BLOQUE_LIMITES           IAGO #032
+  10:48  BLOQUE_LIMITES           MARIA #033
+  11:08  BLOQUE_LIMITES           IAGO #034
+  11:17  BLOQUE_LIMITES           MARIA #035 [analitica]
+  11:32  BLOQUE_LIMITES           MARIA #036
+  11:50  BLOQUE_LIMITES           IAGO #037
+  12:02  BLOQUE_LIMITES           MARIA #038 [analitica]
+  12:17  BLOQUE_LIMITES           MARIA #039
+  12:39  BLOQUE_LIMITES           IAGO #040
+  12:53  BLOQUE_LIMITES           MARIA #041
+  13:16  BLOQUE_LIMITES           IAGO #042
+  13:28  APLICACION_PRACTICA      MARIA #043
+  13:56  APLICACION_PRACTICA      IAGO #044
+  14:37  APLICACION_PRACTICA      MARIA #045
+  14:41  APLICACION_PRACTICA      IAGO #046
+  15:44  APLICACION_PRACTICA      MARIA #047
+  15:48  APLICACION_PRACTICA      IAGO #048
+  16:23  APLICACION_PRACTICA      MARIA #049
+  16:26  APLICACION_PRACTICA      IAGO #050
+  16:59  APLICACION_PRACTICA      MARIA #051
+  17:14  APLICACION_PRACTICA      IAGO #052
+  17:27  CIERRE_CONCEPTOS         IAGO #053
+  17:44  CIERRE_CONCEPTOS         MARIA #054
+  17:54  CIERRE_CONCEPTOS         IAGO #055
+  18:09  CIERRE_CONCEPTOS         MARIA #056
+  18:21  CIERRE_CONCEPTOS         IAGO #057
+  18:33  CIERRE_FINAL             MARIA #058
+  18:41  CIERRE_FINAL             IAGO #059
+
+BLOQUES GENERADOS
+-----------------
+[001] IAGO: <didactico> En febrero de 2026 entraron en vigor las primeras prohibiciones del ...
+[002] IAGO: <conversacional> Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligenc...
+[003] MARIA: <conversacional> Y yo soy Maria. Hoy cerramos el módulo 13 con gobernanza, ética...
+[004] IAGO: <directo> Antes de empezar, lo de siempre: este episodio lo genera un sistema au...
+[005] IAGO: <explicativo> La gobernanza de la IA ha dejado de ser un tema de comités de étic...
+[006] MARIA: <esceptico> ¿Y qué pasa con las organizaciones que están usando IA ahora mismo s...
+[007] IAGO: <contundente> Están operando sin red. El AI Act clasifica todos los sistemas de ...
+[008] MARIA: <analitica> ¿Qué cuenta como sistema de alto riesgo?
+[009] IAGO: <explicativo> Sistemas en sectores de crédito, empleo, salud, educación, justici...
+[010] MARIA: <curioso> ¿Y esto solo aplica en Europa o tiene efecto global?
+[011] IAGO: <firme> El Brussels effect está funcionando igual que con el GDPR. Empresas en E...
+[012] IAGO: <didactico> Vamos con los conceptos núcleo del módulo. Primero, los frameworks d...
+[013] MARIA: [analitica] Govern: estructuras organizativas, políticas, responsabilidades, for...
+[014] MARIA: <reflexivo> ¿Y cómo se relaciona el NIST con el AI Act? Porque el NIST es volunt...
+[015] IAGO: <claro> El NIST AI RMF es el framework que muchas organizaciones usan para cumpl...
+[016] MARIA: <analitica> Segundo concepto: ISO 42001. ¿Qué aporta que no aporte el NIST?
+[017] IAGO: <explicativo> ISO 42001 es el estándar certificable para la gestión de sistemas ...
+[018] MARIA: [analitica] El NIST es un framework de auto-evaluación. ISO 42001 te da un certi...
+[019] MARIA: <directo> Tercer concepto: las métricas de equidad. Porque una cosa es decir que...
+[020] IAGO: <pausado> Hay cuatro métricas principales. Disparate Impact: el ratio de tasas d...
+[021] MARIA: [analitica] Equalized Odds: las tasas de verdaderos positivos y falsos positivos...
+[022] MARIA: <esceptico> ¿Y todas esas definiciones son compatibles entre sí?
+[023] IAGO: <contundente> No. Y ese es el punto. La paradoja de equidad es matemáticamente d...
+[024] IAGO: <explicativo> Cuarto concepto: los orígenes de los sesgos. Los sesgos en los sis...
+[025] MARIA: [analitica] Sesgo de etiquetado, cuando los anotadores humanos introducen sus pr...
+[026] MARIA: <curioso> ¿Tienes un caso concreto de sesgo de proxy?
+[027] IAGO: <grave> El caso Obermeyer publicado en Science en 2019. Un sistema de gestión sa...
+[028] MARIA: <analitica> Quinto concepto: la auditoría de modelos. ¿Qué se audita ?
+[029] IAGO: <didactico> La auditoría de modelos evalúa sistemáticamente un sistema de IA en ...
+[030] MARIA: [analitica] Y cumplimiento normativo: AI Act, RGPD, regulación sectorial. Los fo...
+[031] MARIA: <esceptico> Ahora vamos con lo que falla. Primer límite: la paradoja de la equid...
+[032] IAGO: <reflexivo> Esa es una decisión de valores, no técnica. Y la mayoría de las orga...
+[033] MARIA: <firme> Segundo límite: el gobierno del dato. El AI Act Artículo 10 requiere que...
+[034] IAGO: <pausado> Necesitas linaje de datos completo. Herramientas como Apache Atlas o O...
+[035] MARIA: [analitica] Great Expectations para validar calidad de datos en CI/CD. Y Evident...
+[036] MARIA: <analitica> Tercer límite: la brecha entre principios y práctica. Todas las orga...
+[037] IAGO: <contundente> Porque pasar de principios a práctica requiere herramientas, proce...
+[038] MARIA: [analitica] Necesitas ejecutar tests de equidad en el CI/CD. Necesitas procesos ...
+[039] MARIA: <grave> Cuarto límite: el Brussels effect puede ser una trampa. Adoptar el están...
+[040] IAGO: <serio> Entonces las organizaciones globales tendrán que gestionar múltiples mar...
+[041] MARIA: <directo> Y quinto límite: las auditorías de modelos son caras y lentas. La NYC ...
+[042] IAGO: <reflexivo> No escala. Por eso la industria necesita herramientas de auditoría a...
+[043] MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concr...
+[044] IAGO: <explicativo> El sistema MaquinarIA Pesada es un caso interesante porque combina...
+[045] MARIA: <curioso> ¿Y qué controles técnicos habéis implementado para gestionar los riesg...
+[046] IAGO: <didactico> Primer control: validación de fuentes. El sistema solo puede usar co...
+[047] MARIA: <analitica> ¿Y cómo gestionáis el sesgo en las voces sintéticas?
+[048] IAGO: <pausado> Ahí tenemos un trade-off documentado. Las voces sintéticas de ElevenLa...
+[049] MARIA: <directo> ¿Y tenéis un proceso de auditoría del contenido generado?
+[050] IAGO: <explicativo> Sí. Cada guion generado incluye una sección de verificaciones al f...
+[051] MARIA: <reflexivo> Entonces, en resumen, el sistema tiene controles de validación de fu...
+[052] IAGO: <firme> Y lo importante es que esos controles están implementados en código, no ...
+[053] IAGO: <didactico> No te puedes ir de este capitulo sin haber entendido estos conceptos...
+[054] MARIA: <claro> Segundo: los frameworks de gestión son NIST AI RMF para auto-evaluación ...
+[055] IAGO: <firme> Tercero: las métricas de equidad como disparate impact con umbral 0.8 y ...
+[056] MARIA: <analitica> Cuarto: los sesgos tienen múltiples orígenes en los datos y en el mo...
+[057] IAGO: <contundente> Y quinto: la gobernanza práctica requiere controles implementados ...
+[058] MARIA: <conversacional> Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. ...
+[059] IAGO: <calido> Hasta la próxima.
+
+Produccion completada.

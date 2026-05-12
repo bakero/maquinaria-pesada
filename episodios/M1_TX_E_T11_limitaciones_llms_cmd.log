@@ -1,0 +1,20 @@
+============================================================
+EPISODIO : M1_TX_E_T11_limitaciones_llms
+GUION    : C:\Users\Asus\maquinaria_pesada\Guiones\M1_TX_T11_limitaciones_llms.txt
+COMANDO  : C:\Users\Asus\AppData\Local\Programs\Python\Python312\python.exe C:\Users\Asus\maquinaria_pesada\generar_episodio_v2.py --guion Guiones\M1_TX_T11_limitaciones_llms.txt --ep M1_TX_E_T11_limitaciones_llms
+INICIO   : 2026-05-10 23:56:25
+FIN      : 2026-05-10 23:56:26
+EXIT     : 1 (FALLO)
+============================================================
+
+--- STDOUT ---
+
+Leyendo guion: Guiones\M1_TX_T11_limitaciones_llms.txt
+
+
+--- STDERR ---
+La validacion obligatoria del guion ha fallado antes de sintetizar:
+- Falta la seccion obligatoria: #BLOQUE_PANORAMA.
+- Falta la seccion obligatoria: #BLOQUE_TEMAS_CLAVE.
+- Falta la seccion obligatoria: #APLICACION_PRACTICA.
+
