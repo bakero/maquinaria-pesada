@@ -1,0 +1,107 @@
+{
+  "eval_id": "2026-05-12_14-30",
+  "repos": ["/home/user/maquinaria-pesada"],
+  "stack": {
+    "language": "python",
+    "frameworks": ["streamlit"],
+    "package_manager": "pip",
+    "ai_providers": ["anthropic", "openai", "openai-whisper", "elevenlabs", "kling"],
+    "lines_of_code": 18119,
+    "files_over_300_lines": 19,
+    "is_web_app": false,
+    "is_cli_pipeline": true
+  },
+  "scores": {
+    "code_quality": 5,
+    "patterns": 6,
+    "tests": 0,
+    "frontend": null,
+    "database": null,
+    "security": 7,
+    "cicd": 2,
+    "documentation": 6,
+    "dependencies": 5,
+    "observability": 3,
+    "ai_systems": 6,
+    "global": 4.5
+  },
+  "semaphores": {
+    "code_quality": "yellow",
+    "patterns": "yellow",
+    "tests": "red",
+    "frontend": "na",
+    "database": "na",
+    "security": "green",
+    "cicd": "red",
+    "documentation": "yellow",
+    "dependencies": "yellow",
+    "observability": "red",
+    "ai_systems": "yellow",
+    "global": "yellow"
+  },
+  "critical_count": 3,
+  "improvable_count": 5,
+  "correct_count": 1,
+  "na_count": 2,
+  "top_actions": [
+    {"priority": "critical", "action": "Tests baseline (pytest + smoke pipelines)", "plan_master_pr": "PR 7 (adaptado a pytest)"},
+    {"priority": "critical", "action": "Pipeline CI (lint + ruff + smoke + .env check)", "plan_master_pr": "PR 9"},
+    {"priority": "improvable", "action": "Logging estructurado + correlation_id por episodio", "plan_master_pr": "PR 16"}
+  ],
+  "ai_systems": {
+    "detected": true,
+    "providers": ["Anthropic Claude", "OpenAI GPT", "OpenAI Whisper", "ElevenLabs", "Kling"],
+    "model_names": ["claude-sonnet-4-5", "claude-haiku-4-5", "gpt-4o", "gpt-4o-mini"],
+    "integration_type": "backend_only",
+    "api_key_exposed_in_frontend": false,
+    "data_sent_to_ai": {
+      "user_data_included": false,
+      "pii_detected_in_prompts": false,
+      "sensitive_data_types": [],
+      "conversations_stored": true,
+      "logs_contain_prompts": false,
+      "retention_policy_defined": false
+    },
+    "architecture": {
+      "has_ai_service_layer": false,
+      "prompts_centralized": false,
+      "has_error_handling": "partial",
+      "has_retry_logic": "only_kling",
+      "has_timeout_config": false,
+      "has_rate_limiting": false,
+      "has_fallback": false,
+      "uses_streaming": false,
+      "has_conversation_history": true
+    },
+    "user_interaction": {
+      "user_sees_ai_output": true,
+      "ai_output_labeled": "unverified",
+      "human_oversight_mechanism": true,
+      "human_oversight_detail": "validar_episodio.py runs QA on generated content",
+      "user_can_reject_ai": "manual",
+      "content_moderation": false,
+      "user_feedback_mechanism": false
+    },
+    "legal": {
+      "ai_act_classification": "minimal_or_limited",
+      "legal_basis_identified": false,
+      "dpa_with_provider": "undocumented",
+      "international_transfer_documented": false,
+      "users_informed_of_ai": "unverified",
+      "ai_in_rat": false,
+      "provider_trains_on_data": "depends_on_account_settings",
+      "minors_data_risk": false
+    }
+  },
+  "migration_plan_status": {
+    "applies_to_project": "partial",
+    "non_applicable_prs": ["PR 5", "PR 8", "PR 11", "PR 20", "PR 21", "PR 22"],
+    "critical_for_project": ["PR 1", "PR 2", "PR 7", "PR 9", "PR 10", "PR 16"],
+    "suggested_new_prs": [
+      "PR-IA-1: capa abstracción IA con retry/backoff",
+      "PR-IA-2: prompts centralizados con versionado",
+      "PR-IA-3: trazabilidad de llamadas IA (modelo+tokens+coste)",
+      "PR-IA-4: transparencia 'generado con IA' en outputs"
+    ]
+  }
+}
