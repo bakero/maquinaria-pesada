@@ -38,6 +38,8 @@ tokens = {"gpt": {"input": 0, "output": 0}}
 
 
 def comprimir(texto: str) -> str:
+    import time as _t
+    _t0 = _t.monotonic()
     r = gpt_client.chat.completions.create(
         model=GPT_FAST,
         max_tokens=MAX_TOKENS_COMPRESS,
@@ -48,6 +50,12 @@ def comprimir(texto: str) -> str:
     )
     tokens["gpt"]["input"]  += r.usage.prompt_tokens
     tokens["gpt"]["output"] += r.usage.completion_tokens
+    try:
+        from cockpit.core.usage_tracker import track_openai
+        track_openai(r, model=GPT_FAST, source="dual_debate.py", kind="generation",
+                     latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     return r.choices[0].message.content.strip()
 
 
@@ -58,6 +66,8 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion: str,
         prompt += f"\n\nCONTEXTO PREVIO:\n{contexto_previo}"
     prompt += f"\n\nINSTRUCCION:\n{instruccion}"
 
+    import time as _t
+    _t0 = _t.monotonic()
     r = gpt_client.chat.completions.create(
         model=modelo,
         max_tokens=max_tokens,
@@ -68,6 +78,12 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion: str,
     )
     tokens["gpt"]["input"]  += r.usage.prompt_tokens
     tokens["gpt"]["output"] += r.usage.completion_tokens
+    try:
+        from cockpit.core.usage_tracker import track_openai
+        track_openai(r, model=modelo, source="dual_debate.py", kind="generation",
+                     latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     return r.choices[0].message.content.strip()
 
 

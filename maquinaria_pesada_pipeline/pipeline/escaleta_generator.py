@@ -471,6 +471,12 @@ def generate_escaleta(episode_id: str,
     msg.usage.input_tokens = usage_in
     msg.usage.output_tokens = usage_out
     elapsed = time.time() - t0
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(msg, model=model, source="pipeline.escaleta_generator",
+                        kind="generation", latency_ms=int(elapsed * 1000))
+    except ImportError:
+        pass
 
     if not msg.content:
         raise RuntimeError("Respuesta vacia de Claude")
@@ -554,6 +560,8 @@ TRANSICION OUT, NOTA DIRECCION).
 """
     log.info("  auto-heal: streaming respuesta...")
     chunks = []
+    import time as _t
+    _t0 = _t.monotonic()
     with client.messages.stream(
         model=model,
         max_tokens=32000,
@@ -563,6 +571,12 @@ TRANSICION OUT, NOTA DIRECCION).
         for text in stream.text_stream:
             chunks.append(text)
         final = stream.get_final_message()
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(final, model=model, source="pipeline.escaleta_generator.auto_heal",
+                        kind="update", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     fixed = "".join(chunks).strip()
     if fixed.startswith("```"):
         fixed = re.sub(r"^```(?:markdown)?\s*", "", fixed)

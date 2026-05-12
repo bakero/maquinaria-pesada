@@ -114,3 +114,88 @@ def aggregate(events: Iterable[dict[str, Any]]) -> dict[str, Any]:
 
 def now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+
+
+# ---------------------------------------------------------------------------
+# Helpers para instrumentar pipelines top-level (generar_guion.py, etc.).
+#
+# Uso típico:
+#
+#   from cockpit.core.usage_tracker import track_anthropic, track_openai
+#   t0 = time.monotonic()
+#   resp = client.messages.create(...)
+#   track_anthropic(resp, model=model, source="generar_guion.py", kind="generation",
+#                   latency_ms=int((time.monotonic()-t0)*1000))
+#
+# Los helpers SON DEFENSIVOS: si algo falla extrayendo tokens o escribiendo el
+# log, se silencia (la generación real no debe romperse por telemetría).
+# ---------------------------------------------------------------------------
+
+
+def track_anthropic(
+    response: Any,
+    *,
+    model: str,
+    source: str,
+    kind: str = "generation",
+    latency_ms: int = 0,
+    ok: bool = True,
+    error: str = "",
+) -> None:
+    """Registra una respuesta del SDK Anthropic en `ai_usage.jsonl`.
+
+    Acepta tanto la respuesta de `client.messages.create(...)` como el objeto
+    devuelto por `stream.get_final_message()`.
+    """
+    try:
+        usage = getattr(response, "usage", None)
+        in_tok = int(getattr(usage, "input_tokens", 0) or 0)
+        out_tok = int(getattr(usage, "output_tokens", 0) or 0)
+        record(UsageEvent(
+            timestamp=now_iso(),
+            kind=kind,
+            provider="anthropic",
+            model=model,
+            source=source,
+            input_tokens=in_tok,
+            output_tokens=out_tok,
+            cost_usd=estimate_cost_usd(model, in_tok, out_tok),
+            latency_ms=latency_ms,
+            ok=ok,
+            error=error,
+        ))
+    except Exception:
+        # Telemetría no debe romper la generación.
+        pass
+
+
+def track_openai(
+    response: Any,
+    *,
+    model: str,
+    source: str,
+    kind: str = "generation",
+    latency_ms: int = 0,
+    ok: bool = True,
+    error: str = "",
+) -> None:
+    """Registra una respuesta del SDK OpenAI (`chat.completions.create`)."""
+    try:
+        usage = getattr(response, "usage", None)
+        in_tok = int(getattr(usage, "prompt_tokens", 0) or 0)
+        out_tok = int(getattr(usage, "completion_tokens", 0) or 0)
+        record(UsageEvent(
+            timestamp=now_iso(),
+            kind=kind,
+            provider="openai",
+            model=model,
+            source=source,
+            input_tokens=in_tok,
+            output_tokens=out_tok,
+            cost_usd=estimate_cost_usd(model, in_tok, out_tok),
+            latency_ms=latency_ms,
+            ok=ok,
+            error=error,
+        ))
+    except Exception:
+        pass

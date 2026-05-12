@@ -227,6 +227,8 @@ def make_anthropic_client():
 
 def call_claude(client, model: str, system: str, user: str, max_tokens: int, temperature: float) -> tuple[str, object]:
     """Llama a Claude y devuelve (content_text, response)."""
+    import time as _t
+    _t0 = _t.monotonic()
     response = client.messages.create(
         model=model,
         max_tokens=max_tokens,
@@ -234,6 +236,14 @@ def call_claude(client, model: str, system: str, user: str, max_tokens: int, tem
         system=system,
         messages=[{"role": "user", "content": user}],
     )
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(
+            response, model=model, source="generar_guion.py", kind="generation",
+            latency_ms=int((_t.monotonic() - _t0) * 1000),
+        )
+    except ImportError:
+        pass
     return response.content[0].text, response
 
 

@@ -121,12 +121,20 @@ def _ask_claude_for_concepts(pdf_text: str, modulo: str, tema: str,
         "Devuelve EXCLUSIVAMENTE el JSON con los conceptos."
     )
 
+    import time as _t
+    _t0 = _t.monotonic()
     msg = client.messages.create(
         model=model,
         max_tokens=3000,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_msg}],
     )
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(msg, model=model, source="pipeline.concept_extractor",
+                        kind="generation", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     text = msg.content[0].text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
