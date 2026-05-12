@@ -332,6 +332,90 @@ def check_library_integrity(library) -> dict:
     return _result(len(errors) == 0, checks, errors)
 
 
+# ── 6.bis Escaleta SEMANTIC: detectar texto del guion en pizarra ──
+
+def _normalize_text(s: str) -> str:
+    """Normaliza para comparacion fuzzy: lower, sin tildes, sin
+    puntuacion, espacios colapsados."""
+    import unicodedata
+    s = s.lower()
+    s = "".join(c for c in unicodedata.normalize("NFD", s)
+                if unicodedata.category(c) != "Mn")
+    s = re.sub(r"[^a-z0-9\s]", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _ngrams(text: str, n: int = 4) -> set:
+    """Set de n-gramas de palabras."""
+    words = _normalize_text(text).split()
+    if len(words) < n:
+        return set()
+    return {tuple(words[i:i + n]) for i in range(len(words) - n + 1)}
+
+
+def check_escaleta_semantic(escaleta_path: str | Path,
+                             max_overlap_ratio: float = 0.4) -> dict:
+    """Verifica que el LLM no haya copiado texto del guion en la
+    pizarra (overlay labels). Para cada intervencion compara los
+    4-gramas de su texto vs los de cada label de la tabla on-screen.
+    Si el solapamiento > max_overlap_ratio -> fail.
+
+    Tambien detecta el patron clasico de preguntas literales en
+    highlight_quote / quote / concept_card.
+    """
+    from .escaleta_parser import parse_escaleta
+
+    p = Path(escaleta_path)
+    checks: dict[str, Any] = {}
+    errors: list[str] = []
+
+    if not p.exists():
+        return _result(False, {"exists": False}, ["escaleta no existe"])
+
+    parsed = parse_escaleta(p)
+    total_overlays = 0
+    overlap_ngrams = 0
+    quote_with_question = 0
+    bad_overlays: list[str] = []
+
+    for block in parsed.get("blocks", []):
+        for iv in block.get("interventions", []):
+            iv_text = iv.get("text", "") or ""
+            iv_ngrams = _ngrams(iv_text, n=4)
+            for os_item in iv.get("on_screen", []) or []:
+                total_overlays += 1
+                label = os_item.get("label_text") or os_item.get("raw") or ""
+                # Pattern 1: pregunta literal en highlight_quote / quote / concept
+                elem = (os_item.get("element") or "").lower()
+                if elem in ("highlight_quote", "quote", "concept_card",
+                            "concept_card_image", "concept"):
+                    if "?" in label or label.strip().startswith("¿"):
+                        quote_with_question += 1
+                        bad_overlays.append(f"  iv {iv.get('id')}: {elem} con '?' -> '{label[:60]}'")
+                # Pattern 2: solapamiento alto con texto del guion
+                if iv_ngrams:
+                    label_ngrams = _ngrams(label, n=4)
+                    if label_ngrams:
+                        overlap = len(label_ngrams & iv_ngrams) / len(label_ngrams)
+                        if overlap >= max_overlap_ratio:
+                            overlap_ngrams += 1
+                            bad_overlays.append(
+                                f"  iv {iv.get('id')}: overlap {overlap:.0%} "
+                                f"label={label[:50]!r}")
+
+    checks["total_overlays"] = total_overlays
+    checks["quote_with_question"] = quote_with_question
+    checks["overlap_with_script"] = overlap_ngrams
+    if quote_with_question > 0:
+        errors.append(f"{quote_with_question} overlays son preguntas literales del guion")
+    if overlap_ngrams > 0:
+        errors.append(f"{overlap_ngrams} overlays solapan >40% con texto del guion")
+    if bad_overlays:
+        checks["examples"] = bad_overlays[:10]
+
+    return _result(len(errors) == 0, checks, errors)
+
+
 # ── 7. SRT subtitulos ──────────────────────────────────────────────
 
 def check_srt(path: str | Path,

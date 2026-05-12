@@ -76,6 +76,484 @@
       "modulo": null,
       "source": "kling-recovered-base10s",
       "created": "2026-05-09 08:58:47"
+    },
+    "studio_yago_solo_v2": {
+      "slug": "studio_yago_solo_v2",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v2.mp4",
+      "duration": 10.433333,
+      "prompt": "A single man with short dark hair and short beard sitting at a yellow podcast table with a blue microphone, blue headphones around his neck, wearing dark sweater. He talks while resting his chin briefly on his hand, thoughtful gesture. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Yago solo, plano medio frontal. He talks while resting his chin briefly on his hand, thoughtful gesture",
+      "tags": [
+        "estudio",
+        "yago",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 09:33:15"
+    },
+    "studio_yago_solo_v3": {
+      "slug": "studio_yago_solo_v3",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v3.mp4",
+      "duration": 10.433333,
+      "prompt": "A single man with short dark hair and short beard sitting at a yellow podcast table with a blue microphone, blue headphones around his neck, wearing dark sweater. He talks emphatically, points slightly forward with his hand to underline a key idea. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Yago solo, plano medio frontal. He talks emphatically, points slightly forward with his hand to underline a key idea",
+      "tags": [
+        "estudio",
+        "yago",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 09:39:29"
+    },
+    "studio_yago_solo_v4": {
+      "slug": "studio_yago_solo_v4",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v4.mp4",
+      "duration": 10.433333,
+      "prompt": "A single man with short dark hair and short beard sitting at a yellow podcast table with a blue microphone, blue headphones around his neck, wearing dark sweater. He talks with a warm complicit smile, brief soft laugh, relaxed and friendly tone. Subtle natural facial movements, realistic mouth motion synced with speech, gentle eye blinks, slight head tilts. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Camera locked off, medium shot, only one person in the frame at all times.",
+      "description": "Yago solo, plano medio frontal. He talks with a warm complicit smile, brief soft laugh, relaxed and friendly tone",
+      "tags": [
+        "estudio",
+        "yago",
+        "solo"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 09:45:43"
+    },
+    "studio_two_m_active_v1": {
+      "slug": "studio_two_m_active_v1",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v1.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The woman on the left (dark wavy hair, dark blazer, blue headphones) is speaking. The man on the right (short dark hair, beard, dark sweater, blue headphones) is listening attentively without speaking. Maria looks at the camera while speaking, Yago nods slowly listening. Realistic mouth motion only on the speaking woman, the man's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Maria habla, Yago escucha. Maria looks at the camera while speaking, Yago nods slowly listening",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 09:52:21"
+    },
+    "studio_two_m_active_v2": {
+      "slug": "studio_two_m_active_v2",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v2.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The woman on the left (dark wavy hair, dark blazer, blue headphones) is speaking. The man on the right (short dark hair, beard, dark sweater, blue headphones) is listening attentively without speaking. Maria turns her head toward Yago while speaking, Yago looks back at her attentively. Realistic mouth motion only on the speaking woman, the man's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Maria habla, Yago escucha. Maria turns her head toward Yago while speaking, Yago looks back at her attentively",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 09:58:25"
+    },
+    "studio_two_m_active_v3": {
+      "slug": "studio_two_m_active_v3",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v3.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The woman on the left (dark wavy hair, dark blazer, blue headphones) is speaking. The man on the right (short dark hair, beard, dark sweater, blue headphones) is listening attentively without speaking. Maria speaks to camera, Yago in profile listens with calm attention, hands on table. Realistic mouth motion only on the speaking woman, the man's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Maria habla, Yago escucha. Maria speaks to camera, Yago in profile listens with calm attention, hands on table",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:04:26"
+    },
+    "studio_two_m_active_v4": {
+      "slug": "studio_two_m_active_v4",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v4.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The woman on the left (dark wavy hair, dark blazer, blue headphones) is speaking. The man on the right (short dark hair, beard, dark sweater, blue headphones) is listening attentively without speaking. Maria gesticulates softly while explaining, Yago writes briefly in a notebook on the table. Realistic mouth motion only on the speaking woman, the man's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Maria habla, Yago escucha. Maria gesticulates softly while explaining, Yago writes briefly in a notebook on the table",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:10:38"
+    },
+    "studio_two_m_active_v5": {
+      "slug": "studio_two_m_active_v5",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v5.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The woman on the left (dark wavy hair, dark blazer, blue headphones) is speaking. The man on the right (short dark hair, beard, dark sweater, blue headphones) is listening attentively without speaking. Maria speaks with a warm smile, Yago smiles back complicitly without speaking. Realistic mouth motion only on the speaking woman, the man's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Maria habla, Yago escucha. Maria speaks with a warm smile, Yago smiles back complicitly without speaking",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "maria_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:16:30"
+    },
+    "studio_two_y_active_v1": {
+      "slug": "studio_two_y_active_v1",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v1.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The man on the right (short dark hair, beard, dark sweater, blue headphones) is speaking. The woman on the left (dark wavy hair, dark blazer, blue headphones) is listening attentively without speaking. Yago looks at the camera while speaking, Maria nods slowly listening. Realistic mouth motion only on the speaking man, the woman's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Yago habla, Maria escucha. Yago looks at the camera while speaking, Maria nods slowly listening",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:22:46"
+    },
+    "studio_two_y_active_v2": {
+      "slug": "studio_two_y_active_v2",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v2.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The man on the right (short dark hair, beard, dark sweater, blue headphones) is speaking. The woman on the left (dark wavy hair, dark blazer, blue headphones) is listening attentively without speaking. Yago turns his head toward Maria while speaking, Maria looks back at him attentively. Realistic mouth motion only on the speaking man, the woman's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Yago habla, Maria escucha. Yago turns his head toward Maria while speaking, Maria looks back at him attentively",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:29:01"
+    },
+    "studio_two_y_active_v3": {
+      "slug": "studio_two_y_active_v3",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v3.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The man on the right (short dark hair, beard, dark sweater, blue headphones) is speaking. The woman on the left (dark wavy hair, dark blazer, blue headphones) is listening attentively without speaking. Yago speaks to camera, Maria in profile listens with calm attention, hands resting on table. Realistic mouth motion only on the speaking man, the woman's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Yago habla, Maria escucha. Yago speaks to camera, Maria in profile listens with calm attention, hands resting on table",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:35:24"
+    },
+    "studio_two_y_active_v4": {
+      "slug": "studio_two_y_active_v4",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v4.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The man on the right (short dark hair, beard, dark sweater, blue headphones) is speaking. The woman on the left (dark wavy hair, dark blazer, blue headphones) is listening attentively without speaking. Yago gesticulates softly while explaining, Maria writes briefly in a notebook on the table. Realistic mouth motion only on the speaking man, the woman's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Yago habla, Maria escucha. Yago gesticulates softly while explaining, Maria writes briefly in a notebook on the table",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:41:40"
+    },
+    "studio_two_y_active_v5": {
+      "slug": "studio_two_y_active_v5",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v5.mp4",
+      "duration": 10.433333,
+      "prompt": "Two presenters at a yellow podcast table. The man on the right (short dark hair, beard, dark sweater, blue headphones) is speaking. The woman on the left (dark wavy hair, dark blazer, blue headphones) is listening attentively without speaking. Yago speaks with a warm smile, Maria smiles back complicitly without speaking. Realistic mouth motion only on the speaking man, the woman's mouth stays closed. Heavy industrial podcast studio, dark metal walls, MAQUINARIA PESADA logo on background wall, yellow industrial table, blue podcast microphones, blue Beats-style headphones, warm cinematic lighting, shallow depth of field, professional broadcast quality, 4K. Wide two-shot, both faces clearly visible, locked-off camera.",
+      "description": "Two-shot. Yago habla, Maria escucha. Yago speaks with a warm smile, Maria smiles back complicitly without speaking",
+      "tags": [
+        "estudio",
+        "two_shot",
+        "yago_active"
+      ],
+      "modulo": null,
+      "source": "kling-1.6-pro-10s",
+      "created": "2026-05-09 10:48:14"
+    },
+    "studio_maria_solo_v1_rev": {
+      "slug": "studio_maria_solo_v1_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v1_rev.mp4",
+      "duration": 21.166667,
+      "prompt": "",
+      "description": "Reverse playback de studio_maria_solo_v1",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:53:52"
+    },
+    "studio_maria_solo_v2_rev": {
+      "slug": "studio_maria_solo_v2_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v2_rev.mp4",
+      "duration": 21.166667,
+      "prompt": "",
+      "description": "Reverse playback de studio_maria_solo_v2",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:53:57"
+    },
+    "studio_maria_solo_v3_rev": {
+      "slug": "studio_maria_solo_v3_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v3_rev.mp4",
+      "duration": 21.166667,
+      "prompt": "",
+      "description": "Reverse playback de studio_maria_solo_v3",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:02"
+    },
+    "studio_maria_solo_v4_rev": {
+      "slug": "studio_maria_solo_v4_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_maria_solo_v4_rev.mp4",
+      "duration": 21.166667,
+      "prompt": "",
+      "description": "Reverse playback de studio_maria_solo_v4",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:06"
+    },
+    "studio_yago_solo_v1_rev": {
+      "slug": "studio_yago_solo_v1_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v1_rev.mp4",
+      "duration": 10.433008,
+      "prompt": "",
+      "description": "Reverse playback de studio_yago_solo_v1",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:08"
+    },
+    "studio_yago_solo_v2_rev": {
+      "slug": "studio_yago_solo_v2_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v2_rev.mp4",
+      "duration": 10.433008,
+      "prompt": "",
+      "description": "Reverse playback de studio_yago_solo_v2",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:10"
+    },
+    "studio_yago_solo_v3_rev": {
+      "slug": "studio_yago_solo_v3_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v3_rev.mp4",
+      "duration": 10.433008,
+      "prompt": "",
+      "description": "Reverse playback de studio_yago_solo_v3",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:13"
+    },
+    "studio_yago_solo_v4_rev": {
+      "slug": "studio_yago_solo_v4_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_yago_solo_v4_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_yago_solo_v4",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:15"
+    },
+    "studio_two_m_active_v1_rev": {
+      "slug": "studio_two_m_active_v1_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v1_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_m_active_v1",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:18"
+    },
+    "studio_two_m_active_v2_rev": {
+      "slug": "studio_two_m_active_v2_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v2_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_m_active_v2",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:21"
+    },
+    "studio_two_m_active_v3_rev": {
+      "slug": "studio_two_m_active_v3_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v3_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_m_active_v3",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:23"
+    },
+    "studio_two_m_active_v4_rev": {
+      "slug": "studio_two_m_active_v4_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v4_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_m_active_v4",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:25"
+    },
+    "studio_two_m_active_v5_rev": {
+      "slug": "studio_two_m_active_v5_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_m_active_v5_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_m_active_v5",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:27"
+    },
+    "studio_two_y_active_v1_rev": {
+      "slug": "studio_two_y_active_v1_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v1_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_y_active_v1",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:30"
+    },
+    "studio_two_y_active_v2_rev": {
+      "slug": "studio_two_y_active_v2_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v2_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_y_active_v2",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:33"
+    },
+    "studio_two_y_active_v3_rev": {
+      "slug": "studio_two_y_active_v3_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v3_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_y_active_v3",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:35"
+    },
+    "studio_two_y_active_v4_rev": {
+      "slug": "studio_two_y_active_v4_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v4_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_y_active_v4",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:39"
+    },
+    "studio_two_y_active_v5_rev": {
+      "slug": "studio_two_y_active_v5_rev",
+      "category": "estudio",
+      "path": "C:\\Users\\Asus\\maquinaria_pesada\\Videos\\escenas_biblioteca\\estudio\\studio_two_y_active_v5_rev.mp4",
+      "duration": 10.433333,
+      "prompt": "",
+      "description": "Reverse playback de studio_two_y_active_v5",
+      "tags": [
+        "reversed",
+        "listening_only"
+      ],
+      "modulo": null,
+      "source": "reversed",
+      "created": "2026-05-09 12:54:41"
     }
   }
 }
