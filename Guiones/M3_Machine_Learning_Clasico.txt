@@ -31,7 +31,9 @@ IAGO: <didactico> El módulo cubre tres grandes bloques. Primero, los paradigmas
 MARIA: [directo] De acuerdo. Sigamos.
 
 # BLOQUE_TEMAS_CLAVE
-IAGO: <explicativo> Vamos con los conceptos núcleo del módulo. Empezamos por los tres paradigmas del machine learning. El aprendizaje supervisado es el más común en aplicaciones empresariales. El modelo aprende de pares input-output donde el output correcto, la etiqueta, ha sido proporcionado por humanos. Clasificación: ¿este email es spam o no spam? ¿Esta transacción es fraudulenta o legítima? Regresión: ¿cuál será el precio de este inmueble? ¿Cuántas unidades venderemos el próximo mes? El modelo ve miles de ejemplos etiquetados durante el entrenamiento y aprende la función que mapea inputs a outputs. Luego aplica esa función a datos nuevos que nunca ha visto.
+IAGO: <explicativo> Vamos con los conceptos núcleo del módulo. Empezamos por los tres paradigmas del machine learning. El aprendizaje supervisado es el más común en aplicaciones empresariales. El modelo aprende de pares input-output donde el output correcto, la etiqueta, ha sido proporcionado por humanos. Clasificación: ¿este email es spam o no spam?
+
+MARIA: [analitica] ¿Esta transacción es fraudulenta o legítima? Regresión: ¿cuál será el precio de este inmueble? ¿Cuántas unidades venderemos el próximo mes? El modelo ve miles de ejemplos etiquetados durante el entrenamiento y aprende la función que mapea inputs a outputs. Luego aplica esa función a datos nuevos que nunca ha visto.
 
 MARIA: <conversacional> Y el no supervisado es cuando no tienes etiquetas.
 
@@ -39,15 +41,21 @@ IAGO: <didactico> Correcto. El aprendizaje no supervisado trabaja con datos sin 
 
 MARIA: <curioso> ¿Y el aprendizaje por refuerzo? Ese suena más a robótica que a machine learning clásico.
 
-IAGO: <explicativo> El aprendizaje por refuerzo es donde el modelo aprende a través de la interacción con un entorno. No tiene ejemplos etiquetados. Tiene recompensas y penalizaciones. El modelo toma acciones, observa las consecuencias, y ajusta su estrategia para maximizar la recompensa acumulada a largo plazo. Es la base de sistemas como AlphaGo, que aprendió a jugar al Go mejor que cualquier humano. Y es la base del RLHF, Reinforcement Learning from Human Feedback, que se usa para alinear los LLMs con las preferencias humanas. Cuando entrenas un modelo como GPT-4 para que sus respuestas sean útiles, honestas, y no dañinas, estás usando aprendizaje por refuerzo con feedback humano como señal de recompensa.
+IAGO: <explicativo> El aprendizaje por refuerzo es donde el modelo aprende a través de la interacción con un entorno. No tiene ejemplos etiquetados. Tiene recompensas y penalizaciones.
+
+MARIA: [analitica] El modelo toma acciones, observa las consecuencias, y ajusta su estrategia para maximizar la recompensa acumulada a largo plazo. Es la base de sistemas como AlphaGo, que aprendió a jugar al Go mejor que cualquier humano. Y es la base del RLHF, Reinforcement Learning from Human Feedback, que se usa para alinear los LLMs con las preferencias humanas. Cuando entrenas un modelo como GPT-4 para que sus respuestas sean útiles, honestas, y no dañinas, estás usando aprendizaje por refuerzo con feedback humano como señal de recompensa.
 
 MARIA: <analitica> Entonces los tres paradigmas están vivos en 2026. Supervisado para la mayoría de los problemas empresariales, no supervisado para exploración de datos, y refuerzo para alinear LLMs.
 
-IAGO: <firme> Completamente. Ahora vamos con los algoritmos concretos. Empezamos por regresión lineal y logística, que son los modelos base. La regresión lineal modela la relación entre una variable de respuesta continua y una o más variables predictoras como una función lineal. Es el modelo más simple de ML supervisado. Pero proporciona un punto de referencia excelente, un baseline, para cualquier problema de regresión. Si un modelo más complejo no supera a la regresión lineal, algo está mal. O los datos no tienen patrones no lineales que el modelo complejo pueda explotar, o el modelo complejo está sobreajustando y memorizando ruido.
+IAGO: <firme> Completamente. Ahora vamos con los algoritmos concretos. Empezamos por regresión lineal y logística, que son los modelos base. La regresión lineal modela la relación entre una variable de respuesta continua y una o más variables predictoras como una función lineal.
+
+MARIA: [analitica] Es el modelo más simple de ML supervisado. Pero proporciona un punto de referencia excelente, un baseline, para cualquier problema de regresión. Si un modelo más complejo no supera a la regresión lineal, algo está mal. O los datos no tienen patrones no lineales que el modelo complejo pueda explotar, o el modelo complejo está sobreajustando y memorizando ruido.
 
 MARIA: <conversacional> ¿Y la regresión logística? Por el nombre suena a regresión, pero dijiste que es clasificación.
 
-IAGO: <didactico> Correcto. A pesar del nombre, la regresión logística es un algoritmo de clasificación binaria. Extiende la regresión lineal aplicando la función logística, la sigmoid, que mapea los valores lineales a probabilidades entre cero y uno. Si la probabilidad es mayor de cero punto cinco, predices la clase uno. Si es menor, predices la clase cero. La regresión logística es interpretable, rápida, y funciona bien cuando las clases son linealmente separables. Las regularizaciones L1 y L2, también llamadas Lasso y Ridge, añaden penalizaciones sobre el tamaño de los pesos del modelo. Eso reduce el overfitting y selecciona automáticamente las variables más relevantes. L1 produce pesos iguales a cero para las variables menos relevantes, lo que te da selección automática de features.
+IAGO: <didactico> Correcto. A pesar del nombre, la regresión logística es un algoritmo de clasificación binaria. Extiende la regresión lineal aplicando la función logística, la sigmoid, que mapea los valores lineales a probabilidades entre cero y uno. Si la probabilidad es mayor de cero punto cinco, predices la clase uno.
+
+MARIA: [analitica] Si es menor, predices la clase cero. La regresión logística es interpretable, rápida, y funciona bien cuando las clases son linealmente separables. Las regularizaciones L1 y L2, también llamadas Lasso y Ridge, añaden penalizaciones sobre el tamaño de los pesos del modelo. Eso reduce el overfitting y selecciona automáticamente las variables más relevantes. L1 produce pesos iguales a cero para las variables menos relevantes, lo que te da selección automática de features.
 
 MARIA: <analitica> Pasemos a los árboles de decisión. Esos sí que son interpretables, ¿no? Puedes dibujar el árbol y seguir el camino de una predicción.
 
@@ -65,7 +73,9 @@ IAGO: <explicativo> En 2026, XGBoost y LightGBM siguen superando frecuentemente 
 
 MARIA: <analitica> Quedan las Support Vector Machines y los algoritmos de clustering. ¿Dónde encajan esos?
 
-IAGO: <didactico> Las Support Vector Machines, SVMs, buscan el hiperplano de máximo margen que separa las clases en el espacio de features. Son especialmente efectivas en espacios de alta dimensionalidad y con datos de entrenamiento limitados. Eso las hace populares en bioinformática y análisis de texto con features TF-IDF. El kernel trick permite a las SVMs modelar fronteras de decisión no lineales sin mapear explícitamente los datos a espacios de alta dimensionalidad. k-Nearest Neighbors, k-NN, es el algoritmo de clasificación más simple conceptualmente: para clasificar un nuevo punto, encuentra los k puntos más cercanos en el conjunto de entrenamiento y asigna la clase mayoritaria. Es altamente interpretable pero no escala bien con grandes datasets.
+IAGO: <didactico> Las Support Vector Machines, SVMs, buscan el hiperplano de máximo margen que separa las clases en el espacio de features. Son especialmente efectivas en espacios de alta dimensionalidad y con datos de entrenamiento limitados.
+
+MARIA: [analitica] Eso las hace populares en bioinformática y análisis de texto con features TF-IDF. El kernel trick permite a las SVMs modelar fronteras de decisión no lineales sin mapear explícitamente los datos a espacios de alta dimensionalidad. k-Nearest Neighbors, k-NN, es el algoritmo de clasificación más simple conceptualmente: para clasificar un nuevo punto, encuentra los k puntos más cercanos en el conjunto de entrenamiento y asigna la clase mayoritaria. Es altamente interpretable pero no escala bien con grandes datasets.
 
 MARIA: <conversacional> Y clustering es aprendizaje no supervisado. Agrupar datos sin etiquetas previas.
 

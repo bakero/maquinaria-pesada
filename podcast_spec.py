@@ -393,12 +393,13 @@ def check_blacklist_interjections(text: str, spec: dict) -> list[str]:
 def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que el líder de cada bloque líder tenga >= leader_share_min_percent%.
 
-    Reporta como [WARN] (no hard-fail): los LLMs no alcanzan porcentajes exactos
-    de forma fiable. El issue se reporta para retroalimentación pero no bloquea
-    la generación ni la producción de audio.
+    Hard-fail si qa_rules.hard_fail_on_leader_share_below_min=true.
     """
     issues: list[str] = []
     rules = spec["script_rules"]
+    qa = spec.get("qa_rules", {})
+    hard = qa.get("hard_fail_on_leader_share_below_min", False)
+    prefix = "" if hard else "[WARN] "
     min_pct = rules.get("leader_share_min_percent", 65)
 
     # Construir mapa {sección: speaker_líder}
@@ -429,7 +430,7 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
         pct = (leader_words * 100.0) / total_words
         if pct < min_pct:
             issues.append(
-                f"[WARN] {section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
+                f"{prefix}{section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
                 f"de palabras (minimo {min_pct}%)."
             )
     return issues
@@ -438,11 +439,13 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
 def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que en bloques compartidos cada speaker tenga 40-60% de palabras.
 
-    Reporta como [WARN] (no hard-fail): los LLMs no alcanzan balance exacto
-    de forma fiable. El issue se reporta para retroalimentación pero no bloquea.
+    Hard-fail si qa_rules.hard_fail_on_shared_block_balance=true.
     """
     issues: list[str] = []
     rules = spec["script_rules"]
+    qa = spec.get("qa_rules", {})
+    hard = qa.get("hard_fail_on_shared_block_balance", False)
+    prefix = "" if hard else "[WARN] "
     bal_range = rules.get("shared_block_balance_range_percent", [40, 60])
     min_bal, max_bal = bal_range[0], bal_range[1]
 
@@ -471,7 +474,7 @@ def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
             pct = (words * 100.0) / total
             if pct < min_bal or pct > max_bal:
                 issues.append(
-                    f"[WARN] {section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"{prefix}{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
                     f"(rango permitido: {min_bal}%-{max_bal}%)."
                 )
     return issues

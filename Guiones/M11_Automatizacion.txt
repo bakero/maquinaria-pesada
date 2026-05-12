@@ -31,7 +31,9 @@ IAGO: <reflexivo> El módulo responde tres preguntas fundamentales. Primera: có
 MARIA: [directo] De acuerdo. Sigamos.
 
 # BLOQUE_TEMAS_CLAVE
-IAGO: <didactico> Vamos con los conceptos núcleo. Primero: los tres patrones de integración IA más RPA. Estos tres patrones cubren el noventa por ciento de las implementaciones reales en producción. Patrón uno: IA como front-end, RPA como back-end. La IA gestiona la interacción con el usuario y la comprensión del input. El RPA ejecuta las acciones en los sistemas de back-office. Es el patrón más común para sistemas de atención al cliente con IA. El chatbot interpreta la solicitud del cliente en lenguaje natural. Identifica la intención. Extrae los parámetros relevantes. Y luego el bot RPA ejecuta la acción en el CRM, en el sistema de facturación, o en el ERP. El usuario solo ve al chatbot. No sabe que detrás hay un bot RPA ejecutando transacciones en tres sistemas legacy distintos.
+IAGO: <didactico> Vamos con los conceptos núcleo. Primero: los tres patrones de integración IA más RPA. Estos tres patrones cubren el noventa por ciento de las implementaciones reales en producción. Patrón uno: IA como front-end, RPA como back-end. La IA gestiona la interacción con el usuario y la comprensión del input. El RPA ejecuta las acciones en los sistemas de back-office. Es el patrón más común para sistemas de atención al cliente con IA.
+
+MARIA: [analitica] El chatbot interpreta la solicitud del cliente en lenguaje natural. Identifica la intención. Extrae los parámetros relevantes. Y luego el bot RPA ejecuta la acción en el CRM, en el sistema de facturación, o en el ERP. El usuario solo ve al chatbot. No sabe que detrás hay un bot RPA ejecutando transacciones en tres sistemas legacy distintos.
 
 MARIA: <curioso> ¿Y qué pasa cuando la IA no está segura de haber entendido bien la solicitud?
 
@@ -39,11 +41,15 @@ IAGO: <explicativo> Ahí entra el diseño del workflow. Si la confianza del mode
 
 MARIA: <analitica> Vale. Patrón uno es IA delante, RPA detrás. ¿Y el patrón dos?
 
-IAGO: <directo> Patrón dos: IA para excepciones, RPA para el flujo principal. Aquí el RPA gestiona el ochenta por ciento de los casos estándar de forma autónoma. Y la IA interviene solo cuando el RPA encuentra una excepción que no puede resolver con sus reglas. Por ejemplo: un proceso de conciliación bancaria. El ochenta por ciento de las transacciones encajan perfectamente. El bot RPA las procesa sin intervención. Pero el veinte por ciento tiene alguna anomalía. Una fecha que no cuadra. Un importe ligeramente distinto. Un código de referencia en un formato inesperado. Ahí el RPA llama a la IA. La IA analiza el contexto, busca patrones similares en el histórico, y decide si puede resolver la excepción automáticamente o si necesita escalarlo a un humano.
+IAGO: <directo> Patrón dos: IA para excepciones, RPA para el flujo principal. Aquí el RPA gestiona el ochenta por ciento de los casos estándar de forma autónoma. Y la IA interviene solo cuando el RPA encuentra una excepción que no puede resolver con sus reglas. Por ejemplo: un proceso de conciliación bancaria. El ochenta por ciento de las transacciones encajan perfectamente. El bot RPA las procesa sin intervención.
+
+MARIA: [analitica] Pero el veinte por ciento tiene alguna anomalía. Una fecha que no cuadra. Un importe ligeramente distinto. Un código de referencia en un formato inesperado. Ahí el RPA llama a la IA. La IA analiza el contexto, busca patrones similares en el histórico, y decide si puede resolver la excepción automáticamente o si necesita escalarlo a un humano.
 
 MARIA: <reflexivo> Entonces el RPA es el caballo de batalla para lo predecible, y la IA es el especialista que resuelve los casos raros. Eso tiene sentido. Es más barato ejecutar reglas que llamar a un modelo de lenguaje.
 
-IAGO: <contundente> Y el patrón tres es IA como orquestador, RPA como ejecutor especializado. Aquí el agente de IA descompone tareas complejas y delega la ejecución a bots RPA especializados en sistemas específicos. Un bot SAP. Un bot Salesforce. Un bot para el sistema legacy de contabilidad. El agente de IA recibe una solicitud compleja que requiere tocar cuatro sistemas distintos. Descompone la tarea en subtareas. Decide el orden de ejecución. Y llama a cada bot RPA en secuencia, pasándole los parámetros extraídos del input original. El agente de IA coordina. Los bots RPA ejecutan.
+IAGO: <contundente> Y el patrón tres es IA como orquestador, RPA como ejecutor especializado. Aquí el agente de IA descompone tareas complejas y delega la ejecución a bots RPA especializados en sistemas específicos. Un bot SAP. Un bot Salesforce. Un bot para el sistema legacy de contabilidad. El agente de IA recibe una solicitud compleja que requiere tocar cuatro sistemas distintos.
+
+MARIA: [analitica] Descompone la tarea en subtareas. Decide el orden de ejecución. Y llama a cada bot RPA en secuencia, pasándole los parámetros extraídos del input original. El agente de IA coordina. Los bots RPA ejecutan.
 
 MARIA: <firme> Vale. Tres patrones. IA delante y RPA detrás. IA para excepciones y RPA para el flujo principal. IA orquestador y RPA ejecutor. ¿Y cómo decides cuál usar?
 
@@ -51,7 +57,9 @@ IAGO: <serio> Depende de dónde está la complejidad. Si la complejidad está en
 
 MARIA: <analitica> Segundo concepto clave: workflows inteligentes. ¿Qué los hace diferentes de un workflow normal?
 
-IAGO: <explicativo> Un workflow inteligente combina nodos de automatización determinista con nodos de IA orquestados en una secuencia con lógica de bifurcación y puntos de supervisión humana. Los nodos deterministas son acciones predecibles con reglas claras. Enviar un email de confirmación. Actualizar un registro en el CRM. Crear un ticket en Jira. Los nodos de IA son clasificación, extracción de información de documentos, toma de decisiones contextual, generación de contenido personalizado. Y los puntos de supervisión humana son pausas en el workflow donde un humano revisa y aprueba antes de que el sistema continúe.
+IAGO: <explicativo> Un workflow inteligente combina nodos de automatización determinista con nodos de IA orquestados en una secuencia con lógica de bifurcación y puntos de supervisión humana. Los nodos deterministas son acciones predecibles con reglas claras. Enviar un email de confirmación.
+
+MARIA: [analitica] Actualizar un registro en el CRM. Crear un ticket en Jira. Los nodos de IA son clasificación, extracción de información de documentos, toma de decisiones contextual, generación de contenido personalizado. Y los puntos de supervisión humana son pausas en el workflow donde un humano revisa y aprueba antes de que el sistema continúe.
 
 MARIA: <curioso> ¿Y cuáles son los tipos de nodo más comunes?
 
@@ -61,11 +69,15 @@ MARIA: <reflexivo> Y supongo que la clave está en decidir dónde pones los nodo
 
 IAGO: <contundente> Pones nodos de IA donde hay variabilidad o donde necesitas comprensión del contexto. Y pones nodos deterministas donde la lógica es fija y el output es predecible. La tentación es poner IA en todas partes porque es lo nuevo. Pero caro, lento, y menos fiable que una regla determinista bien escrita. La IA va donde añade valor. El resto es automatización clásica.
 
-IAGO: <explicativo> Los tres patrones de workflow más frecuentes son clasificación y routing, extracción y enriquecimiento, y generación contextualizada. Clasificación y routing: la IA clasifica el input entrante y lo dirige al sub-workflow apropiado. Clasificar emails entrantes y dirigirlos al departamento correcto. Extracción y enriquecimiento: la IA extrae datos estructurados de inputs no estructurados y los enriquece con información de sistemas externos. Extraer datos de una factura PDF y validarlos contra el pedido de compra en el ERP. Generación contextualizada: la IA genera contenido personalizado basándose en datos recuperados de los sistemas. Generar respuestas de soporte personalizadas basadas en el historial del cliente y el tipo de problema.
+IAGO: <explicativo> Los tres patrones de workflow más frecuentes son clasificación y routing, extracción y enriquecimiento, y generación contextualizada. Clasificación y routing: la IA clasifica el input entrante y lo dirige al sub-workflow apropiado. Clasificar emails entrantes y dirigirlos al departamento correcto.
+
+MARIA: [analitica] Extracción y enriquecimiento: la IA extrae datos estructurados de inputs no estructurados y los enriquece con información de sistemas externos. Extraer datos de una factura PDF y validarlos contra el pedido de compra en el ERP. Generación contextualizada: la IA genera contenido personalizado basándose en datos recuperados de los sistemas. Generar respuestas de soporte personalizadas basadas en el historial del cliente y el tipo de problema.
 
 MARIA: <analitica> Tercer concepto: autonomía graduada. Dijiste antes que no automatizas procesos críticos sin supervisión humana en la primera iteración. ¿Cómo gestionas esa progresión?
 
-IAGO: <didactico> Con un modelo de cinco niveles. Nivel cero: asistencia pura. El sistema de IA sugiere acciones pero el humano decide y ejecuta todo. El valor está en la velocidad de información. Nivel uno: automatización supervisada. El sistema ejecuta tareas bien definidas con revisión humana del output antes de que tenga efecto. El humano valida la calidad. Nivel dos: autonomía con excepciones. El sistema ejecuta autónomamente los casos que cumplen los criterios de confianza y escala los casos de baja confianza al humano. El objetivo es un setenta a noventa por ciento de automatización. Nivel tres: autonomía con auditoría. El sistema opera autónomamente y el humano revisa periódicamente una muestra aleatoria de las acciones. La supervisión es estadística, no exhaustiva. Nivel cuatro: autonomía completa con gobernanza. El sistema opera con total autonomía dentro de los límites definidos, con sistemas de detección de anomalías que alertan proactivamente.
+IAGO: <didactico> Con un modelo de cinco niveles. Nivel cero: asistencia pura. El sistema de IA sugiere acciones pero el humano decide y ejecuta todo. El valor está en la velocidad de información. Nivel uno: automatización supervisada. El sistema ejecuta tareas bien definidas con revisión humana del output antes de que tenga efecto. El humano valida la calidad. Nivel dos: autonomía con excepciones.
+
+MARIA: [analitica] El sistema ejecuta autónomamente los casos que cumplen los criterios de confianza y escala los casos de baja confianza al humano. El objetivo es un setenta a noventa por ciento de automatización. Nivel tres: autonomía con auditoría. El sistema opera autónomamente y el humano revisa periódicamente una muestra aleatoria de las acciones. La supervisión es estadística, no exhaustiva. Nivel cuatro: autonomía completa con gobernanza. El sistema opera con total autonomía dentro de los límites definidos, con sistemas de detección de anomalías que alertan proactivamente.
 
 MARIA: <firme> Cinco niveles. Y supongo que no saltas del nivel cero al nivel cuatro de golpe.
 

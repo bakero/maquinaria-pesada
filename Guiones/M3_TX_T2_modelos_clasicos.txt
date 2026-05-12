@@ -27,11 +27,15 @@ MARIA: O sea, no es que sean antiguos. Es que son los únicos que puedes usar en
 IAGO: [contundente] Correcto. Y en contextos donde no hay restricción regulatoria, siguen siendo competitivos. XGBoost con menos de un milisegundo de latencia de inferencia y AUC-ROC por encima de cero noventa y nueve es el estándar en detección de fraude en pagos. PayPal y Stripe usan gradient boosting para procesar millones de transacciones por segundo. No usan redes neuronales porque no las necesitan.
 
 # BLOQUE_COMO
-IAGO: [didactico] Vamos al mecanismo. Empiezo por la regresión logística porque es la más sencilla de entender. La regresión lineal predice un valor continuo como combinación lineal de las variables de entrada: y igual a beta cero más beta uno por x uno más beta dos por x dos, y así sucesivamente. Los coeficientes beta tienen interpretación directa. Imagina que predices el precio de una casa: si beta uno es cincuenta mil y x uno es el número de habitaciones, cada habitación adicional añade cincuenta mil euros al precio estimado, manteniendo todo lo demás constante.
+IAGO: [didactico] Vamos al mecanismo. Empiezo por la regresión logística porque es la más sencilla de entender.
+
+MARIA: [analitica] La regresión lineal predice un valor continuo como combinación lineal de las variables de entrada: y igual a beta cero más beta uno por x uno más beta dos por x dos, y así sucesivamente. Los coeficientes beta tienen interpretación directa. Imagina que predices el precio de una casa: si beta uno es cincuenta mil y x uno es el número de habitaciones, cada habitación adicional añade cincuenta mil euros al precio estimado, manteniendo todo lo demás constante.
 
 MARIA: ¿Y la regresión logística?
 
-IAGO: [explicativo] Aplica una función sigmoide sobre esa combinación lineal para producir una probabilidad entre cero y uno. La fórmula es P de y igual a uno dado x, igual a uno dividido uno más e elevado a menos beta por x. Esa función sigmoide convierte cualquier valor real en un número entre cero y uno, que puedes interpretar como probabilidad. Si el modelo te da cero setenta, significa que tiene un setenta por ciento de confianza en que el cliente va a hacer impago, o va a comprar el producto, o lo que sea que estés prediciendo.
+IAGO: [explicativo] Aplica una función sigmoide sobre esa combinación lineal para producir una probabilidad entre cero y uno. La fórmula es P de y igual a uno dado x, igual a uno dividido uno más e elevado a menos beta por x.
+
+MARIA: [analitica] Esa función sigmoide convierte cualquier valor real en un número entre cero y uno, que puedes interpretar como probabilidad. Si el modelo te da cero setenta, significa que tiene un setenta por ciento de confianza en que el cliente va a hacer impago, o va a comprar el producto, o lo que sea que estés prediciendo.
 
 MARIA: [conversacional] Vale. Ahora los árboles de decisión. Esos son los que dividen el espacio en regiones, ¿no?
 
@@ -59,7 +63,9 @@ IAGO: [explicativo] CatBoost destaca en el manejo nativo de variables categóric
 
 MARIA: [conversacional] Vale. Y los hiperparámetros más importantes en estos modelos, ¿cuáles son?
 
-IAGO: [firme] Los cinco críticos: n_estimators, que es el número de árboles, más es mejor si hay regularización; learning_rate, que suele estar entre cero coma cero uno y cero coma uno, valores menores requieren más árboles; max_depth, que controla la profundidad máxima de cada árbol, típicamente entre tres y ocho, más profundidad significa más complejidad y más riesgo de sobreajuste; subsample, que es el porcentaje de datos que usa cada árbol, entre cero coma siete y cero coma nueve, reduce varianza; y los parámetros de regularización, reg_alpha y reg_lambda. Un tuning básico con Optuna sobre estos parámetros puede mejorar el AUC-ROC entre un dos y un cinco por ciento respecto a los valores por defecto.
+IAGO: [firme] Los cinco críticos: n_estimators, que es el número de árboles, más es mejor si hay regularización; learning_rate, que suele estar entre cero coma cero uno y cero coma uno, valores menores requieren más árboles; max_depth, que controla la profundidad máxima de cada árbol, típicamente entre tres y ocho, más profundidad significa más complejidad y más riesgo de sobreajuste; subsample, que es el porcentaje de datos que usa cada árbol, entre cero coma siete y cero coma nueve, reduce varianza; y los parámetros de regularización, reg_alpha y reg_lambda.
+
+MARIA: [analitica] Un tuning básico con Optuna sobre estos parámetros puede mejorar el AUC-ROC entre un dos y un cinco por ciento respecto a los valores por defecto.
 
 # BLOQUE_LIMITES
 MARIA: [esceptico] Vale. Ahora lo que falla. Primer error que veo constantemente: equipos que saltan directamente a deep learning o a usar LLMs para datos tabulares sin haber comparado con XGBoost.
@@ -80,7 +86,9 @@ IAGO: [explicativo] La solución son los SHAP values. SHAP, que viene de SHapley
 
 MARIA: [conversacional] Cuarto error: no entender cuándo estos modelos no funcionan bien. ¿Cuándo fallan?
 
-IAGO: [didactico] Fallan en datos con estructura espacial o temporal compleja donde las relaciones no son locales. Por ejemplo, en series temporales largas con dependencias a largo plazo, una red recurrente o un transformer puede capturar patrones que un árbol no ve. En imágenes, un árbol no tiene sentido porque no captura la estructura espacial. Y en texto, antes de los transformers se usaban SVM con buenos resultados, pero actualmente los modelos de lenguaje los superan ampliamente. Los modelos clásicos son para datos tabulares. Punto.
+IAGO: [didactico] Fallan en datos con estructura espacial o temporal compleja donde las relaciones no son locales. Por ejemplo, en series temporales largas con dependencias a largo plazo, una red recurrente o un transformer puede capturar patrones que un árbol no ve. En imágenes, un árbol no tiene sentido porque no captura la estructura espacial.
+
+MARIA: [analitica] Y en texto, antes de los transformers se usaban SVM con buenos resultados, pero actualmente los modelos de lenguaje los superan ampliamente. Los modelos clásicos son para datos tabulares. Punto.
 
 MARIA: [reflexivo] O sea, el límite no es de capacidad. Es de tipo de dato.
 
@@ -92,7 +100,6 @@ MARIA: [conversacional] No te puedes ir de este capitulo sin haber entendido est
 IAGO: [firme] Primero: XGBoost y LightGBM son el baseline obligatorio para cualquier problema de datos tabulares antes de plantear deep learning.
 
 MARIA: [claro] Segundo: la regresión logística sigue siendo el estándar en sectores regulados porque sus coeficientes son directamente interpretables y auditables.
-
 
 # CIERRE_FINAL
 MARIA: [conversacional] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.

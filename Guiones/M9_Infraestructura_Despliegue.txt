@@ -35,7 +35,9 @@ IAGO: <didactico> Ahora entramos en los conceptos núcleo del módulo. Vamos a c
 
 MARIA: <esceptico> Secretos. Suena obvio, pero es donde más se falla.
 
-IAGO: <contundente> Correcto. Los sistemas de IA en producción necesitan acceder a múltiples servicios externos usando credenciales. APIs de modelos, bases de datos, APIs de sistemas empresariales. Y los anti-patrones más comunes son peligrosísimos: almacenar las credenciales directamente en el código fuente, en variables de entorno sin cifrar, o en archivos de configuración que se suben al repositorio de git. La práctica correcta es usar un gestor de secretos. HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager. Almacenan las credenciales de forma cifrada, con rotación automática y acceso auditado. Y aplicas el principio de mínimo privilegio: cada servicio tiene solo las credenciales necesarias para su función específica. El agente de atención al cliente no debe tener acceso a las bases de datos financieras. El sistema de análisis de contratos no debe tener permisos de escritura en producción.
+IAGO: <contundente> Correcto. Los sistemas de IA en producción necesitan acceder a múltiples servicios externos usando credenciales. APIs de modelos, bases de datos, APIs de sistemas empresariales. Y los anti-patrones más comunes son peligrosísimos: almacenar las credenciales directamente en el código fuente, en variables de entorno sin cifrar, o en archivos de configuración que se suben al repositorio de git. La práctica correcta es usar un gestor de secretos.
+
+MARIA: [analitica] HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, Google Secret Manager. Almacenan las credenciales de forma cifrada, con rotación automática y acceso auditado. Y aplicas el principio de mínimo privilegio: cada servicio tiene solo las credenciales necesarias para su función específica. El agente de atención al cliente no debe tener acceso a las bases de datos financieras. El sistema de análisis de contratos no debe tener permisos de escritura en producción.
 
 MARIA: <analitica> O sea, granularidad de permisos para limitar el daño si algo se compromete.
 
@@ -43,11 +45,15 @@ IAGO: <firme> Ahora, segundo concepto: rate limiting y autenticación. Los siste
 
 MARIA: <directo> ¿Y cómo se protege?
 
-IAGO: <explicativo> Rate limiting es la primera línea de defensa. Limitas el número de solicitudes por usuario o por IP en una ventana de tiempo. Si un usuario supera el límite, rechazas sus solicitudes hasta que pase la ventana. La autenticación con JWT o API keys por usuario te permite no solo control de acceso sino también auditoría del uso y revocación granular. Y el circuit breaker desconecta automáticamente un componente que está fallando para evitar que sus fallos afecten al resto. Es crítico para la resiliencia cuando dependes de APIs externas que pueden tener downtimes o degradaciones.
+IAGO: <explicativo> Rate limiting es la primera línea de defensa. Limitas el número de solicitudes por usuario o por IP en una ventana de tiempo. Si un usuario supera el límite, rechazas sus solicitudes hasta que pase la ventana.
+
+MARIA: [analitica] La autenticación con JWT o API keys por usuario te permite no solo control de acceso sino también auditoría del uso y revocación granular. Y el circuit breaker desconecta automáticamente un componente que está fallando para evitar que sus fallos afecten al resto. Es crítico para la resiliencia cuando dependes de APIs externas que pueden tener downtimes o degradaciones.
 
 MARIA: <conversacional> Tercer concepto: optimización de latencia. Aquí es donde el usuario nota si el sistema funciona o no.
 
-IAGO: <grave> La latencia en sistemas de IA tiene múltiples fuentes que deben optimizarse independientemente. La latencia de primera respuesta, Time To First Token, es crítica para la experiencia del usuario en sistemas conversacionales. Es el tiempo desde que el usuario envía la consulta hasta que recibe el primer token de la respuesta. Y la técnica más efectiva para reducir la latencia percibida es el streaming: devolver los tokens al usuario según se generan, en lugar de esperar a que el modelo genere la respuesta completa. Hace los sistemas conversacionales mucho más responsivos.
+IAGO: <grave> La latencia en sistemas de IA tiene múltiples fuentes que deben optimizarse independientemente. La latencia de primera respuesta, Time To First Token, es crítica para la experiencia del usuario en sistemas conversacionales.
+
+MARIA: [analitica] Es el tiempo desde que el usuario envía la consulta hasta que recibe el primer token de la respuesta. Y la técnica más efectiva para reducir la latencia percibida es el streaming: devolver los tokens al usuario según se generan, en lugar de esperar a que el modelo genere la respuesta completa. Hace los sistemas conversacionales mucho más responsivos.
 
 MARIA: <curioso> ¿Y a nivel de modelo?
 
@@ -55,7 +61,9 @@ IAGO: <didactico> Cuantización del modelo. Reduces la precisión de los paráme
 
 MARIA: <analitica> Y luego está el prompt caching, que reduce costes y latencia al mismo tiempo.
 
-IAGO: <explicativo> El prompt caching es una técnica disponible en las APIs de Anthropic, OpenAI y Google. Cuando el mismo prefijo de prompt se reutiliza en múltiples llamadas, el proveedor puede cachear los estados de atención para ese prefijo y evitar recalcularlos en cada llamada. Es especialmente efectivo en sistemas donde el system prompt es largo y constante, como los asistentes con RAG donde el contexto de los documentos es estático. Puede reducir el coste de las llamadas en un ochenta a noventa por ciento.
+IAGO: <explicativo> El prompt caching es una técnica disponible en las APIs de Anthropic, OpenAI y Google. Cuando el mismo prefijo de prompt se reutiliza en múltiples llamadas, el proveedor puede cachear los estados de atención para ese prefijo y evitar recalcularlos en cada llamada.
+
+MARIA: [analitica] Es especialmente efectivo en sistemas donde el system prompt es largo y constante, como los asistentes con RAG donde el contexto de los documentos es estático. Puede reducir el coste de las llamadas en un ochenta a noventa por ciento.
 
 MARIA: <directo> Cuarto concepto: gestión del coste total de propiedad. TCO. Aquí es donde muchos proyectos se estrellan.
 

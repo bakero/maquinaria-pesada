@@ -23,7 +23,9 @@ MARIA: <analitica> ¿Qué cubre este módulo?
 IAGO: <directo> Cuatro grandes bloques. Primero, el panorama de seguridad en sistemas de IA: qué es el OWASP LLM Top 10, qué vulnerabilidades incluye, y por qué la prompt injection es el riesgo número uno. Segundo, data poisoning y supply chain de modelos: cómo se introducen backdoors en los datos de entrenamiento y cómo se distribuyen modelos comprometidos. Tercero, content filtering y seguridad agéntica: cómo validar outputs y cómo proteger sistemas donde los agentes tienen herramientas que modifican el estado del mundo real. Y cuarto, red teaming y Secure AI Development Lifecycle: cómo simular ataques adversariales para encontrar vulnerabilidades antes que los atacantes reales.
 
 # BLOQUE_TEMAS_CLAVE
-IAGO: <didactico> Empecemos por el OWASP LLM Top 10 2026. Son diez vulnerabilidades críticas, y cinco de ellas son nuevas en 2026. LLM01 es Prompt Injection: manipulación del comportamiento del LLM a través del input del usuario o de datos procesados. Es el número uno por segundo año consecutivo. LLM02 es Sensitive Information Disclosure, que subió al número dos en 2026: el LLM revela información confidencial del system prompt, datos de otros usuarios, o información de entrenamiento privada. LLM03 es Supply Chain: dependencias comprometidas en modelos base, datasets, o librerías. LLM04 es Data and Model Poisoning: manipulación de los datos de entrenamiento para introducir backdoors. Y LLM05 es Improper Output Handling: pasar outputs del LLM sin sanitizar a sistemas downstream.
+IAGO: <didactico> Empecemos por el OWASP LLM Top 10 2026. Son diez vulnerabilidades críticas, y cinco de ellas son nuevas en 2026. LLM01 es Prompt Injection: manipulación del comportamiento del LLM a través del input del usuario o de datos procesados. Es el número uno por segundo año consecutivo.
+
+MARIA: [analitica] LLM02 es Sensitive Information Disclosure, que subió al número dos en 2026: el LLM revela información confidencial del system prompt, datos de otros usuarios, o información de entrenamiento privada. LLM03 es Supply Chain: dependencias comprometidas en modelos base, datasets, o librerías. LLM04 es Data and Model Poisoning: manipulación de los datos de entrenamiento para introducir backdoors. Y LLM05 es Improper Output Handling: pasar outputs del LLM sin sanitizar a sistemas downstream.
 
 MARIA: <curioso> ¿Y las cinco nuevas?
 
@@ -31,15 +33,21 @@ IAGO: <explicativo> LLM06 es Excessive Agency: el agente tiene más permisos de 
 
 MARIA: <analitica> Hablemos de prompt injection. Dijiste que tiene una tasa de éxito del 89.6%. ¿Cómo funciona?
 
-IAGO: <directo> La prompt injection es inherente a cómo funcionan los LLMs. El modelo no distingue entre instrucciones del sistema y inputs del usuario de la misma forma que un sistema operativo distingue entre código privilegiado y código de usuario. Todo llega como texto en el mismo espacio de tokens. Las técnicas más efectivas documentadas son tres. Primero, roleplay injection, con una tasa de éxito del 89.6%: instruir al modelo a actuar como un personaje sin restricciones. Segundo, logic traps, con una tasa de éxito del 81.4%: explotar dilemas morales para eludir filtros. Y tercero, encoding tricks, con una tasa de éxito del 76.2%: Base64, Unicode especial, cualquier codificación que el filtro de input no reconozca pero el modelo sí pueda decodificar.
+IAGO: <directo> La prompt injection es inherente a cómo funcionan los LLMs. El modelo no distingue entre instrucciones del sistema y inputs del usuario de la misma forma que un sistema operativo distingue entre código privilegiado y código de usuario. Todo llega como texto en el mismo espacio de tokens.
+
+MARIA: [analitica] Las técnicas más efectivas documentadas son tres. Primero, roleplay injection, con una tasa de éxito del 89.6%: instruir al modelo a actuar como un personaje sin restricciones. Segundo, logic traps, con una tasa de éxito del 81.4%: explotar dilemas morales para eludir filtros. Y tercero, encoding tricks, con una tasa de éxito del 76.2%: Base64, Unicode especial, cualquier codificación que el filtro de input no reconozca pero el modelo sí pueda decodificar.
 
 MARIA: <esceptico> ¿Y no hay defensa?
 
-IAGO: <serio> Hay defensa, pero no es una sola medida. Un paper de octubre de 2025, con investigadores de OpenAI, Anthropic y Google DeepMind, demostró que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. La defensa correcta es en capas. Primera capa: separación de instrucciones y datos. Segunda capa: validación de input. Tercera capa: controles en la capa de ejecución. Cuarta capa: human-in-the-loop para acciones irreversibles. Y quinta capa: monitorización continua. Ninguna capa es suficiente sola. Todas juntas reducen el riesgo a niveles manejables.
+IAGO: <serio> Hay defensa, pero no es una sola medida. Un paper de octubre de 2025, con investigadores de OpenAI, Anthropic y Google DeepMind, demostró que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. La defensa correcta es en capas. Primera capa: separación de instrucciones y datos. Segunda capa: validación de input.
+
+MARIA: [analitica] Tercera capa: controles en la capa de ejecución. Cuarta capa: human-in-the-loop para acciones irreversibles. Y quinta capa: monitorización continua. Ninguna capa es suficiente sola. Todas juntas reducen el riesgo a niveles manejables.
 
 MARIA: <didactico> Ahora, data poisoning. ¿Cómo se introduce información maliciosa en los datos de entrenamiento?
 
-IAGO: <conversacional> El poisoning en fine-tuning es especialmente peligroso porque los datasets de fine-tuning son pequeños. Si tu dataset tiene mil ejemplos, el 1% de los datos son solo diez ejemplos maliciosos. Y esos diez ejemplos pueden ser suficientes para manipular el comportamiento del modelo. Los backdoor attacks introducen triggers ocultos que activan comportamientos específicos del modelo solo cuando reciben el patrón de activación. PoisonGPT, un experimento de Mithril Security en 2023, demostró que es posible modificar quirúrgicamente los pesos de un LLM para que genere información falsa específica en respuesta a preguntas específicas, pasando todos los benchmarks estándar.
+IAGO: <conversacional> El poisoning en fine-tuning es especialmente peligroso porque los datasets de fine-tuning son pequeños. Si tu dataset tiene mil ejemplos, el 1% de los datos son solo diez ejemplos maliciosos.
+
+MARIA: [analitica] Y esos diez ejemplos pueden ser suficientes para manipular el comportamiento del modelo. Los backdoor attacks introducen triggers ocultos que activan comportamientos específicos del modelo solo cuando reciben el patrón de activación. PoisonGPT, un experimento de Mithril Security en 2023, demostró que es posible modificar quirúrgicamente los pesos de un LLM para que genere información falsa específica en respuesta a preguntas específicas, pasando todos los benchmarks estándar.
 
 MARIA: <analitica> ¿Y qué pasa con los modelos que descargamos de Hugging Face?
 
@@ -53,7 +61,9 @@ IAGO: <explicativo> Las principales son tres. Primera: LlamaGuard de Meta, un mo
 
 MARIA: <analitica> Y cuando el sistema tiene agentes con herramientas, ¿qué cambia?
 
-IAGO: <serio> Los sistemas agénticos amplían dramáticamente la superficie de ataque. Los agentes tienen herramientas que modifican el estado del mundo real. Las amenazas específicas son cuatro. Primera: memory poisoning, introducir información falsa en la memoria del agente para influir en decisiones futuras. Segunda: tool misuse, un agente comprometido invocando herramientas con parámetros maliciosos. Tercera: privilege escalation, usar una herramienta de bajo privilegio para acceder a herramientas de alto privilegio. Y cuarta: SSRF via tool de URL fetch, usar la herramienta de búsqueda web del agente como proxy para acceder a servicios internos protegidos.
+IAGO: <serio> Los sistemas agénticos amplían dramáticamente la superficie de ataque. Los agentes tienen herramientas que modifican el estado del mundo real. Las amenazas específicas son cuatro.
+
+MARIA: [analitica] Primera: memory poisoning, introducir información falsa en la memoria del agente para influir en decisiones futuras. Segunda: tool misuse, un agente comprometido invocando herramientas con parámetros maliciosos. Tercera: privilege escalation, usar una herramienta de bajo privilegio para acceder a herramientas de alto privilegio. Y cuarta: SSRF via tool de URL fetch, usar la herramienta de búsqueda web del agente como proxy para acceder a servicios internos protegidos.
 
 MARIA: <directo> ¿Y cómo se defiende eso?
 
@@ -62,19 +72,25 @@ IAGO: <firme> La regla Meta de octubre de 2025 lo dice claro: los controles de s
 # BLOQUE_LIMITES
 MARIA: <esceptico> Ahora hablemos de lo que falla. Dijiste que el 90% de las defensas publicadas pueden eludirse con ataques adaptativos. ¿Eso significa que no hay defensa real?
 
-IAGO: <pausado> Significa que no hay defensa perfecta. Las defensas basadas solo en el prompt son las más vulnerables. Si tu defensa es un texto que le dices al modelo, un atacante puede escribir otro texto que anule el primero. Las defensas que funcionan son las que están fuera del modelo: validación de input antes de que llegue al modelo, controles en la capa de ejecución de herramientas, human-in-the-loop para acciones críticas. Pero incluso con todas esas capas, un atacante suficientemente motivado puede encontrar formas de eludirlas. La seguridad en IA no es un estado, es un proceso continuo.
+IAGO: <pausado> Significa que no hay defensa perfecta. Las defensas basadas solo en el prompt son las más vulnerables. Si tu defensa es un texto que le dices al modelo, un atacante puede escribir otro texto que anule el primero.
+
+MARIA: [analitica] Las defensas que funcionan son las que están fuera del modelo: validación de input antes de que llegue al modelo, controles en la capa de ejecución de herramientas, human-in-the-loop para acciones críticas. Pero incluso con todas esas capas, un atacante suficientemente motivado puede encontrar formas de eludirlas. La seguridad en IA no es un estado, es un proceso continuo.
 
 MARIA: <analitica> ¿Y qué pasa con los modelos que generan contenido falso como factual? LLM09, Misinformation.
 
-IAGO: <conversacional> Es uno de los problemas más difíciles. Los LLMs no tienen un modelo interno de verdad. Generan texto que es estadísticamente probable dado el contexto. Si el texto falso es estadísticamente probable, el modelo lo genera. Las técnicas de mitigación son tres. Primera: retrieval-augmented generation, RAG, para anclar las respuestas en documentos verificables. Segunda: fact-checking automático con herramientas externas. Y tercera: disclaimers explícitos cuando el modelo no tiene certeza. Pero ninguna de esas técnicas es perfecta. RAG puede introducir información falsa si los documentos están envenenados. El fact-checking automático puede fallar. Y los disclaimers no evitan que los usuarios confíen en la información falsa.
+IAGO: <conversacional> Es uno de los problemas más difíciles. Los LLMs no tienen un modelo interno de verdad. Generan texto que es estadísticamente probable dado el contexto.
 
-MARIA: <directo> ¿Y el consumo sin límites? LLM10, Unbounded Consumption.
+MARIA: [analitica] Si el texto falso es estadísticamente probable, el modelo lo genera. Las técnicas de mitigación son tres. Primera: retrieval-augmented generation, RAG, para anclar las respuestas en documentos verificables. Segunda: fact-checking automático con herramientas externas. Y tercera: disclaimers explícitos cuando el modelo no tiene certeza. Pero ninguna de esas técnicas es perfecta. RAG puede introducir información falsa si los documentos están envenenados. El fact-checking automático puede fallar. Y los disclaimers no evitan que los usuarios confíen en la información falsa. ¿Y el consumo sin límites? LLM10, Unbounded Consumption.
 
-IAGO: <explicativo> Un atacante puede diseñar inputs que hagan que el modelo consuma recursos desproporcionados. Por ejemplo, un input que haga que el modelo genere una respuesta extremadamente larga, o que active un bucle de herramientas donde el agente llama a la misma herramienta miles de veces. Las defensas son límites duros: máximo de tokens por respuesta, máximo de llamadas a herramientas por sesión, timeouts, y rate limiting por usuario. Pero esos límites también pueden afectar a usuarios legítimos con necesidades reales de alto consumo.
+IAGO: <explicativo> Un atacante puede diseñar inputs que hagan que el modelo consuma recursos desproporcionados. Por ejemplo, un input que haga que el modelo genere una respuesta extremadamente larga, o que active un bucle de herramientas donde el agente llama a la misma herramienta miles de veces.
+
+MARIA: [analitica] Las defensas son límites duros: máximo de tokens por respuesta, máximo de llamadas a herramientas por sesión, timeouts, y rate limiting por usuario. Pero esos límites también pueden afectar a usuarios legítimos con necesidades reales de alto consumo.
 
 MARIA: <esceptico> ¿Y el red teaming? Dijiste que es el estándar del Secure AI Development Lifecycle. ¿Realmente funciona?
 
-IAGO: <serio> El red teaming automatizado encuentra vulnerabilidades que los humanos no encuentran, porque prueba sistemáticamente miles de variaciones de ataques. Pero también tiene límites. Las herramientas automatizadas como Garak o PyRIT están limitadas por los vectores de ataque que conocen. Si aparece un nuevo tipo de ataque, las herramientas no lo detectan hasta que se actualizan. Y el red teaming humano es caro y no escala. La combinación de red teaming automatizado en CI/CD más red teaming humano periódico es el enfoque más efectivo, pero no es una garantía.
+IAGO: <serio> El red teaming automatizado encuentra vulnerabilidades que los humanos no encuentran, porque prueba sistemáticamente miles de variaciones de ataques. Pero también tiene límites. Las herramientas automatizadas como Garak o PyRIT están limitadas por los vectores de ataque que conocen.
+
+MARIA: [analitica] Si aparece un nuevo tipo de ataque, las herramientas no lo detectan hasta que se actualizan. Y el red teaming humano es caro y no escala. La combinación de red teaming automatizado en CI/CD más red teaming humano periódico es el enfoque más efectivo, pero no es una garantía.
 
 # APLICACION_PRACTICA
 MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. Este sistema tiene un LLM que genera guiones a partir de PDFs de módulos del máster. Tiene voces sintéticas que convierten esos guiones en audio. Y tiene un pipeline de video que genera avatares y monta el producto final. Concretamente: ¿qué vectores de ataque tiene este sistema y qué controles de seguridad se han implementado?

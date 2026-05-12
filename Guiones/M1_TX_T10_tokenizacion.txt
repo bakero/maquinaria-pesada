@@ -25,15 +25,21 @@ MARIA: Entonces las palabras comunes en inglés son tokens únicos porque aparec
 IAGO: "The", "and", "is" son tokens únicos. Palabras menos frecuentes como "tokenization" se dividen en dos o tres fragmentos: "token" más "ization". Palabras raras o en idiomas poco representados se dividen hasta llegar a bytes individuales si es necesario. Eso garantiza que cualquier texto puede tokenizarse sin tokens desconocidos. Zero unknown tokens.
 
 # BLOQUE_COMO
-IAGO: [explicativo] Veamos cómo funciona esto en la práctica. Tienes texto crudo. El tokenizador lo convierte en una lista de IDs. Esos IDs entran al modelo como índices en una tabla de embeddings. Cada ID se mapea a un vector de alta dimensión, por ejemplo setecientas sesenta y ocho dimensiones en GPT-2, doce mil doscientas ochenta y ocho en GPT-4. Esos vectores pasan por las capas del Transformer: atención, normalización, feed-forward. Al final, el modelo produce una distribución de probabilidad sobre todos los IDs del vocabulario para el siguiente token. Elige el ID más probable, lo decodifica de vuelta a texto, y lo añade a la secuencia. Repite hasta completar la respuesta o alcanzar un token de fin.
+IAGO: [explicativo] Veamos cómo funciona esto en la práctica. Tienes texto crudo. El tokenizador lo convierte en una lista de IDs. Esos IDs entran al modelo como índices en una tabla de embeddings. Cada ID se mapea a un vector de alta dimensión, por ejemplo setecientas sesenta y ocho dimensiones en GPT-2, doce mil doscientas ochenta y ocho en GPT-4. Esos vectores pasan por las capas del Transformer: atención, normalización, feed-forward.
 
-MARIA: [reflexivo] Y el proceso inverso, de ID a texto, es la decodificación. Pero aquí viene lo interesante: el tokenizador no es reversible de forma perfecta. Hay casos donde múltiples textos distintos pueden producir la misma secuencia de tokens si el tokenizador tiene ambigüedades en su tabla de fusiones. raro, pero técnicamente posible dependiendo de cómo se entrenó el vocabulario.
+MARIA: [analitica] ¿Y cómo decide el modelo qué token devolver?
 
-IAGO: Correcto. Y hay otro detalle técnico importante: los tokenizadores modernos como el de GPT-4 usan byte-level BPE. Eso significa que en lugar de empezar con caracteres Unicode, empiezan con bytes UTF-8. Esto tiene una ventaja: cualquier texto en cualquier idioma se puede representar como bytes, así que el tokenizador nunca falla. Pero tiene una consecuencia: caracteres especiales, emojis, y símbolos matemáticos pueden consumir múltiples tokens porque se codifican en múltiples bytes UTF-8.
+IAGO: [didactico] Al final, el modelo produce una distribución de probabilidad sobre todos los IDs del vocabulario para el siguiente token.
+
+MARIA: [analitica] Es decir: elige el ID más probable, lo decodifica de vuelta a texto, y lo añade a la secuencia. Repite hasta completar la respuesta o alcanzar un token de fin. Y el proceso inverso, de ID a texto, es la decodificación.
+
+MARIA: [reflexivo] Pero aquí viene lo interesante: el tokenizador no es reversible de forma perfecta. Hay casos donde múltiples textos distintos pueden producir la misma secuencia de tokens si el tokenizador tiene ambigüedades en su tabla de fusiones. Es raro, pero técnicamente posible dependiendo de cómo se entrenó el vocabulario.
+
+IAGO: [explicativo] Correcto. Y hay otro detalle técnico importante: los tokenizadores modernos como el de GPT-4 usan byte-level BPE. Eso significa que en lugar de empezar con caracteres Unicode, empiezan con bytes UTF-8. Esto tiene una ventaja: cualquier texto en cualquier idioma se puede representar como bytes, así que el tokenizador nunca falla. Pero tiene una consecuencia: caracteres especiales, emojis, y símbolos matemáticos pueden consumir múltiples tokens porque se codifican en múltiples bytes UTF-8.
 
 MARIA: [analitica] Entonces el coste de procesar texto no es lineal con el número de caracteres. Depende de cómo se codifican esos caracteres en bytes y de cuántos de esos bytes se fusionaron durante el entrenamiento del vocabulario. Un emoji puede costar cuatro tokens. Un carácter chino puede costar dos o tres tokens. Una palabra común en inglés cuesta uno.
 
-IAGO: Y eso nos lleva directamente a los problemas prácticos de la tokenización.
+IAGO: [directo] Y eso nos lleva directamente a los problemas prácticos de la tokenización.
 
 # BLOQUE_LIMITES
 MARIA: [contundente] Hablemos de lo que falla. Primer problema: los LLMs no pueden contar letras dentro de un token. Si "strawberry" se tokeniza como un único ID, el modelo ve un número entero, no las letras S-T-R-A-W-B-E-R-R-Y. Cuando le preguntas cuántas "r" tiene la palabra, el modelo no puede contarlas porque no tiene acceso a la estructura interna del token. Solo tiene el ID. Este problema es famoso. La solución es forzar al modelo a descomponer la palabra letra por letra antes de contar, o usar razonamiento extendido para que el modelo infiera la estructura interna. Pero eso no siempre funciona.

@@ -35,7 +35,9 @@ MARIA: <esceptico> Pero también alucinan, tienen sesgos, no tienen memoria entr
 IAGO: <firme> Correcto. Y esa es precisamente la competencia más valiosa de cualquier profesional que trabaje con IA en dos mil veintiseis: distinguir entre lo que la IA puede hacer de forma fiable hoy, lo que puede hacer de forma probabilística, y lo que todavía no puede hacer. Este máster está diseñado para desarrollar esa capacidad crítica junto con los conocimientos técnicos.
 
 # BLOQUE_TEMAS_CLAVE
-IAGO: <didactico> Vamos ahora con los conceptos núcleo del módulo. Empezamos por la distinción fundamental: IA Estrecha versus IA General. Toda la IA disponible en dos mil veintiseis es IA Estrecha, sistemas optimizados para una tarea o un conjunto de tareas relacionadas que no generalizan bien fuera de su dominio de entrenamiento. Un modelo de lenguaje puede escribir código y analizar contratos, pero no puede conducir un coche o controlar un robot físico directamente. Un sistema de visión por computadora entrenado para detectar tumores en radiografías de tórax no puede usarse directamente para analizar imágenes de satélite.
+IAGO: <didactico> Vamos ahora con los conceptos núcleo del módulo. Empezamos por la distinción fundamental: IA Estrecha versus IA General.
+
+MARIA: [analitica] Toda la IA disponible en dos mil veintiseis es IA Estrecha, sistemas optimizados para una tarea o un conjunto de tareas relacionadas que no generalizan bien fuera de su dominio de entrenamiento. Un modelo de lenguaje puede escribir código y analizar contratos, pero no puede conducir un coche o controlar un robot físico directamente. Un sistema de visión por computadora entrenado para detectar tumores en radiografías de tórax no puede usarse directamente para analizar imágenes de satélite.
 
 MARIA: <conversacional> ¿Y la IA General?
 
@@ -43,7 +45,9 @@ IAGO: <explicativo> La IA General, la capacidad de razonar y aprender sobre cual
 
 MARIA: <analitica> Segundo concepto: la jerarquía técnica. Machine Learning, Deep Learning, y los modelos de lenguaje grande. ¿Cómo se relacionan?
 
-IAGO: <didactico> Machine Learning es la disciplina dentro de la IA que estudia cómo los sistemas aprenden de datos sin ser programados explícitamente. En lugar de escribir reglas, proporcionas ejemplos y el algoritmo infiere las reglas. Deep Learning es un subconjunto del Machine Learning que usa redes neuronales artificiales con muchas capas para aprender representaciones de los datos a múltiples niveles de abstracción. Y los modelos de lenguaje grande son redes neuronales profundas basadas en la arquitectura Transformer, entrenadas sobre cantidades masivas de texto para predecir el siguiente token en una secuencia.
+IAGO: <didactico> Machine Learning es la disciplina dentro de la IA que estudia cómo los sistemas aprenden de datos sin ser programados explícitamente. En lugar de escribir reglas, proporcionas ejemplos y el algoritmo infiere las reglas.
+
+MARIA: [analitica] Deep Learning es un subconjunto del Machine Learning que usa redes neuronales artificiales con muchas capas para aprender representaciones de los datos a múltiples niveles de abstracción. Y los modelos de lenguaje grande son redes neuronales profundas basadas en la arquitectura Transformer, entrenadas sobre cantidades masivas de texto para predecir el siguiente token en una secuencia.
 
 MARIA: <curioso> ¿Y esa capacidad de predecir tokens es lo que produce el razonamiento y la escritura?
 
@@ -59,7 +63,9 @@ IAGO: <explicativo> Para las organizaciones, la IA generativa de texto es la má
 
 MARIA: <directo> Cuarto concepto: los vectores de impacto en las organizaciones. ¿Cómo transforma la IA a las empresas realmente?
 
-IAGO: <explicativo> La IA impacta a través de cuatro vectores principales. Primero, productividad individual: los trabajadores del conocimiento que usan IA de forma efectiva son significativamente más productivos. En estudios controlados, completan tareas un cuarenta a cincuenta y cinco por ciento más rápido con calidad comparable o superior. Segundo, automatización de procesos: los procesos repetitivos y semi-repetitivos que antes requerían trabajo humano pueden automatizarse parcial o Tercero, mejora de la toma de decisiones: los sistemas de IA pueden analizar cantidades de datos que los humanos no pueden procesar e identificar patrones no obvios. Cuarto, creación de nuevos productos y servicios: la IA habilita propuestas de valor que simplemente no eran posibles antes.
+IAGO: <explicativo> La IA impacta a través de cuatro vectores principales. Primero, productividad individual: los trabajadores del conocimiento que usan IA de forma efectiva son significativamente más productivos.
+
+MARIA: [analitica] En estudios controlados, completan tareas un cuarenta a cincuenta y cinco por ciento más rápido con calidad comparable o superior. Segundo, automatización de procesos: los procesos repetitivos y semi-repetitivos que antes requerían trabajo humano pueden automatizarse parcial o Tercero, mejora de la toma de decisiones: los sistemas de IA pueden analizar cantidades de datos que los humanos no pueden procesar e identificar patrones no obvios. Cuarto, creación de nuevos productos y servicios: la IA habilita propuestas de valor que simplemente no eran posibles antes.
 
 MARIA: <conversacional> ¿Y ese impacto es uniforme?
 
@@ -67,7 +73,9 @@ IAGO: <serio> No. Los sectores con mayor intensidad de trabajo del conocimiento,
 
 MARIA: <analitica> Quinto concepto: el modelo de adopción. De experimentos a transformación. ¿Cómo escalan las organizaciones?
 
-IAGO: <didactico> Las organizaciones siguen un modelo en cinco fases. Fase uno, Exploración: herramientas de IA individuales, uso ad-hoc por empleados pioneros, sin estrategia ni gobernanza. Fase dos, Adopción temprana: acceso a herramientas para grupos de usuarios, primeros casos de uso identificados, formación básica. Fase tres, Escalado: casos de uso en producción con impacto medible, estrategia de IA definida, gobernanza básica, equipo de IA en construcción. Fase cuatro, Transformación: la IA integrada en los procesos core del negocio, impacto medible en métricas de negocio. Fase cinco, Reinvención: nuevos modelos de negocio habilitados por la IA, ventaja competitiva estructural.
+IAGO: <didactico> Las organizaciones siguen un modelo en cinco fases. Fase uno, Exploración: herramientas de IA individuales, uso ad-hoc por empleados pioneros, sin estrategia ni gobernanza. Fase dos, Adopción temprana: acceso a herramientas para grupos de usuarios, primeros casos de uso identificados, formación básica.
+
+MARIA: [analitica] Fase tres, Escalado: casos de uso en producción con impacto medible, estrategia de IA definida, gobernanza básica, equipo de IA en construcción. Fase cuatro, Transformación: la IA integrada en los procesos core del negocio, impacto medible en métricas de negocio. Fase cinco, Reinvención: nuevos modelos de negocio habilitados por la IA, ventaja competitiva estructural.
 
 MARIA: <esceptico> ¿Y dónde está la mayoría de las organizaciones?
 
@@ -80,11 +88,15 @@ IAGO: <serio> Muy grave si no lo gestionas. Un modelo puede generar un informe f
 
 MARIA: <analitica> Segundo límite: los sesgos heredados de los datos de entrenamiento. Los modelos reproducen los sesgos que existen en internet. Sesgo de género, sesgo racial, sesgo geográfico. ¿Qué implica eso?
 
-IAGO: <explicativo> Que si usas un modelo para filtrar currículums, puede discriminar contra candidatos de ciertos perfiles. Si lo usas para evaluar riesgo crediticio, puede penalizar a grupos vulnerables. Si lo usas para generar contenido de marketing, puede perpetuar estereotipos. La gestión de sesgos no es un tema ético separado de la práctica técnica, es un fallo de ingeniería con consecuencias empresariales reales: sanciones regulatorias, litigios, daño reputacional.
+IAGO: <explicativo> Que si usas un modelo para filtrar currículums, puede discriminar contra candidatos de ciertos perfiles. Si lo usas para evaluar riesgo crediticio, puede penalizar a grupos vulnerables.
+
+MARIA: [analitica] Si lo usas para generar contenido de marketing, puede perpetuar estereotipos. La gestión de sesgos no es un tema ético separado de la práctica técnica, es un fallo de ingeniería con consecuencias empresariales reales: sanciones regulatorias, litigios, daño reputacional.
 
 MARIA: <conversacional> Tercer límite: los sistemas agénticos fallan en procesos largos. Tú les das una tarea de cincuenta pasos y se pierden en el paso cuarenta y siete. ¿Por qué?
 
-IAGO: <didactico> Porque los modelos actuales no tienen planificación robusta a largo plazo. Pueden razonar sobre el siguiente paso, pero no pueden mantener un plan coherente durante decenas de pasos con dependencias complejas. Cada paso introduce incertidumbre, y esa incertidumbre se acumula. La solución es descomponer tareas largas en subtareas más cortas con validación intermedia.
+IAGO: <didactico> Porque los modelos actuales no tienen planificación robusta a largo plazo. Pueden razonar sobre el siguiente paso, pero no pueden mantener un plan coherente durante decenas de pasos con dependencias complejas.
+
+MARIA: [analitica] Cada paso introduce incertidumbre, y esa incertidumbre se acumula. La solución es descomponer tareas largas en subtareas más cortas con validación intermedia.
 
 MARIA: <esceptico> Cuarto límite: la falta de persistencia de memoria. Los modelos no recuerdan conversaciones anteriores por defecto. Cada interacción es un contexto nuevo. ¿Cómo afecta eso a los casos de uso empresariales?
 
@@ -92,7 +104,9 @@ IAGO: <explicativo> Significa que si construyes un asistente de atención al cli
 
 MARIA: <directo> Quinto límite: la dependencia de proveedores externos. Si usas OpenAI o Anthropic, estás enviando tus datos a terceros. Si cambian los precios, cambias tu estructura de costes. Si cambian las políticas de uso, puedes perder acceso. ¿Cómo se gestiona esa dependencia?
 
-IAGO: <serio> Con una estrategia clara. Para casos de uso de alta privacidad o alto volumen, considera modelos open source con despliegue propio. Para casos de uso de alta complejidad con volumen moderado, los modelos propietarios son más prácticos. Y en ambos casos, diseña tu arquitectura de forma que puedas cambiar de proveedor sin reescribir todo el sistema.
+IAGO: <serio> Con una estrategia clara. Para casos de uso de alta privacidad o alto volumen, considera modelos open source con despliegue propio.
+
+MARIA: [analitica] Para casos de uso de alta complejidad con volumen moderado, los modelos propietarios son más prácticos. Y en ambos casos, diseña tu arquitectura de forma que puedas cambiar de proveedor sin reescribir todo el sistema.
 
 MARIA: <analitica> Sexto límite: el coste de inferencia a escala. Generar un millón de tokens con GPT-4 cuesta quince dólares. Si tu caso de uso genera cien millones de tokens al mes, son un millón y medio de dólares al año. ¿Cuántas organizaciones han hecho ese cálculo antes de escalar?
 
@@ -100,7 +114,9 @@ IAGO: <contundente> Muy pocas. Y por eso muchos proyectos piloto que funcionan t
 
 MARIA: <conversacional> Y séptimo límite: el factor humano. La resistencia al cambio, el miedo a la obsolescencia, la falta de formación. ¿Cómo de grande es ese obstáculo?
 
-IAGO: <reflexivo> Es el obstáculo más grande. Puedes tener la mejor tecnología del mundo, pero si tus empleados no la usan porque tienen miedo de que les reemplace, o porque no entienden cómo usarla, o porque nadie les ha explicado cómo cambia su rol, la transformación no ocurre. La gestión del cambio para la adopción de IA es tan importante como los aspectos técnicos de la implementación.
+IAGO: <reflexivo> Sí.
+
+MARIA: [analitica] Es el obstáculo más grande. Puedes tener la mejor tecnología del mundo, pero si tus empleados no la usan porque tienen miedo de que les reemplace, o porque no entienden cómo usarla, o porque nadie les ha explicado cómo cambia su rol, la transformación no ocurre. La gestión del cambio para la adopción de IA es tan importante como los aspectos técnicos de la implementación.
 
 # APLICACION_PRACTICA
 MARIA: <conversacional> Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. MaquinarIA Pesada es un proyecto que produce catorce episodios de un máster sobre inteligencia artificial usando íntegramente IA generativa. Dos presentadores ficticios, María y Yago, con voces sintetizadas por ElevenLabs. Guiones generados por Claude. Audio ensamblado automáticamente. Video renderizado con avatares y subtítulos. Sin intervención humana en la grabación. Concretamente: ¿cómo se aplican los conceptos de este módulo a un sistema de producción automática de contenido educativo?

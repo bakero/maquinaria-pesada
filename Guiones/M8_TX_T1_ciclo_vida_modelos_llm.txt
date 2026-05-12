@@ -27,7 +27,9 @@ MARIA: [esceptico] Y ahí es donde entra LLMOps. Para evitar que esos 67 billone
 IAGO: LLMOps es el sistema de control que detecta cuándo el modelo está empezando a degradarse, cuándo está produciendo outputs incorrectos, cuándo el coste se está disparando, y te da las herramientas para actuar antes de que el problema afecte a todos tus usuarios. Es como tener sensores en una planta industrial que te avisan cuando una máquina empieza a vibrar de forma anómala, antes de que se rompa.
 
 # BLOQUE_COMO
-IAGO: [explicativo] El ciclo de vida de un sistema LLM tiene cuatro fases. Fase uno: diseño y selección del modelo. Aquí defines los requisitos del sistema. Qué tareas debe resolver, qué latencia es aceptable, cuál es el presupuesto de coste por consulta, cuáles son los requisitos de privacidad y compliance, qué volumen de consultas esperas. Con esos requisitos, seleccionas el modelo base. Modelo frontier vía API como GPT-4 o Claude, o modelo open source autohosteado como Llama. Defines el enfoque de adaptación: prompting directo, RAG, fine-tuning, o una combinación. Y eliges el stack tecnológico.
+IAGO: [explicativo] El ciclo de vida de un sistema LLM tiene cuatro fases. Fase uno: diseño y selección del modelo. Aquí defines los requisitos del sistema. Qué tareas debe resolver, qué latencia es aceptable, cuál es el presupuesto de coste por consulta, cuáles son los requisitos de privacidad y compliance, qué volumen de consultas esperas.
+
+MARIA: [analitica] Con esos requisitos, seleccionas el modelo base. Modelo frontier vía API como GPT-4 o Claude, o modelo open source autohosteado como Llama. Defines el enfoque de adaptación: prompting directo, RAG, fine-tuning, o una combinación. Y eliges el stack tecnológico.
 
 MARIA: Esa fase suena a decisiones de arquitectura clásica. ¿Qué tiene de específico para LLMs?
 
@@ -72,7 +74,6 @@ IAGO: No te puedes ir de este capitulo sin haber entendido estos conceptos.
 IAGO: [didactico] Primero: el ciclo de vida de un sistema LLM tiene cuatro fases obligatorias: diseño y selección, desarrollo y evaluación con golden dataset, despliegue gradual con canary, y monitorización continua con ciclo de mejora.
 
 MARIA: Segundo: los cinco pilares de observabilidad LLM son evaluación continua de outputs, tracing distribuido del pipeline, versionado de prompts como código, monitorización específica de RAG con métricas de faithfulness, y gestión del ciclo de vida con capacidad de rollback.
-
 
 # CIERRE_FINAL
 IAGO: Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.

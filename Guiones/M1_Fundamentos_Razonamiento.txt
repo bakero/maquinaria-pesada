@@ -23,7 +23,9 @@ MARIA: <analitica> Entonces no es un módulo teórico. Es el módulo que te evit
 IAGO: <firme> La teoría aquí tiene consecuencias directas sobre fiabilidad, seguridad, y escalabilidad de sistemas reales.
 
 # BLOQUE_TEMAS_CLAVE
-IAGO: <explicativo> Primer concepto clave: la naturaleza del conocimiento en los LLMs. Los modelos de lenguaje no tienen conocimiento en el sentido humano. No tienen una base de datos de hechos que pueden consultar. Lo que tienen es una compresión estadística masiva del texto humano: patrones de co-ocurrencia de palabras y conceptos que, cuando se combinan con la predicción del siguiente token, producen respuestas que parecen conocimiento pero son inferencias estadísticas sobre qué texto sería plausible dado el contexto. Esta distinción es crítica para entender las alucinaciones. Cuando un LLM genera un hecho incorrecto con total confianza, no está mintiendo. Está produciendo el texto estadísticamente más plausible dado su contexto de entrenamiento, y ese texto resulta ser incorrecto.
+IAGO: <explicativo> Primer concepto clave: la naturaleza del conocimiento en los LLMs. Los modelos de lenguaje no tienen conocimiento en el sentido humano. No tienen una base de datos de hechos que pueden consultar.
+
+MARIA: [analitica] Lo que tienen es una compresión estadística masiva del texto humano: patrones de co-ocurrencia de palabras y conceptos que, cuando se combinan con la predicción del siguiente token, producen respuestas que parecen conocimiento pero son inferencias estadísticas sobre qué texto sería plausible dado el contexto. Esta distinción es crítica para entender las alucinaciones. Cuando un LLM genera un hecho incorrecto con total confianza, no está mintiendo. Está produciendo el texto estadísticamente más plausible dado su contexto de entrenamiento, y ese texto resulta ser incorrecto.
 
 MARIA: <esceptico> ¿Y el modelo sabe cuándo está inventando?
 
@@ -37,7 +39,9 @@ MARIA: <curioso> Pero los modelos grandes sí muestran capacidades de razonamien
 
 IAGO: <didactico> Correcto. La postura alternativa señala que los modelos más grandes demuestran capacidades emergentes de razonamiento. Que las técnicas de prompting como Chain of Thought mejoran significativamente el rendimiento en tareas de razonamiento. Y que los modelos de razonamiento como o3 de OpenAI, que generan un scratchpad de razonamiento antes de producir la respuesta, demuestran capacidades de resolución de problemas muy superiores a los modelos estándar. La verdad parece ser que los LLMs tienen algo funcionalmente similar al razonamiento sin ser idéntico al razonamiento humano.
 
-IAGO: <explicativo> Tercer concepto: las técnicas de razonamiento avanzado. Chain of Thought fue introducido formalmente por Wei y su equipo en Google Brain en 2022. La idea es simple pero poderosa: en lugar de pedir al modelo que produzca directamente la respuesta a un problema complejo, se le pide que razone paso a paso antes de dar la respuesta. El resultado es un aumento significativo en la corrección de las respuestas para tareas de razonamiento matemático, lógico, y común. El mecanismo por el que Chain of Thought mejora el rendimiento tiene que ver con la forma en que los modelos generan texto: cada token generado se convierte en parte del contexto que informa los tokens siguientes.
+IAGO: <explicativo> Tercer concepto: las técnicas de razonamiento avanzado. Chain of Thought fue introducido formalmente por Wei y su equipo en Google Brain en 2022.
+
+MARIA: [analitica] La idea es simple pero poderosa: en lugar de pedir al modelo que produzca directamente la respuesta a un problema complejo, se le pide que razone paso a paso antes de dar la respuesta. El resultado es un aumento significativo en la corrección de las respuestas para tareas de razonamiento matemático, lógico, y común. El mecanismo por el que Chain of Thought mejora el rendimiento tiene que ver con la forma en que los modelos generan texto: cada token generado se convierte en parte del contexto que informa los tokens siguientes.
 
 MARIA: <curioso> ¿Y Tree of Thoughts?
 

@@ -29,7 +29,9 @@ MARIA: Eso cambia completamente la trazabilidad de la respuesta.
 IAGO: [firme] En el caso Mata versus Avianca, un abogado presentó citas judiciales alucinadas por ChatGPT. El juez le impuso sanciones. Harvey AI, el sistema RAG que usan el 97% de los bufetes del Am Law 100, resolvió ese problema: cada afirmación incluye cita al documento fuente y fragmento No hay alucinaciones de conocimiento porque el modelo no inventa: cita.
 
 # BLOQUE_COMO
-IAGO: [explicativo] El flujo técnico de RAG tiene cuatro etapas. Primera: ingesta. Los documentos de la base de conocimiento se dividen en fragmentos manejables, se generan sus embeddings, y se almacenan en una base de datos vectorial junto con sus metadatos. Segunda: recuperación. Cuando llega una consulta del usuario, se genera su embedding y se buscan los K chunks más similares en la base vectorial. Tercera: aumentación. Los chunks recuperados se insertan en el prompt del LLM como contexto adicional. Cuarta: generación. El LLM genera una respuesta basándose en la consulta y el contexto recuperado.
+IAGO: [explicativo] El flujo técnico de RAG tiene cuatro etapas. Primera: ingesta. Los documentos de la base de conocimiento se dividen en fragmentos manejables, se generan sus embeddings, y se almacenan en una base de datos vectorial junto con sus metadatos. Segunda: recuperación.
+
+MARIA: [analitica] Cuando llega una consulta del usuario, se genera su embedding y se buscan los K chunks más similares en la base vectorial. Tercera: aumentación. Los chunks recuperados se insertan en el prompt del LLM como contexto adicional. Cuarta: generación. El LLM genera una respuesta basándose en la consulta y el contexto recuperado.
 
 MARIA: ¿Qué es un chunk ?
 
@@ -37,7 +39,9 @@ IAGO: Un fragmento de texto. Imagina que tienes un manual de 200 páginas. No pu
 
 MARIA: [curioso] Y esos chunks, ¿cómo se almacenan? Porque no es una base de datos SQL normal.
 
-IAGO: No. Es una base de datos vectorial. Almacena embeddings e indexa para búsqueda eficiente por similitud. Actualmente el mercado se consolida alrededor de cuatro opciones: Pinecone, que es SaaS managed y la más fácil de empezar. Weaviate, que es open source con versión cloud, buen balance. Milvus, open source, diseñado para mayor escala. Y Qdrant, también open source, alto rendimiento, fácil de auto-hostear. FAISS de Meta es la librería estándar para búsqueda vectorial en memoria sin necesidad de una base de datos completa.
+IAGO: No. Es una base de datos vectorial. Almacena embeddings e indexa para búsqueda eficiente por similitud. Actualmente el mercado se consolida alrededor de cuatro opciones: Pinecone, que es SaaS managed y la más fácil de empezar.
+
+MARIA: [analitica] Weaviate, que es open source con versión cloud, buen balance. Milvus, open source, diseñado para mayor escala. Y Qdrant, también open source, alto rendimiento, fácil de auto-hostear. FAISS de Meta es la librería estándar para búsqueda vectorial en memoria sin necesidad de una base de datos completa.
 
 MARIA: [analitica] Entonces el sistema tiene cinco componentes técnicos reales. Primero, el pipeline de ingesta: parsing de documentos, chunking, embedding, almacenamiento. Segundo, la base de datos vectorial. Tercero, el sistema de retrieval que procesa la consulta y recupera los chunks más relevantes. Cuarto, el prompt builder que combina la consulta con el contexto recuperado. Y quinto, el LLM que genera la respuesta final. ¿Es correcto?
 
@@ -50,7 +54,9 @@ IAGO: No. Los modelos de embedding genéricos tienen peor rendimiento en dominio
 # BLOQUE_LIMITES
 MARIA: [esceptico] Vamos a lo que falla. Porque RAG no es mágico. Primer error común: construir el RAG antes de definir las preguntas que debe responder. He visto equipos que indexan todo el corpus de la empresa sin tener claro qué casos de uso van a resolver. ¿Por qué es un problema?
 
-IAGO: Porque el diseño del sistema depende del tipo de preguntas. El tamaño de chunk óptimo para preguntas factuales cortas es diferente del tamaño óptimo para preguntas de análisis largo. El modelo de embedding que funciona bien para documentos técnicos puede fallar en documentos legales. Si no defines los 20 o 50 casos de uso más representativos y construyes un golden dataset de evaluación, estás diseñando a ciegas.
+IAGO: Porque el diseño del sistema depende del tipo de preguntas. El tamaño de chunk óptimo para preguntas factuales cortas es diferente del tamaño óptimo para preguntas de análisis largo.
+
+MARIA: [analitica] El modelo de embedding que funciona bien para documentos técnicos puede fallar en documentos legales. Si no defines los 20 o 50 casos de uso más representativos y construyes un golden dataset de evaluación, estás diseñando a ciegas.
 
 MARIA: [firme] Segundo error: asumir que RAG elimina las alucinaciones. No es verdad. RAG reduce dramáticamente las alucinaciones de conocimiento, eso sí. El modelo ya no afirma cosas que no están en los documentos. Pero puede distorsionar o mal interpretar el contexto recuperado. Puede hacer inferencias incorrectas a partir de fragmentos correctos. La evaluación continua con métricas de faithfulness es esencial. RAGAS es el framework estándar para eso.
 
@@ -68,7 +74,6 @@ IAGO: [serio] No te puedes ir de este capítulo sin haber entendido estos concep
 IAGO: RAG es generación aumentada con recuperación: el LLM consulta una base de conocimiento antes de responder, en lugar de responder solo de memoria.
 
 MARIA: El flujo técnico tiene cuatro etapas: ingesta con chunking y embedding, recuperación por similitud vectorial, aumentación del prompt con contexto, y generación de la respuesta.
-
 
 # CIERRE_FINAL
 IAGO: [calido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.

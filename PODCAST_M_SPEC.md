@@ -774,7 +774,8 @@ Debe incluir literalmente:
     "soft_warn_on_temporal_reference_without_publication_context": true,
     "soft_warn_on_missing_everyday_analogy_after_complex_concept": true,
     "hard_fail_on_saludo_collapsed_single_block": true,
-    "hard_fail_on_presenter_surname_invented": true
+    "hard_fail_on_presenter_surname_invented": true,
+    "hard_fail_on_shared_block_balance": true
   },
   "saludo_format": {
     "min_blocks": 3,

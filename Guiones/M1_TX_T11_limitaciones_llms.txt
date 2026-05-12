@@ -35,7 +35,9 @@ MARIA: [explicativo] La aritmética imprecisa tiene una causa técnica concreta:
 
 IAGO: ¿Y lost in the middle?
 
-MARIA: [didactico] Lost in the middle es un fenómeno documentado por Liu y otros en 2023. Experimentos sistemáticos muestran que los LLMs rinden peor cuando la información relevante está en el centro del contexto en comparación con cuando está al principio o al final. Caídas de precisión de hasta 20 puntos porcentuales para información posicionada en el centro de un contexto de 32K tokens frente al mismo modelo con la misma información al principio. La causa técnica es cómo funcionan los mecanismos de atención: la información en los extremos tiene mayor peso en la representación final.
+MARIA: [didactico] Lost in the middle es un fenómeno documentado por Liu y otros en 2023. Experimentos sistemáticos muestran que los LLMs rinden peor cuando la información relevante está en el centro del contexto en comparación con cuando está al principio o al final.
+
+IAGO: [explicativo] Caídas de precisión de hasta 20 puntos porcentuales para información posicionada en el centro de un contexto de 32K tokens frente al mismo modelo con la misma información al principio. La causa técnica es cómo funcionan los mecanismos de atención: la información en los extremos tiene mayor peso en la representación final.
 
 IAGO: Y la inconsistencia temporal viene del muestreo.
 

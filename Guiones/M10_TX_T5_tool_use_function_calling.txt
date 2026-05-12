@@ -31,7 +31,9 @@ MARIA: Dame un ejemplo de una herramienta mal diseñada.
 IAGO: [contundente] Una herramienta llamada "fetch_data" con la descripción "obtiene datos". El modelo no tiene forma de saber cuándo usarla, qué tipo de datos devuelve, ni con qué argumentos llamarla. Compárala con "search_company_news: busca noticias recientes sobre una empresa usando su nombre o ticker. Úsala cuando necesites información actualizada sobre eventos recientes, no para información histórica anterior a 2020. Devuelve lista de artículos con título, fecha y resumen. Parámetro: company_name, string, requerido". una herramienta utilizable. La diferencia entre las dos es la diferencia entre un agente que funciona y uno que alucina.
 
 # BLOQUE_COMO
-IAGO: [explicativo] Vamos al mecanismo técnico. El ciclo de function calling tiene cuatro pasos. Primero: tú defines las herramientas con sus schemas JSON. Segundo: envías el mensaje del usuario junto con la lista de herramientas disponibles al modelo. Tercero: el modelo decide si usar una herramienta y devuelve un bloque especial, en Anthropic se llama tool_use, en OpenAI function_call, con el nombre de la función y los argumentos. Cuarto: tú ejecutas esa función en tu infraestructura, obtienes el resultado, y lo devuelves al modelo como tool_result. El modelo procesa el resultado y decide si necesita otra herramienta o ya puede producir la respuesta final.
+IAGO: [explicativo] Vamos al mecanismo técnico. El ciclo de function calling tiene cuatro pasos. Primero: tú defines las herramientas con sus schemas JSON.
+
+MARIA: [analitica] Segundo: envías el mensaje del usuario junto con la lista de herramientas disponibles al modelo. Tercero: el modelo decide si usar una herramienta y devuelve un bloque especial, en Anthropic se llama tool_use, en OpenAI function_call, con el nombre de la función y los argumentos. Cuarto: tú ejecutas esa función en tu infraestructura, obtienes el resultado, y lo devuelves al modelo como tool_result. El modelo procesa el resultado y decide si necesita otra herramienta o ya puede producir la respuesta final.
 
 MARIA: ¿Y si el modelo necesita usar varias herramientas para responder una sola pregunta?
 
@@ -74,8 +76,6 @@ IAGO: No te puedes ir de este capitulo sin haber entendido estos conceptos.
 MARIA: [directo] De acuerdo. Sigamos.
 
 IAGO: [claro] Function calling es el mecanismo que permite a un LLM expresar de forma estructurada qué función externa necesita ejecutar, con un schema JSON validado, sin parsing frágil de texto libre.
-
-
 
 # CIERRE_FINAL
 MARIA: Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
