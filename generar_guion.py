@@ -1337,6 +1337,14 @@ def main() -> None:
                             f"- {s}\n"
                             f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas (70-100 palabras)."
                         )
+                # Include enumerated list warns in feedback
+                enum_soft = [s for s in soft_issues_retry if "lista enumerada" in s]
+                for s in enum_soft[:3]:
+                    feedback_parts.append(
+                        f"- {s}\n"
+                        f"  ACCIÓN: NO uses Primero/Segundo/Tercero en un mismo turno. "
+                        f"Distribuye los puntos: IAGO explica uno, MARIA reacciona, IAGO continúa."
+                    )
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO DEL INTENTO ANTERIOR (corrige todos estos puntos):\n"

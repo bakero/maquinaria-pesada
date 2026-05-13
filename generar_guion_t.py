@@ -617,6 +617,19 @@ def main() -> None:
                         )
                     else:
                         feedback_parts.append(f"- {issue}")
+                # Include soft warns about short blocks and enumerated lists
+                soft_retry = [i for i in feedback_issues if i.startswith("[WARN]")]
+                for s in [x for x in soft_retry if re.search(r"solo [123] frase", x)][:3]:
+                    feedback_parts.append(
+                        f"- {s}\n"
+                        f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas (70-100 palabras)."
+                    )
+                for s in [x for x in soft_retry if "lista enumerada" in x][:3]:
+                    feedback_parts.append(
+                        f"- {s}\n"
+                        f"  ACCIÓN: NO uses Primero/Segundo/Tercero en un mismo turno. "
+                        f"Distribuye: un speaker explica un punto, el otro reacciona, continúa."
+                    )
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO (corrige TODOS estos puntos antes de generar):\n"
