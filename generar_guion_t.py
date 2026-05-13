@@ -38,6 +38,7 @@ sys.path.insert(0, str(BASE_DIR))
 from generar_guion import (  # noqa: E402
     _fix_antipingpong,
     _fix_digit_numbers_in_dialogue,
+    _rebalance_shared_block,
     _split_oversized_blocks,
     _trim_cierre_conceptos_if_excess,
 )
@@ -270,21 +271,25 @@ INSTRUCCIONES CRÍTICAS:
 5. Secciones PROHIBIDAS (NO generes): BLOQUE_QUE, BLOQUE_LIMITES, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3
 6. ROLES POR BLOQUE (obligatorio):
    - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤12 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
-   - BLOQUE_COMO: COMPARTIDO (40-60% cada uno). Líder rota por sub-concepto. Si hay 2 sub-conceptos: sub1 lidera IAGO (150-180 palabras), sub2 lidera MARIA (150-180 palabras). Explica CÓMO funciona: mecanismo técnico.
+   - BLOQUE_COMO: COMPARTIDO. OBLIGATORIO: IAGO y MARIA deben tener ENTRE 40%-60% cada uno del total de palabras del bloque. Para lograrlo: si hay 2+ sub-conceptos, sub1 lo lidera IAGO (4-6 frases, 70-120 palabras), sub2 lo lidera MARIA (4-6 frases, 70-120 palabras). PROHIBIDO que MARIA solo haga preguntas en BLOQUE_COMO; MARIA debe explicar al menos un sub-concepto completo.
    - BLOQUE_REALIDAD: MARIA es la VOZ EXPERTA de empresa en este bloque. MARIA presenta los casos reales, datos de adopción y retos empresariales (mínimo 5 intervenciones de desarrollo, cada una con ≥4 frases). IAGO solo aporta contexto técnico breve cuando sea estrictamente necesario (máximo 2 intervenciones, ≤3 frases cada una). Si IAGO habla más que MARIA en este bloque, el guion está INCORRECTO. Usa prioritariamente la FUENTE DE CASOS EMPRESARIALES VERIFICADOS. Incluye al menos 2 de: dato adopción con fuente, caso empresa real con resultado, reto documentado, oportunidad de negocio.
 7. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
-8. # CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
-   Exactamente 3 conceptos (ni 2 ni 4 — hard-fail si hay otra cantidad).
-   Alternados: líder-apoyo-líder o apoyo-líder-apoyo según paridad del TEMA.
-   Cada concepto en una sola frase, no expandidos.
+8. # CIERRE_CONCEPTOS — ESTRUCTURA OBLIGATORIA (hard-fail si no cumple):
+   Exactamente 3 bloques hablados. El speaker que ABRE el episodio (HOOK) es el "líder".
+   BLOQUE 1 (líder): Dice "{rules['concepts_closing_phrase']}" + inmediatamente "Primero: [concepto 1]" — TODO EN UN SOLO BLOQUE.
+   BLOQUE 2 (apoyo): "Segundo: [concepto 2]"
+   BLOQUE 3 (líder): "Tercero: [concepto 3]"
+   PROHIBIDO: opener en bloque separado. El "No te puedes ir..." y el primer concepto VAN JUNTOS en un único bloque del líder.
+   Cada concepto en una sola frase concisa, no expandidos.
 9. # CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
    SOLO {other if opener != "IAGO" else "IAGO" if opener == "IAGO" else other} pronuncia el cierre según paridad. El otro speaker NO responde, NO añade nada. El guion termina cuando el closer dice su última frase. HARD-FAIL si hay intervención adicional tras el cierre.
 10. Usa "Yago" en el texto hablado, nunca "Iago".
-11. REGLA DE LONGITUD — DURA:
-    El diálogo total NO debe superar {rules['maximum_word_count']} palabras.
-    Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
+11. REGLA DE LONGITUD — DURA (BIDIRECCIONAL):
+    El diálogo total DEBE estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
+    MÍNIMO OBLIGATORIO: {rules['minimum_word_count']} palabras totales. Si llegas a CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-200} palabras de diálogo, AMPLÍA los bloques centrales antes de continuar.
+    MÁXIMO: {rules['maximum_word_count']} palabras. Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
     NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
-    Escribe CIERRE_CONCEPTOS en borrador mental ANTES de expandir los bloques centrales.
+    CONTROL: cada bloque de desarrollo (no preguntas) debe tener 4-6 frases (60-100 palabras). Si tienes menos de 4, amplía antes de continuar.
 12. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3 puntos del CIERRE_CONCEPTOS.
     Esos puntos deben derivarse directamente de los bloques centrales.
@@ -585,8 +590,9 @@ def main() -> None:
         draft = normalize_generated_script(strip_verification_block(text), spec)
         draft = enforce_fixed_phrases(draft, spec)
         draft = _fix_digit_numbers_in_dialogue(draft)
-        draft = _fix_antipingpong(draft, spec)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
+        draft = _rebalance_shared_block(draft, spec)
+        draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)

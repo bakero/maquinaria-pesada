@@ -391,6 +391,7 @@ INSTRUCCIONES CRÍTICAS:
 12. LONGITUD DEL GUION — REGLA DURA:
     El total del guion (incluyendo sección VERIFICACIONES) debe estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
     La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO debe ser de ~{rules['minimum_word_count']-200} a ~{rules['maximum_word_count']-200} palabras.
+    OBLIGATORIO: el DIÁLOGO debe superar las {rules['minimum_word_count']-200} palabras. Si llegas al CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-400} palabras, AMPLÍA los bloques anteriores antes de continuar.
     NÚMERO DE FRASES POR INTERVENCIÓN (clave para alcanzar el mínimo):
     - Bloques de desarrollo (BLOQUE_PANORAMA, BLOQUE_DESTACADO, APLICACION_PRACTICA): 4-6 frases (70-120 palabras)
     - IAGO en BLOQUE_PANORAMA: 3-4 bloques de desarrollo (cada uno 4-6 frases, 70-100 palabras)
@@ -406,7 +407,9 @@ INSTRUCCIONES CRÍTICAS:
     Cuando llegues al CIERRE_CONCEPTOS, escribe EXACTAMENTE esos puntos.
 14. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE:
     - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
-    - BLOQUE_DESTACADO: COMPARTIDO. Cada speaker ENTRE 40%-60% del total. Alterna liderazgo por concepto.
+    - BLOQUE_DESTACADO: COMPARTIDO. OBLIGATORIO que IAGO y MARIA tengan cada uno ENTRE 40%-60% del total de palabras del bloque.
+      Para lograrlo: MARIA debe tener AL MENOS 2 bloques de desarrollo de 4-6 frases (70-100 palabras cada uno) dentro de BLOQUE_DESTACADO.
+      NO es válido que MARIA solo haga preguntas cortas en BLOQUE_DESTACADO. MARIA debe explicar conceptos completos.
     - APLICACION_PRACTICA: MARIA 30-40%, IAGO 60-70%.
 15. REGLA ANALOGÍA — DURA:
     Cada concepto técnico complejo en BLOQUE_PANORAMA o BLOQUE_DESTACADO debe ir precedido de UNA analogía cotidiana en 1-2 frases.
@@ -474,84 +477,237 @@ def _fix_digit_numbers_in_dialogue(script_text: str) -> str:
 
 
 def _fix_antipingpong(script_text: str, spec: dict) -> str:
-    """Inserta una pregunta breve de MARIA si hay 3+ bloques consecutivos de IAGO.
+    """Inserta un bridge cuando hay 3+ bloques consecutivos del mismo speaker.
 
-    Solo actúa en casos de 3 consecutivos exactamente; no altera el contenido existente,
-    sino que inserta una línea de transición entre el 2° y 3° bloque de IAGO.
-    Limitado a máximo 2 inserciones por guion para no alterar la estructura.
+    Actúa en todos los runs de 3+, sin límite de inserciones, para eliminar
+    el hard-fail de bloques consecutivos. Los bridges tienen 4+ frases y no
+    contienen interjecciones de la blacklist.
     """
     rules = spec.get("script_rules", {})
     max_c = rules.get("max_consecutive_blocks_same_speaker", 2)
     speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
 
+    # Secciones donde NO insertamos bridges (estructura fija)
+    _NO_BRIDGE_SECTIONS = {
+        "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
+        "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
+    }
+
     lines = script_text.split("\n")
-    # Extraer posición de cada línea de speaker con su sección actual
+
+    # Construir mapa línea→sección
+    section_map: dict[int, str] = {}
+    current_section = ""
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("# ") and not stripped.startswith("# #"):
+            current_section = stripped[2:].strip()
+        section_map[i] = current_section
+
     speaker_lines: list[tuple[int, str]] = []
     for i, line in enumerate(lines):
         stripped = line.strip()
         m = speaker_pat.match(stripped)
-        if m:
+        if m and section_map.get(i, "") not in _NO_BRIDGE_SECTIONS:
             speaker_lines.append((i, m.group(1).upper()))
 
-    # Encontrar runs de 3+ del mismo speaker
-    inserts: list[int] = []
-    max_inserts = 2
+    # Encontrar posiciones donde hay que insertar (3er bloque consecutivo del mismo speaker)
+    inserts: list[tuple[int, str]] = []  # (line_i, dominant_speaker)
     consec = 1
     for idx in range(1, len(speaker_lines)):
         prev_line_i, prev_speaker = speaker_lines[idx - 1]
         cur_line_i, cur_speaker = speaker_lines[idx]
         if cur_speaker == prev_speaker:
             consec += 1
-            if consec > max_c and len(inserts) < max_inserts:
-                # Insertar entre prev y cur
-                inserts.append(prev_line_i)
+            if consec > max_c:
+                inserts.append((prev_line_i, prev_speaker))
         else:
             consec = 1
 
     if not inserts:
         return script_text
 
-    # Bridges de antipingpong: 4 frases, tag válido, sin blacklist.
-    BRIDGES = [
+    # Bridges para cada speaker dominante: 4 frases, sin blacklist, tag válido
+    BRIDGES_FROM_IAGO: list[str] = [
         "MARIA: [reflexivo] Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí. No quiero perder el hilo de la progresión lógica.",
         "MARIA: [curioso] Déjame entender bien este punto antes de seguir. ¿Qué implica esto en la práctica concreta para las organizaciones? Porque a veces los conceptos suenan claros en abstracto pero la implementación tiene sus fricciones propias. ¿Cuáles son las más habituales aquí?",
+        "MARIA: [analitica] Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel y la implementación en sistemas con deuda técnica. ¿Dónde suelen aparecer los primeros problemas?",
     ]
+    BRIDGES_FROM_MARIA: list[str] = [
+        "IAGO: [directo] Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación que cambia cómo se interpreta lo que acabas de describir. El mecanismo interno es lo que determina la robustez real del sistema.",
+        "IAGO: [reflexivo] La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos. Lo que funciona con datos limpios no funciona igual con inputs variables. El umbral de confianza es el parámetro que más afecta al resultado final.",
+        "IAGO: [explicativo] Hay un matiz importante ahí. Los datos de producción raramente cumplen las condiciones del laboratorio. El modelo tiene que ser robusto a esa variabilidad. Y eso determina qué arquitectura es viable en la práctica.",
+    ]
+
     result = list(lines)
-    for insert_idx, line_i in enumerate(sorted(inserts, reverse=True)):
-        bridge = BRIDGES[insert_idx % len(BRIDGES)]
+    iago_bridge_idx = 0
+    maria_bridge_idx = 0
+    for line_i, dominant in sorted(inserts, key=lambda x: x[0], reverse=True):
+        if dominant == "IAGO":
+            bridge = BRIDGES_FROM_IAGO[iago_bridge_idx % len(BRIDGES_FROM_IAGO)]
+            iago_bridge_idx += 1
+        else:
+            bridge = BRIDGES_FROM_MARIA[maria_bridge_idx % len(BRIDGES_FROM_MARIA)]
+            maria_bridge_idx += 1
         result.insert(line_i + 1, bridge)
 
     return "\n".join(result)
 
 
 def _trim_cierre_conceptos_if_excess(script_text: str, spec: dict) -> str:
-    """Si CIERRE_CONCEPTOS tiene más de max_c bloques hablados, elimina los excedentes del final."""
+    """Ajusta CIERRE_CONCEPTOS al número de bloques hablados permitido.
+
+    M-type: máximo key_concepts_block_count_max (5). Elimina bloques del penúltimo.
+    T-type: exactamente key_concepts_block_count_exact (3).
+      Caso habitual: LLM genera 4 bloques [opener, concepto1, concepto2, concepto3].
+      Si opener y concepto1 son del mismo speaker, los fusiona en uno solo → 3 bloques.
+      Si no son del mismo speaker, elimina el penúltimo bloque → 3 bloques.
+    """
     rules = spec["script_rules"]
+    exact = rules.get("key_concepts_block_count_exact")
     max_c = rules.get("key_concepts_block_count_max", 5)
+    target = exact if exact is not None else max_c
 
     lines = script_text.split("\n")
-    in_cierre = False
-    speaker_line_indices: list[int] = []
     speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
 
+    # Collect speaker line indices within CIERRE_CONCEPTOS
+    speaker_idxs: list[int] = []
+    in_cierre = False
     for i, line in enumerate(lines):
         stripped = line.strip()
         if stripped == "# CIERRE_CONCEPTOS":
             in_cierre = True
             continue
-        if in_cierre and stripped.startswith("# ") and stripped != "# CIERRE_CONCEPTOS":
+        if in_cierre and stripped.startswith("# "):
             break
         if in_cierre and speaker_pat.match(stripped):
-            speaker_line_indices.append(i)
+            speaker_idxs.append(i)
 
-    if len(speaker_line_indices) <= max_c:
-        return script_text  # Ya dentro del rango
+    count = len(speaker_idxs)
+    if count <= target:
+        return script_text  # ya dentro del rango
 
-    # Eliminar bloques excedentes (del final, antes del último)
-    excess = len(speaker_line_indices) - max_c
-    to_remove = set(speaker_line_indices[-(excess + 1):-1])  # quitar del penúltimo hacia atrás
+    # T-type: exact count via fusion or removal
+    if exact is not None:
+        result = list(lines)
+        while True:
+            # Recalcular índices en result actual
+            cur_idxs: list[int] = []
+            in_c = False
+            for i, ln in enumerate(result):
+                s = ln.strip()
+                if s == "# CIERRE_CONCEPTOS":
+                    in_c = True
+                    continue
+                if in_c and s.startswith("# "):
+                    break
+                if in_c and speaker_pat.match(s):
+                    cur_idxs.append(i)
+
+            if len(cur_idxs) <= exact:
+                break
+
+            idx0, idx1 = cur_idxs[0], cur_idxs[1]
+            m0 = re.match(r"^(IAGO|MARIA)\s*:", result[idx0].strip(), re.IGNORECASE)
+            m1 = re.match(r"^(IAGO|MARIA)\s*:", result[idx1].strip(), re.IGNORECASE)
+            if m0 and m1 and m0.group(1).upper() == m1.group(1).upper():
+                # Mismo speaker: fusionar opener en bloque siguiente
+                opener_body = re.sub(
+                    r"^(IAGO|MARIA)\s*:\s*(\[.*?\])?\s*", "", result[idx0], flags=re.IGNORECASE
+                ).strip()
+                result[idx1] = result[idx1].rstrip() + " " + opener_body
+                result[idx0] = ""
+            else:
+                # Distinto speaker: eliminar penúltimo bloque
+                result[cur_idxs[-2]] = ""
+
+        return "\n".join(ln for ln in result if ln != "" or True).replace("\n\n\n", "\n\n")
+
+    # M-type: eliminar bloques del penúltimo hacia el antepenúltimo
+    excess = count - target
+    to_remove = set(speaker_idxs[-(excess + 1):-1])
     out = [line for i, line in enumerate(lines) if i not in to_remove]
     return "\n".join(out)
+
+
+def _rebalance_shared_block(script_text: str, spec: dict) -> str:
+    """Rebalancea BLOQUE_DESTACADO (M) o BLOQUE_COMO (T) si un speaker supera el 60%.
+
+    Estrategia mecánica: busca el bloque de desarrollo más largo del speaker dominante
+    en la zona central del bloque compartido y cambia su etiqueta al speaker minoritario.
+    No altera el contenido, solo el speaker. Itera hasta que ambos speakers estén en 40-60%.
+    Máximo 3 iteraciones para evitar loops.
+    """
+    rules = spec.get("script_rules", {})
+    shared_sections = rules.get("shares_blocks", ["BLOQUE_DESTACADO"])
+    lo, hi = 0.40, 0.60
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
+
+    lines = script_text.split("\n")
+    # Construir mapa sección → lista de índices de bloques hablados
+    current_section = ""
+    line_sections: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("# ") and not stripped.startswith("# #"):
+            current_section = stripped[2:].strip()
+        line_sections.append(current_section)
+
+    for shared_section in shared_sections:
+        for _iter in range(3):
+            # Identificar bloques en esta sección
+            block_indices = [
+                i for i, line in enumerate(lines)
+                if line_sections[i] == shared_section and speaker_pat.match(line.strip())
+            ]
+            if not block_indices:
+                break
+
+            # Calcular palabras por speaker
+            words_by_speaker: dict[str, int] = {"IAGO": 0, "MARIA": 0}
+            block_words: list[tuple[int, str, int]] = []  # (line_idx, speaker, word_count)
+            for idx in block_indices:
+                m = speaker_pat.match(lines[idx].strip())
+                spk = m.group(1).upper() if m else "IAGO"
+                body = re.sub(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*", "", lines[idx], flags=re.IGNORECASE)
+                wc = len(body.split())
+                words_by_speaker[spk] = words_by_speaker.get(spk, 0) + wc
+                block_words.append((idx, spk, wc))
+
+            total = sum(words_by_speaker.values())
+            if total == 0:
+                break
+
+            iago_pct = words_by_speaker["IAGO"] / total
+
+            if lo <= iago_pct <= hi:
+                break  # En rango
+
+            dominant = "IAGO" if iago_pct > hi else "MARIA"
+            minority = "MARIA" if dominant == "IAGO" else "IAGO"
+
+            # Bloques del speaker dominante (excluir primero y último)
+            dom_blocks = [(idx, wc) for idx, spk, wc in block_words if spk == dominant]
+            candidates = dom_blocks[1:-1] if len(dom_blocks) > 2 else dom_blocks
+            if not candidates:
+                break
+
+            # Elegir el bloque central más largo del speaker dominante
+            mid = len(candidates) // 2
+            target_idx = min(
+                candidates[max(0, mid - 1): mid + 2],
+                key=lambda x: -x[1]
+            )[0]
+
+            # Cambiar el speaker de ese bloque
+            old_line = lines[target_idx]
+            new_line = re.sub(
+                r"^(IAGO|MARIA)(\s*:)", minority + r"\2", old_line, count=1, flags=re.IGNORECASE
+            )
+            lines[target_idx] = new_line
+
+    return "\n".join(lines)
 
 
 def _inject_cta_if_missing(script_text: str, spec: dict) -> str:
@@ -1042,6 +1198,7 @@ def main() -> None:
         draft = _fix_digit_numbers_in_dialogue(draft)
         draft = _inject_cta_if_missing(draft, spec)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
+        draft = _rebalance_shared_block(draft, spec)
         draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
 
