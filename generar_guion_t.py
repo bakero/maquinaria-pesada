@@ -34,7 +34,14 @@ BASE_DIR  = Path(__file__).parent
 SPEC_PATH = BASE_DIR / "PODCAST_T_SPEC.md"
 
 sys.path.insert(0, str(BASE_DIR))
-from podcast_spec import (
+# Post-procesadores compartidos con generar_guion.py (M-type)
+from generar_guion import (  # noqa: E402
+    _fix_antipingpong,
+    _fix_digit_numbers_in_dialogue,
+    _split_oversized_blocks,
+    _trim_cierre_conceptos_if_excess,
+)
+from podcast_spec import (  # noqa: E402
     build_script_stats,
     extract_theme_concepts,
     guion_to_ep_code,
@@ -136,8 +143,8 @@ def make_anthropic_client():
         if not api_key:
             raise SystemExit("ANTHROPIC_API_KEY no encontrada en .env")
         return anthropic.Anthropic(api_key=api_key)
-    except ImportError:
-        raise SystemExit("Faltan dependencias: pip install anthropic")
+    except ImportError as err:
+        raise SystemExit("Faltan dependencias: pip install anthropic") from err
 
 
 def call_claude(
@@ -289,7 +296,8 @@ INSTRUCCIONES CRÍTICAS:
     Marcadores válidos: "imagina que", "es como cuando", "piensa en", "el equivalente sería", "igual que".
 14. REGLA AUDIO — LONGITUD DE INTERVENCIÓN:
     Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
-    Máximo absoluto por intervención: 200 palabras. Si necesitas más, divide en dos.
+    Máximo absoluto por intervención: 190 palabras. Si un concepto necesita más, pártelo en DOS bloques:
+    el primero ≤190 palabras, el otro speaker hace una pregunta breve, y el primero retoma ≤190 palabras.
     Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
 15. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
@@ -454,12 +462,6 @@ def extract_leading_tag(text: str) -> str | None:
     return f"[{m.group(1).strip()}]" if m else None
 
 
-def remove_leading_tag(text: str) -> str:
-    """Elimina [tag] al inicio si existe."""
-    import re as _re
-    return _re.sub(r"^\[(.+?)\]\s*", "", text.strip(), count=1)
-
-
 def build_verification_section(
     script_body: str,
     spec: dict,
@@ -503,7 +505,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generador de guiones T — MaquinarIA Pesada")
     parser.add_argument("--pdf",          required=True,  help="Ruta al PDF del tema (ej: PDFs/temas/M1_T11_limitaciones_llms.pdf)")
     parser.add_argument("--spec",         default=str(SPEC_PATH), help="Ruta a PODCAST_T_SPEC.md")
-    parser.add_argument("--max-intentos", type=int, default=2)
+    parser.add_argument("--max-intentos", type=int, default=3)
     args = parser.parse_args()
 
     # ── Cargar spec ─────────────────────────────────────────────────────────
@@ -562,13 +564,13 @@ def main() -> None:
     for attempt in range(1, args.max_intentos + 1):
         print(f"\n  [2/3] Generando guion (intento {attempt}/{args.max_intentos})...")
 
-        if attempt > 1:
-            hard_issues = [i for i in local_issues if not i.startswith("[WARN]")]
-            if hard_issues:
+        if attempt > 1 and local_issues:
+            all_hard = [i for i in local_issues if not i.startswith("[WARN]")]
+            if all_hard:
                 user_prompt_ext = (
                     user_prompt
-                    + "\n\nFEEDBACK (corrige todos estos puntos):\n"
-                    + "\n".join(f"- {i}" for i in hard_issues)
+                    + "\n\nFEEDBACK OBLIGATORIO (corrige TODOS estos puntos antes de generar):\n"
+                    + "\n".join(f"- {i}" for i in all_hard)
                 )
             else:
                 user_prompt_ext = user_prompt
@@ -582,6 +584,10 @@ def main() -> None:
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)
         draft = enforce_fixed_phrases(draft, spec)
+        draft = _fix_digit_numbers_in_dialogue(draft)
+        draft = _fix_antipingpong(draft, spec)
+        draft = _trim_cierre_conceptos_if_excess(draft, spec)
+        draft = _split_oversized_blocks(draft, spec=spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)
         draft_with_ver = draft.rstrip() + "\n\n" + verification
@@ -589,6 +595,14 @@ def main() -> None:
         local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)
         hard_issues  = [i for i in local_issues if not i.startswith("[WARN]")]
         soft_issues  = [i for i in local_issues if i.startswith("[WARN]")]
+
+        # Promover ciertos soft warns a hard para forzar retry
+        extra_hard = [
+            i.removeprefix("[WARN] ") for i in soft_issues
+            if ("maximo recomendado" in i and "palabras" in i and "por intervencion" not in i)
+        ]
+        if extra_hard:
+            hard_issues = hard_issues + extra_hard
 
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
         for issue in hard_issues:

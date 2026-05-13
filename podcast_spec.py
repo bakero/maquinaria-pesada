@@ -827,12 +827,18 @@ def validate_script_text(
     # ── 12. Frases por intervención en bloques de desarrollo ─────────────────
     min_sents = rules.get("minimum_sentences_per_intervention", 2)
     max_sents = rules.get("maximum_sentences_per_intervention", 10)
+    reaction_limit = rules.get("reaction_word_limit", 12)
     dev_sections = set(rules.get("required_sections", [])) - {
         "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
         "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
     }
     for count_val, block in zip(stats["sentence_counts"], blocks, strict=False):
         if block.get("section") not in dev_sections:
+            continue
+        # Bloques de reacción (≤ reaction_word_limit palabras) son transiciones
+        # cortas intencionales; exentos del mínimo de frases.
+        block_words = count_words(remove_leading_tag(block["text"]))
+        if block_words <= reaction_limit:
             continue
         if count_val < min_sents:
             issues.append(

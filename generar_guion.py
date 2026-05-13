@@ -511,10 +511,10 @@ def _fix_antipingpong(script_text: str, spec: dict) -> str:
     if not inserts:
         return script_text
 
-    # Aplicar inserciones (de atrás hacia adelante para no desplazar índices)
+    # Bridges de antipingpong: 4 frases, tag válido, sin blacklist.
     BRIDGES = [
-        "MARIA: [reflexivo] ¿Y cómo conecta esto con lo que vimos antes?",
-        "MARIA: [curioso] ¿Qué implica esto en la práctica?",
+        "MARIA: [reflexivo] Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí. No quiero perder el hilo de la progresión lógica.",
+        "MARIA: [curioso] Déjame entender bien este punto antes de seguir. ¿Qué implica esto en la práctica concreta para las organizaciones? Porque a veces los conceptos suenan claros en abstracto pero la implementación tiene sus fricciones propias. ¿Cuáles son las más habituales aquí?",
     ]
     result = list(lines)
     for insert_idx, line_i in enumerate(sorted(inserts, reverse=True)):
@@ -584,14 +584,18 @@ def _inject_cta_if_missing(script_text: str, spec: dict) -> str:
     return script_text  # No se encontró la frase final, no se modifica
 
 
+# Bridges usados por _split_oversized_blocks.
+# Requisitos: etiqueta válida en allowed_tags, sin interjecciones de la blacklist
+# (exactamente, claro que sí, muy bien dicho, tienes toda la razón, exacto,
+#  por supuesto, eso es, totalmente), 4 frases para no disparar el warn de frases mínimas.
 _SPLIT_BRIDGES_FROM_IAGO = [
-    "MARIA: [analitico] Interesante. ¿Y cómo se aplica eso en la práctica? Porque lo que describes suena bien en teoría. Pero los equipos de implementación suelen encontrar fricciones que no están en los modelos.",
-    "MARIA: [reflexivo] Entiendo la lógica. ¿Tienes un ejemplo concreto donde eso funciona así? Me pregunto si el resultado cambia según la escala de la organización. No siempre el patrón general se cumple en todos los contextos.",
-    "MARIA: [curioso] Eso tiene sentido. ¿Y qué implicaciones tiene para los equipos que gestionan esos procesos? Porque no es solo una decisión técnica. Hay un componente organizativo que a menudo se subestima.",
+    "MARIA: [analitica] Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel y la implementación en sistemas con deuda técnica. ¿Dónde suelen aparecer los primeros problemas?",
+    "MARIA: [reflexivo] Tiene lógica desde la perspectiva técnica. ¿Tienes un caso donde ese patrón haya mostrado sus límites? Entender dónde falla un modelo ayuda tanto como saber dónde funciona. Las excepciones revelan las premisas ocultas.",
+    "MARIA: [curioso] El contexto organizativo importa tanto como el técnico en estos casos. ¿Qué implica eso para los equipos que no parten de una base de datos estructurada? El punto de partida condiciona mucho el recorrido que es viable.",
 ]
 _SPLIT_BRIDGES_FROM_MARIA = [
-    "IAGO: [directo] Exacto. ¿Puedes concretar eso con un caso real? Porque la teoría es clara. Pero necesito entender dónde encaja esto en un sistema en producción.",
-    "IAGO: [reflexivo] Bien apuntado. ¿Y si el contexto cambia radicalmente? La mayoría de los frameworks asumen estabilidad. Pero la realidad operativa es mucho más volátil.",
+    "IAGO: [directo] Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación que cambia cómo se interpreta lo que acabas de describir. El mecanismo interno es lo que determina la robustez real del sistema.",
+    "IAGO: [reflexivo] La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos. Lo que funciona con datos limpios no funciona igual con inputs variables. El umbral de confianza es el parámetro que más afecta al resultado final.",
 ]
 
 # Secciones donde NO se parte: el modelo ya controla la longitud allí
@@ -601,13 +605,21 @@ _NO_SPLIT_SECTIONS = {
 }
 
 
-def _split_oversized_blocks(script_text: str, max_words: int = 190) -> str:
+def _split_oversized_blocks(script_text: str, max_words: int = 190, spec: dict | None = None) -> str:
     """Divide bloques con > max_words palabras insertando una pregunta puente.
 
     El TTS a 1.32× velocidad genera artefactos en intervenciones > 200 palabras.
     Busca el primer fin de frase entre la palabra 120 y 160 para partir ahí.
     Solo actúa en secciones de desarrollo (no en HOOK, SALUDO, CIERRE_FINAL…).
+    Garantiza que la continuación no empiece con frase de la blacklist.
     """
+    blacklist: list[str] = []
+    if spec:
+        blacklist = [
+            normalize_text_for_match(p)
+            for p in spec.get("script_rules", {}).get("blacklist_validation_interjections", [])
+        ]
+
     lines = script_text.split("\n")
     result: list[str] = []
     speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*(.*)", re.DOTALL)
@@ -640,13 +652,22 @@ def _split_oversized_blocks(script_text: str, max_words: int = 190) -> str:
             result.append(line)
             continue
 
-        # Buscar fin de frase entre palabra 120 y 160
+        # Buscar fin de frase entre palabra 120 y 160, evitando que la
+        # continuación empiece con una frase de la blacklist.
         search_start = min(120, max(0, len(words) - 30))
         search_end = min(160, len(words) - 5)
-        split_pos = next(
-            (i + 1 for i in range(search_start, search_end) if words[i].endswith((".", "?", "!"))),
-            len(words) * 2 // 3,  # fallback
-        )
+
+        split_pos = len(words) * 2 // 3  # fallback
+        for i in range(search_start, search_end):
+            if words[i].endswith((".", "?", "!")):
+                candidate_start = " ".join(words[i + 1:i + 4]).lower() if i + 1 < len(words) else ""
+                # Rechazar si el inicio de la continuación es una frase blacklisted
+                starts_blacklisted = any(
+                    candidate_start.startswith(bl) for bl in blacklist
+                )
+                if not starts_blacklisted:
+                    split_pos = i + 1
+                    break
 
         first_text = " ".join(words[:split_pos])
         second_text = " ".join(words[split_pos:])
@@ -654,10 +675,12 @@ def _split_oversized_blocks(script_text: str, max_words: int = 190) -> str:
         bridge = bridges[bridge_counter % len(bridges)]
         bridge_counter += 1
 
+        # La continuación usa el mismo tag que el bloque original para coherencia
+        cont_tag = tag if tag else "[directo]"
         prefix = f"{speaker}: {tag}" if tag else f"{speaker}:"
         result.append(f"{prefix} {first_text}")
         result.append(bridge)
-        result.append(f"{speaker}: [directo] {second_text}")
+        result.append(f"{speaker}: {cont_tag} {second_text}")
 
     return "\n".join(result)
 
@@ -1020,7 +1043,7 @@ def main() -> None:
         draft = _inject_cta_if_missing(draft, spec)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
         draft = _fix_antipingpong(draft, spec)
-        draft = _split_oversized_blocks(draft)
+        draft = _split_oversized_blocks(draft, spec=spec)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
