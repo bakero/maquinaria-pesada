@@ -391,14 +391,14 @@ INSTRUCCIONES CRÍTICAS:
 12. LONGITUD DEL GUION — REGLA DURA:
     El total del guion (incluyendo sección VERIFICACIONES) debe estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
     La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO puro debe tener entre {rules['minimum_word_count']-200} y {rules['maximum_word_count']-200} palabras.
-    OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']-100} palabras de diálogo para asegurar superar el mínimo total con la VERIFICACIONES.
+    OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']+200} palabras de diálogo (margen de seguridad frente al mínimo total).
     CONTROL EN TIEMPO REAL: antes de APLICACION_PRACTICA cuenta las palabras del diálogo generado hasta ahí.
-    Si llevas menos de {rules['minimum_word_count']-700} palabras, AÑADE contenido en BLOQUE_DESTACADO antes de continuar.
+    Si llevas menos de {rules['minimum_word_count']-500} palabras, AÑADE un bloque extra completo en BLOQUE_DESTACADO antes de continuar.
     REGLA DE DENSIDAD POR SECCIÓN:
     - BLOQUE_PANORAMA: cada bloque IAGO debe tener 4-6 frases (70-100 palabras). MARIA solo hace preguntas ≤20 palabras.
     - BLOQUE_DESTACADO: cada bloque de desarrollo debe tener 4-6 frases. Ambos speakers desarrollan conceptos completos.
     - APLICACION_PRACTICA: mínimo 5 bloques de desarrollo de 4-6 frases (no 4). Cada bloque: 70-100 palabras.
-    REGLA ABSOLUTA: todo bloque de desarrollo (no preguntas) DEBE tener mínimo 4 frases. Cuenta antes de avanzar.
+    REGLA ABSOLUTA: todo bloque de desarrollo (no preguntas ni reacciones) DEBE tener EXACTAMENTE 4-6 frases. Está PROHIBIDO escribir un bloque de desarrollo con 3 frases o menos. Cuenta antes de avanzar.
     Si al llegar a APLICACION_PRACTICA llevas más de {int(rules['maximum_word_count'] * 0.72)} palabras, limita APLICACION_PRACTICA a 400 palabras.
 13. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3-5 puntos del CIERRE_CONCEPTOS.

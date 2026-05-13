@@ -287,10 +287,10 @@ INSTRUCCIONES CRÍTICAS:
 10. Usa "Yago" en el texto hablado, nunca "Iago".
 11. REGLA DE LONGITUD — DURA (BIDIRECCIONAL):
     El diálogo total DEBE estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
-    MÍNIMO OBLIGATORIO: {rules['minimum_word_count']} palabras totales. Si llegas a CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-200} palabras de diálogo, AMPLÍA los bloques centrales antes de continuar.
+    MÍNIMO OBLIGATORIO: {rules['minimum_word_count']} palabras totales. Si llegas a CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-150} palabras de diálogo, AMPLÍA los bloques centrales antes de continuar.
     MÁXIMO: {rules['maximum_word_count']} palabras. Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
     NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
-    CONTROL: cada bloque de desarrollo (no preguntas) debe tener 4-6 frases (60-100 palabras). Si tienes menos de 4, amplía antes de continuar.
+    CONTROL: cada bloque de desarrollo (no preguntas ni reacciones) debe tener EXACTAMENTE 4-6 frases (60-100 palabras). Está PROHIBIDO escribir un bloque de desarrollo con 3 frases o menos. Si tienes menos de 4, amplía antes de continuar.
 12. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3 puntos del CIERRE_CONCEPTOS.
     Esos puntos deben derivarse directamente de los bloques centrales.
