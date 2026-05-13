@@ -852,6 +852,8 @@ def _split_oversized_sentence_blocks(script_text: str, max_sentences: int = 10, 
     Esta función los parte en la frase N//2 para eliminar el warn.
     Solo actúa fuera de HOOK/INTRO/SALUDO/CIERRE_FINAL/VERIFICACIONES.
     """
+    if spec:
+        max_sentences = spec.get("script_rules", {}).get("maximum_sentences_per_intervention", max_sentences)
     lines = script_text.split("\n")
     result: list[str] = []
     speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*(.*)", re.DOTALL)
@@ -1255,6 +1257,8 @@ def main() -> None:
 
     local_issues: list[str] = []
     draft = ""
+    best_draft = ""
+    best_score: tuple[int, int, int] = (999, 999, 999)  # (hard_count, word_deficit, soft_count)
 
     for attempt in range(1, args.max_intentos + 1):
         print(f"\n  [3/4] Generando guion (intento {attempt}/{args.max_intentos})...")
@@ -1356,14 +1360,26 @@ def main() -> None:
         for issue in soft_issues:
             print(f"         [WARN] {issue}")
 
+        # Track best attempt by (hard_count, word_deficit, soft_count)
+        wc_issue = next((i for i in hard_issues if "palabras (minimo:" in i), None)
+        word_deficit = 0
+        if wc_issue:
+            m_wc = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", wc_issue)
+            if m_wc:
+                word_deficit = max(0, int(m_wc.group(2)) - int(m_wc.group(1)))
+        score = (len(hard_issues), word_deficit, len(soft_issues))
+        if score < best_score:
+            best_score = score
+            best_draft = draft_with_ver
+
         if not hard_issues:
             draft = draft_with_ver
             print("         [PASS] Validacion OK")
             break
 
         if attempt == args.max_intentos:
-            print(f"\n  [WARN] Superado máximo de intentos. Guardando con {len(hard_issues)} issue(s) hard.")
-            draft = draft_with_ver
+            print(f"\n  [WARN] Superado máximo de intentos. Guardando mejor intento ({best_score[0]} hard, {best_score[2]} soft).")
+            draft = best_draft
 
     # ── Guardar ──────────────────────────────────────────────────────────────
     print("\n  [4/4] Guardando guion...")
