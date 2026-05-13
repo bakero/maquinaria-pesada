@@ -639,8 +639,14 @@ def _rebalance_shared_block(script_text: str, spec: dict) -> str:
     No altera el contenido, solo el speaker. Itera hasta que ambos speakers estén en 40-60%.
     Máximo 3 iteraciones para evitar loops.
     """
-    rules = spec.get("script_rules", {})
-    shared_sections = rules.get("shares_blocks", ["BLOQUE_DESTACADO"])
+    # Obtener secciones compartidas igual que validate_shared_block_balance
+    shared_sections: list[str] = []
+    for cfg in spec.get("speakers", {}).values():
+        for section in cfg.get("shares_blocks", []):
+            if section not in shared_sections:
+                shared_sections.append(section)
+    if not shared_sections:
+        shared_sections = ["BLOQUE_DESTACADO"]
     lo, hi = 0.40, 0.60
     speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
 
@@ -1173,13 +1179,34 @@ def main() -> None:
         print(f"\n  [3/4] Generando guion (intento {attempt}/{args.max_intentos})...")
 
         if attempt > 1 and local_issues:
-            # Añadir feedback de problemas previos al prompt
             hard_issues = [i for i in local_issues if not i.startswith("[WARN]")]
             if hard_issues:
+                # Feedback específico para word count bajo
+                feedback_parts = []
+                for issue in hard_issues:
+                    wc_m = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", issue)
+                    if wc_m:
+                        actual, needed = int(wc_m.group(1)), int(wc_m.group(2))
+                        diff = needed - actual
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN REQUERIDA: añade {diff} palabras más. "
+                            f"Amplía BLOQUE_PANORAMA (añade 1 bloque de IAGO de 4+ frases) "
+                            f"y APLICACION_PRACTICA (añade 2-3 frases a los bloques existentes). "
+                            f"NO recortes nada del intento anterior, solo AÑADE."
+                        )
+                    elif "BLOQUE_DESTACADO" in issue or "BLOQUE_COMO" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: el speaker minoritario DEBE tener 2+ bloques de desarrollo "
+                            f"de 4-6 frases cada uno. Redistribuye los conceptos."
+                        )
+                    else:
+                        feedback_parts.append(f"- {issue}")
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO DEL INTENTO ANTERIOR (corrige todos estos puntos):\n"
-                    + "\n".join(f"- {i}" for i in hard_issues)
+                    + "\n".join(feedback_parts)
                 )
             else:
                 user_prompt_ext = user_prompt

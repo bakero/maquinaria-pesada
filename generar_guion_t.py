@@ -572,10 +572,44 @@ def main() -> None:
         if attempt > 1 and local_issues:
             all_hard = [i for i in local_issues if not i.startswith("[WARN]")]
             if all_hard:
+                feedback_parts = []
+                for issue in all_hard:
+                    wc_min = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", issue)
+                    wc_max = re.search(r"tiene (\d+) palabras \(maximo recomendado: (\d+)\)", issue)
+                    if wc_min:
+                        actual, needed = int(wc_min.group(1)), int(wc_min.group(2))
+                        diff = needed - actual
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: añade {diff} palabras más. Amplía BLOQUE_PANORAMA "
+                            f"(+1 bloque IAGO de 4+ frases) y BLOQUE_COMO (+2-3 frases). NO recortes nada."
+                        )
+                    elif wc_max:
+                        actual, limit = int(wc_max.group(1)), int(wc_max.group(2))
+                        diff = actual - limit
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: elimina {diff} palabras. Recorta BLOQUE_REALIDAD "
+                            f"quitando el ejemplo menos relevante."
+                        )
+                    elif "BLOQUE_COMO" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: MARIA debe liderar al menos UN sub-concepto completo "
+                            f"en BLOQUE_COMO con 4-6 frases (70-120 palabras)."
+                        )
+                    elif "CIERRE_CONCEPTOS" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: CIERRE_CONCEPTOS debe tener EXACTAMENTE 3 bloques. "
+                            f"El opener 'No te puedes ir...' y el primer concepto van EN UN SOLO bloque del líder."
+                        )
+                    else:
+                        feedback_parts.append(f"- {issue}")
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO (corrige TODOS estos puntos antes de generar):\n"
-                    + "\n".join(f"- {i}" for i in all_hard)
+                    + "\n".join(feedback_parts)
                 )
             else:
                 user_prompt_ext = user_prompt
