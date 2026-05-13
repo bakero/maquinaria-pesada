@@ -1340,11 +1340,20 @@ def main() -> None:
                 # Include enumerated list warns in feedback
                 enum_soft = [s for s in soft_issues_retry if "lista enumerada" in s]
                 for s in enum_soft[:3]:
-                    feedback_parts.append(
-                        f"- {s}\n"
-                        f"  ACCIÓN: NO uses Primero/Segundo/Tercero en un mismo turno. "
-                        f"Distribuye los puntos: IAGO explica uno, MARIA reacciona, IAGO continúa."
-                    )
+                    if has_word_count_fail:
+                        feedback_parts.append(
+                            f"- {s}\n"
+                            f"  ACCIÓN: Convierte cada lista (Primero/Segundo/Tercero) en diálogo extendido: "
+                            f"IAGO explica el punto 1 en 3-4 frases → MARIA reacciona con 3-4 frases → "
+                            f"IAGO explica el punto 2 en 3-4 frases → MARIA elabora con 3-4 frases. "
+                            f"Esto añade palabras Y elimina la lista. NO uses 'Primero/Segundo/Tercero'."
+                        )
+                    else:
+                        feedback_parts.append(
+                            f"- {s}\n"
+                            f"  ACCIÓN: NO uses Primero/Segundo/Tercero en un mismo turno. "
+                            f"Distribuye los puntos: IAGO explica uno, MARIA reacciona, IAGO continúa."
+                        )
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO DEL INTENTO ANTERIOR (corrige todos estos puntos):\n"
