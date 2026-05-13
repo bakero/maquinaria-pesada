@@ -414,7 +414,9 @@ INSTRUCCIONES CRÍTICAS:
     BIEN: "Imagina que cada palabra es una posición en un mapa. Las palabras similares están cerca. Eso son los embeddings."
 16. REGLA AUDIO — LONGITUD DE INTERVENCIÓN:
     Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
-    Máximo absoluto por intervención: 200 palabras (250 en Momento 2 de APLICACION_PRACTICA). Si necesitas más, divide en dos.
+    Máximo absoluto por intervención: 190 palabras. Si un concepto necesita más, pártelo en DOS bloques:
+    el primero explica la primera parte (≤190 palabras), el otro speaker hace una pregunta breve,
+    y el primero retoma con la segunda parte (≤190 palabras).
     Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
 17. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
@@ -580,6 +582,84 @@ def _inject_cta_if_missing(script_text: str, spec: dict) -> str:
             return "\n".join(lines)
 
     return script_text  # No se encontró la frase final, no se modifica
+
+
+_SPLIT_BRIDGES_FROM_IAGO = [
+    "MARIA: [analitico] Interesante. ¿Y cómo se aplica eso en la práctica? Porque lo que describes suena bien en teoría. Pero los equipos de implementación suelen encontrar fricciones que no están en los modelos.",
+    "MARIA: [reflexivo] Entiendo la lógica. ¿Tienes un ejemplo concreto donde eso funciona así? Me pregunto si el resultado cambia según la escala de la organización. No siempre el patrón general se cumple en todos los contextos.",
+    "MARIA: [curioso] Eso tiene sentido. ¿Y qué implicaciones tiene para los equipos que gestionan esos procesos? Porque no es solo una decisión técnica. Hay un componente organizativo que a menudo se subestima.",
+]
+_SPLIT_BRIDGES_FROM_MARIA = [
+    "IAGO: [directo] Exacto. ¿Puedes concretar eso con un caso real? Porque la teoría es clara. Pero necesito entender dónde encaja esto en un sistema en producción.",
+    "IAGO: [reflexivo] Bien apuntado. ¿Y si el contexto cambia radicalmente? La mayoría de los frameworks asumen estabilidad. Pero la realidad operativa es mucho más volátil.",
+]
+
+# Secciones donde NO se parte: el modelo ya controla la longitud allí
+_NO_SPLIT_SECTIONS = {
+    "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
+    "CIERRE_FINAL", "VERIFICACIONES",
+}
+
+
+def _split_oversized_blocks(script_text: str, max_words: int = 190) -> str:
+    """Divide bloques con > max_words palabras insertando una pregunta puente.
+
+    El TTS a 1.32× velocidad genera artefactos en intervenciones > 200 palabras.
+    Busca el primer fin de frase entre la palabra 120 y 160 para partir ahí.
+    Solo actúa en secciones de desarrollo (no en HOOK, SALUDO, CIERRE_FINAL…).
+    """
+    lines = script_text.split("\n")
+    result: list[str] = []
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*(.*)", re.DOTALL)
+    bridge_counter = 0
+    skip_section = False
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            section_name = stripped[2:].strip()
+            skip_section = section_name in _NO_SPLIT_SECTIONS
+            result.append(line)
+            continue
+
+        if skip_section:
+            result.append(line)
+            continue
+
+        m = speaker_pat.match(stripped)
+        if not m:
+            result.append(line)
+            continue
+
+        speaker = m.group(1).upper()
+        tag = (m.group(2) or "").strip()
+        text = m.group(3).strip()
+        words = text.split()
+
+        if len(words) <= max_words:
+            result.append(line)
+            continue
+
+        # Buscar fin de frase entre palabra 120 y 160
+        search_start = min(120, max(0, len(words) - 30))
+        search_end = min(160, len(words) - 5)
+        split_pos = next(
+            (i + 1 for i in range(search_start, search_end) if words[i].endswith((".", "?", "!"))),
+            len(words) * 2 // 3,  # fallback
+        )
+
+        first_text = " ".join(words[:split_pos])
+        second_text = " ".join(words[split_pos:])
+        bridges = _SPLIT_BRIDGES_FROM_IAGO if speaker == "IAGO" else _SPLIT_BRIDGES_FROM_MARIA
+        bridge = bridges[bridge_counter % len(bridges)]
+        bridge_counter += 1
+
+        prefix = f"{speaker}: {tag}" if tag else f"{speaker}:"
+        result.append(f"{prefix} {first_text}")
+        result.append(bridge)
+        result.append(f"{speaker}: [directo] {second_text}")
+
+    return "\n".join(result)
 
 
 def _fix_tts_closing_tags(content: str) -> str:
@@ -940,6 +1020,7 @@ def main() -> None:
         draft = _inject_cta_if_missing(draft, spec)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
         draft = _fix_antipingpong(draft, spec)
+        draft = _split_oversized_blocks(draft)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
