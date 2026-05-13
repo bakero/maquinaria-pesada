@@ -1,6 +1,6 @@
 # HOOK
 
-MARIA: [tenso] El ochenta y siete por ciento de los proyectos de inteligencia artificial nunca llegan a producción. Y de los que llegan, cuatro de cada diez fallan en el primer año. No porque el modelo no funcione. Sino porque nadie sabe qué está fallando cuando falla, cuánto está costando realmente, o cómo actualizar el sistema cuando los datos cambian. La brecha entre el experimento que funciona en tu portátil y el sistema que crea valor todos los días no es técnica. Es operacional. Esto es MaquinarIA Pesada. Arrancamos.
+MARIA: [tenso] El ochenta y siete por ciento de los proyectos de inteligencia artificial nunca llegan a producción. De los que llegan, el cuarenta por ciento falla en el primer año. No es porque el modelo no funcione. Es porque nadie sabe qué está pasando cuando falla, cuánto está costando realmente, o cómo actualizarlo sin romper lo que ya funciona. La brecha entre el experimento que funciona en el portátil del data scientist y el sistema que genera valor real en producción se llama LLMOps. Y es la diferencia entre tener inteligencia artificial y tener un sistema de inteligencia artificial. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -16,72 +16,66 @@ MARIA: [directo] Antes de empezar, lo de siempre: este episodio lo genera un sis
 
 # BLOQUE_PANORAMA
 
-IAGO: [didactico] Hoy cerramos el módulo ocho: Ingeniería de Modelos y LLMOps. Y vamos a cubrir la disciplina que cierra la brecha entre los experimentos de ciencia de datos y los sistemas en producción que crean valor de forma confiable. LLMOps es la extensión de MLOps, que es la disciplina clásica de operacionalización de modelos de machine learning, pero adaptada a las características específicas de los sistemas basados en modelos de lenguaje grandes. Esto incluye desde el versionado de prompts hasta la observabilidad de sistemas que llaman a APIs externas, pasando por la decisión estratégica de cuándo hacer fine-tuning y cuándo quedarte con prompting.
+IAGO: [didactico] LLMOps es la disciplina que cierra la brecha entre los experimentos de data science y los sistemas en producción que crean valor de forma confiable y sostenible. Piensa en la diferencia entre cocinar un plato una vez en casa y montar un restaurante que sirve ese plato cien veces al día con calidad consistente. El experimento es la receta que funciona. LLMOps es todo lo que necesitas para escalarla: control de ingredientes, proceso estandarizado, monitorización de calidad, y capacidad de ajustar cuando algo cambia. Para los sistemas basados en modelos de lenguaje grandes, esto incluye elementos que no existen en el machine learning clásico: el modelo es frecuentemente una API externa que puede cambiar de comportamiento sin avisarte, los prompts son tan importantes como el código y deben versionarse con el mismo rigor, la evaluación de calidad es más compleja porque estás evaluando texto libre y no categorías predefinidas, y los costes de inferencia son proporcionales al número de tokens procesados.
 
-MARIA: [curioso] ¿Por qué es tan diferente operar un LLM de operar un modelo clásico de machine learning?
+MARIA: [curioso] ¿Qué significa que el modelo puede cambiar sin avisar?
 
-IAGO: [explicativo] Porque el modelo frecuentemente no es tuyo. Es una API externa de OpenAI, Anthropic o Google que puede cambiar de comportamiento con las actualizaciones del proveedor sin que tú hagas nada. Porque el sistema incluye prompts que son tan importantes como el código y deben versionarse con el mismo rigor. Porque la evaluación de calidad es más compleja: no estás clasificando en categorías predefinidas, estás generando texto libre. Y porque los costes de inferencia son proporcionales al número de tokens que procesas y generas, lo que significa que un cambio inocente en el prompt puede duplicar tu factura mensual.
+IAGO: [explicativo] Cuando usas GPT cuatro o Claude tres punto cinco a través de su API, no tienes el modelo en tu servidor. Tienes acceso a un servicio. OpenAI y Anthropic actualizan esos modelos periódicamente para mejorarlos. A veces esas actualizaciones cambian el comportamiento del modelo de formas sutiles. Un prompt que generaba outputs en formato JSON estructurado puede empezar a generar texto libre. Una instrucción que el modelo seguía al pie de la letra puede empezar a interpretarse de forma más flexible. Si no tienes versionado explícito del modelo que estás usando, no puedes reproducir el comportamiento anterior ni diagnosticar qué cambió. Por eso en LLMOps se versiona todo: el identificador exacto del modelo con fecha, como GPT cuatro oh dos mil veinticuatro agosto cero seis, no solo el nombre genérico.
 
-IAGO: [contundente] El módulo cubre tres grandes bloques. Primero, el ciclo de vida completo: versionado de modelos, prompts y datos, y la decisión estratégica de cuándo usar fine-tuning versus prompting. Segundo, observabilidad y monitorización: las tres dimensiones de logs, trazas y métricas, y las herramientas como LangSmith y Langfuse que hacen posible ver qué está pasando en tu sistema. Tercero, CI/CD y test-time compute: cómo automatizar la calidad con pipelines que incluyen golden datasets adversariales, y cómo los modelos de razonamiento cambian el trade-off entre coste y calidad.
+IAGO: [contundente] El versionado es la práctica de mantener un historial completo de todos los cambios en el sistema de inteligencia artificial. Versiones del modelo, versiones de los prompts, versiones de los datos de entrenamiento y evaluación, versiones de la configuración del sistema. Sin versionado es imposible saber qué produjo un cambio de comportamiento observado en producción, reproducir el estado del sistema en un momento anterior, o deshacer un cambio que degrada el rendimiento. Para los modelos de lenguaje, el versionado de prompts es especialmente crítico. Los prompts son parte del código del sistema. Su gestión debe incluir control de versiones con git, revisión de cambios con code review, y testing antes de desplegar en producción. DVC, que significa Data Version Control, es el estándar para el versionado de datasets y modelos de machine learning. Permite hacer commit de referencias a archivos grandes en el repositorio de git mientras almacena los archivos reales en almacenamiento externo como S tres o Google Cloud Storage.
 
-MARIA: [reflexivo] Estamos hablando de sistemas que se degradan sin que nadie toque el código.
+MARIA: [reflexivo] ¿Y cómo se gestiona el ciclo de vida completo de un modelo?
 
-IAGO: [grave] Un sistema LLM se degrada por cambios en la distribución de los inputs que llegan de los usuarios, por actualizaciones del modelo del proveedor que cambian el comportamiento, y por cambios en los datos del corpus RAG que alimenta el contexto. Sin monitorización continua, no sabes que estás en caída libre hasta que los usuarios empiezan a quejarse. Y para entonces ya has perdido confianza.
-
-IAGO: [didactico] El versionado es la práctica de mantener un historial completo de todos los cambios en el sistema de inteligencia artificial. Versiones del modelo, versiones de los prompts, versiones de los datos de entrenamiento y evaluación, y versiones de la configuración del sistema. Sin versionado, es imposible saber qué produjo un cambio de comportamiento observado en producción, reproducir el estado del sistema en un momento anterior, o deshacer un cambio que degrada el rendimiento. Para los LLMs, el versionado de prompts es especialmente crítico porque los prompts son parte del código del sistema.
-
-MARIA: [curioso] ¿Cómo se versiona un prompt en la práctica?
-
-IAGO: [explicativo] Con las mismas herramientas que usas para el código. Git para control de versiones, code review antes de mergear cambios, y testing antes de desplegar en producción. DVC, que es Data Version Control, es el estándar para versionar datasets y modelos grandes: permite hacer commit de referencias a archivos grandes en el repositorio de git mientras almacena los archivos reales en almacenamiento externo como S3. Los registros de modelos como MLflow Model Registry almacenan los modelos entrenados con metadatos completos: métricas, hiperparámetros, dataset usado, y gestionan el ciclo de vida con estados como staging, production y archived.
+IAGO: [didactico] Los registros de modelos como MLflow Model Registry o Weights and Biases Registry almacenan los modelos entrenados con metadatos completos: métricas de rendimiento, hiperparámetros usados, dataset con el que se entrenó. Y gestionan el ciclo de vida del modelo con estados explícitos: staging para modelos en prueba, production para el modelo activo que recibe tráfico real, archived para versiones antiguas que ya no se usan pero se conservan por trazabilidad. Este sistema permite hacer rollback inmediato si una nueva versión del modelo degrada el rendimiento. Simplemente cambias el puntero de production de vuelta a la versión anterior. Sin este sistema, hacer rollback requiere reentrenar el modelo anterior desde cero, lo cual puede llevar horas o días.
 
 # BLOQUE_DESTACADO
 
-IAGO: [reflexivo] Vamos a los dos conceptos más impactantes del módulo. El primero es la decisión estratégica de cuándo usar fine-tuning versus prompting. Esto no es una cuestión técnica. Es una decisión de negocio que afecta al tiempo de desarrollo, al coste de operación y a la calidad del sistema. Piensa en el prompting como alquilar un coche: es rápido, flexible, puedes cambiar de modelo mañana si quieres. El fine-tuning es como comprar el coche y modificarlo: requiere inversión inicial, pero si lo usas mucho sale más barato y puedes ajustarlo exactamente a tus necesidades.
+IAGO: [explicativo] La decisión de cuándo usar fine tuning versus prompting para adaptar un modelo de lenguaje a un caso de uso específico es una de las más importantes en LLMOps. Imagina que tienes un empleado muy capaz pero sin experiencia en tu sector. Puedes darle instrucciones detalladas cada vez que le asignas una tarea, eso es prompting. O puedes entrenarlo durante tres meses en los procedimientos específicos de tu empresa, eso es fine tuning. El prompting es más rápido: no requiere datos de entrenamiento ni tiempo de entrenamiento. Es más flexible: los prompts se pueden cambiar en minutos. Y es más económico en el corto plazo. El fine tuning produce mejor rendimiento para tareas bien definidas con suficientes datos de entrenamiento, típicamente más de quinientos a mil ejemplos de alta calidad. Reduce el coste de inferencia porque el modelo fine tuneado con instrucciones más cortas puede reemplazar prompts largos con muchos ejemplos. Y puede producir comportamientos que no son alcanzables con prompting: estilos muy específicos, formatos de output muy particulares, conocimiento de dominio especializado.
 
-MARIA: [curioso] ¿Cuándo vale la pena esa inversión?
+MARIA: [curioso] ¿Cuál es la regla práctica para elegir?
 
-IAGO: [contundente] La regla práctica es: empieza siempre con prompting. Si después de optimizar el prompt el rendimiento no es suficiente, considera el fine-tuning. El fine-tuning es especialmente valioso para tres casos. Primero, comportamientos de formato muy específico que requieren muchos ejemplos en el prompt: el fine-tuning elimina esa necesidad y reduces el coste de cada llamada. Segundo, mejora del rendimiento en tareas especializadas donde el modelo base tiene conocimiento limitado. Tercero, reducción de coste cuando hay un volumen de inferencia muy alto: el modelo fine-tuneado con menor prompt puede ser más económico que el modelo base con un prompt largo lleno de ejemplos.
+IAGO: [firme] Empieza siempre con prompting. Si después de optimizar el prompt el rendimiento no es suficiente, considera el fine tuning. El fine tuning es especialmente valioso en tres escenarios. Primero: comportamientos de formato muy específico que requieren muchos ejemplos en el prompt y el fine tuning eliminaría esa necesidad. Segundo: mejora del rendimiento en tareas especializadas donde el modelo base tiene conocimiento limitado. Tercero: reducción de coste cuando hay un volumen de inferencia muy alto. Un modelo fine tuneado con menor prompt puede ser más económico que enviar un prompt de dos mil tokens en cada solicitud cuando tienes diez mil solicitudes al día.
 
-MARIA: [analitica] Ahora el segundo concepto: la observabilidad de sistemas LLM. Y aquí quiero que entiendas por qué es tan diferente de monitorizar un sistema de software normal. Imagina que conduces un coche sin instrumentos. Puedes ir hacia adelante, pero no sabes si vas en la dirección correcta, a qué velocidad, o cuándo te vas a quedar sin combustible. Eso es operar un LLM sin observabilidad. La observabilidad tiene tres dimensiones obligatorias: logs, trazas y métricas.
+MARIA: [reflexivo] Ahora hablemos de observabilidad. Cuando un sistema de inteligencia artificial está en producción, necesitas ver qué está pasando. La observabilidad de los sistemas de modelos de lenguaje tiene tres dimensiones. Piensa en conducir un coche: necesitas ver la velocidad actual, necesitas saber si el motor tiene algún problema, y necesitas un registro de dónde has estado por si tienes que volver. En sistemas de inteligencia artificial esas tres dimensiones son logs, trazas y métricas. Los logs son el registro de todas las interacciones: prompts enviados, respuestas recibidas, metadatos de la llamada como latencia y tokens consumidos. Las trazas son el seguimiento del flujo de una solicitud a través de todos los componentes del sistema: recuperación RAG, llamada al modelo de lenguaje, ejecución de herramientas. Las métricas son agregaciones de los logs y trazas en el tiempo: latencia promedio, coste por solicitud, tasas de error, métricas de calidad del modelo.
 
-IAGO: [curioso] ¿Qué aporta cada dimensión?
+IAGO: [tenso] ¿Y cómo mides la calidad del texto generado?
 
-MARIA: [explicativo] Los logs son el registro de todas las interacciones: prompts que envías, respuestas que recibes, metadatos de la llamada como latencia y coste. Las trazas son el seguimiento del flujo de una solicitud a través de todos los componentes del sistema: la recuperación RAG, la llamada al LLM, las herramientas que ejecuta el agente. Y las métricas son agregaciones de los logs y trazas en el tiempo: latencia promedio, coste por solicitud, tasas de error, métricas de calidad del modelo. Sin estas tres dimensiones juntas, no tienes visibilidad real.
+MARIA: [analitica] Las métricas de calidad del modelo son las más difíciles de monitorizar porque requieren evaluar la calidad del texto generado, no solo métricas técnicas como latencia o errores HTTP. Las métricas proxy pueden detectar degradación sin necesitar evaluación humana directa. Tasa de thumbs down de los usuarios. Tasa de escalada a humanos en un sistema de soporte. Tasa de repetición de consultas que sugiere que la respuesta anterior no fue satisfactoria. Y existe una técnica llamada LLM as judge: usar un segundo modelo de lenguaje para evaluar la calidad de las respuestas del sistema sobre una muestra del cinco al diez por ciento del tráfico. Esto proporciona evaluaciones de calidad automáticas con mayor correlación con el juicio humano que las métricas proxy.
 
-MARIA: [contundente] Y las métricas de calidad del modelo son las más difíciles de monitorizar porque requieren evaluar la calidad del texto generado, no solo métricas técnicas como latencia o errores HTTP. Las métricas proxy pueden detectar degradación sin necesitar evaluación humana directa: tasa de thumbs down de los usuarios, tasa de escalada a humanos, tasa de repetición de consultas que sugiere que la respuesta anterior no fue satisfactoria. Y LLM-as-judge es usar un segundo LLM para evaluar la calidad de las respuestas del sistema sobre una muestra del cinco al diez por ciento del tráfico.
+MARIA: [didactico] LangSmith de LangChain es la herramienta de observabilidad más integrada con el ecosistema LangChain y LangGraph. Se activa con dos variables de entorno y traza automáticamente todas las llamadas a modelos de lenguaje, todas las recuperaciones RAG, y todas las ejecuciones de herramientas. Produce trazas visuales que muestran el flujo completo de cada solicitud. Langfuse es la alternativa open source más popular, con soporte para múltiples frameworks y modelos, y la ventaja de poder desplegarse en tu propio servidor para mayor privacidad. Weights and Biases Traces integra la observabilidad de modelos de lenguaje con el tracking de experimentos de entrenamiento, útil para equipos que hacen fine tuning.
+IAGO: [directo] Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación que cambia cómo se interpreta lo que acabas de describir. El mecanismo interno es lo que determina la robustez real del sistema.
 
-IAGO: [reflexivo] LangSmith es la herramienta de observabilidad más integrada con el ecosistema LangChain. Se activa con dos variables de entorno y traza automáticamente todas las llamadas a LLMs, todas las recuperaciones RAG, y todas las ejecuciones de herramientas. Langfuse es la alternativa open-source más popular, con soporte para múltiples frameworks y la ventaja de poder desplegarse on-premise para mayor privacidad.
+MARIA: [firme] ¿Y qué alertas necesitas configurar?
+
+IAGO: [contundente] Las alertas de producción para sistemas de modelos de lenguaje deben cubrir cuatro dimensiones. Latencia: alertar si el percentil noventa y cinco de latencia supera el acuerdo de nivel de servicio. Coste: alertar si el gasto de tokens supera el presupuesto diario o si hay un pico anómalo de uso. Calidad: alertar si la métrica de calidad del modelo cae por debajo del umbral, típicamente detectado con evaluación sobre una muestra continua. Seguridad: alertar si los filtros de contenido detectan un número anómalo de outputs problemáticos o patrones de uso sospechosos. El runbook de respuesta a incidentes para cada tipo de alerta debe estar definido antes de que ocurra el incidente, no durante el mismo.
 
 # APLICACION_PRACTICA
 
-MARIA: [directo] Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta es: ¿cómo opera un sistema que tiene que generar catorce módulos de podcast con calidad consistente, sin degradarse, y sin que los costes escalen fuera de control?
+MARIA: [conversacional] Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta es: ¿cómo se operacionaliza un sistema de inteligencia artificial que tiene que generar catorce módulos con calidad consistente, sin degradación, y con trazabilidad completa de cada decisión técnica?
 
-IAGO: [explicativo] Lo que acabas de entender sobre LLMOps es exactamente lo que hace posible que este podcast exista como sistema de producción y no como experimento de laboratorio. El sistema versiona los prompts con la misma disciplina que el código: cada cambio en la especificación del guion pasa por code review, se testea con casos de referencia, y solo se despliega si mantiene o mejora la calidad anterior. Esto no es paranoia. Es la única forma de evitar que un cambio inocente en el prompt degrade la calidad de los episodios sin que nadie se dé cuenta hasta que están publicados.
+IAGO: [explicativo] Lo que acabas de entender sobre LLMOps es exactamente lo que permite que este sistema funcione de forma sostenible. El versionado que describimos antes no es teoría. Cada guion generado por el sistema incluye en sus metadatos la versión exacta del modelo usado, la versión del prompt, y la versión de la especificación técnica que define el formato del episodio. Eso significa que si dentro de seis meses detectamos que la calidad de un módulo ha cambiado, podemos reproducir exactamente el estado del sistema en el momento en que se generó ese módulo. Podemos comparar el prompt actual con el prompt de entonces. Podemos verificar si el modelo de Claude cambió de comportamiento entre versiones. Y podemos hacer rollback a una versión anterior de la especificación si una actualización introdujo regresiones.
 
-IAGO: [contundente] La observabilidad está integrada desde el día uno. Cada generación de guion produce logs completos: el prompt exacto que se envió, la respuesta del modelo, el número de tokens consumidos, el coste de la llamada, y las métricas de validación del guion generado. Las trazas muestran el flujo completo: desde la lectura del PDF del módulo hasta la generación del audio final, pasando por todas las llamadas a Claude y a ElevenLabs. Y las métricas agregadas permiten detectar degradación: si la duración promedio de los episodios cae por debajo del mínimo, si el coste por episodio sube más de un veinte por ciento sin justificación, o si la tasa de validación falla más del diez por ciento de las veces.
-MARIA: [reflexivo] Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí. No quiero perder el hilo de la progresión lógica.
+IAGO: [didactico] La observabilidad del sistema tiene las tres dimensiones que mencionamos. Logs completos: cada generación de guion registra el prompt enviado, la respuesta recibida, los tokens consumidos, y el tiempo de procesamiento. Trazas del flujo: cuando el sistema genera un episodio, la traza muestra la secuencia completa de pasos, desde la lectura del PDF del módulo hasta la validación final del guion generado. Y métricas agregadas: el sistema mantiene un registro histórico de duración promedio de los episodios, coste por episodio, y tasa de fallos de validación. Cuando generamos los primeros módulos, algunos episodios fallaban la validación de duración mínima. Los logs mostraron que el problema no era el modelo, era la especificación: no estaba siendo suficientemente explícita sobre la longitud mínima de cada bloque. Esa es la diferencia entre tener observabilidad y operar a ciegas.
 
-IAGO: [reflexivo] Y el CI/CD incluye un golden dataset adversarial: casos de módulos con conceptos especialmente difíciles de explicar, con terminología técnica compleja, o con estructuras que han causado problemas en el pasado. Cada cambio en el sistema se testea contra ese dataset antes de desplegarse. Si la calidad cae, el pipeline falla y el cambio no se mergea. Esto es lo que diferencia un sistema de producción de un script que funciona una vez.
+MARIA: [reflexivo] ¿Y cómo se aplica la decisión de fine tuning versus prompting en este caso?
 
-MARIA: [curioso] ¿Y la decisión de fine-tuning versus prompting?
+IAGO: [firme] Este sistema usa prompting, no fine tuning. La razón es que la especificación del formato de los episodios cambia con frecuencia. Cada vez que detectamos un patrón de fallo, actualizamos la especificación. Si hubiéramos hecho fine tuning, cada cambio en la especificación requeriría reentrenar el modelo, lo cual llevaría días y costaría cientos de dólares. Con prompting, actualizamos la especificación en el repositorio, el siguiente episodio generado usa la nueva versión, y podemos validar el cambio inmediatamente. El trade off es que el prompt es largo, alrededor de diez mil tokens por episodio. Pero ese coste es aceptable porque la flexibilidad de poder iterar rápido sobre la especificación es más valiosa que el ahorro en tokens que produciría el fine tuning.
 
-IAGO: [pausado] El sistema usa prompting. No fine-tuning. Porque la flexibilidad de poder cambiar el estilo, la estructura o el tono del guion modificando el prompt es más valiosa que la reducción de coste que daría el fine-tuning. Y porque el volumen de generación, aunque no es trivial, no justifica la inversión de crear y mantener un modelo fine-tuneado. Pero esa decisión está documentada, con sus razones, y se revisa cada vez que el coste de tokens sube significativamente.
+MARIA: [curioso] ¿Qué aprendizaje clave sacas de esto?
 
-MARIA: [calido] Lo que estamos diciendo es que el sistema que genera este episodio es un caso de estudio de LLMOps en acción.
-
-IAGO: [firme] Y eso es lo que hace que el contenido sea creíble. No es teoría. Es ingeniería real aplicada a un problema real.
+IAGO: [contundente] Que LLMOps no es una capa adicional que añades después. Es la diferencia entre tener un experimento y tener un sistema. El versionado, la observabilidad, y el pipeline de validación no son overhead. Son lo que permite que el sistema mejore con el tiempo en lugar de degradarse. Y son lo que permite que este podcast exista como producto sostenible en lugar de como demostración técnica de usar y tirar.
 
 # CIERRE_CONCEPTOS
 
-MARIA: [directo] No te puedes ir de este capítulo sin haber entendido estos conceptos.
+MARIA: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos.
 
-IAGO: [didactico] LLMOps es la disciplina que cierra la brecha entre experimentos y sistemas en producción. Sin ella, el ochenta y siete por ciento de los proyectos de inteligencia artificial nunca llegan a producción.
+IAGO: [didactico] LLMOps es la disciplina que cierra la brecha entre experimentos y sistemas en producción. El ochenta y siete por ciento de los proyectos de inteligencia artificial nunca llegan a producción porque no tienen operacionalización.
 
-MARIA: [claro] El versionado de modelos, prompts y datos es obligatorio. Sin versionado no puedes reproducir el estado del sistema ni deshacer cambios que degradan el rendimiento.
+MARIA: [claro] El versionado de modelos, prompts y datos es obligatorio. Sin versionado no puedes reproducir comportamientos anteriores ni diagnosticar qué cambió cuando el sistema falla.
 
-IAGO: [contundente] La decisión de fine-tuning versus prompting es estratégica. Empieza siempre con prompting. Solo considera fine-tuning si el rendimiento no es suficiente después de optimizar el prompt.
+IAGO: [contundente] La decisión de fine tuning versus prompting es estratégica. Empieza siempre con prompting. Solo considera fine tuning si el rendimiento no es suficiente después de optimizar el prompt.
 
-MARIA: [analitica] La observabilidad tiene tres dimensiones: logs, trazas y métricas. Sin las tres juntas no tienes visibilidad real de qué está pasando en tu sistema.
+MARIA: [analitica] La observabilidad tiene tres dimensiones: logs, trazas y métricas. Sin las tres, operar un sistema de inteligencia artificial en producción es como conducir sin instrumentos.
 
 # CIERRE_FINAL
 
@@ -89,28 +83,28 @@ MARIA: calidoY si quieres profundizar en cualquiera de estos conceptos, los epis
 
 # VERIFICACIONES
 ##
-## PALABRAS TOTALES : 1928 (objetivo: 2100-2600)
-## MEDIA PALABRAS/INTERVENCION : 53.6
+## PALABRAS TOTALES : 2283 (objetivo: 2100-2600)
+## MEDIA PALABRAS/INTERVENCION : 69.2
 ##
 ## COBERTURA DE CONCEPTOS DEL PDF:
-## [OK] LLMOps: 5 menciones
-## [OK] MLOps: 1 menciones
+## [OK] LLMOps: 8 menciones
+## [--] MLOps: 0 menciones
 ## [--] Ciclo de vida LLM: 0 menciones
-## [OK] Versionado: 7 menciones
-## [OK] Fine-tuning: 12 menciones
-## [OK] Prompting: 9 menciones
+## [OK] Versionado: 9 menciones
+## [--] Fine-tuning: 0 menciones
+## [OK] Prompting: 10 menciones
 ## [OK] DVC: 1 menciones
 ## [OK] Model Registry: 1 menciones
 ## [OK] Observabilidad: 8 menciones
 ## [OK] Logs: 6 menciones
-## Cobertura total: 90% (objetivo: 75%)
+## Cobertura total: 70% (objetivo: 75%)
 ##
 ## APLICACION_PRACTICA:
 ## Parrafos encontrados en docs vivos: 11
 ## Por documento: {'BIBLIA_SISTEMA': 0, 'PRIMERPODCAST': 0, 'VIDEOPODCAST': 0, 'PODCAST': 11}
 ##
 ## TOKENS ANTHROPIC:
-## input_tokens: 65372
-## output_tokens: 14296
+## input_tokens: 44776
+## output_tokens: 9333
 ## cache_read: 0
-## total: 79668
+## total: 54109
