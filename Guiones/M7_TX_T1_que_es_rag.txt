@@ -1,6 +1,6 @@
 # HOOK
 
-IAGO: [tenso] El noventa y siete por ciento de los grandes bufetes de Estados Unidos se pusieron en lista de espera para Harvey AI en dos mil veintitrés. Morgan Stanley conectó cien mil documentos internos a un asistente que responde en segundos lo que antes llevaba horas buscar. JPMorgan ahorró trescientas sesenta mil horas de trabajo legal al año con un sistema que lee contratos. ¿Qué tienen en común estos tres casos? RAG. Retrieval-Augmented Generation. La arquitectura que se ha convertido en el caso de uso número uno de los modelos de lenguaje en empresa. Hoy explicamos por qué un LLM con acceso a tus documentos internos cambia más las reglas del juego que cualquier modelo más grande o más rápido. Esto es MaquinarIA Pesada. Arrancamos.
+IAGO: [directo] El ochenta y ocho por ciento de las empresas Fortune quinientos usan inteligencia artificial. Pero solo el treinta y tres por ciento la ha escalado en producción. La brecha no está en los modelos. Está en cómo conectas esos modelos con tus propios datos. RAG, Retrieval-Augmented Generation, es la arquitectura que resuelve ese problema. Es el caso de uso número uno en empresa en dos mil veinticinco. Y hoy vamos a explicar exactamente por qué. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -16,84 +16,89 @@ IAGO: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera u
 
 # BLOQUE_PANORAMA
 
-IAGO: [didactico] RAG es el acrónimo de Retrieval-Augmented Generation. Es una arquitectura que combina dos capacidades: la recuperación de información de bases de conocimiento propias y la generación de texto de los modelos de lenguaje. La idea central es elegante. En lugar de pedirle a un LLM que responda de memoria, le das acceso a un libro abierto. Antes de generar su respuesta, el sistema busca los fragmentos relevantes en tu base documental y los inserta en el contexto del modelo. El LLM genera la respuesta basándose en esos fragmentos, no solo en lo que aprendió durante el entrenamiento.
+IAGO: [didactico] RAG es el acrónimo de Retrieval-Augmented Generation. Es una arquitectura que combina dos cosas: la capacidad generativa de un modelo de lenguaje grande y la recuperación de información de bases de conocimiento propias de tu empresa. Imagina que un modelo de lenguaje es como un estudiante haciendo un examen. Sin RAG, ese estudiante responde de memoria. Solo puede usar lo que aprendió durante su entrenamiento. Con RAG, ese estudiante responde con libro abierto. Antes de generar la respuesta, consulta las fuentes relevantes y construye su respuesta basándose en ellas. Esa es la diferencia fundamental.
 
-MARIA: [curioso] ¿Por qué eso se ha convertido en el caso de uso número uno?
+MARIA: [curioso] ¿Y por qué es el caso de uso número uno en empresa?
 
-IAGO: [explicativo] Porque resuelve el problema fundamental de los LLMs en empresa. Un modelo entrenado en dos mil veintitrés no sabe nada sobre los documentos internos de tu organización. No conoce tus políticas actualizadas, tus contratos vigentes, tus datos de clientes, ni los desarrollos posteriores a su fecha de corte. RAG soluciona esto sin necesidad de reentrenar el modelo. Conectas el LLM a tu base documental y cada consulta trae consigo el contexto relevante. El mercado de RAG alcanzó mil ochocientos cincuenta millones de dólares en dos mil veinticuatro y crece al cuarenta y nueve por ciento anual. Anthropic, OpenAI y Google lo recomiendan como la técnica principal para conectar LLMs con datos propietarios.
+IAGO: [firme] Porque resuelve el problema más crítico que tienen los modelos de lenguaje en entornos corporativos. Los LLMs tienen conocimiento general del mundo hasta su fecha de corte de entrenamiento. Pero no saben nada sobre tus documentos internos, tus políticas actualizadas, tus datos de clientes, o los desarrollos posteriores a su entrenamiento. RAG soluciona esto sin modificar el modelo. En lugar de reentrenarlo, le proporcionas la información relevante directamente en el contexto de cada consulta. Es más rápido, más barato y más trazable que el fine-tuning.
 
-MARIA: [reflexivo] Entonces es como la diferencia entre un examen de memoria cerrado y uno con libro abierto.
+MARIA: [analitica] ¿Cuándo usas RAG y cuándo fine-tuning?
 
-IAGO: [contundente] ese contraste. Un LLM sin RAG responde de memoria. Solo puede usar lo que aprendió durante el preentrenamiento, con todas sus limitaciones: corte de conocimiento, posibles alucinaciones, cero acceso a información privada. Un LLM con RAG responde con libro abierto. Consulta las fuentes relevantes antes de construir la respuesta. Eso cambia radicalmente la utilidad del sistema en contextos empresariales donde la precisión y la trazabilidad importan.
+IAGO: [explicativo] RAG es la elección correcta cuando tu conocimiento cambia frecuentemente. Documentos que se actualizan, datos en tiempo real, bases de conocimiento grandes y diversas. También cuando necesitas trazabilidad total: poder responder de qué documento viene cada afirmación. Y cuando tus datos son confidenciales y no quieres incluirlos en el proceso de entrenamiento. Fine-tuning es mejor cuando necesitas cambiar el estilo, el tono o el comportamiento del modelo. Cuando el dominio es estable y bien definido. O cuando el rendimiento de RAG no es suficiente para la tarea específica. Pero en dos mil veinticinco, para la mayoría de casos empresariales, RAG es la respuesta.
 
 # BLOQUE_COMO
 
-IAGO: [didactico] El flujo técnico de RAG tiene cuatro etapas. Primera etapa: ingesta. Los documentos de tu base de conocimiento se dividen en fragmentos manejables que llamamos chunks. Cada chunk se convierte en un embedding, que es un vector numérico que representa el significado del texto. Esos embeddings se almacenan en una base de datos vectorial junto con los metadatos del documento original. Segunda etapa: recuperación. Cuando llega una consulta del usuario, el sistema genera el embedding de esa consulta y busca los K chunks más similares en la base vectorial usando distancia coseno o producto punto.
+IAGO: [didactico] El flujo de RAG tiene cuatro etapas. La primera es la ingesta. Los documentos de tu base de conocimiento se dividen en fragmentos manejables que llamamos chunks. Cada chunk se vectoriza, es decir, se convierte en un embedding. Piensa en un embedding como una huella digital matemática del significado del texto. Esos embeddings se almacenan en una base de datos vectorial junto con sus metadatos. Esa base de datos es como un índice gigante que te permite buscar por similitud semántica, no por palabras clave.
 
-MARIA: [analitica] ¿Cómo decides qué tan grande debe ser cada chunk?
+MARIA: [conversacional] Y cuando llega una consulta del usuario, ¿qué pasa?
 
-MARIA: [explicativo] Esa es una de las decisiones de diseño críticas. Si el chunk es muy pequeño, pierdes contexto. Si es muy grande, introduces ruido y desperdicias tokens del contexto del LLM. El tamaño típico está entre doscientas y quinientas palabras por chunk, pero depende del tipo de documento y de las preguntas que el sistema debe responder. No hay una respuesta única. Necesitas evaluar con casos reales de tu dominio.
-IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
+IAGO: [explicativo] Ahí entra la segunda etapa: la recuperación. La consulta del usuario también se convierte en un embedding. Ese embedding se compara con todos los embeddings almacenados en la base vectorial. El sistema recupera los K chunks más similares. Normalmente entre tres y diez fragmentos, dependiendo del caso de uso. Esos chunks son los que contienen la información más relevante para responder la pregunta.
 
-MARIA: [didactico] Tercera etapa: aumentación. Los chunks recuperados se insertan en el prompt del LLM como contexto adicional. Imagina que el usuario pregunta sobre la política de vacaciones de la empresa. El sistema recupera los tres fragmentos más relevantes del manual del empleado y construye un prompt que dice algo como: "Basándote en los siguientes fragmentos de la política de RRHH, responde a la pregunta del usuario". A continuación pega los fragmentos recuperados, y después la pregunta del usuario. Cuarta etapa: generación. El LLM lee el contexto aumentado y genera una respuesta fundamentada en esos fragmentos específicos.
+MARIA: [analitica] Vale, ya tenemos los fragmentos relevantes. ¿Cómo se usan?
 
-IAGO: [reflexivo] Aquí hay un detalle técnico importante. El orden en que insertas los chunks en el prompt afecta la respuesta. Los modelos de lenguaje tienden a dar más peso a la información que aparece al principio o al final del contexto. Si pones el chunk más relevante en medio de un contexto muy largo, el modelo puede ignorarlo parcialmente. Eso se llama el problema de lost in the middle.
+MARIA: [claro] Tercera etapa: la aumentación. Los chunks recuperados se insertan en el prompt del modelo de lenguaje como contexto adicional. El prompt dice algo como: aquí está la pregunta del usuario, y aquí están los fragmentos relevantes de la documentación. Genera una respuesta basándote en estos fragmentos. Cuarta etapa: la generación. El modelo lee la consulta y el contexto recuperado, y produce una respuesta fundamentada en esas fuentes. No inventa. Cita.
+IAGO: [reflexivo] En producción real, ese factor determina la arquitectura.
 
-MARIA: [curioso] ¿Y cómo se compara RAG con fine-tuning?
+MARIA: [reflexivo] Ahora, los componentes técnicos. Porque esto no es solo un modelo y una base de datos. Hay toda una infraestructura detrás.
+IAGO: [serio] El sistema tiene que manejar eso explícitamente.
 
-IAGO: [contundente] Son técnicas complementarias, no excluyentes. RAG es mejor cuando el conocimiento cambia frecuentemente, cuando la base documental es grande y diversa, cuando necesitas trazabilidad de dónde viene cada afirmación, o cuando los datos son confidenciales y no quieres incluirlos en el proceso de entrenamiento. Fine-tuning es mejor cuando necesitas cambiar el estilo, el tono o el comportamiento del modelo, cuando el dominio es estable y bien definido, o cuando el rendimiento de RAG no es suficiente para la tarea específica. En muchos casos, la solución óptima combina ambos: fine-tuning para el comportamiento y RAG para el conocimiento actualizado.
+MARIA: [didactico] Correcto. Un sistema RAG completo tiene cinco componentes. Primero, el pipeline de ingesta: parsing de documentos, chunking, embedding y almacenamiento. Segundo, la base de datos vectorial: almacena los embeddings e indexa para búsqueda eficiente. Tercero, el sistema de retrieval: procesa la consulta, genera su embedding y recupera los chunks. Cuarto, el prompt builder: construye el prompt del modelo combinando consulta y contexto. Quinto, el generador: el modelo de lenguaje que produce la respuesta final.
+IAGO: [directo] La escala cambia ese escenario por completo.
+
+MARIA: [curioso] ¿Y cuáles son las bases de datos vectoriales que se usan en producción?
+
+IAGO: [firme] En dos mil veinticinco, el mercado se consolida alrededor de cuatro opciones. Pinecone: SaaS managed, la más fácil para empezar. Weaviate: open source con opción cloud, buen balance. Milvus: open source, diseñado para mayor escala. Y Qdrant: open source, alto rendimiento, fácil de auto-hostear. También está FAISS de Meta, que es una librería estándar para búsqueda vectorial en memoria sin necesidad de una base de datos completa. Cada una tiene su caso de uso óptimo.
 
 # BLOQUE_REALIDAD
 
-MARIA: [analitica] Vamos a los casos reales documentados. Harvey AI es el ejemplo canónico en el sector legal. Es una startup fundada en dos mil veintidós que construyó un sistema RAG sobre corpus jurídico masivo. Integra bases de datos legales como Westlaw y LexisNexis. El resultado: más del noventa y siete por ciento de los grandes bufetes de Estados Unidos se pusieron en lista de espera durante dos mil veintitrés. El caso de uso principal es redacción de contratos, due diligence, investigación jurídica y análisis de precedentes. Los testimonios de usuarios piloto reportan reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental.
+MARIA: [analitica] Vamos a casos reales documentados. Harvey AI en el sector legal. Es uno de los casos más citados porque resolvió un problema crítico: las citas alucinadas. Los modelos de lenguaje inventaban jurisprudencia. Harvey construyó un sistema RAG sobre millones de documentos de jurisprudencia, contratos y legislación. Cada afirmación del sistema incluye la cita al documento fuente y el fragmento exacto. Hoy sirve al noventa y siete por ciento de los bufetes del Am Law cien. Eliminó el problema que llevó a sanciones judiciales en el caso Mata contra Avianca, donde un abogado presentó citas inventadas por un modelo.
 
-IAGO: [reflexivo] ¿Qué problema específico resolvió Harvey que no se pudiera resolver antes?
+IAGO: [grave] Ese caso fue un punto de inflexión. Demostró que sin trazabilidad, los LLMs no son viables en entornos de alto riesgo.
 
-MARIA: [firme] El problema de las citas alucinadas. Hubo un caso judicial famoso, Mata versus Avianca, donde un abogado presentó documentos generados por un LLM que citaba jurisprudencia inventada. El juez sancionó al abogado. Harvey resuelve eso porque cada afirmación incluye cita al documento fuente y fragmento exacto. El sistema no inventa precedentes. Los recupera de bases verificadas.
+MARIA: [firme] Segundo caso: Morgan Stanley Wealth Management. Construyeron un asistente RAG sobre cien mil documentos de research financiero. Los asesores hacen preguntas en lenguaje natural y el sistema recupera fragmentos relevantes con citas. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. Antes, un asesor perdía media jornada buscando un informe específico. Ahora tarda treinta segundos. El socio tecnológico fue OpenAI con GPT-cuatro. Lo presentaron públicamente en el DevDay de dos mil veintitrés.
 
-MARIA: [didactico] Morgan Stanley implementó un asistente RAG para sus asesores financieros. La base de conocimiento tiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Antes, un asesor que necesitaba información específica sobre un producto de inversión podía tardar horas buscando en carpetas compartidas y correos antiguos. Ahora hace una pregunta en lenguaje natural y el sistema recupera los fragmentos relevantes y genera un resumen contextualizado. El tiempo de búsqueda pasó de horas a minutos. El socio tecnológico es OpenAI con GPT-cuatro. Esto se presentó públicamente en el OpenAI DevDay de dos mil veintitrés.
+MARIA: [conversacional] Tercer caso: el chatbot de soporte técnico de Microsoft para la documentación de Azure. RAG sobre la documentación técnica completa. Los usuarios obtienen respuestas precisas a preguntas técnicas complejas con referencias a la sección exacta de la documentación. El impacto: reducción de tickets de soporte repetitivos. Los desarrolladores dejan de abrir tickets para preguntas que ya están documentadas.
+IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
+
+MARIA: [reflexivo] Y un caso interno muy común: asistentes de política interna de recursos humanos. RAG sobre el manual del empleado, convenios colectivos, políticas actualizadas. Los empleados consultan directamente sin necesidad de abrir tickets. Preguntas sobre vacaciones, beneficios, procedimientos de baja. Todo resuelto en tiempo real con cita a la política aplicable.
 IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
 
-MARIA: [conversacional] JPMorgan tiene un sistema que se llama COIN, Contract Intelligence. Es un caso más antiguo, basado en machine learning clásico, no en LLMs, pero ilustra el ROI cuantificable. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Antes era un proceso manual que llevaba trescientas sesenta mil horas de trabajo de abogados y analistas al año. Ahora el sistema tarda segundos. Trescientas sesenta mil horas ahorradas. Eso es ROI verificable y documentado.
+MARIA: [esceptico] Ahora, los retos. Porque RAG no elimina totalmente las alucinaciones. Reduce dramáticamente las alucinaciones de conocimiento, esas en las que el modelo afirma cosas que no están en los documentos. Pero no las elimina completamente. El modelo puede aún distorsionar o mal interpretar el contexto recuperado. Por eso la evaluación continua con métricas de faithfulness es esencial. Faithfulness mide si la respuesta generada es fiel al contexto recuperado.
 
-IAGO: [curioso] ¿Cuál es el reto técnico más común al escalar RAG en producción?
+IAGO: [tenso] Y está el gap prototipo-producción. Construir un RAG funcional en local es fácil. Escalarlo a producción con latencia baja, multi-tenancy y monitorización es otro mundo.
 
-MARIA: [analitica] La latencia. Recuperar embeddings de una base vectorial con millones de documentos y generar una respuesta del LLM puede tardar varios segundos. En aplicaciones de chat en tiempo real, eso es inaceptable. Las empresas tienen que optimizar la indexación, usar cachés inteligentes, y en algunos casos pre-computar respuestas para las preguntas más frecuentes. El segundo reto es la gestión del corpus.
-IAGO: [reflexivo] Hay un matiz técnico que conviene añadir.
-MARIA: [analitica] Los documentos cambian, se actualizan, se eliminan. Necesitas un pipeline de ingesta continua que mantenga la base vectorial sincronizada con la realidad documental. El tercer reto es multi-tenancy. Si tienes mil clientes usando el mismo sistema RAG, cada uno debe ver solo sus documentos. Eso requiere filtrado por metadatos a nivel de recuperación, y ese filtrado no puede degradar el rendimiento.
-
-MARIA: [reflexivo] Hay también un reto de expectativas. RAG reduce dramáticamente las alucinaciones de conocimiento, pero no las elimina completamente. El modelo puede aún distorsionar o mal interpretar el contexto recuperado. Las empresas que esperan cero errores se van a decepcionar. La evaluación continua con métricas de faithfulness es esencial. Faithfulness mide si la respuesta generada es fiel al contexto recuperado, no si es correcta en sentido absoluto.
+MARIA: [analitica] Correcto. El mercado de RAG alcanzó uno punto ochenta y cinco billones de dólares en dos mil veinticuatro. Crece al cuarenta y nueve por ciento anual. Anthropic, OpenAI y Google lo recomiendan como la técnica principal para conectar modelos con datos propietarios. Pero la mayoría de proyectos se quedan en piloto. El salto a producción requiere gestión del corpus, control de versiones de documentos, y pipelines de ingesta robustos.
 
 # CIERRE_CONCEPTOS
 
-IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: RAG conecta LLMs con bases documentales propias mediante recuperación vectorial, insertando los fragmentos relevantes en el contexto antes de generar la respuesta.
+IAGO: [firme] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: RAG es libro abierto frente a memoria cerrada. El modelo consulta fuentes antes de responder.
 
-MARIA: [claro] Segundo: RAG es mejor que fine-tuning cuando el conocimiento cambia frecuentemente, cuando necesitas trazabilidad, o cuando los datos son confidenciales.
+MARIA: [claro] Segundo: el flujo es ingestar, recuperar, aumentar y generar. Cuatro etapas con cinco componentes técnicos.
 
-IAGO: [contundente] Tercero: el gap de prototipo a producción en RAG es significativo y requiere gestión del corpus, optimización de latencia, multi-tenancy y monitorización continua de faithfulness.
+IAGO: [contundente] Tercero: RAG es mejor que fine-tuning cuando el conocimiento cambia, cuando necesitas trazabilidad, o cuando los datos son confidenciales.
 
 # CIERRE_FINAL
 
-IAGO: [calido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+IAGO: [natural] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
 
 # VERIFICACIONES
 ##
-## PALABRAS TOTALES : 1574 (objetivo: 1400-1850)
-## MEDIA PALABRAS/INTERVENCION : 81.3
+## PALABRAS TOTALES : 1420 (objetivo: 1400-1850)
+## MEDIA PALABRAS/INTERVENCION : 76.5
 ##
 ## COBERTURA DE CONCEPTOS DEL PDF:
-## [OK] rag: 19 menciones
-## [OK] llm: 11 menciones
-## [FALTA] seccion: 0 menciones
+## [OK] rag: 20 menciones
+## [FALTA] llm: 0 menciones
+## [OK] seccion: 1 menciones
 ## [OK] augmented generation: 2 menciones
 ## [FALTA] cuando se necesita: 0 menciones
-## [FALTA] open source: 0 menciones
-## [FALTA] es el caso: 0 menciones
-## [OK] embedding: 2 menciones
-## Cobertura: 50% (objetivo: 75%)
+## [OK] open source: 3 menciones
+## [OK] es el caso: 2 menciones
+## [OK] embedding: 6 menciones
+## Cobertura: 75% (objetivo: 75%)
 ##
 ## TOKENS ANTHROPIC:
-## input_tokens: 20735
-## output_tokens: 3350
+## input_tokens: 56965
+## output_tokens: 8634
 ## cache_read: 0
-## total: 24085
+## total: 65599

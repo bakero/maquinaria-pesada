@@ -1,6 +1,6 @@
 # HOOK
 
-IAGO: [tenso] En dos mil veintitrés, un agente de IA de Chevrolet empezó a recomendar coches de Tesla a sus clientes. No era un hack. Era un chatbot mal diseñado con acceso a herramientas que no debía tener. El problema no fue el modelo de lenguaje. Fue que nadie había pensado bien qué funciones podía ejecutar y cuáles no. Hoy hablamos de tool use y function calling: el mecanismo que permite a los agentes hacer cosas en el mundo real, no solo hablar. Y de por qué diseñar mal ese mecanismo puede costarle a tu empresa millones de dólares en reputación. Esto es MaquinarIA Pesada. Arrancamos.
+IAGO: [directo] En dos mil veintitrés, un agente de IA de Morgan Stanley procesó cien mil documentos internos para responder preguntas de asesores financieros en segundos. Pero sin herramientas externas, ese mismo modelo no podría ni consultar el precio actual de una acción. La diferencia entre un LLM que solo razona y uno que actúa en el mundo real se llama function calling. Y es el mecanismo que separa los chatbots de los agentes que completan tareas reales en tu empresa. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -16,85 +16,100 @@ IAGO: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera u
 
 # BLOQUE_PANORAMA
 
-IAGO: [didactico] Vamos a lo importante. Un modelo de lenguaje sin herramientas solo puede razonar sobre lo que ya sabe. Puede escribir texto, puede analizar lo que le des, pero no puede buscar información actualizada, no puede ejecutar código, no puede consultar una base de datos ni enviar un email. Es como tener un consultor brillante encerrado en una habitación sin teléfono ni internet. Para que un agente sea útil en el mundo real, necesita herramientas. Y tool use es el nombre técnico de esa capacidad.
+IAGO: [didactico] Vamos a lo concreto. Un modelo de lenguaje sin herramientas solo puede razonar sobre lo que ya sabe. Le preguntas cuánto vale una acción ahora mismo y no puede responder: sus datos de entrenamiento terminaron hace meses. Le pides que envíe un email y no tiene forma de hacerlo. Le pides que consulte tu base de datos interna y no puede acceder.
+MARIA: [curioso] ¿Y qué pasa cuando ese supuesto no se cumple?
+IAGO: [didactico] Function calling es el mecanismo técnico que permite a los modelos modernos expresar que necesitan ejecutar una función específica del mundo externo. No generan texto libre diciendo "llama a la función buscar web con argumento precio acción Tesla". Generan un bloque JSON estructurado con el nombre exacto de la función y los argumentos válidos según el esquema que tú definiste. Tú ejecutas esa función. Devuelves el resultado al modelo. Y el modelo continúa su razonamiento con información actualizada.
 
-MARIA: [curioso] ¿Y qué cuenta como herramienta en este contexto?
+MARIA: [curioso] ¿Y qué cambia eso en la práctica?
 
-IAGO: [explicativo] Cualquier función que el agente puede invocar para interactuar con sistemas externos. Buscar en la web, consultar una API de datos financieros, ejecutar código Python, leer un archivo, escribir en una base de datos, enviar un mensaje por Slack. Cada una de esas acciones es una herramienta. Y la calidad del set de herramientas que le das al agente es uno de los factores más determinantes en su capacidad real. Un agente con herramientas mal diseñadas es como darle a alguien un destornillador para clavar un clavo. Técnicamente puede intentarlo, pero el resultado va a ser desastroso.
+IAGO: [contundente] Que pasas de un chatbot que conversa a un agente que actúa. Un agente con function calling puede buscar información actualizada en la web, ejecutar código Python para analizar datos, consultar bases de datos empresariales, enviar emails, crear tickets en Jira, publicar mensajes en Slack, y completar tareas en sistemas reales. La calidad del conjunto de herramientas disponibles es uno de los factores más determinantes en la capacidad de un sistema agéntico. Sin herramientas bien diseñadas, el agente más sofisticado es inútil.
 
-MARIA: [directo] ¿Y function calling es lo mismo que tool use?
+MARIA: [analitica] Entonces el diseño de las herramientas importa tanto como el modelo.
 
-IAGO: [claro] Function calling es el mecanismo técnico específico. Es la forma en que los modelos modernos como GPT cuatro, Claude o Gemini expresan que necesitan ejecutar una función. En lugar de generar texto libre diciendo algo como "necesito buscar en la web el término X", el modelo genera un bloque estructurado en JSON con el nombre exacto de la función y los argumentos válidos según el esquema que tú como desarrollador definiste. Eso elimina ambigüedad. El desarrollador recibe ese JSON, ejecuta la función, y devuelve el resultado al modelo para que continúe su razonamiento.
+IAGO: [firme] Y ahí es donde la mayoría falla.
 
 # BLOQUE_COMO
 
-IAGO: [explicativo] El ciclo de function calling tiene cuatro pasos muy claros. Primero, el desarrollador define las herramientas disponibles con sus esquemas JSON. Cada herramienta tiene un nombre, una descripción de qué hace, y un esquema de parámetros con tipos y si son requeridos u opcionales. Segundo, el modelo recibe el mensaje del usuario más la lista de herramientas disponibles y decide si necesita usar alguna. Si decide que sí, devuelve un mensaje especial con el nombre de la función y los argumentos en formato estructurado. Tercero, el desarrollador ejecuta esa función con esos argumentos y devuelve el resultado al modelo. Cuarto, el modelo procesa el resultado y decide si necesita llamar a otra herramienta o si ya puede producir la respuesta final.
+IAGO: [explicativo] El ciclo de function calling tiene cuatro pasos claros. Primero: tú defines las herramientas con sus esquemas JSON. Nombre de la función, descripción de qué hace, parámetros con sus tipos, cuáles son obligatorios. Segundo: el modelo recibe el mensaje del usuario más la lista de herramientas disponibles y decide si necesita usar alguna.
+MARIA: [reflexivo] ¿Cuál es el principal riesgo en ese punto?
+IAGO: [explicativo] Tercero: si decide usarla, devuelve un mensaje especial. En Anthropic se llama tool use block. En OpenAI, function call. Ese mensaje contiene el nombre de la función y los argumentos en JSON. Cuarto: tú ejecutas la función con esos argumentos, devuelves el resultado como tool result al modelo, y el modelo procesa ese resultado para decidir si necesita otra herramienta o si ya puede dar la respuesta final.
 
-MARIA: [reflexivo] ¿Y qué pasa cuando el agente necesita llamar a varias herramientas a la vez?
+MARIA: [reflexivo] ¿Y cómo sabes que el modelo eligió la herramienta correcta?
 
-MARIA: [directo] Ahí entra el parallel tool calling. Los modelos modernos pueden decidir llamar a múltiples herramientas simultáneamente en un solo turno. Imagina que le preguntas a un agente financiero cómo está valorada una empresa respecto a sus competidores. En lugar de llamar primero a la herramienta que busca los datos financieros de esa empresa, esperar el resultado, y después llamar a la herramienta que busca datos del sector, el modelo puede invocar ambas herramientas en paralelo. Eso reduce la latencia total de forma dramática. La latencia es la de la llamada más lenta, no la suma de todas.
-IAGO: [directo] La escala cambia ese escenario por completo.
+IAGO: [serio] No lo sabes hasta que ves el resultado. Por eso el diseño de las herramientas es crítico. Una herramienta con nombre vago como "obtener datos" y descripción genérica es inutilizable. El modelo no sabe cuándo usarla. Las herramientas bien diseñadas tienen nombres descriptivos que el modelo puede entender: buscar web, obtener datos financieros de empresa, enviar email. Descripciones claras de qué hace la herramienta, cuándo usarla, qué devuelve. Y esquemas JSON precisos con tipos, restricciones, y ejemplos cuando son útiles.
 
-MARIA: [analitica] Ahora hablemos del diseño de herramientas. Porque una cosa es que el modelo pueda llamar funciones y otra muy distinta es que esas funciones estén bien diseñadas. ¿Qué hace que una herramienta sea buena?
+MARIA: [analitica] Ahora, algo que cambia la latencia. Los modelos modernos pueden llamar a varias herramientas en paralelo. ¿Cómo funciona eso?
 
-IAGO: [serio] Cuatro cosas. Primera, nombre descriptivo. Una herramienta llamada "buscar en la web" es mucho mejor que una llamada "herramienta uno". El modelo necesita entender qué hace con solo leer el nombre. Segunda, descripción clara.
-MARIA: [curioso] ¿Y qué pasa cuando ese supuesto no se cumple?
-IAGO: [serio] No basta con decir "obtiene datos". Tienes que explicar qué hace exactamente, cuándo usarla, qué devuelve, y los casos límite importantes. Tercera, esquema JSON preciso con tipos, restricciones y ejemplos cuando sean útiles. Y cuarta, comportamiento predecible. La misma herramienta con los mismos argumentos debe producir el mismo resultado, o documentar explícitamente si es no determinista.
+MARIA: [conversacional] Piensa en un agente de análisis financiero. Le preguntas cómo está valorada una empresa respecto a sus competidores. El agente necesita tres cosas: los datos financieros de la empresa, el benchmark del sector, y las noticias recientes. Sin llamadas paralelas, el modelo llama primero a obtener datos financieros de empresa, espera el resultado, luego llama a obtener benchmark del sector, espera, luego busca noticias, espera. Tres llamadas secuenciales. Con parallel tool calling, el modelo decide llamar a las tres herramientas simultáneamente en un solo turno. Tú ejecutas las tres llamadas con asyncio o threading, devuelves los tres resultados juntos, y el modelo los usa para construir el análisis. La latencia total es igual a la de la llamada más lenta, no a la suma de las tres.
+IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
 
-MARIA: [firme] Y aquí viene un error que veo constantemente en empresas que están implementando agentes. Definen cincuenta herramientas porque creen que más es mejor. Es como darle a alguien una caja de herramientas con cincuenta destornilladores diferentes. El agente se confunde, elige la herramienta incorrecta, o tarda más en decidir. La regla práctica es entre cinco y quince herramientas bien definidas. Eso es más efectivo que cincuenta herramientas ambiguas.
+MARIA: [directo] ¿Qué modelos soportan eso?
 
-IAGO: [pausado] Y hay otro concepto técnico que importa aquí: herramientas con estado versus sin estado. Las herramientas sin estado producen siempre el mismo resultado con los mismos argumentos. Una búsqueda web, una consulta a base de datos. Son las más simples de usar y de testear. Pero las herramientas con estado modifican el sistema externo. Enviar un email, crear un registro en la base de datos, publicar un mensaje en Slack. Esas requieren mucho más cuidado porque tienen efectos secundarios. El agente no debe llamarlas repetidamente si ya las ejecutó, y necesitas mecanismos de rollback para los casos donde la acción fue incorrecta.
+IAGO: [claro] GPT cuatro, Claude tres punto cinco en adelante, Gemini. Es una capacidad estándar en los modelos de frontera actuales.
+
+MARIA: [tenso] Y ahora el problema que nadie quiere admitir hasta que lo ves en producción. Tool hallucination. El modelo invoca una herramienta que no existe, pasa argumentos del tipo incorrecto, o peor: genera resultados inventados para una herramienta sin haberla llamado realmente. ¿Cómo lo previenes?
+
+MARIA: [firme] Tres capas de defensa. Primera: esquemas JSON estrictos. El structured output del modelo verifica que los argumentos son del tipo correcto antes de devolvértelos. Si definiste que el parámetro número de resultados es un entero entre uno y veinte, el modelo no puede pasar una cadena de texto.
+IAGO: [directo] El rendimiento en producción depende de eso.
+MARIA: [firme] Segunda: validación de argumentos en el cliente antes de ejecutar la herramienta. No asumas que el JSON que devuelve el modelo es seguro. Valídalo. Tercera: logging de todas las llamadas a herramientas con sus argumentos para auditoría. Si el modelo empieza a alucinar herramientas, lo ves en los logs y puedes corregir las descripciones.
+IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
+
+MARIA: [reflexivo] ¿Y cuántas herramientas debería tener un agente?
+
+IAGO: [contundente] Entre cinco y quince bien definidas son más efectivas que cincuenta ambiguamente definidas. Un agente con cincuenta herramientas disponibles tiene dificultades para seleccionar la correcta. El modelo puede confundir herramientas similares o elegir la menos adecuada. La regla práctica: menos herramientas, mejor diseñadas.
 
 # BLOQUE_REALIDAD
 
-MARIA: [serio] Vamos a lo que pasa cuando esto se implementa en empresas reales. Porque el diseño de herramientas no es un ejercicio teórico. Es la diferencia entre un agente que funciona y uno que destruye valor. Según el informe State of AI de McKinsey de dos mil veinticinco, el treinta y tres por ciento de las empresas que han implementado agentes reportan incidentes de seguridad relacionados con herramientas mal diseñadas. Eso incluye acceso no autorizado a datos, ejecución de código malicioso, y modificaciones no intencionadas de sistemas críticos.
+MARIA: [analitica] Vamos a casos reales documentados. Morgan Stanley implementó un sistema de RAG con function calling para sus asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural. El sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. El socio tecnológico fue OpenAI con GPT cuatro. Esto lo presentaron públicamente en OpenAI DevDay dos mil veintitrés.
 
-IAGO: [tenso] ¿Y cuál es el riesgo más común?
+IAGO: [conversacional] ¿Qué herramientas específicas usaban?
 
-MARIA: [contundente] Tool hallucination. El modelo invoca una herramienta con argumentos incorrectos. Por ejemplo, pasa una cadena de texto donde se espera un número. O invoca una herramienta que no existe en el set disponible porque confunde nombres similares. O lo más peligroso: genera resultados inventados para una herramienta sin haberla llamado realmente. Las mitigaciones son esquemas JSON estrictos que verifiquen los tipos, validación de argumentos en el cliente antes de ejecutar la herramienta, y logging de todas las llamadas con sus argumentos para auditoría posterior.
+MARIA: [claro] Búsqueda vectorial sobre embeddings de los documentos, extracción de metadatos, y generación de resumen. Tres herramientas. No cincuenta. Y cada una con un esquema JSON estricto que definía exactamente qué argumentos aceptaba y qué devolvía.
 
-MARIA: [analitica] Un caso real documentado es el de Morgan Stanley. Implementaron un sistema de RAG con tool use para sus asesores financieros. Base de conocimiento con más de cien mil documentos internos. Los asesores hacen preguntas en lenguaje natural y el sistema recupera documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. Pero lo interesante es que Morgan Stanley no dio al agente acceso a herramientas de escritura. Solo lectura. Eso eliminó el riesgo de que el agente modificara documentos o enviara información incorrecta a clientes.
-IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
+MARIA: [tenso] Ahora un caso de ejecución de código en sandbox. Los agentes de análisis de datos pueden escribir y ejecutar código Python para procesar datasets con pandas y numpy, generar visualizaciones con matplotlib, calcular estadísticas complejas, ejecutar modelos de machine learning. Pero ejecutar código arbitrario generado por un LLM sin aislamiento es un riesgo de seguridad crítico. El código podría borrar archivos del sistema, exfiltrar datos, consumir todos los recursos. La solución: sandbox. Contenedores Docker efímeros, microVMs como Firecracker, o servicios de ejecución de código en la nube como E dos B o Modal. El código se ejecuta en un entorno aislado sin acceso al sistema del usuario.
 
-MARIA: [reflexivo] Otro caso es el de agentes de análisis de datos con ejecución de código en sandbox. El agente puede escribir y ejecutar código Python para procesar datasets, generar visualizaciones, calcular estadísticas complejas. Pero ese código se ejecuta en un contenedor aislado sin acceso al sistema del usuario. Servicios como E dos B o Modal proporcionan esos sandboxes. La regla dura aquí es: nunca permitas ejecución de código arbitrario sin sandbox. El código generado por el modelo puede hacer rm menos rf barra, exfiltrar datos, o consumir todos los recursos del sistema.
-IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
+IAGO: [serio] ¿Cuál es el trade off?
 
-MARIA: [directo] Y el reto empresarial más grande que veo es la falta de documentación de herramientas. Las empresas definen herramientas con descripciones vagas tipo "obtiene datos" o "procesa información". Eso es inutilizable. Una descripción de alta calidad incluye: nombre descriptivo, qué hace exactamente, cuándo usarla versus cuándo no, qué devuelve, formato de los parámetros con ejemplos, y los casos edge importantes. Sin eso, el agente va a fallar de formas impredecibles.
+MARIA: [directo] Latencia. Crear un contenedor efímero añade entre quinientos milisegundos y dos segundos por ejecución. Pero es el precio de la seguridad. No hay alternativa segura a velocidad nativa.
 
-IAGO: [claro] Y hay un límite técnico que las empresas subestiman: la cantidad de herramientas que un modelo puede manejar efectivamente. Aunque técnicamente puedes definir cien herramientas, el modelo tiene más dificultades para seleccionar la correcta cuando el set es grande. La ventana de contexto se llena de definiciones de herramientas y queda menos espacio para el razonamiento real.
+MARIA: [reflexivo] Y un caso del sector legal. Harvey AI, startup fundada en dos mil veintidós, especializada en IA para bufetes. Tecnología base: LLM con fine tuning sobre corpus jurídico, integración con bases de datos legales como Westlaw y LexisNexis. Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera. Casos de uso: redacción de contratos, due diligence, investigación jurídica, análisis de precedentes. Resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
 
-MARIA: [firme] La oportunidad de negocio aquí es clara. Las empresas que diseñan bien sus herramientas y las documentan correctamente pueden escalar agentes de forma segura. Las que no lo hacen van a enfrentarse a incidentes de seguridad, pérdida de confianza de usuarios, y costes operativos altos por debugging constante. El diseño de herramientas no es un detalle de implementación. Es arquitectura crítica.
+IAGO: [curioso] ¿Qué herramientas específicas ofrecían?
+
+MARIA: [claro] Búsqueda semántica en bases de datos jurídicas, extracción de cláusulas de contratos, comparación de precedentes, y generación de borradores de documentos legales. Cada herramienta con validación estricta de argumentos para evitar que el modelo generara referencias a casos que no existen.
+
+MARIA: [firme] El reto documentado que enfrentan las empresas con function calling: el equilibrio entre dar al agente suficientes herramientas para ser útil y no darle tantas que se confunda. Según estudios recientes de Gartner, el ochenta por ciento de los proyectos de agentes en producción empiezan con más de treinta herramientas y terminan reduciendo a menos de diez después de ver los errores en logs. La oportunidad concreta: diseñar conjuntos de herramientas especializados por dominio en lugar de catálogos genéricos. Un agente de ITSM no necesita las mismas herramientas que un agente de análisis financiero.
 
 # CIERRE_CONCEPTOS
 
-IAGO: [directo] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: function calling es el mecanismo que permite a los modelos invocar funciones externas de forma estructurada mediante JSON, eliminando ambigüedad.
+IAGO: [didactico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: function calling permite a los modelos invocar funciones externas de forma estructurada mediante bloques JSON, no texto libre.
 
-MARIA: [claro] Segundo: el diseño de herramientas determina la capacidad real del agente, y entre cinco y quince herramientas bien documentadas son más efectivas que cincuenta mal definidas.
+MARIA: [claro] Segundo: el diseño de herramientas importa más que la cantidad. Entre cinco y quince herramientas bien definidas son más efectivas que cincuenta ambiguas.
 
-IAGO: [contundente] Tercero: la ejecución de código arbitrario sin sandbox es un riesgo de seguridad crítico, y tool hallucination se mitiga con esquemas estrictos y validación en cliente.
+IAGO: [contundente] Tercero: la ejecución de código arbitrario generado por un LLM requiere sandbox obligatorio. Sin aislamiento, es un riesgo de seguridad crítico.
 
 # CIERRE_FINAL
 
-IAGO: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+IAGO: [calido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
 
 # VERIFICACIONES
 ##
-## PALABRAS TOTALES : 1647 (objetivo: 1400-1850)
-## MEDIA PALABRAS/INTERVENCION : 77.3
+## PALABRAS TOTALES : 1579 (objetivo: 1400-1850)
+## MEDIA PALABRAS/INTERVENCION : 69.2
 ##
 ## COBERTURA DE CONCEPTOS DEL PDF:
 ## [FALTA] seccion: 0 menciones
-## [OK] json: 6 menciones
-## [OK] function calling: 5 menciones
-## [FALTA] llm: 0 menciones
-## [OK] api: 1 menciones
-## [OK] ejecucion de codigo: 4 menciones
+## [OK] json: 8 menciones
+## [OK] function calling: 7 menciones
+## [OK] llm: 4 menciones
+## [FALTA] api: 0 menciones
+## [OK] ejecucion de codigo: 3 menciones
 ## [OK] el modelo puede: 2 menciones
-## [OK] herramienta: 15 menciones
+## [OK] herramienta: 8 menciones
 ## Cobertura: 75% (objetivo: 75%)
 ##
 ## TOKENS ANTHROPIC:
 ## input_tokens: 21271
-## output_tokens: 3446
+## output_tokens: 3408
 ## cache_read: 0
-## total: 24717
+## total: 24679
