@@ -715,6 +715,13 @@ obligatoria en validación pero NO genera audio. El sonido viene de
       "eso es",
       "totalmente"
     ],
+    "blacklist_placeholder_phrases": [
+      "Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación",
+      "La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos",
+      "Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí",
+      "Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel",
+      "Déjame entender bien este punto antes de seguir. ¿Qué implica esto en la práctica concreta para las organizaciones"
+    ],
     "hook_templates": ["dato", "pregunta_incomoda", "caso"],
     "preescritura_required": {
       "datos_numericos_min": 4,

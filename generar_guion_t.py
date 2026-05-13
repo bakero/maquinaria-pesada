@@ -315,6 +315,12 @@ INSTRUCCIONES CRÍTICAS:
     MAL: "backpropagation es el algoritmo que..."
     BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
 17. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Intercala.
+18. REGLA DE DIÁLOGO NATURAL — PROHIBICIONES:
+    PROHIBIDO: enumeraciones "Primero... Segundo... Tercero... Cuarto..." en el turno de un solo speaker.
+    Si necesitas listar 3+ puntos, distribúyelos entre ambos speakers con reacciones entre ellos.
+    PROHIBIDO: que un speaker se haga una pregunta y la responda él mismo en el turno siguiente.
+    PROHIBIDO: intervenciones genéricas de relleno sin contenido específico del tema ("Bien apuntado,
+    déjame añadir la perspectiva técnica...", "Hay algo que me genera curiosidad en este punto...").
 18. REFERENCIAS TEMPORALES — REGLA DURA:
     Cuando hables del ESTADO ACTUAL, NO cites año: usa "hoy", "actualmente", "en este momento".
     Solo cita un año cuando esté pegado a una publicación identificable por nombre propio.

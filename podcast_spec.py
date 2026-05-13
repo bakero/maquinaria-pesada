@@ -945,6 +945,27 @@ def validate_script_text(
             f"{stats['avg_words_per_intervention']:.1f} (maximo recomendado: {avg_max})."
         )
 
+    # ── 25. HARD: frases placeholder genéricas (contenido de relleno) ──────────
+    placeholder_phrases = rules.get("blacklist_placeholder_phrases", [])
+    for phrase in placeholder_phrases:
+        if phrase.lower() in text.lower():
+            issues.append(
+                f"Frase placeholder detectada (contenido de relleno sin valor): '{phrase[:60]}...'"
+            )
+
+    # ── 26. WARN: lista enumerada en voz alta (Primero/Segundo/Tercero/Cuarto) ─
+    enum_pattern = re.compile(
+        r"(Primero|Primera)[,:].*?(Segundo|Segunda)[,:].*?(Tercero|Tercera)[,:]",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for blk in stats["blocks"]:
+        blk_text = blk["text"]
+        if enum_pattern.search(blk_text):
+            issues.append(
+                f"[WARN] Bloque {blk['index']} ({blk.get('section','?')}) usa lista enumerada "
+                f"(Primero/Segundo/Tercero): distribuye los puntos entre ambos speakers."
+            )
+
     return issues
 
 

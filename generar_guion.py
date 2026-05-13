@@ -422,6 +422,13 @@ INSTRUCCIONES CRÍTICAS:
 17. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
     MAL: "el 3.7% de empresas", "costó $3M". BIEN: "el tres punto siete por ciento", "costó tres millones".
+18. REGLA DE DIÁLOGO NATURAL — PROHIBICIONES:
+    PROHIBIDO: enumeraciones "Primero... Segundo... Tercero... Cuarto..." en el turno de un solo speaker.
+    Si necesitas listar 3+ puntos, distribúyelos entre los dos speakers o introduce reacciones entre ellos.
+    PROHIBIDO: que un speaker se haga una pregunta y la responda él mismo en el turno siguiente.
+    Si IAGO termina con una pregunta retórica, la respuesta la da MARIA (y viceversa).
+    PROHIBIDO: intervenciones genéricas de relleno sin contenido específico del tema ("Bien apuntado,
+    déjame añadir la perspectiva técnica...", "Hay algo que me genera curiosidad en este punto...").
     Excepción: años de papers donde el año es parte del nombre ("el informe McKinsey 2024").
 18. REGLA TECNICISMO ACELERADO:
     Todo tecnicismo largo (>3 sílabas, inglés o compuesto) necesita frase introductoria previa.
@@ -525,16 +532,26 @@ def _fix_antipingpong(script_text: str, spec: dict) -> str:
     if not inserts:
         return script_text
 
-    # Bridges para cada speaker dominante: 4 frases, sin blacklist, tag válido
+    # Bridges cortos (≤30 palabras → exentos del check min-frases con reaction_word_limit=30)
     BRIDGES_FROM_IAGO: list[str] = [
-        "MARIA: [reflexivo] Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí. No quiero perder el hilo de la progresión lógica.",
-        "MARIA: [curioso] Déjame entender bien este punto antes de seguir. ¿Qué implica esto en la práctica concreta para las organizaciones? Porque a veces los conceptos suenan claros en abstracto pero la implementación tiene sus fricciones propias. ¿Cuáles son las más habituales aquí?",
-        "MARIA: [analitica] Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel y la implementación en sistemas con deuda técnica. ¿Dónde suelen aparecer los primeros problemas?",
+        "MARIA: [curioso] ¿Dónde suele aparecer el primer problema en producción?",
+        "MARIA: [reflexivo] ¿Y si los datos de partida no están limpios?",
+        "MARIA: [directo] ¿Cuánto tiempo lleva implementarlo correctamente?",
+        "MARIA: [serio] ¿Hay casos donde este enfoque no escale bien?",
+        "MARIA: [curioso] ¿Qué riesgo real implica ignorar ese punto?",
+        "MARIA: [reflexivo] ¿Cómo lo validas antes de ponerlo en producción?",
+        "MARIA: [directo] ¿Y en equipos sin experiencia técnica funciona igual?",
+        "MARIA: [serio] ¿Dónde está el límite de este enfoque?",
     ]
     BRIDGES_FROM_MARIA: list[str] = [
-        "IAGO: [directo] Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación que cambia cómo se interpreta lo que acabas de describir. El mecanismo interno es lo que determina la robustez real del sistema.",
-        "IAGO: [reflexivo] La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos. Lo que funciona con datos limpios no funciona igual con inputs variables. El umbral de confianza es el parámetro que más afecta al resultado final.",
-        "IAGO: [explicativo] Hay un matiz importante ahí. Los datos de producción raramente cumplen las condiciones del laboratorio. El modelo tiene que ser robusto a esa variabilidad. Y eso determina qué arquitectura es viable en la práctica.",
+        "IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.",
+        "IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.",
+        "IAGO: [directo] La escala cambia ese escenario por completo.",
+        "IAGO: [serio] El sistema tiene que manejar eso explícitamente.",
+        "IAGO: [reflexivo] En producción real, ese factor determina la arquitectura.",
+        "IAGO: [explicativo] Hay un aspecto de rendimiento que completa ese cuadro.",
+        "IAGO: [directo] El trade-off técnico aquí es latencia versus precisión.",
+        "IAGO: [serio] Técnicamente, ese patrón tiene un coste que hay que gestionar.",
     ]
 
     result = list(lines)
@@ -745,17 +762,27 @@ def _inject_cta_if_missing(script_text: str, spec: dict) -> str:
 
 
 # Bridges usados por _split_oversized_blocks.
-# Requisitos: etiqueta válida en allowed_tags, sin interjecciones de la blacklist
-# (exactamente, claro que sí, muy bien dicho, tienes toda la razón, exacto,
-#  por supuesto, eso es, totalmente), 4 frases para no disparar el warn de frases mínimas.
+# Bridges cortos (≤30 palabras → exentos del check min-frases con reaction_word_limit=30)
+# Distintos de los de _fix_antipingpong para maximizar variedad en el guion.
 _SPLIT_BRIDGES_FROM_IAGO = [
-    "MARIA: [analitica] Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel y la implementación en sistemas con deuda técnica. ¿Dónde suelen aparecer los primeros problemas?",
-    "MARIA: [reflexivo] Tiene lógica desde la perspectiva técnica. ¿Tienes un caso donde ese patrón haya mostrado sus límites? Entender dónde falla un modelo ayuda tanto como saber dónde funciona. Las excepciones revelan las premisas ocultas.",
-    "MARIA: [curioso] El contexto organizativo importa tanto como el técnico en estos casos. ¿Qué implica eso para los equipos que no parten de una base de datos estructurada? El punto de partida condiciona mucho el recorrido que es viable.",
+    "MARIA: [curioso] ¿Y qué pasa cuando ese supuesto no se cumple?",
+    "MARIA: [reflexivo] ¿Cuál es el principal riesgo en ese punto?",
+    "MARIA: [directo] ¿Cómo se mide eso en un sistema real?",
+    "MARIA: [serio] ¿Hay alternativas más sencillas para equipos pequeños?",
+    "MARIA: [curioso] ¿Cuándo deja de ser suficiente este enfoque?",
+    "MARIA: [reflexivo] ¿Qué caso de uso lo justifica mejor?",
+    "MARIA: [directo] ¿Existe alguna trampa habitual al implementarlo?",
+    "MARIA: [serio] ¿Y si el volumen de datos es bajo al principio?",
 ]
 _SPLIT_BRIDGES_FROM_MARIA = [
-    "IAGO: [directo] Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación que cambia cómo se interpreta lo que acabas de describir. El mecanismo interno es lo que determina la robustez real del sistema.",
-    "IAGO: [reflexivo] La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos. Lo que funciona con datos limpios no funciona igual con inputs variables. El umbral de confianza es el parámetro que más afecta al resultado final.",
+    "IAGO: [reflexivo] Hay un matiz técnico que conviene añadir.",
+    "IAGO: [explicativo] Desde la implementación, ese punto tiene una capa más.",
+    "IAGO: [directo] El rendimiento en producción depende de eso.",
+    "IAGO: [serio] La arquitectura condiciona mucho cómo se gestiona eso.",
+    "IAGO: [reflexivo] Técnicamente hay un caso límite que importa aquí.",
+    "IAGO: [explicativo] Ese comportamiento cambia con la escala.",
+    "IAGO: [directo] El sistema distribuido introduce un factor extra.",
+    "IAGO: [serio] Vale la pena ver el impacto en latencia de eso.",
 ]
 
 # Secciones donde NO se parte: el modelo ya controla la longitud allí
@@ -1083,16 +1110,12 @@ def enforce_fixed_phrases(text: str, spec: dict) -> str:
 
         if position == "last_block":
             # Reemplazar contenido completo del bloque con la frase fija
-            new_content = f"<calido>{phrase}</calido>" if not tag else f"{tag}{phrase}</{tag.strip('<>')}>"
+            new_content = f"[calido]{phrase}" if not tag else f"[{tag}]{phrase}"
             lines[target_idx] = f"{speaker}: {new_content}"
         else:
             # Prefijar la frase al bloque (para conceptos_closing)
             plain = remove_leading_tag(content)
-            if tag:
-                inner_tag = tag.strip("<>")
-                new_content = f"{tag}{phrase} {plain}</{inner_tag}>"
-            else:
-                new_content = f"{phrase} {plain}"
+            new_content = f"[{tag}]{phrase} {plain}" if tag else f"{phrase} {plain}"
             lines[target_idx] = f"{speaker}: {new_content}"
 
         return "\n".join(lines)
