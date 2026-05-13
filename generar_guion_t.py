@@ -615,6 +615,13 @@ def main() -> None:
                             f"  ACCIÓN: CIERRE_CONCEPTOS debe tener EXACTAMENTE 3 bloques. "
                             f"El opener 'No te puedes ir...' y el primer concepto van EN UN SOLO bloque del líder."
                         )
+                    elif "consecutivos del mismo speaker" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: NUNCA escribas 3 bloques seguidos del mismo speaker. "
+                            f"Después de cada 2 bloques de IAGO, MARIA debe intervenir (al menos 1 bloque). "
+                            f"Revisa toda la sección y alterna obligatoriamente."
+                        )
                     else:
                         feedback_parts.append(f"- {issue}")
                 # Include soft warns about short blocks and enumerated lists
@@ -650,9 +657,9 @@ def main() -> None:
         draft = _fix_digit_numbers_in_dialogue(draft)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
         draft = _rebalance_shared_block(draft, spec)
-        draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
         draft = _split_oversized_sentence_blocks(draft, spec=spec)
+        draft = _fix_antipingpong(draft, spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)
         draft_with_ver = draft.rstrip() + "\n\n" + verification

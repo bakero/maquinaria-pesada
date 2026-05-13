@@ -391,9 +391,11 @@ INSTRUCCIONES CRÍTICAS:
 12. LONGITUD DEL GUION — REGLA DURA:
     El total del guion (incluyendo sección VERIFICACIONES) debe estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
     La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO puro debe tener entre {rules['minimum_word_count']-200} y {rules['maximum_word_count']-200} palabras.
-    OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']+200} palabras de diálogo (margen de seguridad frente al mínimo total).
-    CONTROL EN TIEMPO REAL: antes de APLICACION_PRACTICA cuenta las palabras del diálogo generado hasta ahí.
-    Si llevas menos de {rules['minimum_word_count']-500} palabras, AÑADE un bloque extra completo en BLOQUE_DESTACADO antes de continuar.
+    OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']+300} palabras de diálogo (margen de seguridad frente al mínimo total).
+    CONTROL EN TIEMPO REAL — DOS CHECKPOINTS OBLIGATORIOS:
+    1. Al terminar BLOQUE_PANORAMA: debes llevar al menos {rules['minimum_word_count']-700} palabras. Si no, añade 1-2 bloques IAGO más.
+    2. Al terminar BLOQUE_DESTACADO: debes llevar al menos {rules['minimum_word_count']-300} palabras. Si no, añade un sub-bloque completo (4-6 frases, 70-100 palabras) antes de continuar.
+    Si al llegar a APLICACION_PRACTICA llevas menos de {rules['minimum_word_count']-200} palabras, AÑADE un bloque extra completo antes de continuar.
     REGLA DE DENSIDAD POR SECCIÓN:
     - BLOQUE_PANORAMA: cada bloque IAGO debe tener 4-6 frases (70-100 palabras). MARIA solo hace preguntas ≤20 palabras.
     - BLOQUE_DESTACADO: cada bloque de desarrollo debe tener 4-6 frases. Ambos speakers desarrollan conceptos completos.
@@ -1327,6 +1329,13 @@ def main() -> None:
                             f"  ACCIÓN: el speaker minoritario DEBE tener 2+ bloques de desarrollo "
                             f"de 4-6 frases cada uno. Redistribuye los conceptos."
                         )
+                    elif "consecutivos del mismo speaker" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: NUNCA escribas 3 bloques seguidos del mismo speaker. "
+                            f"Después de cada 2 bloques de IAGO, MARIA debe intervenir. "
+                            f"Alterna obligatoriamente en toda la sección."
+                        )
                     else:
                         feedback_parts.append(f"- {issue}")
                 # Always include soft warns about short blocks (≤3 frases) in feedback
@@ -1377,9 +1386,9 @@ def main() -> None:
         draft = _inject_cta_if_missing(draft, spec)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
         draft = _rebalance_shared_block(draft, spec)
-        draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
         draft = _split_oversized_sentence_blocks(draft, spec=spec)
+        draft = _fix_antipingpong(draft, spec)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
