@@ -567,13 +567,15 @@ def main() -> None:
     local_issues: list[str] = []
     draft = ""
     best_draft = ""
+    best_issues: list[str] = []
     best_score: tuple[int, int, int] = (999, 999, 999)  # (hard_count, word_deficit, soft_count)
 
     for attempt in range(1, args.max_intentos + 1):
         print(f"\n  [2/3] Generando guion (intento {attempt}/{args.max_intentos})...")
 
-        if attempt > 1 and local_issues:
-            all_hard = [i for i in local_issues if not i.startswith("[WARN]")]
+        feedback_issues = best_issues if best_issues else local_issues
+        if attempt > 1 and feedback_issues:
+            all_hard = [i for i in feedback_issues if not i.startswith("[WARN]")]
             if all_hard:
                 feedback_parts = []
                 for issue in all_hard:
@@ -665,6 +667,7 @@ def main() -> None:
         if score < best_score:
             best_score = score
             best_draft = draft_with_ver
+            best_issues = local_issues[:]
 
         if not hard_issues:
             draft = draft_with_ver
