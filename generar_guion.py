@@ -393,11 +393,11 @@ INSTRUCCIONES CRÍTICAS:
     La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO puro debe tener entre {rules['minimum_word_count']-200} y {rules['maximum_word_count']-200} palabras.
     OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']-100} palabras de diálogo para asegurar superar el mínimo total con la VERIFICACIONES.
     CONTROL EN TIEMPO REAL: antes de APLICACION_PRACTICA cuenta las palabras del diálogo generado hasta ahí.
-    Si llevas menos de {rules['minimum_word_count']-600} palabras, AÑADE un bloque más de IAGO en BLOQUE_DESTACADO antes de continuar.
-    NÚMERO DE BLOQUES REQUERIDOS:
-    - BLOQUE_PANORAMA: 3-4 bloques IAGO de desarrollo (cada uno 4-6 frases, 70-100 palabras) + máximo 3 preguntas MARIA
-    - BLOQUE_DESTACADO: 2-3 conceptos, cada concepto con 2-3 bloques de desarrollo de 4-6 frases
-    - APLICACION_PRACTICA: mínimo 4 bloques de desarrollo (2 IAGO + 2 MARIA) de 4-6 frases cada uno
+    Si llevas menos de {rules['minimum_word_count']-700} palabras, AÑADE contenido en BLOQUE_DESTACADO antes de continuar.
+    REGLA DE DENSIDAD POR SECCIÓN:
+    - BLOQUE_PANORAMA: cada bloque IAGO debe tener 4-6 frases (70-100 palabras). MARIA solo hace preguntas ≤12 palabras.
+    - BLOQUE_DESTACADO: cada bloque de desarrollo debe tener 4-6 frases. Ambos speakers desarrollan conceptos completos.
+    - APLICACION_PRACTICA: mínimo 5 bloques de desarrollo de 4-6 frases (no 4). Cada bloque: 70-100 palabras.
     REGLA ABSOLUTA: todo bloque de desarrollo (no preguntas) DEBE tener mínimo 4 frases. Cuenta antes de avanzar.
     Si al llegar a APLICACION_PRACTICA llevas más de {int(rules['maximum_word_count'] * 0.72)} palabras, limita APLICACION_PRACTICA a 400 palabras.
 13. REGLA CIERRE — PRIMERA:
@@ -845,6 +845,89 @@ def _split_oversized_blocks(script_text: str, max_words: int = 190, spec: dict |
     return "\n".join(result)
 
 
+def _split_oversized_sentence_blocks(script_text: str, max_sentences: int = 10, spec: dict | None = None) -> str:
+    """Divide bloques con > max_sentences frases en dos mitades, insertando un puente.
+
+    El validador emite soft-warn para bloques con más de max_sentences frases.
+    Esta función los parte en la frase N//2 para eliminar el warn.
+    Solo actúa fuera de HOOK/INTRO/SALUDO/CIERRE_FINAL/VERIFICACIONES.
+    """
+    lines = script_text.split("\n")
+    result: list[str] = []
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*(.*)", re.DOTALL)
+    bridge_counter = 0
+    skip_section = False
+
+    # Sentence boundary: ends with .!? not preceded by digit (decimal) or single letter (abbrev)
+    sent_end_pat = re.compile(r"[.!?]+\s+")
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            section_name = stripped[2:].strip()
+            skip_section = section_name in _NO_SPLIT_SECTIONS
+            result.append(line)
+            continue
+
+        if skip_section:
+            result.append(line)
+            continue
+
+        m = speaker_pat.match(stripped)
+        if not m:
+            result.append(line)
+            continue
+
+        speaker = m.group(1).upper()
+        tag = (m.group(2) or "").strip()
+        text = m.group(3).strip()
+
+        # Count sentences
+        sentences = [s.strip() for s in sent_end_pat.split(text) if s.strip()]
+        # Handle last sentence (no trailing space after sentence end)
+        if text and text[-1] in ".!?":
+            pass  # already split correctly
+        else:
+            # Merge the last partial segment (no sentence-ending punctuation)
+            pass
+
+        if len(sentences) <= max_sentences:
+            result.append(line)
+            continue
+
+        # Split at the midpoint
+        mid = len(sentences) // 2
+        # Reconstruct first and second halves from original text
+        # Find split position in original text by finding end of mid-th sentence
+        pos = 0
+        for _i in range(mid):
+            m_end = sent_end_pat.search(text, pos)
+            if m_end:
+                pos = m_end.end()
+            else:
+                pos = len(text)
+                break
+
+        first_text = text[:pos].strip()
+        second_text = text[pos:].strip()
+
+        if not second_text:
+            result.append(line)
+            continue
+
+        bridges = _SPLIT_BRIDGES_FROM_IAGO if speaker == "IAGO" else _SPLIT_BRIDGES_FROM_MARIA
+        bridge = bridges[bridge_counter % len(bridges)]
+        bridge_counter += 1
+
+        cont_tag = tag if tag else "[directo]"
+        prefix = f"{speaker}: {tag}" if tag else f"{speaker}:"
+        result.append(f"{prefix} {first_text}")
+        result.append(bridge)
+        result.append(f"{speaker}: {cont_tag} {second_text}")
+
+    return "\n".join(result)
+
+
 def _fix_tts_closing_tags(content: str) -> str:
     """Reemplaza tags de cierre erroneos (</iago>, </maria>) por el tag de apertura correcto."""
     open_match = re.search(r"<([a-zA-Z_]+)>", content)
@@ -1178,20 +1261,35 @@ def main() -> None:
 
         if attempt > 1 and local_issues:
             hard_issues = [i for i in local_issues if not i.startswith("[WARN]")]
+            soft_issues_retry = [i for i in local_issues if i.startswith("[WARN]")]
             if hard_issues:
-                # Feedback específico para word count bajo
+                # Feedback específico para word count bajo y bloques cortos
                 feedback_parts = []
+                has_word_count_fail = False
                 for issue in hard_issues:
                     wc_m = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", issue)
                     if wc_m:
+                        has_word_count_fail = True
                         actual, needed = int(wc_m.group(1)), int(wc_m.group(2))
                         diff = needed - actual
+                        # Find specific short blocks to call out
+                        short_block_msgs = [
+                            s for s in soft_issues_retry
+                            if re.search(r"solo \d frase", s) and "APLICACION" in s
+                        ]
+                        short_hint = ""
+                        if short_block_msgs:
+                            short_hint = (
+                                " Los siguientes bloques tienen pocas frases y deben ampliarse a 4-6: "
+                                + "; ".join(short_block_msgs[:3])
+                                + "."
+                            )
                         feedback_parts.append(
                             f"- {issue}\n"
-                            f"  ACCIÓN REQUERIDA: añade {diff} palabras más. "
-                            f"Amplía BLOQUE_PANORAMA (añade 1 bloque de IAGO de 4+ frases) "
-                            f"y APLICACION_PRACTICA (añade 2-3 frases a los bloques existentes). "
-                            f"NO recortes nada del intento anterior, solo AÑADE."
+                            f"  ACCIÓN REQUERIDA: añade {diff} palabras más."
+                            f"{short_hint} "
+                            f"Amplía APLICACION_PRACTICA: cada bloque de desarrollo debe tener "
+                            f"MÍNIMO 4 frases (70-100 palabras). NO recortes nada, solo AÑADE."
                         )
                     elif "BLOQUE_DESTACADO" in issue or "BLOQUE_COMO" in issue:
                         feedback_parts.append(
@@ -1201,6 +1299,14 @@ def main() -> None:
                         )
                     else:
                         feedback_parts.append(f"- {issue}")
+                # Also include soft warns about short blocks (≤3 frases) in non-word-count failures
+                if not has_word_count_fail:
+                    short_soft = [s for s in soft_issues_retry if re.search(r"solo [123] frase", s)]
+                    for s in short_soft[:3]:
+                        feedback_parts.append(
+                            f"- {s}\n"
+                            f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas."
+                        )
                 user_prompt_ext = (
                     user_prompt
                     + "\n\nFEEDBACK OBLIGATORIO DEL INTENTO ANTERIOR (corrige todos estos puntos):\n"
@@ -1226,6 +1332,7 @@ def main() -> None:
         draft = _rebalance_shared_block(draft, spec)
         draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
+        draft = _split_oversized_sentence_blocks(draft, spec=spec)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)

@@ -40,6 +40,7 @@ from generar_guion import (  # noqa: E402
     _fix_digit_numbers_in_dialogue,
     _rebalance_shared_block,
     _split_oversized_blocks,
+    _split_oversized_sentence_blocks,
     _trim_cierre_conceptos_if_excess,
 )
 from podcast_spec import (  # noqa: E402
@@ -628,6 +629,7 @@ def main() -> None:
         draft = _rebalance_shared_block(draft, spec)
         draft = _fix_antipingpong(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)
+        draft = _split_oversized_sentence_blocks(draft, spec=spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)
         draft_with_ver = draft.rstrip() + "\n\n" + verification
