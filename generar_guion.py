@@ -22,7 +22,7 @@ import json
 import os
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 import pdfplumber
@@ -35,19 +35,16 @@ SPEC_PATH = BASE_DIR / "PODCAST_M_SPEC.md"
 
 sys.path.insert(0, str(BASE_DIR))
 from podcast_spec import (
-    load_spec,
-    read_text,
     build_script_stats,
-    count_concept_mentions,
-    count_words,
     extract_theme_concepts,
+    guion_to_ep_code,
+    load_spec,
     normalize_text_for_match,
     opening_speaker,
+    read_text,
     remove_leading_tag,
     validate_script_text,
-    guion_to_ep_code,
 )
-
 
 # ---------------------------------------------------------------------------
 # Uso de tokens Anthropic
@@ -221,8 +218,8 @@ def make_anthropic_client():
         if not api_key:
             raise SystemExit("ANTHROPIC_API_KEY no encontrada en .env")
         return anthropic.Anthropic(api_key=api_key)
-    except ImportError:
-        raise SystemExit("Faltan dependencias: pip install anthropic")
+    except ImportError as err:
+        raise SystemExit("Faltan dependencias: pip install anthropic") from err
 
 
 def call_claude(client, model: str, system: str, user: str, max_tokens: int, temperature: float) -> tuple[str, object]:
@@ -268,14 +265,20 @@ def extract_concepts_with_claude(
         f"TEMA: {topic}\n\n"
         "PDF:\n"
         f"{pdf_text[:15000]}\n\n"
-        "Devuelve JSON exactamente así:\n"
-        '{"key_concepts": ["concepto1", "concepto2"], '
-        '"hard_for_audio": ["termino_visual1"]}'
+        "Devuelve JSON exactamente así (usa nombres CORTOS de 1-3 palabras, sin paréntesis ni explicaciones):\n"
+        '{"key_concepts": ["RPA", "embeddings", "RAG"], '
+        '"hard_for_audio": ["backpropagation"]}'
+        "\nLos key_concepts deben ser las palabras/siglas exactas tal como aparecen en el PDF."
     )
     try:
         text, resp = call_claude(client, model, system, user, max_tokens=1000, temperature=0.0)
         usage.add(resp)
-        data = json.loads(text)
+        # Strip markdown code fences if Haiku wraps the JSON
+        raw = text.strip()
+        if raw.startswith("```"):
+            raw = re.sub(r"^```(?:json)?\s*", "", raw)
+            raw = re.sub(r"\s*```$", "", raw.strip())
+        data = json.loads(raw)
         concepts   = [c.strip() for c in data.get("key_concepts", []) if c.strip()][:10]
         hard_audio = [c.strip() for c in data.get("hard_for_audio", []) if c.strip()][:5]
         return concepts, hard_audio
@@ -356,28 +359,48 @@ INSTRUCCIONES CRÍTICAS:
 4. Estructura obligatoria en orden (v5 — SIN BLOQUE_LIMITES):
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_DESTACADO → # APLICACION_PRACTICA → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (no las generes): BLOQUE_LIMITES, BLOQUE_TEMAS_CLAVE, BLOQUE_REALIDAD, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, BLOQUE_QUE, BLOQUE_COMO, INSERCION_1, INSERCION_2, INSERCION_3, INSERCION_EMPRESA
-6. BLOQUE_DESTACADO — criterios de selección de conceptos (aplica en este orden):
+6. BLOQUE_DESTACADO — criterios y estructura OBLIGATORIA:
+   Criterios de selección de los 2-3 conceptos (aplica en este orden):
    a) El más contraintuitivo del módulo (lo que la mayoría no sabe o cree lo contrario).
    b) El más relevante para profesionales no técnicos (CTOs, CEOs, directores de área).
    c) El que mejor conecta con la APLICACION_PRACTICA.
-   Solo 2-3 conceptos (NO todos los del módulo). Liderazgo compartido 40-60% entre ambos speakers.
-   Si hay 2 conceptos: IAGO lidera el primero, MARIA el segundo. Con 3: IAGO-MARIA-IAGO.
+   REPARTO POR CONCEPTO — el "líder" da la explicación COMPLETA del concepto (4-6 frases, 60-100 palabras):
+   - Con 2 conceptos: Concepto A → IAGO lidera (4-6 frases desarrollo) + MARIA 1-2 preguntas.
+                      Concepto B → MARIA lidera (4-6 frases desarrollo completo) + IAGO 1-2 preguntas.
+   - Con 3 conceptos: A→IAGO lidera, B→MARIA lidera, C→IAGO lidera.
+   OBLIGATORIO: MARIA debe tener al menos UN bloque de desarrollo de 4-6 frases (60-100 palabras).
+   EJEMPLO CORRECTO de MARIA liderando:
+     MARIA: [explicativo] La gobernanza de IA no es solo un conjunto de reglas formales. Es el sistema de toma de decisiones que determina quién es responsable de qué cuando un modelo falla. Piénsalo como la diferencia entre tener un reglamento interno y tener una estructura de auditoría real. El reglamento dice qué hacer. La gobernanza decide quién lo verifica y qué consecuencias hay si no se cumple.
+   PROHIBIDO: que MARIA solo haga preguntas de 5-10 palabras en BLOQUE_DESTACADO.
+   Objetivo cuantitativo: IAGO 40-60%, MARIA 40-60% del total de palabras del bloque.
 7. APLICACION_PRACTICA: 3 momentos internos SIEMPRE así:
    - Momento 1 (MARIA plantea, ~45-60s): "Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta es: ¿[pregunta operativa del módulo]?"
    - Momento 2 (IAGO detalla en HIGH-LEVEL, ~2-2.5 min): IAGO conecta el módulo con el sistema de forma CONCEPTUAL, NO técnica. Patrón: "esto que acabas de aprender es exactamente lo que hace posible que [X del sistema]". NO citar nombres de archivos, funciones, parámetros ni costes específicos. NO dar detalles de implementación. Debe sonar como revelación natural. Usa el material de los docs vivos en nivel conceptual.
    - Momento 3 (cierre conjunto MARIA+IAGO, ~30-45s): MARIA pregunta o señala el aprendizaje. IAGO lo aterriza. Frase final que conecta de vuelta con el módulo.
-8. CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
-   Lista 3-5 conceptos. Al menos uno conectado con APLICACION_PRACTICA.
+8. CIERRE_CONCEPTOS — estructura EXACTA:
+   La sección tiene entre 3 y 5 bloques hablados EN TOTAL (el validador cuenta todos los bloques, incluida la apertura).
+   Bloque 1 (apertura): {opener} dice exactamente: "{rules['concepts_closing_phrase']}"
+   Bloques 2-4: lista de 2 a 4 conceptos clave (uno por bloque, alternando speakers).
+   TOTAL bloques: 3 (1 apertura + 2 conceptos) a 5 (1 apertura + 4 conceptos). NUNCA 6.
+   Al menos un concepto conectado con APLICACION_PRACTICA.
 9. CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
    SOLO {opener} pronuncia el cierre (paridad). {other} NO responde ni añade nada. El guion termina cuando {opener} dice su última frase. HARD-FAIL si hay intervención de {other} tras el cierre.
    CTA OBLIGATORIA (integrar de forma natural antes de la frase final): mencionar que los episodios del módulo ya están disponibles. Ejemplo: "...y si quieres profundizar en cualquiera de estos conceptos, los episodios del módulo ya están disponibles en nuestras plataformas habituales." Debe sonar natural, no como anuncio.
 10. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
 11. Usa "Yago" en el texto hablado, nunca "Iago".
-12. REGLA DE LONGITUD — DURA:
-    El diálogo total NO debe superar {rules['maximum_word_count']} palabras.
-    Si llegas a APLICACION_PRACTICA habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
-    NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
-    Escribe CIERRE_CONCEPTOS en borrador mental ANTES de expandir los bloques centrales.
+12. LONGITUD DEL GUION — REGLA DURA:
+    El total del guion (incluyendo sección VERIFICACIONES) debe estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
+    La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO debe ser de ~{rules['minimum_word_count']-200} a ~{rules['maximum_word_count']-200} palabras.
+    NÚMERO DE FRASES POR INTERVENCIÓN (clave para alcanzar el mínimo):
+    - Bloques de desarrollo (BLOQUE_PANORAMA, BLOQUE_DESTACADO, APLICACION_PRACTICA): 4-6 frases (70-120 palabras)
+    - IAGO en BLOQUE_PANORAMA: 3-4 bloques de desarrollo (cada uno 4-6 frases, 70-100 palabras)
+    - MARIA en BLOQUE_PANORAMA: máximo 3 preguntas (8-15 palabras cada una)
+    - Concepto líder en BLOQUE_DESTACADO: 4-6 frases (70-100 palabras) de desarrollo real
+    - Reacciones/preguntas breves: 8-15 palabras máximo
+    REGLA ABSOLUTA: cada bloque de BLOQUE_PANORAMA, BLOQUE_DESTACADO o APLICACION_PRACTICA
+    que no sea una pregunta corta DEBE tener mínimo 4 frases. Si tienes solo 2-3 frases, AÑADE más.
+    AUTOCONTROL: antes de pasar al siguiente bloque, cuenta las frases. Si son menos de 4, amplía.
+    Si al llegar a APLICACION_PRACTICA llevas más de {int(rules['maximum_word_count'] * 0.72)} palabras, limita APLICACION_PRACTICA a 400 palabras.
 13. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3-5 puntos del CIERRE_CONCEPTOS.
     Cuando llegues al CIERRE_CONCEPTOS, escribe EXACTAMENTE esos puntos.
@@ -405,9 +428,158 @@ INSTRUCCIONES CRÍTICAS:
     Solo cita año pegado a publicación identificable por nombre propio.
     PROHIBIDO: "en 2024", "en 2025", "en dos mil veinticinco" como marcador del presente.
 20. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Intercala.
-21. CIERRE_CONCEPTOS: ENTRE 3 Y 5 conceptos. NUNCA 6, NUNCA 2. Cuenta las intervenciones de speaker en el bloque (sin contar la apertura) y verifica que estén entre 3 y 5.
+21. ANTIPINGPONG en detalle: Tras 2 bloques del MISMO speaker, el siguiente DEBE ser del otro. Revisa antes de finalizar que nunca hay 3 del mismo seguidos.
+22. CIERRE_CONCEPTOS recuento: ANTES de escribirlo, cuenta: apertura (1 bloque) + conceptos (2-4 bloques) = 3-5 bloques TOTALES. Si escribes 5 conceptos → son 6 bloques totales = FAIL. Máximo 4 conceptos (4 + apertura = 5 bloques = VÁLIDO).
 """
     return system, user
+
+
+_DIGIT_TO_WORD_ES = {
+    "0": "cero", "1": "uno", "2": "dos", "3": "tres", "4": "cuatro",
+    "5": "cinco", "6": "seis", "7": "siete", "8": "ocho", "9": "nueve",
+    "10": "diez", "11": "once", "12": "doce", "13": "trece", "14": "catorce",
+    "15": "quince", "16": "dieciséis", "17": "diecisiete", "18": "dieciocho",
+    "19": "diecinueve", "20": "veinte", "30": "treinta", "40": "cuarenta",
+    "50": "cincuenta", "60": "sesenta", "70": "setenta", "80": "ochenta",
+    "90": "noventa", "100": "cien",
+}
+
+_DIGIT_NUMBER_PATTERNS = [
+    # Porcentajes: "3.7%" → "tres punto siete por ciento"
+    (re.compile(r"\b(\d+)[.,](\d+)\s*%"), lambda m: f"{_DIGIT_TO_WORD_ES.get(m.group(1), m.group(1))} punto {_DIGIT_TO_WORD_ES.get(m.group(2), m.group(2))} por ciento"),
+    (re.compile(r"\b(\d+)\s*%"), lambda m: f"{_DIGIT_TO_WORD_ES.get(m.group(1), m.group(1))} por ciento"),
+    # Cifras monetarias: "$3M" "$500K"
+    (re.compile(r"\$\s*(\d+(?:[.,]\d+)?)\s*[Mm]"), lambda m: f"{_DIGIT_TO_WORD_ES.get(m.group(1).split('.')[0].split(',')[0], m.group(1))} millones de dólares"),
+    (re.compile(r"\$\s*(\d+(?:[.,]\d+)?)\s*[Kk]"), lambda m: f"{_DIGIT_TO_WORD_ES.get(m.group(1).split('.')[0], m.group(1))} mil dólares"),
+]
+
+
+def _fix_digit_numbers_in_dialogue(script_text: str) -> str:
+    """Convierte patrones de números en dígitos a palabras en las líneas de diálogo.
+
+    Solo actúa sobre líneas que empiezan con IAGO: o MARIA: para no tocar
+    headers, comentarios ni la sección VERIFICACIONES.
+    """
+    lines = script_text.split("\n")
+    out: list[str] = []
+    for line in lines:
+        stripped = line.strip()
+        if re.match(r"^(IAGO|MARIA)\s*:", stripped, re.IGNORECASE):
+            for pattern, replacer in _DIGIT_NUMBER_PATTERNS:
+                line = pattern.sub(replacer, line)
+        out.append(line)
+    return "\n".join(out)
+
+
+def _fix_antipingpong(script_text: str, spec: dict) -> str:
+    """Inserta una pregunta breve de MARIA si hay 3+ bloques consecutivos de IAGO.
+
+    Solo actúa en casos de 3 consecutivos exactamente; no altera el contenido existente,
+    sino que inserta una línea de transición entre el 2° y 3° bloque de IAGO.
+    Limitado a máximo 2 inserciones por guion para no alterar la estructura.
+    """
+    rules = spec.get("script_rules", {})
+    max_c = rules.get("max_consecutive_blocks_same_speaker", 2)
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
+
+    lines = script_text.split("\n")
+    # Extraer posición de cada línea de speaker con su sección actual
+    speaker_lines: list[tuple[int, str]] = []
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        m = speaker_pat.match(stripped)
+        if m:
+            speaker_lines.append((i, m.group(1).upper()))
+
+    # Encontrar runs de 3+ del mismo speaker
+    inserts: list[int] = []
+    max_inserts = 2
+    consec = 1
+    for idx in range(1, len(speaker_lines)):
+        prev_line_i, prev_speaker = speaker_lines[idx - 1]
+        cur_line_i, cur_speaker = speaker_lines[idx]
+        if cur_speaker == prev_speaker:
+            consec += 1
+            if consec > max_c and len(inserts) < max_inserts:
+                # Insertar entre prev y cur
+                inserts.append(prev_line_i)
+        else:
+            consec = 1
+
+    if not inserts:
+        return script_text
+
+    # Aplicar inserciones (de atrás hacia adelante para no desplazar índices)
+    BRIDGES = [
+        "MARIA: [reflexivo] ¿Y cómo conecta esto con lo que vimos antes?",
+        "MARIA: [curioso] ¿Qué implica esto en la práctica?",
+    ]
+    result = list(lines)
+    for insert_idx, line_i in enumerate(sorted(inserts, reverse=True)):
+        bridge = BRIDGES[insert_idx % len(BRIDGES)]
+        result.insert(line_i + 1, bridge)
+
+    return "\n".join(result)
+
+
+def _trim_cierre_conceptos_if_excess(script_text: str, spec: dict) -> str:
+    """Si CIERRE_CONCEPTOS tiene más de max_c bloques hablados, elimina los excedentes del final."""
+    rules = spec["script_rules"]
+    max_c = rules.get("key_concepts_block_count_max", 5)
+
+    lines = script_text.split("\n")
+    in_cierre = False
+    speaker_line_indices: list[int] = []
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:", re.IGNORECASE)
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped == "# CIERRE_CONCEPTOS":
+            in_cierre = True
+            continue
+        if in_cierre and stripped.startswith("# ") and stripped != "# CIERRE_CONCEPTOS":
+            break
+        if in_cierre and speaker_pat.match(stripped):
+            speaker_line_indices.append(i)
+
+    if len(speaker_line_indices) <= max_c:
+        return script_text  # Ya dentro del rango
+
+    # Eliminar bloques excedentes (del final, antes del último)
+    excess = len(speaker_line_indices) - max_c
+    to_remove = set(speaker_line_indices[-(excess + 1):-1])  # quitar del penúltimo hacia atrás
+    out = [line for i, line in enumerate(lines) if i not in to_remove]
+    return "\n".join(out)
+
+
+def _inject_cta_if_missing(script_text: str, spec: dict) -> str:
+    """Si CIERRE_FINAL no contiene la CTA obligatoria, la inyecta antes de la frase de cierre."""
+    cta_marker = "los episodios del modulo ya estan disponibles"
+    final_phrase = spec["script_rules"].get("final_closing_phrase", "")
+
+    # Detectar si ya hay CTA (búsqueda normalizada)
+    import unicodedata as _ud
+    def _norm(s: str) -> str:
+        return "".join(
+            c for c in _ud.normalize("NFD", s.lower())
+            if _ud.category(c) != "Mn"
+        ).replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
+
+    if cta_marker in _norm(script_text):
+        return script_text  # CTA ya presente
+
+    # Buscar la línea que contiene la frase final para inyectar la CTA justo antes
+    lines = script_text.split("\n")
+    final_norm = _norm(final_phrase)
+    cta_text = "Y si quieres profundizar en cualquiera de estos conceptos, los episodios del módulo ya están disponibles en nuestras plataformas habituales."
+
+    for i, line in enumerate(lines):
+        if final_phrase and final_norm and final_norm in _norm(line):
+            # Inyectar CTA en la misma línea, antes de la frase final
+            lines[i] = line.replace(final_phrase, cta_text + " " + final_phrase)
+            return "\n".join(lines)
+
+    return script_text  # No se encontró la frase final, no se modifica
 
 
 def _fix_tts_closing_tags(content: str) -> str:
@@ -512,7 +684,7 @@ def enforce_fixed_phrases(text: str, spec: dict) -> str:
     Opera sobre el cuerpo del guion (sin bloque de verificaciones).
     Preserva la etiqueta TTS del bloque si existe.
     """
-    from podcast_spec import normalize_text_for_match, extract_leading_tag, remove_leading_tag
+    from podcast_spec import extract_leading_tag, normalize_text_for_match
 
     rules = spec["script_rules"]
     SPEAKER_RE = re.compile(r"^(IAGO|MARIA)\s*:\s*(.*)$", re.IGNORECASE | re.MULTILINE)
@@ -666,7 +838,7 @@ def main() -> None:
     parser.add_argument("--pdf",     required=True, help="Ruta al PDF RESUMEN del módulo")
     parser.add_argument("--nombre",  default=None,  help="Nombre del módulo para el archivo (ej: Ingenieria_de_Prompts). Opcional.")
     parser.add_argument("--spec",    default=str(SPEC_PATH), help="Ruta a PODCAST_M_SPEC.md")
-    parser.add_argument("--max-intentos", type=int, default=2, help="Intentos si falla la validación")
+    parser.add_argument("--max-intentos", type=int, default=3, help="Intentos si falla la validación")
     args = parser.parse_args()
 
     # ── Cargar spec ─────────────────────────────────────────────────────────
@@ -689,7 +861,7 @@ def main() -> None:
     ep_code        = guion_to_ep_code(Path(guion_filename).stem)
 
     print(f"\n{'='*60}")
-    print(f"  GENERADOR GUION M — MaquinarIA Pesada")
+    print("  GENERADOR GUION M — MaquinarIA Pesada")
     print(f"  Módulo   : M{modulo_n} — {topic}")
     print(f"  PDF      : {pdf_path.name}")
     print(f"  Salida   : {guion_path.name}")
@@ -764,6 +936,10 @@ def main() -> None:
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)
         draft = enforce_fixed_phrases(draft, spec)
+        draft = _fix_digit_numbers_in_dialogue(draft)
+        draft = _inject_cta_if_missing(draft, spec)
+        draft = _trim_cierre_conceptos_if_excess(draft, spec)
+        draft = _fix_antipingpong(draft, spec)
 
         # ── Validación ───────────────────────────────────────────────────────
         verification = build_verification_section(draft, spec, concept_list, usage, ficha)
@@ -772,6 +948,14 @@ def main() -> None:
         local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)
         hard_issues  = [i for i in local_issues if not i.startswith("[WARN]")]
         soft_issues  = [i for i in local_issues if i.startswith("[WARN]")]
+
+        # Tratar el exceso de palabras y la falta de CTA como hard en el retry
+        word_count_issues = [i for i in soft_issues if "maximo recomendado" in i and "palabras" in i]
+        cta_issues = [i for i in soft_issues if "CTA" in i]
+        # Normalizar: quitar prefijo [WARN] de los issues que promocionamos a hard
+        promoted = [i.removeprefix("[WARN] ") for i in word_count_issues + cta_issues]
+        if promoted:
+            hard_issues = hard_issues + promoted
 
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
         for issue in hard_issues:
@@ -789,7 +973,7 @@ def main() -> None:
             draft = draft_with_ver
 
     # ── Guardar ──────────────────────────────────────────────────────────────
-    print(f"\n  [4/4] Guardando guion...")
+    print("\n  [4/4] Guardando guion...")
     guion_path.parent.mkdir(parents=True, exist_ok=True)
     guion_path.write_text(draft.rstrip() + "\n", encoding="utf-8")
 

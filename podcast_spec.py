@@ -476,9 +476,10 @@ def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
         total = sum(speaker_words.values()) or 1
         for speaker, words in speaker_words.items():
             pct = (words * 100.0) / total
-            if pct < min_bal or pct > max_bal:
+            pct_rounded = round(pct)
+            if pct_rounded < min_bal or pct_rounded > max_bal:
                 issues.append(
-                    f"{prefix}{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"{prefix}{section} (compartido): {speaker} tiene {pct_rounded}% de palabras "
                     f"(rango permitido: {min_bal}%-{max_bal}%)."
                 )
     return issues
@@ -741,7 +742,7 @@ def validate_script_text(
     # ── 5. Anti-pingpong (máx consecutivos del mismo speaker) ──────────────
     max_consec = rules.get("max_consecutive_blocks_same_speaker", 2)
     consecutive = 1
-    for current, nxt in zip(blocks, blocks[1:]):
+    for current, nxt in zip(blocks, blocks[1:], strict=False):
         if current["speaker"] == nxt["speaker"]:
             consecutive += 1
             if consecutive > max_consec:
@@ -830,7 +831,7 @@ def validate_script_text(
         "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
         "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
     }
-    for count_val, block in zip(stats["sentence_counts"], blocks):
+    for count_val, block in zip(stats["sentence_counts"], blocks, strict=False):
         if block.get("section") not in dev_sections:
             continue
         if count_val < min_sents:
@@ -902,7 +903,7 @@ def validate_script_text(
             (re.compile(r"\b\d+[.,]?\d*\s*[MB](?:illones?)?\b"), "cifra grande en digitos"),
         ]
         spoken_lines = [remove_leading_tag(b["text"]) for b in blocks]
-        for line, block in zip(spoken_lines, blocks):
+        for line, block in zip(spoken_lines, blocks, strict=False):
             for pattern, desc in digit_patterns:
                 if pattern.search(line):
                     issues.append(
