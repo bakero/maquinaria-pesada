@@ -96,11 +96,12 @@ EPISODES = [
 def validate_guion(guion_path: Path, spec_path: Path) -> tuple[list[str], list[str]]:
     """Validates guion and returns (hard_issues, soft_issues)."""
     sys.path.insert(0, str(BASE_DIR))
-    from podcast_spec import load_spec, validate_script_text
+    from podcast_spec import guion_to_ep_code, load_spec, validate_script_text
 
     spec = load_spec(str(spec_path))
+    ep_code = guion_to_ep_code(guion_path.stem)
     text = guion_path.read_text(encoding="utf-8")
-    issues = validate_script_text(text, spec)
+    issues = validate_script_text(text, ep_code, spec)
     hard = [i for i in issues if not i.startswith("[WARN]")]
     soft = [i for i in issues if i.startswith("[WARN]")]
     return hard, soft
