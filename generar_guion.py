@@ -390,17 +390,15 @@ INSTRUCCIONES CRÍTICAS:
 11. Usa "Yago" en el texto hablado, nunca "Iago".
 12. LONGITUD DEL GUION — REGLA DURA:
     El total del guion (incluyendo sección VERIFICACIONES) debe estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
-    La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO debe ser de ~{rules['minimum_word_count']-200} a ~{rules['maximum_word_count']-200} palabras.
-    OBLIGATORIO: el DIÁLOGO debe superar las {rules['minimum_word_count']-200} palabras. Si llegas al CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-400} palabras, AMPLÍA los bloques anteriores antes de continuar.
-    NÚMERO DE FRASES POR INTERVENCIÓN (clave para alcanzar el mínimo):
-    - Bloques de desarrollo (BLOQUE_PANORAMA, BLOQUE_DESTACADO, APLICACION_PRACTICA): 4-6 frases (70-120 palabras)
-    - IAGO en BLOQUE_PANORAMA: 3-4 bloques de desarrollo (cada uno 4-6 frases, 70-100 palabras)
-    - MARIA en BLOQUE_PANORAMA: máximo 3 preguntas (8-15 palabras cada una)
-    - Concepto líder en BLOQUE_DESTACADO: 4-6 frases (70-100 palabras) de desarrollo real
-    - Reacciones/preguntas breves: 8-15 palabras máximo
-    REGLA ABSOLUTA: cada bloque de BLOQUE_PANORAMA, BLOQUE_DESTACADO o APLICACION_PRACTICA
-    que no sea una pregunta corta DEBE tener mínimo 4 frases. Si tienes solo 2-3 frases, AÑADE más.
-    AUTOCONTROL: antes de pasar al siguiente bloque, cuenta las frases. Si son menos de 4, amplía.
+    La sección VERIFICACIONES añade ~200 palabras. Por tanto el DIÁLOGO puro debe tener entre {rules['minimum_word_count']-200} y {rules['maximum_word_count']-200} palabras.
+    OBJETIVO DE DIÁLOGO: apunta a {rules['minimum_word_count']-100} palabras de diálogo para asegurar superar el mínimo total con la VERIFICACIONES.
+    CONTROL EN TIEMPO REAL: antes de APLICACION_PRACTICA cuenta las palabras del diálogo generado hasta ahí.
+    Si llevas menos de {rules['minimum_word_count']-600} palabras, AÑADE un bloque más de IAGO en BLOQUE_DESTACADO antes de continuar.
+    NÚMERO DE BLOQUES REQUERIDOS:
+    - BLOQUE_PANORAMA: 3-4 bloques IAGO de desarrollo (cada uno 4-6 frases, 70-100 palabras) + máximo 3 preguntas MARIA
+    - BLOQUE_DESTACADO: 2-3 conceptos, cada concepto con 2-3 bloques de desarrollo de 4-6 frases
+    - APLICACION_PRACTICA: mínimo 4 bloques de desarrollo (2 IAGO + 2 MARIA) de 4-6 frases cada uno
+    REGLA ABSOLUTA: todo bloque de desarrollo (no preguntas) DEBE tener mínimo 4 frases. Cuenta antes de avanzar.
     Si al llegar a APLICACION_PRACTICA llevas más de {int(rules['maximum_word_count'] * 0.72)} palabras, limita APLICACION_PRACTICA a 400 palabras.
 13. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3-5 puntos del CIERRE_CONCEPTOS.
