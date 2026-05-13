@@ -277,11 +277,14 @@ def build_script_stats(text: str, spec: dict, concepts: list[str] | None = None)
         concept: count_concept_mentions(text, concept)
         for concept in (concepts or [])
     }
+    # Exclude short reaction blocks from average so the metric reflects development blocks only
+    dev_word_counts = [w for w in word_counts if w > short_threshold]
+    avg_dev = (sum(dev_word_counts) / len(dev_word_counts)) if dev_word_counts else 0.0
     return {
         "blocks": blocks,
         "sections": sections,
         "word_count_total": sum(word_counts),
-        "avg_words_per_intervention": (sum(word_counts) / len(word_counts)) if word_counts else 0.0,
+        "avg_words_per_intervention": avg_dev,
         "max_words_per_intervention": max(word_counts) if word_counts else 0,
         "min_words_per_intervention": min(word_counts) if word_counts else 0,
         "long_percentage": (long_count * 100.0) / total,
