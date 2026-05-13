@@ -515,7 +515,7 @@ obligatoria en validación pero NO genera audio. El sonido viene de
     "maximum_word_count": 1800,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 8,
-    "reaction_word_limit": 12,
+    "reaction_word_limit": 20,
     "max_reactions_per_block": 3,
     "target_avg_words_per_intervention_min": 50,
     "target_avg_words_per_intervention_max": 90,

@@ -395,7 +395,7 @@ INSTRUCCIONES CRÍTICAS:
     CONTROL EN TIEMPO REAL: antes de APLICACION_PRACTICA cuenta las palabras del diálogo generado hasta ahí.
     Si llevas menos de {rules['minimum_word_count']-700} palabras, AÑADE contenido en BLOQUE_DESTACADO antes de continuar.
     REGLA DE DENSIDAD POR SECCIÓN:
-    - BLOQUE_PANORAMA: cada bloque IAGO debe tener 4-6 frases (70-100 palabras). MARIA solo hace preguntas ≤12 palabras.
+    - BLOQUE_PANORAMA: cada bloque IAGO debe tener 4-6 frases (70-100 palabras). MARIA solo hace preguntas ≤20 palabras.
     - BLOQUE_DESTACADO: cada bloque de desarrollo debe tener 4-6 frases. Ambos speakers desarrollan conceptos completos.
     - APLICACION_PRACTICA: mínimo 5 bloques de desarrollo de 4-6 frases (no 4). Cada bloque: 70-100 palabras.
     REGLA ABSOLUTA: todo bloque de desarrollo (no preguntas) DEBE tener mínimo 4 frases. Cuenta antes de avanzar.
@@ -404,7 +404,7 @@ INSTRUCCIONES CRÍTICAS:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3-5 puntos del CIERRE_CONCEPTOS.
     Cuando llegues al CIERRE_CONCEPTOS, escribe EXACTAMENTE esos puntos.
 14. BALANCE OBLIGATORIO DE PALABRAS POR BLOQUE:
-    - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras. MARIA hace ≤3 preguntas cortas (≤12 palabras cada una).
+    - BLOQUE_PANORAMA: IAGO debe tener ≥65% de las palabras. MARIA hace ≤3 preguntas cortas (≤20 palabras cada una).
     - BLOQUE_DESTACADO: COMPARTIDO. OBLIGATORIO que IAGO y MARIA tengan cada uno ENTRE 40%-60% del total de palabras del bloque.
       Para lograrlo: MARIA debe tener AL MENOS 2 bloques de desarrollo de 4-6 frases (70-100 palabras cada uno) dentro de BLOQUE_DESTACADO.
       NO es válido que MARIA solo haga preguntas cortas en BLOQUE_DESTACADO. MARIA debe explicar conceptos completos.
@@ -418,7 +418,7 @@ INSTRUCCIONES CRÍTICAS:
     Máximo absoluto por intervención: 190 palabras. Si un concepto necesita más, pártelo en DOS bloques:
     el primero explica la primera parte (≤190 palabras), el otro speaker hace una pregunta breve,
     y el primero retoma con la segunda parte (≤190 palabras).
-    Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
+    Reacciones/preguntas: máximo 20 palabras (preferiblemente 8-15). NO usar interjecciones de validación.
 17. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
     MAL: "el 3.7% de empresas", "costó $3M". BIEN: "el tres punto siete por ciento", "costó tres millones".
@@ -1272,24 +1272,24 @@ def main() -> None:
                         has_word_count_fail = True
                         actual, needed = int(wc_m.group(1)), int(wc_m.group(2))
                         diff = needed - actual
-                        # Find specific short blocks to call out
+                        # Find specific short blocks to call out (all sections)
                         short_block_msgs = [
                             s for s in soft_issues_retry
-                            if re.search(r"solo \d frase", s) and "APLICACION" in s
+                            if re.search(r"solo [123] frase", s)
                         ]
                         short_hint = ""
                         if short_block_msgs:
                             short_hint = (
-                                " Los siguientes bloques tienen pocas frases y deben ampliarse a 4-6: "
-                                + "; ".join(short_block_msgs[:3])
+                                " Bloques con pocas frases que DEBES ampliar a 4-6: "
+                                + "; ".join(short_block_msgs[:4])
                                 + "."
                             )
                         feedback_parts.append(
                             f"- {issue}\n"
                             f"  ACCIÓN REQUERIDA: añade {diff} palabras más."
                             f"{short_hint} "
-                            f"Amplía APLICACION_PRACTICA: cada bloque de desarrollo debe tener "
-                            f"MÍNIMO 4 frases (70-100 palabras). NO recortes nada, solo AÑADE."
+                            f"Cada bloque de desarrollo debe tener MÍNIMO 4 frases (70-100 palabras). "
+                            f"NO recortes nada, solo AÑADE contenido."
                         )
                     elif "BLOQUE_DESTACADO" in issue or "BLOQUE_COMO" in issue:
                         feedback_parts.append(
@@ -1299,13 +1299,13 @@ def main() -> None:
                         )
                     else:
                         feedback_parts.append(f"- {issue}")
-                # Also include soft warns about short blocks (≤3 frases) in non-word-count failures
-                if not has_word_count_fail:
-                    short_soft = [s for s in soft_issues_retry if re.search(r"solo [123] frase", s)]
-                    for s in short_soft[:3]:
+                # Always include soft warns about short blocks (≤3 frases) in feedback
+                short_soft = [s for s in soft_issues_retry if re.search(r"solo [123] frase", s)]
+                if short_soft and not has_word_count_fail:
+                    for s in short_soft[:4]:
                         feedback_parts.append(
                             f"- {s}\n"
-                            f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas."
+                            f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas (70-100 palabras)."
                         )
                 user_prompt_ext = (
                     user_prompt

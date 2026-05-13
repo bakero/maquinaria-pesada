@@ -271,7 +271,7 @@ INSTRUCCIONES CRÍTICAS:
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_COMO → # BLOQUE_REALIDAD → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (NO generes): BLOQUE_QUE, BLOQUE_LIMITES, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3
 6. ROLES POR BLOQUE (obligatorio):
-   - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤12 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
+   - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤20 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
    - BLOQUE_COMO: COMPARTIDO. OBLIGATORIO: IAGO y MARIA deben tener ENTRE 40%-60% cada uno del total de palabras del bloque. Para lograrlo: si hay 2+ sub-conceptos, sub1 lo lidera IAGO (4-6 frases, 70-120 palabras), sub2 lo lidera MARIA (4-6 frases, 70-120 palabras). PROHIBIDO que MARIA solo haga preguntas en BLOQUE_COMO; MARIA debe explicar al menos un sub-concepto completo.
    - BLOQUE_REALIDAD: MARIA es la VOZ EXPERTA de empresa en este bloque. MARIA presenta los casos reales, datos de adopción y retos empresariales (mínimo 5 intervenciones de desarrollo, cada una con ≥4 frases). IAGO solo aporta contexto técnico breve cuando sea estrictamente necesario (máximo 2 intervenciones, ≤3 frases cada una). Si IAGO habla más que MARIA en este bloque, el guion está INCORRECTO. Usa prioritariamente la FUENTE DE CASOS EMPRESARIALES VERIFICADOS. Incluye al menos 2 de: dato adopción con fuente, caso empresa real con resultado, reto documentado, oportunidad de negocio.
 7. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
@@ -304,7 +304,7 @@ INSTRUCCIONES CRÍTICAS:
     Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
     Máximo absoluto por intervención: 190 palabras. Si un concepto necesita más, pártelo en DOS bloques:
     el primero ≤190 palabras, el otro speaker hace una pregunta breve, y el primero retoma ≤190 palabras.
-    Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
+    Reacciones/preguntas: máximo 20 palabras (preferiblemente 8-15). NO usar interjecciones de validación.
 15. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
     MAL: "el 3.7% de empresas", "costó $3M", "en Q3 2026".
