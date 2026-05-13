@@ -28,7 +28,7 @@ EPISODES = [
             "--nombre", "Ingenieria_Prompts",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/RESUMEN_M6_Ingenieria_Prompts.txt",
+        "guion": "Guiones/M6_Ingenieria_Prompts.txt",
         "spec": "PODCAST_M_SPEC.md",
     },
     {
@@ -41,7 +41,7 @@ EPISODES = [
             "--nombre", "Sistemas_RAG",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/RESUMEN_M7_Sistemas_RAG.txt",
+        "guion": "Guiones/M7_Sistemas_RAG.txt",
         "spec": "PODCAST_M_SPEC.md",
     },
     {
@@ -54,7 +54,7 @@ EPISODES = [
             "--nombre", "Ingenieria_LLMOps",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/RESUMEN_M8_Ingenieria_LLMOps.txt",
+        "guion": "Guiones/M8_Ingenieria_LLMOps.txt",
         "spec": "PODCAST_M_SPEC.md",
     },
     {
@@ -65,7 +65,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M3_T2_modelos_clasicos.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M3_T2_modelos_clasicos.txt",
+        "guion": "Guiones/M3_TX_T2_modelos_clasicos.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
     {
@@ -76,7 +76,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M7_T1_que_es_rag.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M7_T1_que_es_rag.txt",
+        "guion": "Guiones/M7_TX_T1_que_es_rag.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
     {
@@ -87,7 +87,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M10_T5_tool_use_function_calling.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M10_T5_tool_use_function_calling.txt",
+        "guion": "Guiones/M10_TX_T5_tool_use_function_calling.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
 ]
@@ -158,7 +158,12 @@ def run_episode(ep: dict, log_dir: Path, delete_existing: bool) -> dict:
     report_file = log_dir / f"{ep['id']}.json"
     report_file.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    status = "OK" if not hard else f"HARD:{len(hard)}"
+    if not gen_ok:
+        status = "NO_GENERADO"
+    elif hard:
+        status = f"HARD:{len(hard)}"
+    else:
+        status = "OK"
     print(f"    → {status} | soft:{len(soft)} | {elapsed:.0f}s")
     for h in hard:
         print(f"      [HARD] {h}")
