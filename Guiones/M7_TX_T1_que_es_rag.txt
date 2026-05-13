@@ -1,6 +1,6 @@
 # HOOK
 
-IAGO: [directo] El noventa y siete por ciento de los bufetes más grandes de Estados Unidos están en lista de espera para usar Harvey AI. Morgan Stanley indexó cien mil documentos internos para que sus asesores encuentren información en segundos en lugar de horas. Y JPMorgan ahorró trescientas sesenta mil horas anuales de trabajo legal con un sistema que lee contratos. Los tres casos tienen algo en común: RAG. Retrieval-Augmented Generation. La arquitectura que conecta modelos de lenguaje con bases de conocimiento propias. Es el caso de uso número uno de IA en empresa. Y hoy vamos a explicar exactamente cómo funciona, por qué está ganando a fine-tuning, y qué hace que pasar de prototipo a producción sea tan complicado. Esto es MaquinarIA Pesada. Arrancamos.
+IAGO: [tenso] El noventa y siete por ciento de los grandes bufetes de Estados Unidos están en lista de espera para usar Harvey AI. Morgan Stanley conectó cien mil documentos internos a un sistema que responde preguntas en segundos. Microsoft redujo tickets de soporte técnico con un chatbot que cita la documentación exacta de Azure. ¿Qué tienen en común? Todos usan RAG: Retrieval-Augmented Generation. La arquitectura que convirtió a los modelos de lenguaje en sistemas con memoria externa. Hoy explicamos por qué RAG es el caso de uso número uno de IA empresarial en este momento, cómo funciona por dentro, y qué separa un prototipo de un sistema en producción real. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -16,80 +16,76 @@ IAGO: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera u
 
 # BLOQUE_PANORAMA
 
-IAGO: [didactico] RAG es el acrónimo de Retrieval-Augmented Generation. Generación aumentada con recuperación. Es una arquitectura que resuelve el problema más básico de los modelos de lenguaje en empresa: el modelo sabe del mundo hasta su fecha de corte de entrenamiento, pero no sabe nada de tus documentos internos, de tus políticas actualizadas, de los datos de tus clientes. RAG soluciona esto sin modificar el modelo. En lugar de reentrenar, le das al modelo la información relevante directamente en el contexto de cada consulta.
+IAGO: [didactico] RAG significa Retrieval-Augmented Generation. Es una arquitectura que combina dos capacidades: recuperar información de bases de conocimiento propias y generar respuestas con modelos de lenguaje. Piensa en la diferencia entre un examen de memoria cerrado y un examen con libro abierto. Un modelo sin RAG responde de memoria: solo usa lo que aprendió durante el entrenamiento, con todas sus limitaciones. Corte de conocimiento, posibles alucinaciones, cero acceso a información privada. Un modelo con RAG responde con libro abierto: antes de generar la respuesta, consulta las fuentes relevantes y construye su respuesta basándose en ellas.
 
-MARIA: [curioso] ¿Cómo un libro abierto en lugar de un examen de memoria?
+MARIA: [curioso] ¿Y por qué es el caso de uso número uno?
 
-IAGO: [claro] ese símil. Un modelo sin RAG responde de memoria cerrada: solo puede usar lo que aprendió en el preentrenamiento. Con todas sus limitaciones. Corte de conocimiento, posibles alucinaciones, cero acceso a información privada. Un modelo con RAG responde con libro abierto: antes de generar la respuesta, consulta las fuentes relevantes y construye su respuesta basándose en ellas. Por eso RAG se ha convertido en el caso de uso empresarial número uno. El mercado alcanzó mil ochocientos cincuenta millones de dólares en dos mil veinticuatro y crece al cuarenta y nueve por ciento anual. Anthropic, OpenAI y Google lo recomiendan como técnica principal para conectar modelos con datos propietarios.
+IAGO: [firme] Porque resuelve el problema fundamental de conectar modelos generales con datos propietarios empresariales. Los modelos tienen conocimiento del mundo hasta su fecha de corte, pero no saben nada sobre tus documentos internos, tus políticas actualizadas, tus datos de clientes. RAG soluciona esto sin modificar el modelo. En lugar de hacer fine-tuning, le proporcionas la información relevante directamente en el contexto de cada consulta. El mercado alcanzó mil ochocientos cincuenta millones de dólares en dos mil veinticuatro y crece al cuarenta y nueve por ciento anual. Anthropic, OpenAI y Google recomiendan RAG como técnica principal para datos propietarios.
 
-MARIA: [esceptico] ¿Y por qué no hacer fine-tuning directamente?
+MARIA: [esceptico] ¿Cuándo usas RAG en lugar de fine-tuning?
 
-IAGO: [firme] Porque RAG y fine-tuning responden a necesidades diferentes. RAG es la elección correcta cuando el conocimiento cambia frecuentemente. Documentos que se actualizan, datos en tiempo real. Cuando la base de conocimiento es grande y diversa. Cuando necesitas trazabilidad: de qué documento viene esta respuesta. O cuando los datos son confidenciales y no quieres incluirlos en el proceso de entrenamiento. Fine-tuning es mejor cuando necesitas cambiar el estilo, el tono o el comportamiento del modelo. Cuando el dominio es estable y bien definido. O cuando el rendimiento de RAG no es suficiente para la tarea específica.
+IAGO: [explicativo] RAG es la elección correcta cuando el conocimiento cambia frecuentemente. Documentos que se actualizan, datos en tiempo real, políticas que evolucionan. También cuando necesitas trazabilidad: saber de qué documento viene cada respuesta. O cuando los datos son confidenciales y no quieres incluirlos en el proceso de entrenamiento. Fine-tuning es mejor cuando necesitas cambiar el estilo, el tono o el comportamiento del modelo de forma permanente. Cuando el dominio es estable y bien definido. O cuando el rendimiento de RAG no es suficiente para la tarea específica.
 
 # BLOQUE_COMO
 
-IAGO: [explicativo] El flujo básico de RAG tiene cuatro etapas. Primera: ingesta. Los documentos de la base de conocimiento se dividen en fragmentos manejables, lo que llamamos chunks. Se generan sus embeddings, sus representaciones vectoriales. Y se almacenan en una base de datos vectorial junto con sus metadatos. Segunda: recuperación. Cuando llega una consulta del usuario, se genera su embedding y se buscan los K chunks más similares en la base vectorial. Tercera: aumentación. Los chunks recuperados se insertan en el prompt del modelo como contexto adicional. Cuarta: generación. El modelo genera una respuesta basándose en la consulta y el contexto recuperado.
+IAGO: [didactico] El flujo básico de RAG tiene cuatro etapas. Primera: ingesta. Los documentos de la base de conocimiento se dividen en fragmentos manejables, llamamos a esto chunking. Cada fragmento se convierte en un embedding, un vector numérico que representa su significado. Esos embeddings se almacenan en una base de datos vectorial junto con sus metadatos: título del documento, fecha, sección, autor. Segunda etapa: recuperación. Cuando llega una consulta del usuario, se genera su embedding. Se buscan los K fragmentos más similares en la base vectorial usando distancia coseno o producto punto. Tercera: aumentación. Los fragmentos recuperados se insertan en el prompt del modelo como contexto adicional. Cuarta: generación. El modelo genera una respuesta basándose en la consulta original y el contexto recuperado.
 
-MARIA: [analitica] Vamos a los componentes técnicos. ¿Qué necesitas para montar un sistema RAG en producción?
+MARIA: [analitica] ¿Qué componentes técnicos necesitas para construir esto?
 
-IAGO: [reflexivo] Un sistema RAG completo tiene cinco componentes. El pipeline de ingesta procesa los documentos fuente: parsing, que es extracción de texto de PDF, Word, HTML. Chunking, división en fragmentos. Embedding, vectorización de cada chunk. Y almacenamiento en la base vectorial con metadatos.
+IAGO: [explicativo] Un sistema RAG completo tiene cinco componentes. El pipeline de ingesta procesa los documentos fuente: parsing para extraer texto de PDF, Word, HTML. Chunking para dividir en fragmentos. Embedding para vectorizar cada fragmento. Y almacenamiento en la base vectorial con metadatos. Segundo componente: la base de datos vectorial. Almacena embeddings e indexa para búsqueda eficiente por similitud. Tercer componente: el sistema de retrieval. Procesa la consulta del usuario, genera su embedding, y recupera los fragmentos más relevantes. Cuarto: el prompt builder. Construye el prompt del modelo combinando la consulta y el contexto recuperado. Quinto: el modelo generador que produce la respuesta fundamentada en el contexto.
 
-MARIA: [directo] El segundo componente es la base de datos vectorial. Almacena embeddings e indexa para búsqueda eficiente por similitud. En diciembre de dos mil veinticinco, el mercado se consolida alrededor de cuatro opciones. Pinecone: SaaS managed, más fácil de empezar. Weaviate: open source más cloud, buen balance. Milvus: open source, mayor escala. Y Qdrant: open source, alto rendimiento, fácil de auto-hostear. FAISS de Meta es la librería estándar para búsqueda vectorial en memoria sin necesidad de una base de datos completa.
+MARIA: [reflexivo] Hablemos de las bases vectoriales. Imagina que tienes que elegir una para tu empresa. ¿Qué opciones reales existen ahora mismo? Porque el mercado se ha consolidado bastante. Tienes cuatro opciones principales. Pinecone es la opción SaaS managed, la más fácil para empezar: te olvidas de la infraestructura. Weaviate es open source con versión cloud, buen balance entre control y comodidad. Milvus es open source para mayor escala, pensado para casos con millones de vectores. Y Qdrant, también open source, con alto rendimiento y fácil de auto-hostear si necesitas mantener los datos en tu infraestructura. Si no necesitas una base de datos completa, FAISS de Meta es la librería estándar para búsqueda vectorial en memoria.
 
-IAGO: [conversacional] El tercer componente es el sistema de retrieval. Procesa la consulta del usuario, genera su embedding, y recupera los chunks más relevantes. El cuarto es el prompt builder: construye el prompt del modelo combinando la consulta y el contexto recuperado. Y el quinto es el modelo generador: produce la respuesta fundamentada en el contexto.
+IAGO: [conversacional] ¿Y qué pasa con los embeddings?
 
-MARIA: [curioso] ¿Y cómo decides el tamaño del chunk?
-
-IAGO: [pausado] Esa es una de las decisiones de diseño más críticas. Chunks muy pequeños pierden contexto. Chunks muy grandes diluyen la señal. No hay una respuesta única. Depende del tipo de preguntas que el sistema debe responder. Por eso el proceso correcto empieza definiendo los veinte a cincuenta casos de uso más representativos. Construyes el golden dataset de evaluación. Y diseñas el sistema para maximizar el rendimiento en esos casos.
+MARIA: [claro] Los embeddings son el componente central de la recuperación. La calidad del embedding determina qué tan bien el sistema encuentra los fragmentos relevantes. Los modelos de embedding genéricos funcionan bien para casos generales, pero tienen peor rendimiento en dominios especializados: médico, legal, técnico. Por eso evalúas el rendimiento de recuperación con tu golden dataset usando varios modelos antes de construir el índice completo. Text-embedding-three-large de OpenAI y Voyage AI son opciones estándar actualmente.
 
 # BLOQUE_REALIDAD
 
-MARIA: [firme] Vamos a casos reales documentados. Harvey AI, sector legal. Startup fundada en dos mil veintidós, especializada en IA para bufetes. Usa un modelo de lenguaje con fine-tuning sobre corpus jurídico, integrado con bases de datos legales como Westlaw y LexisNexis. La adopción: más del noventa y siete por ciento de los grandes bufetes de Estados Unidos en lista de espera durante dos mil veintitrés. Casos de uso: redacción de contratos, due diligence, investigación jurídica, análisis de precedentes. Resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
+MARIA: [firme] Vamos a los casos reales. Harvey AI es el ejemplo canónico en el sector legal. Startup fundada en dos mil veintidós, especializada en IA para bufetes. Usan un modelo de lenguaje con fine-tuning sobre corpus jurídico, integrado con bases de datos legales como Westlaw y LexisNexis. Más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera durante dos mil veintitrés. El caso de uso: redacción de contratos, due diligence, investigación jurídica, análisis de precedentes. El resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
 
-IAGO: [serio] ¿Y en banca?
+IAGO: [conversacional] ¿Y en finanzas?
 
-MARIA: [contundente] Morgan Stanley. Sistema RAG para asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. Resultado: reducción del tiempo de búsqueda de información de horas a minutos. Socio tecnológico: OpenAI con GPT-cuatro. Presentación pública en OpenAI DevDay dos mil veintitrés.
+MARIA: [analitica] Morgan Stanley implementó un sistema RAG para asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. El socio tecnológico es OpenAI con GPT-cuatro. Esto lo presentaron públicamente en OpenAI DevDay dos mil veintitrés.
 
-MARIA: [directo] Otro caso: JPMorgan COIN. Contract Intelligence. Basado en machine learning clásico: procesamiento de lenguaje natural, clasificadores. Analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Resultado cuantificado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Es el caso canónico de machine learning clásico con ROI cuantificado y verificable.
+MARIA: [esceptico] Microsoft tiene un chatbot de soporte técnico sobre la documentación completa de Azure. RAG sobre toda la documentación técnica. Los usuarios obtienen respuestas precisas a preguntas técnicas complejas con referencias a la sección exacta de la documentación. Esto reduce los tickets de soporte repetitivos. Otro caso: asistente de política interna de recursos humanos en una multinacional. RAG sobre el manual del empleado, convenios colectivos, políticas actualizadas. Los empleados consultan directamente sin necesidad de abrir tickets para preguntas sobre vacaciones, beneficios o procedimientos de baja.
 
-IAGO: [reflexivo] ¿Cuál es el reto más grande?
+IAGO: [reflexivo] ¿Cuál es el reto principal?
 
-MARIA: [analitica] El gap entre prototipo y producción. Construir un RAG que funciona en un notebook es fácil. Llevarlo a producción con gestión del corpus, latencia controlada, multi-tenancy, y monitorización continua es donde la mayoría de los proyectos se quedan atascados. Requiere definir criterios de calidad del corpus, actualización de documentos, evaluación continua con métricas como RAGAS, y arquitectura que escale. El stack tecnológico de referencia en dos mil veinticinco: LangChain o LlamaIndex como framework de orquestación, Qdrant o Pinecone como base vectorial, Voyage AI o text-embedding-tres-large como modelo de embedding, un modelo frontier o modelo fine-tuneado como generador, y RAGAS para evaluación continua.
+MARIA: [tenso] El gap entre prototipo y producción. Construir un prototipo de RAG es relativamente sencillo: LangChain, una base vectorial, un modelo de embedding, y un prompt básico. Pero llevarlo a producción requiere gestión del corpus: qué documentos incluir, con qué criterios de calidad y actualización. Requiere latencia controlada: los usuarios no esperan más de tres segundos. Requiere multi-tenancy: cada cliente ve solo sus documentos. Y requiere monitorización continua: evaluar si las respuestas son correctas, si los fragmentos recuperados son relevantes, si el sistema alucina. El stack tecnológico de referencia actualmente: LangChain o LlamaIndex como framework de orquestación, Qdrant o Pinecone como base vectorial, Voyage AI o text-embedding-three-large como modelo de embedding, un modelo frontier o fine-tuneado como generador, y RAGAS para evaluación continua.
 
-MARIA: [calido] Y un error común: asumir que RAG elimina totalmente las alucinaciones. RAG reduce dramáticamente las alucinaciones de conocimiento, el modelo afirma cosas que no están en los documentos, pero no las elimina completamente. El modelo puede aún distorsionar o mal interpretar el contexto recuperado. La evaluación continua con métricas de faithfulness es esencial.
+MARIA: [directo] El error más común: construir el RAG antes de definir las preguntas que debe responder. El diseño del sistema depende del tipo de preguntas. Tamaño de chunk, modelo de embedding, parámetros de recuperación. Todo eso se optimiza para los casos de uso representativos. Empieza definiendo los veinte a cincuenta casos más representativos, construye el golden dataset de evaluación, y diseña el sistema para maximizar el rendimiento en esos casos. Otro error: asumir que RAG elimina totalmente las alucinaciones. RAG reduce dramáticamente las alucinaciones de conocimiento, el modelo afirma cosas que no están en los documentos. Pero no las elimina completamente. El modelo puede aún distorsionar o mal interpretar el contexto recuperado. La evaluación continua con métricas de faithfulness es esencial.
 
 # CIERRE_CONCEPTOS
 
-IAGO: [directo] No te puedes ir de este capítulo sin haber entendido estos conceptos.
+IAGO: [firme] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: RAG es Retrieval-Augmented Generation, la arquitectura que conecta modelos de lenguaje con bases de conocimiento propias mediante recuperación vectorial.
 
-IAGO: [claro] RAG es generación aumentada con recuperación: el modelo consulta documentos antes de responder, como un examen con libro abierto.
+MARIA: Segundo: el flujo es ingestar documentos, hacer chunking y embedding, indexar en base vectorial, recuperar fragmentos relevantes por similitud, insertar en prompt, y el modelo genera respuesta fundamentada.
 
-MARIA: [firme] El flujo tiene cuatro etapas: ingesta con chunking y embedding, recuperación por similitud vectorial, aumentación del prompt con contexto, y generación fundamentada.
-
-IAGO: [contundente] RAG es mejor que fine-tuning cuando el conocimiento cambia frecuentemente, cuando necesitas trazabilidad, o cuando los datos son confidenciales.
+IAGO: Tercero: el gap entre prototipo y producción es significativo y requiere gestión del corpus, latencia controlada, multi-tenancy y monitorización continua con métricas de evaluación.
 
 # CIERRE_FINAL
 
-IAGO: [calido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+IAGO: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
 
 # VERIFICACIONES
 ##
-## PALABRAS TOTALES : 1324 (objetivo: 1400-1800)
-## MEDIA PALABRAS/INTERVENCION : 47.3
+## PALABRAS TOTALES : 1494 (objetivo: 1400-1800)
+## MEDIA PALABRAS/INTERVENCION : 57.5
 ##
 ## COBERTURA DE CONCEPTOS DEL PDF:
-## [OK] rag: 18 menciones
+## [OK] rag: 20 menciones
 ## [FALTA] llm: 0 menciones
-## [FALTA] seccion: 0 menciones
-## [OK] augmented generation: 2 menciones
+## [OK] seccion: 2 menciones
+## [OK] augmented generation: 3 menciones
 ## [FALTA] cuando se necesita: 0 menciones
 ## [OK] open source: 3 menciones
 ## [OK] es el caso: 2 menciones
-## [OK] embedding: 6 menciones
-## Cobertura: 62% (objetivo: 75%)
+## [OK] embedding: 12 menciones
+## Cobertura: 75% (objetivo: 75%)
 ##
 ## TOKENS ANTHROPIC:
-## input_tokens: 54879
-## output_tokens: 8131
+## input_tokens: 20321
+## output_tokens: 3320
 ## cache_read: 0
-## total: 63010
+## total: 23641
