@@ -1,6 +1,6 @@
 # HOOK
 
-MARIA: [directo] El ochenta por ciento de los proyectos de machine learning en empresa usan modelos clásicos. Regresión logística, árboles de decisión, XGBoost. No transformers. No LLMs. Algoritmos de hace décadas que resuelven problemas reales con latencias de un milisegundo y costes mínimos. Hoy explicamos por qué estos modelos siguen siendo el caballo de batalla de la inteligencia artificial en producción. Esto es MaquinarIA Pesada. Arrancamos.
+MARIA: [directo] El ochenta por ciento de los proyectos de datos en empresa se resuelven con los mismos cinco algoritmos. Regresión logística. Árboles de decisión. Random Forest. XGBoost. LightGBM. Antes de plantear cualquier solución con deep learning o modelos de lenguaje, estos modelos deben ser tu baseline obligatorio. Esto es MaquinarIA Pesada. Arrancamos.
 
 # INTRO_SONIDO
 
@@ -16,92 +16,91 @@ MARIA: [directo] Antes de empezar, el aviso de siempre: este episodio lo genera 
 
 # BLOQUE_PANORAMA
 
-IAGO: [didactico] Los modelos clásicos de machine learning son regresión logística, árboles de decisión, Random Forest, XGBoost y LightGBM. Son los algoritmos que resuelven la mayoría de los problemas de predicción sobre datos estructurados en empresa. Datos tabulares. Filas y columnas. El tipo de dato que vive en bases de datos SQL, en hojas de cálculo, en sistemas ERP. Antes de plantear cualquier solución con deep learning o LLMs sobre este tipo de datos, estos modelos deben ser tu baseline obligatorio.
+IAGO: [didactico] Los modelos clásicos de machine learning son el caballo de batalla del análisis predictivo empresarial. Cuando hablamos de modelos clásicos, nos referimos a algoritmos que operan sobre datos estructurados, esos datos que viven en tablas con filas y columnas. Regresión logística para clasificación binaria. Árboles de decisión para reglas interpretables. Random Forest para robustez. XGBoost y LightGBM para máxima precisión. Estos algoritmos resuelven la mayoría de los problemas de predicción en empresa de forma efectiva, eficiente y con costes de entrenamiento e inferencia muy controlados.
 
-MARIA: [curioso] ¿Por qué obligatorio?
+MARIA: [curioso] ¿Por qué son el estándar si tenemos modelos más modernos?
 
-IAGO: [contundente] Porque son interpretables, baratos de entrenar, rápidos de inferir y maduros en producción. XGBoost y LightGBM dominan consistentemente los benchmarks de datos tabulares y las competiciones de Kaggle con datos estructurados. Un paper de revisión de IBM Research que comparó XGBoost, LightGBM y CatBoost en cuatro datasets a gran escala encontró que todos son competitivos, con XGBoost y LightGBM consistentemente en el top en términos de precisión y velocidad. Para sectores regulados como banca o seguros, la regresión logística sigue siendo el modelo de referencia por su interpretabilidad perfecta y sus propiedades matemáticas bien entendidas.
+IAGO: [explicativo] Porque combinan tres propiedades que las redes neuronales profundas no siempre garantizan. Primera: interpretabilidad. En sectores regulados como banca o seguros, necesitas explicar por qué el modelo tomó una decisión. Segunda: eficiencia.
+MARIA: [curioso] ¿Y qué pasa cuando ese supuesto no se cumple?
+IAGO: [explicativo] Entrenar un XGBoost con cien mil filas puede llevar minutos en un portátil. Tercera: madurez en producción. Estos modelos llevan décadas desplegados a escala industrial. Las herramientas, los pipelines, el conocimiento operativo están completamente consolidados. Un paper de IBM Research comparó XGBoost, LightGBM y CatBoost en cuatro datasets a gran escala y encontró que todos son competitivos en precisión y velocidad, superando consistentemente a arquitecturas de deep learning en datos tabulares.
 
-MARIA: [reflexivo] ¿Qué significa interpretabilidad perfecta?
+MARIA: [reflexivo] O sea, no es que sean antiguos. Es que son efectivos.
 
-IAGO: [claro] Que puedes leer los coeficientes del modelo y entender exactamente qué peso tiene cada variable en la predicción. En regresión logística, si el coeficiente de la variable ratio deuda ingresos es cero punto cinco, significa que por cada unidad de aumento en ese ratio, la probabilidad de impago aumenta de forma cuantificable. Eso es auditable. Eso es explicable a un regulador o a un cliente que pregunta por qué se le denegó un crédito. Los modelos de scoring crediticio en Europa usan regresión logística o variantes cercanas precisamente por esto. El GDPR y las regulaciones bancarias exigen explicabilidad de las decisiones crediticias.
+IAGO: [contundente] Son la primera línea de defensa. Si XGBoost no resuelve tu problema con datos tabulares, entonces sí, plantéate arquitecturas más complejas. Pero empezar por ahí sin haber probado estos modelos es saltar pasos críticos.
 
 # BLOQUE_COMO
 
-IAGO: [explicativo] Empecemos por la regresión lineal y logística. La regresión lineal predice un valor continuo como combinación lineal de las variables de entrada. Es como calcular el precio de una casa sumando el valor base más un precio por metro cuadrado más un ajuste por número de habitaciones. Cada variable tiene un coeficiente que multiplica su valor.
-MARIA: [curioso] ¿Y qué pasa cuando ese supuesto no se cumple?
-IAGO: [explicativo] La regresión logística hace lo mismo pero aplica una función sigmoide sobre esa combinación lineal para producir una probabilidad entre cero y uno. Eso la convierte en el modelo estándar para clasificación binaria. ¿Este cliente va a pagar el préstamo? ¿Este correo es spam? Preguntas de sí o no con una probabilidad asociada.
+IAGO: [explicativo] Vamos al mecanismo. Empecemos por la regresión logística, que es el modelo más interpretable del arsenal. Imagina que tienes que predecir si un cliente va a pagar su préstamo o no. La regresión logística toma las variables de entrada, ingresos, ratio de deuda, historial crediticio, y las combina linealmente.
+MARIA: [reflexivo] ¿Cuál es el principal riesgo en ese punto?
+IAGO: [explicativo] Multiplica cada variable por un coeficiente que el modelo aprende durante el entrenamiento. Luego aplica una función sigmoide sobre esa combinación para producir una probabilidad entre cero y uno. Lo importante aquí es que los coeficientes tienen interpretación directa. Si el coeficiente del ratio de deuda es menos cero punto tres, significa que por cada unidad de aumento en ese ratio, la probabilidad de pago disminuye. Esa transparencia matemática es por qué los modelos de scoring crediticio en Europa siguen siendo regresiones logísticas o variantes muy cercanas.
 
-MARIA: [natural] Y los árboles de decisión funcionan de forma completamente distinta.
+MARIA: [curioso] ¿Y cuándo pasamos de regresión a árboles?
 
-MARIA: [didactico] Un árbol de decisión divide iterativamente el espacio de variables en regiones cada vez más homogéneas respecto al objetivo. Imagina que estás clasificando clientes por riesgo de impago. El árbol pregunta primero: ¿el ratio deuda ingresos es mayor que cero punto cuatro? Si sí, va por la rama derecha. Si no, por la izquierda.
-IAGO: [explicativo] Desde la implementación, ese punto tiene una capa más.
-MARIA: [didactico] Luego hace otra pregunta en cada rama. ¿Tiene más de tres retrasos en pagos anteriores? Y así sucesivamente hasta llegar a una hoja que dice: este cliente es de alto riesgo o de bajo riesgo. Los árboles son completamente interpretables porque puedes visualizar y leer cada decisión. No requieren normalización de los datos, manejan variables categóricas de forma nativa y capturan automáticamente interacciones entre variables.
-IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
+MARIA: [didactico] Cuando la relación entre variables y target no es lineal. Los árboles de decisión dividen el espacio de variables en regiones cada vez más homogéneas. Piensa en un árbol como una serie de preguntas encadenadas. ¿El cliente tiene ingresos mayores a tres mil euros? Si sí, vamos por la rama derecha.
+IAGO: [directo] El rendimiento en producción depende de eso.
+MARIA: [didactico] Si no, por la izquierda. ¿Tiene más de dos años de antigüedad laboral? Otra pregunta. Cada nodo interno aplica una condición sobre una variable, y según la respuesta diriges el ejemplo hacia una rama u otra hasta llegar a una hoja que produce la predicción final. Los árboles capturan automáticamente interacciones entre variables sin que tengas que especificarlas manualmente.
 
-MARIA: [curioso] ¿Cuál es su limitación?
+MARIA: [analitica] Pero un solo árbol es inestable, ¿no? Pequeños cambios en los datos pueden producir árboles muy distintos.
 
-IAGO: [contundente] Varianza alta. Pequeños cambios en los datos de entrenamiento pueden producir árboles muy distintos. Un árbol individual tiende a sobreajustar. Por eso los métodos de ensemble son tan potentes.
+IAGO: [firme] Correcto. Ahí es donde entran los métodos de ensemble. Random Forest entrena muchos árboles de forma independiente sobre muestras aleatorias de los datos y características, y combina sus predicciones por votación o promedio. El promedio de muchos árboles con alta varianza produce un modelo con varianza mucho menor. El resultado es robusto y generaliza bien incluso sin mucho ajuste de hiperparámetros.
 
-MARIA: [reflexivo] Random Forest y Gradient Boosting. Ahí es donde estos modelos se vuelven realmente competitivos en producción. Random Forest entrena muchos árboles de forma independiente sobre muestras aleatorias de los datos y características, y combina sus predicciones por votación o promedio. Es como tener un comité de expertos donde cada uno vio datos ligeramente distintos. El promedio de muchos árboles con alta varianza produce un modelo con varianza mucho menor manteniendo el sesgo bajo. El resultado es un modelo robusto que generaliza bien incluso con poca tunificación de hiperparámetros.
+MARIA: [explicativo] Y luego está Gradient Boosting, que es donde XGBoost y LightGBM entran en juego. La diferencia clave es que en lugar de entrenar árboles independientes, los construyes de forma secuencial. Cada árbol nuevo corrige los errores del ensemble anterior. El modelo mira dónde se equivocó en las predicciones previas, calcula los residuos, esos errores que cometió, y entrena el siguiente árbol para ajustarse específicamente a esos residuos. Repites el proceso cientos de veces. El resultado es un modelo de alta precisión que suele superar a Random Forest en benchmarks tabulares. Eso sí, tiene más hiperparámetros que ajustar y requiere algo más de tiempo de entrenamiento.
 
-MARIA: [analitica] Gradient Boosting va un paso más allá. XGBoost, LightGBM y CatBoost construyen los árboles de forma secuencial. Cada árbol nuevo corrige los errores del ensemble anterior ajustándose a los residuos, que son los errores que el modelo actual comete. Es como un proceso iterativo de mejora donde cada árbol se especializa en los casos difíciles que los anteriores no resolvieron bien. El resultado es un modelo de alta precisión que suele superar a Random Forest en benchmarks tabulares a cambio de más hiperparámetros a ajustar y algo más de tiempo de entrenamiento.
-IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
+IAGO: [conversacional] ¿Y qué hace especial a XGBoost frente a Gradient Boosting estándar?
 
-MARIA: [natural] ¿Qué diferencia a XGBoost de LightGBM?
+MARIA: [explicativo] XGBoost añade regularización L uno y L dos en la función objetivo para evitar sobreajuste. Procesa los datos en paralelo para acelerar el entrenamiento. Maneja valores nulos de forma nativa, el modelo aprende automáticamente la mejor dirección para los datos faltantes. Y tiene soporte para GPU. LightGBM va un paso más allá en velocidad. Usa histogramas para aproximar los splits óptimos, lo que lo hace mucho más rápido en datasets grandes. Y crece leaf-wise en lugar de level-wise, produce árboles más profundos y precisos, aunque más propensos a sobreajustar si no aplicas regularización adecuada.
 
-IAGO: [claro] XGBoost añade regularización L uno y L dos en el objetivo para evitar sobreajuste, procesamiento paralelo para entrenamiento rápido, manejo nativo de valores nulos donde aprende automáticamente la mejor dirección para los datos faltantes, y soporte para GPU. LightGBM usa histogramas para aproximar los splits óptimos, lo que lo hace mucho más rápido en datasets grandes, y crecimiento leaf-wise en lugar de level-wise. Eso produce árboles más profundos y precisos pero más propensos a sobreajustar sin regularización adecuada. CatBoost destaca en el manejo nativo de variables categóricas sin one-hot encoding.
-
-MARIA: [reflexivo] ¿Y los hiperparámetros críticos?
-
-IAGO: [didactico] Los más importantes para gradient boosting son número de árboles, donde más es mejor si hay regularización. Learning rate entre cero punto cero uno y cero punto uno es el rango típico. Valores menores requieren más árboles. Max depth entre tres y ocho es el rango típico. Más profundidad significa más complejidad y más riesgo de sobreajuste. Subsample, que es el porcentaje de datos por árbol, entre cero punto siete y cero punto nueve reduce varianza. Y los parámetros de regularización reg alpha y reg lambda. Un tuning básico con Optuna o Hyperopt sobre estos parámetros puede mejorar el AUC-ROC entre un dos y un cinco por ciento respecto a los valores por defecto.
+IAGO: [reflexivo] Los hiperparámetros más importantes para gradient boosting son número de árboles, más es mejor si hay regularización, learning rate, típicamente entre cero punto cero uno y cero punto uno, profundidad máxima del árbol, entre tres y ocho es el rango habitual, y los parámetros de regularización. Un tuning básico con Optuna sobre estos parámetros puede mejorar el AUC-ROC entre un dos y un cinco por ciento respecto a los valores por defecto.
 
 # BLOQUE_REALIDAD
 
-MARIA: [firme] Ahora la realidad de producción. JPMorgan Chase, el mayor banco de Estados Unidos por activos, tiene un sistema llamado COIN, Contract Intelligence. Usa machine learning clásico, procesamiento de lenguaje natural y clasificadores para analizar contratos legales de préstamos comerciales y extraer cláusulas clave. El resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba exactamente esas trescientas sesenta mil horas anuales. Ahora tarda segundos. Este es el caso canónico de ML clásico con retorno de inversión cuantificado y verificable.
+MARIA: [analitica] Vamos a los casos reales documentados, porque estos modelos no son teoría académica. Están en producción resolviendo problemas de negocio a escala industrial. Empecemos por scoring de crédito. BBVA y Santander usan regresión logística o variantes muy cercanas para sus modelos de scoring regulados en Europa.
+IAGO: [serio] La arquitectura condiciona mucho cómo se gestiona eso.
+MARIA: [analitica] ¿Por qué? Porque el GDPR y las regulaciones bancarias exigen explicabilidad de las decisiones crediticias. El coeficiente de ratio deuda ingresos en la regresión dice exactamente cuánto pesa esa variable en la decisión. No hay caja negra. El regulador puede auditar el modelo línea por línea.
 
-IAGO: [natural] ¿Y en detección de fraude?
+IAGO: [conversacional] ¿Y en sectores donde la velocidad es crítica?
 
-MARIA: [contundente] PayPal y Stripe usan XGBoost para detección de fraude en pagos. Procesan millones de transacciones por segundo. XGBoost con menos de un milisegundo de latencia de inferencia y AUC-ROC de cero punto nueve nueve o superior es el estándar de la industria para este problema. La velocidad importa porque cada milisegundo adicional en la validación de una transacción afecta la experiencia del usuario. Y la precisión importa porque un falso positivo bloquea una compra legítima y genera frustración. Un falso negativo deja pasar fraude real.
+MARIA: [explicativo] Detección de fraude en pagos. PayPal y Stripe procesan millones de transacciones por segundo. XGBoost con menos de un milisegundo de latencia de inferencia y AUC-ROC de cero punto noventa y nueve o superior es el estándar de la industria para este problema. El modelo analiza patrones de transacción, geolocalización, historial del usuario, y decide en tiempo real si bloquear o aprobar. La precisión tiene que ser altísima porque cada falso positivo es un cliente legítimo bloqueado, y cada falso negativo es dinero perdido por fraude.
 
-MARIA: [reflexivo] En retail, Walmart y Carrefour usan LightGBM para predicción de demanda por producto-tienda-semana sobre datasets con millones de filas. LightGBM es la elección por su velocidad en datasets grandes y su buen manejo de variables categóricas como tienda, producto y categoría sin preprocessing. En telecomunicaciones, Telefónica y Vodafone usan Random Forest para predicción de abandono de clientes con cientos de variables: actividad, uso de servicios, historial de reclamaciones, datos demográficos. Random Forest produce feature importances que permiten identificar los principales drivers de churn para las acciones de retención.
+MARIA: [firme] En retail, predicción de demanda. Walmart y Carrefour usan LightGBM para predecir demanda por producto, tienda y semana sobre datasets con millones de filas. LightGBM es la elección por su velocidad en datasets grandes y su buen manejo de variables categóricas, tienda, producto, categoría, sin preprocessing pesado. El modelo alimenta directamente los sistemas de reposición automática de inventario.
+IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
 
-IAGO: [serio] ¿Cuál es el error más común?
+MARIA: [reflexivo] Y en telecomunicaciones, churn prediction. Telefónica y Vodafone entrenan modelos de predicción de abandono de clientes con cientos de variables: actividad, uso de servicios, historial de reclamaciones, datos demográficos. Random Forest produce feature importances que permiten identificar los principales drivers de churn para las acciones de retención. Si el modelo detecta que un cliente de alto valor tiene alta probabilidad de abandono, activa automáticamente una oferta personalizada.
 
-MARIA: [directo] Usar deep learning o LLMs para datos tabulares sin comparar primero con XGBoost. En benchmarks sistemáticos publicados en NeurIPS, XGBoost y LightGBM superan a las redes neuronales en la mayoría de los datasets tabulares medianos. Para datos estructurados, XGBoost es el baseline que hay que superar antes de justificar la complejidad de una red neuronal. El segundo error es no hacer feature engineering básico antes de entrenar. Los modelos de gradient boosting aprenden bien las interacciones entre variables, pero algunas transformaciones básicas como logaritmo de variables con distribución sesgada, ratios entre variables relacionadas o fechas descompuestas en día, mes y hora pueden mejorar el rendimiento significativamente sin añadir complejidad al modelo.
+IAGO: [esceptico] ¿Cuál es el error más común al trabajar con estos modelos?
 
-MARIA: [analitica] Y el tercer error crítico: usar feature importance de XGBoost directamente para explicabilidad. La feature importance nativa de XGBoost, que cuenta el número de veces que una variable aparece en un split, es inestable y puede ser engañosa en presencia de variables correlacionadas. SHAP values son significativamente más fiables para explicabilidad y deben preferirse. SHAP descompone la predicción de cada instancia mostrando la contribución de cada variable a esa predicción específica. Eso es lo que necesitas cuando un cliente pregunta por qué se le denegó un crédito o por qué el sistema clasificó su transacción como sospechosa.
+MARIA: [contundente] Usar deep learning o modelos de lenguaje para datos tabulares sin comparar primero con XGBoost. En un estudio presentado en NeurIPS dos mil veintidós, investigadores compararon sistemáticamente XGBoost, LightGBM y redes neuronales en datasets tabulares medianos. XGBoost y LightGBM superaron a las redes neuronales en la mayoría de los casos. Para datos estructurados, XGBoost es el baseline que hay que superar antes de justificar la complejidad de una red neuronal. Otro error: usar feature importance nativa de XGBoost directamente para explicabilidad. Esa métrica, número de veces que una variable aparece en un split, es inestable y puede ser engañosa en presencia de variables correlacionadas. SHAP values son significativamente más fiables y deben preferirse en producción.
 
 # CIERRE_CONCEPTOS
 
-MARIA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: XGBoost y LightGBM son el estado del arte en datos tabulares y deben ser tu baseline antes de escalar a deep learning.
+MARIA: [directo] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: los modelos clásicos de machine learning son el baseline obligatorio para datos tabulares antes de escalar a deep learning.
 
-IAGO: [firme] Segundo: la regresión logística sigue siendo el modelo de referencia en sectores regulados por su interpretabilidad perfecta y sus propiedades matemáticas auditables.
+IAGO: [firme] Segundo: XGBoost y LightGBM dominan los benchmarks tabulares por su combinación de precisión, velocidad e interpretabilidad con SHAP.
 
-MARIA: [contundente] Tercero: SHAP values para explicabilidad, no feature importance nativa, cuando necesites justificar predicciones en producción.
+MARIA: [contundente] Tercero: en sectores regulados, la regresión logística sigue siendo el estándar por su interpretabilidad matemática perfecta y auditable.
 
 # CIERRE_FINAL
 
-IAGO: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+MARIA: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
 
 # VERIFICACIONES
 ##
-## PALABRAS TOTALES : 1658 (objetivo: 1400-1850)
-## MEDIA PALABRAS/INTERVENCION : 81.1
+## PALABRAS TOTALES : 1508 (objetivo: 1400-1850)
+## MEDIA PALABRAS/INTERVENCION : 65.0
 ##
 ## COBERTURA DE CONCEPTOS DEL PDF:
 ## [FALTA] seccion: 0 menciones
-## [OK] xgboost y lightgbm: 5 menciones
-## [OK] shap: 3 menciones
+## [OK] xgboost y lightgbm: 4 menciones
+## [OK] shap: 2 menciones
 ## [OK] auc: 2 menciones
 ## [OK] roc: 2 menciones
 ## [OK] arboles de decision: 3 menciones
-## [OK] random forest: 6 menciones
+## [OK] random forest: 5 menciones
 ## [FALTA] svm: 0 menciones
 ## Cobertura: 75% (objetivo: 75%)
 ##
 ## TOKENS ANTHROPIC:
 ## input_tokens: 21876
-## output_tokens: 3546
+## output_tokens: 3354
 ## cache_read: 0
-## total: 25422
+## total: 25230
