@@ -1,0 +1,118 @@
+# HOOK
+
+MARIA: [tenso] Nueve de cada diez defensas contra ataques de prompt injection publicadas en papers académicos pueden eludirse con ataques adaptativos. Esto no lo dice un hacker anónimo en un foro. Lo publicó en octubre de dos mil veinticinco un equipo conjunto de OpenAI, Anthropic y Google DeepMind. El prompt es el único mecanismo de control del comportamiento del modelo en producción. Y ese mecanismo tiene una vulnerabilidad estructural que la industria aún no sabe resolver completamente. Esto es MaquinarIA Pesada. Arrancamos.
+
+# INTRO_SONIDO
+
+[INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]
+
+# SALUDO_Y_PRESENTACION
+
+MARIA: [natural] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Maria.
+
+IAGO: [natural] Y yo soy Yago.
+
+MARIA: [directo] Antes de empezar, lo de siempre: este episodio lo genera un sistema automático de inteligencia artificial. Puede contener errores. Si oyes algo que no te cuadra, contrástalo. El sistema que produce este podcast también es contenido del podcast: al final del episodio veremos cómo se aplica lo de hoy a ese sistema.
+
+# BLOQUE_PANORAMA
+
+IAGO: [didactico] La ingeniería de prompts es la disciplina de diseñar, evaluar y optimizar los inputs textuales a los modelos de lenguaje para obtener outputs consistentes y de calidad. No es un arte intuitivo. Es una ingeniería con principios, técnicas y procesos de evaluación sistemáticos. Lo que empezó como experimentación se ha convertido en una de las competencias más demandadas en el mercado de trabajo de inteligencia artificial. No porque sea difícil de aprender, sino porque es difícil de hacer bien y tiene impacto directo en la calidad de los sistemas en producción.
+
+MARIA: [curioso] ¿Por qué es tan crítica para los sistemas reales?
+
+IAGO: [explicativo] Por un hecho fundamental: para la mayoría de los casos de uso empresariales que no requieren ajuste fino, el prompt es el único mecanismo de control del comportamiento del modelo. Todo lo que el sistema hace, cómo lo hace, qué restricciones respeta, qué tono usa y qué formato produce está determinado por el prompt. Un prompt mal diseñado produce un sistema poco fiable, inconsistente y difícil de mantener. Un prompt bien diseñado produce un sistema consistente, controlable y eficiente. La diferencia entre los dos no es cosmética. Es la diferencia entre un prototipo de demostración y un sistema que puedes poner en producción.
+
+MARIA: [reflexivo] Entonces no estamos hablando de escribir mejores instrucciones. Estamos hablando de arquitectura del sistema.
+
+IAGO: [contundente] eso. Un prompt efectivo para producción tiene anatomía. Tiene secciones bien diferenciadas. El rol y el contexto definen quién es el modelo: un asistente de soporte técnico, un analista financiero, un tutor de programación. Las instrucciones específicas detallan qué debe hacer, cómo debe hacerlo y qué restricciones debe respetar. Los ejemplos en formato few-shot muestran al modelo el tipo de input que recibirá y el tipo de output que se espera. El formato del output define la estructura exacta: JSON con campos específicos, markdown con secciones definidas, respuesta de una sola línea. Y los delimitadores separan las distintas partes del prompt para evitar confusión y reducir el riesgo de inyección maliciosa.
+
+IAGO: [analitica] La sección de instrucciones es la más crítica. Las mejores prácticas son claras. Ser específico y sin ambigüedad: las instrucciones vagas producen comportamiento impredecible. Usar afirmaciones positivas en lugar de negativas cuando sea posible: decir responde siempre en español es más efectivo que no respondas en inglés. Proporcionar ejemplos de lo que es correcto y de lo que no lo es. Y estructurar las instrucciones por orden de importancia: las instrucciones al principio del system prompt tienen mayor peso estadístico en el comportamiento del modelo.
+
+MARIA: [esceptico] ¿Y cómo sabes que un cambio en el prompt realmente mejora el sistema?
+
+IAGO: [firme] Con evaluación sistemática. Ahí es donde la ingeniería de prompts se separa de la intuición. Necesitas un golden dataset: entre cincuenta y doscientos pares de input y output esperado que representen la distribución real de casos de uso. Métricas de evaluación adecuadas al caso: para clasificación usas accuracy y F1, para texto libre usas LLM-as-judge con rúbricas específicas, para extracción usas precision y recall de campos. Y un proceso de A/B testing entre versiones del prompt. Este proceso hace visible qué cambios mejoran el rendimiento y qué cambios lo degradan. Convierte el desarrollo de prompts en un proceso de optimización con feedback objetivo, no en prueba y error.
+
+# BLOQUE_DESTACADO
+
+IAGO: [reflexivo] Hay tres técnicas de prompting que cambian completamente la calidad de los sistemas en producción. La primera es la más contraintuitiva: self-consistency. La mayoría de los desarrolladores generan una sola respuesta del modelo y la usan directamente. Self-consistency hace lo contrario. Generas múltiples respuestas independientes al mismo prompt, con temperatura mayor que cero para introducir variación, y seleccionas la respuesta con mayor acuerdo entre las muestras. Para preguntas de respuesta única como matemáticas, clasificación o respuestas factuales, la respuesta más frecuente entre cinco a diez muestras es significativamente más precisa que una sola muestra. El coste es proporcional al número de muestras: cinco muestras son cinco veces el coste de una sola llamada. Pero para casos de uso donde la precisión justifica el coste adicional, self-consistency es la técnica más efectiva disponible.
+
+MARIA: [curioso] ¿Esto funciona solo para respuestas únicas o también para razonamiento complejo?
+
+IAGO: [explicativo] Para razonamiento complejo funciona aún mejor. Self-consistency combinado con Chain of Thought produce los mejores resultados: generas múltiples cadenas de razonamiento independientes y seleccionas la conclusión más consistente entre ellas. Esto no solo mejora la precisión. También mejora la confiabilidad: cuando múltiples caminos de razonamiento independientes llegan a la misma conclusión, la confianza en esa conclusión es mayor. Los modelos de razonamiento como o3 internalizan algo similar en su proceso de extended thinking. Pero para los modelos estándar, self-consistency es la forma más directa de obtener esa propiedad.
+
+MARIA: [tenso] Ahora hablemos del elefante en la habitación. Prompt injection. El noventa por ciento de las defensas publicadas pueden eludirse. ¿Qué significa esto para los sistemas en producción?
+
+MARIA: [grave] Significa que la defensa contra prompt injection no es un problema completamente resuelto. Los ataques directos incluyen instrucciones explícitas de ignorar el system prompt, roleplay injections donde el atacante pide al modelo que actúe como un sistema sin restricciones, y encoding tricks con instrucciones en Base64 o con caracteres especiales que evitan filtros de texto. Los ataques indirectos son más sutiles: introducen instrucciones maliciosas a través de los datos que el modelo procesa. Un documento PDF con instrucciones invisibles. Una página web recuperada por un agente de búsqueda. El modelo no distingue entre instrucciones del diseñador del sistema e instrucciones del usuario.
+IAGO: [explicativo] Desde la arquitectura, eso tiene una consecuencia directa.
+
+MARIA: [analitica] Entonces, ¿cómo se defiende un sistema real? Porque no podemos simplemente no usar prompts.
+
+IAGO: [contundente] La defensa correcta es en capas. No hay una sola técnica que resuelva el problema. Separación clara entre instrucciones y inputs del usuario con delimitadores. Instrucciones explícitas en el system prompt de ignorar cualquier instrucción en el input del usuario. Controles en la capa de ejecución de herramientas, fuera del control del modelo: si el modelo pide ejecutar código o acceder a datos sensibles, esa decisión no la toma el modelo, la toma el sistema. Y human-in-the-loop para acciones de alto impacto. La defensa en capas no elimina el riesgo completamente, pero lo reduce a niveles manejables para producción.
+
+MARIA: [reflexivo] La tercera técnica que mencionaste al principio: meta-prompting o prompt chaining. ¿Por qué es relevante para profesionales no técnicos?
+
+MARIA: [didactico] Porque cambia la forma en que diseñas sistemas complejos. En lugar de intentar que el modelo haga todo en una sola llamada, descompones el problema en múltiples llamadas donde el output de cada una sirve de input para la siguiente. Imagina que tienes que analizar un contrato complejo. Primera llamada: identificar las secciones del contrato. Segunda llamada: para cada sección, extraer las cláusulas clave. Tercera llamada: evaluar el riesgo de las cláusulas identificadas. Cuarta llamada: generar el resumen ejecutivo a partir del análisis de riesgo. Esta descomposición produce resultados más precisos y controlables que intentar hacer todo de una vez. Y lo más importante: hace el sistema más fácil de mantener y de depurar. Si algo falla, sabes exactamente en qué llamada falló.
+IAGO: [reflexivo] Añadiría una dimensión técnica a ese punto.
+
+MARIA: [curioso] ¿Y esto no hace el sistema más lento?
+
+IAGO: [explicativo] Sí, hace el sistema más lento. Pero no linealmente. Puedes paralelizar las llamadas que no dependen unas de otras. Y el trade-off entre velocidad y precisión casi siempre favorece la precisión en sistemas empresariales. Un sistema que responde en tres segundos con precisión del noventa y cinco por ciento es más valioso que un sistema que responde en un segundo con precisión del setenta por ciento. El coste de los errores en producción es mayor que el coste de la latencia adicional.
+
+# APLICACION_PRACTICA
+
+MARIA: [directo] Ahora veamos cómo todo esto se aplica en un sistema real. Concretamente, en el sistema que está generando este podcast. La pregunta es: ¿cómo se diseñan los prompts de un sistema que tiene que generar cien episodios de podcast con calidad consistente, tono reconocible y rigor técnico verificable?
+
+IAGO: [explicativo] Lo que acabas de entender sobre ingeniería de prompts es exactamente lo que hace posible que este sistema funcione. El sistema no usa un solo prompt genérico. Usa una arquitectura de prompts con tres capas. La primera capa es el system prompt canónico: define el rol del sistema, el tono del podcast, las restricciones de formato y las reglas de calidad. Ese prompt tiene más de mil palabras y está versionado en git como código. La segunda capa son los prompts específicos de cada tipo de episodio: episodios T de tema individual, episodios M de módulo completo. Cada tipo tiene su propia especificación con estructura obligatoria, balance de intervenciones entre presentadores y reglas de contenido. Y la tercera capa son los prompts de validación: después de generar cada guion, el sistema ejecuta verificaciones automáticas contra las reglas de la especificación.
+
+IAGO: [analitica] La técnica de few-shot que vimos antes está en el núcleo del sistema. Cada prompt de generación incluye ejemplos de episodios anteriores que cumplen las reglas: ejemplos de hooks efectivos, ejemplos de transiciones naturales entre bloques, ejemplos de cierres que conectan conceptos. Esos ejemplos no son decorativos. Son instrucciones implícitas que guían al modelo hacia el estilo objetivo. Y la técnica de meta-prompting también está presente: el sistema no genera el episodio completo en una sola llamada. Genera el hook, valida que cumple las reglas, genera el bloque de panorama, valida de nuevo, genera el bloque destacado, valida otra vez. Cada bloque es una llamada independiente con su propio contexto y sus propias reglas de validación.
+MARIA: [curioso] ¿Dónde suele aparecer el primer problema en producción?
+
+IAGO: [contundente] Y la defensa contra prompt injection está en la arquitectura del sistema. El contenido técnico viene de PDFs que el sistema lee pero no ejecuta. Si un PDF contiene instrucciones maliciosas, esas instrucciones no pueden modificar el comportamiento del sistema porque el PDF no se pasa directamente al modelo como prompt. Se extrae el contenido, se estructura, y se inyecta en el contexto del prompt canónico que tiene prioridad absoluta. Las instrucciones del PDF no pueden sobrescribir las instrucciones del system prompt. Esa separación de capas es defensa en profundidad.
+
+MARIA: [reflexivo] Entonces el sistema que estamos escuchando ahora mismo es un caso de estudio de ingeniería de prompts aplicada. No es un prototipo. Es un sistema en producción con evaluación sistemática.
+
+IAGO: [firme] Y eso es lo que diferencia la ingeniería de prompts de la experimentación. El sistema tiene un proceso de evaluación continua: cada episodio generado se valida contra las reglas de la especificación, se mide la duración del audio, se verifica que los conceptos del módulo están cubiertos. Cuando una validación falla, el sistema lo registra y el equipo ajusta los prompts. Eso es ingeniería de prompts real: ciclo de feedback, medición objetiva y mejora continua.
+
+# CIERRE_CONCEPTOS
+
+MARIA: [calido] No te puedes ir de este capítulo sin haber entendido estos conceptos.
+
+IAGO: [didactico] La ingeniería de prompts es disciplina, no arte. Tiene anatomía: rol, instrucciones, ejemplos, formato y delimitadores.
+
+MARIA: [explicativo] Self-consistency mejora la precisión generando múltiples respuestas independientes y seleccionando la más consistente. El coste es proporcional al número de muestras, pero la ganancia en precisión justifica el coste en casos críticos.
+
+IAGO: [contundente] Prompt injection es el riesgo de seguridad número uno. La defensa es en capas: delimitadores, instrucciones explícitas, controles en la capa de ejecución y human-in-the-loop.
+
+MARIA: [firme] El prompt como código: versionado en git, testing en CI/CD, evaluación sistemática con golden dataset. Eso es lo que convierte un prototipo en un sistema de producción, como el que está generando este episodio.
+
+# CIERRE_FINAL
+
+MARIA: [calido]Y si quieres profundizar en cualquiera de estos conceptos, los episodios del módulo ya están disponibles en nuestras plataformas habituales. Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+# VERIFICACIONES
+##
+## PALABRAS TOTALES : 2081 (objetivo: 2100-2600)
+## MEDIA PALABRAS/INTERVENCION : 87.5
+##
+## COBERTURA DE CONCEPTOS DEL PDF:
+## [OK] Ingeniería de Prompts: 7 menciones
+## [--] Anatomía del prompt: 0 menciones
+## [OK] Few-shot: 2 menciones
+## [--] Zero-shot: 0 menciones
+## [--] One-shot: 0 menciones
+## [OK] Chain of Thought: 1 menciones
+## [--] CoT: 0 menciones
+## [OK] Self-consistency: 6 menciones
+## [OK] Prompt injection: 5 menciones
+## [OK] Meta-prompting: 2 menciones
+## Cobertura total: 60% (objetivo: 75%)
+##
+## APLICACION_PRACTICA:
+## Parrafos encontrados en docs vivos: 10
+## Por documento: {'BIBLIA_SISTEMA': 0, 'PRIMERPODCAST': 0, 'VIDEOPODCAST': 0, 'PODCAST': 10}
+##
+## TOKENS ANTHROPIC:
+## input_tokens: 45478
+## output_tokens: 9299
+## cache_read: 0
+## total: 54777
