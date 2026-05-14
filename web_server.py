@@ -392,6 +392,16 @@ def load_episode_detail(ep_id: str) -> dict | None:
         except (ValueError, OSError):
             return None
 
+    # Progreso persistido de la última corrida del pipeline de audio (si existe).
+    progress = None
+    try:
+        import episode_state
+        es = episode_state.load(ep_id)
+        if es is not None:
+            progress = es.to_dict()
+    except Exception:  # noqa: BLE001
+        progress = None
+
     return {
         "id": ep.id,
         "mod": ep.module,
@@ -401,6 +411,7 @@ def load_episode_detail(ep_id: str) -> dict | None:
         "title": ep.label or f"Episodio {ep.id}",
         "dur": "—",
         "state": _state_for_episode(ep),
+        "progress": progress,
         "paths": {
             "pdf": rel(ep.pdf),
             "guion": rel(ep.guion),

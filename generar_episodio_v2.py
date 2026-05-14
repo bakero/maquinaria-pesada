@@ -2,18 +2,19 @@
 from __future__ import annotations
 
 import argparse
+import glob as _glob
 import os
 import re
+import subprocess
 import sys
 import time
-import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-import glob as _glob
 from dotenv import load_dotenv
 
+import episode_state
 from podcast_spec import (
     DEFAULT_SPEC_PATH,
     extract_leading_tag,
@@ -21,7 +22,6 @@ from podcast_spec import (
     parse_script_blocks,
     validate_script_text,
 )
-
 
 load_dotenv(override=True)
 
@@ -244,6 +244,44 @@ def generar_bloque(client: ElevenLabs, bloque: dict, ep: str, temp_dir: Path, sp
                 print(f"  [{indice:03d}] FALLO DEFINITIVO. Bloque omitido.")
                 return None
     return None
+
+
+def generar_bloques(
+    client: ElevenLabs,
+    bloques: list[dict],
+    ep: str,
+    temp_dir: Path,
+    spec: dict,
+    workers: int = 1,
+) -> dict[int, tuple[Path | None, dict]]:
+    """Genera el audio de varios bloques y devuelve {index: (ruta|None, bloque)}.
+
+    workers=1 (por defecto): secuencial, con pausa de 0.5 s entre llamadas para
+    no saturar la API — comportamiento histórico, byte a byte idéntico.
+    workers>1: genera en paralelo con un ThreadPoolExecutor. generar_bloque es
+    I/O-bound (HTTP + escritura de fichero), así que los hilos dan x2-x3 real.
+    Conviene mantener `workers` dentro del límite de concurrencia del plan de
+    ElevenLabs; los errores transitorios ya se reintentan dentro de generar_bloque.
+    """
+    resultados: dict[int, tuple[Path | None, dict]] = {}
+    if workers <= 1:
+        for position, bloque in enumerate(bloques):
+            ruta = generar_bloque(client, bloque, ep, temp_dir, spec)
+            resultados[bloque["index"]] = (ruta, bloque)
+            if position < len(bloques) - 1:
+                time.sleep(0.5)
+        return resultados
+
+    from concurrent.futures import ThreadPoolExecutor
+    print(f"   Generación concurrente: {workers} workers")
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futuros = {
+            executor.submit(generar_bloque, client, bloque, ep, temp_dir, spec): bloque
+            for bloque in bloques
+        }
+        for futuro, bloque in futuros.items():
+            resultados[bloque["index"]] = (futuro.result(), bloque)
+    return resultados
 
 
 def generar_musica(api_key: str, ruta_destino: Path, spec: dict) -> bool:
@@ -609,7 +647,7 @@ def guardar_log(
         "",
         "CONSUMO",
         "-------",
-        f"Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)",
+        "Tokens audio:       no aplica (ElevenLabs usa creditos/caracteres)",
         f"Caracteres totales: {total_chars}",
         f"Creditos estimados: {total_chars}",
     ]
@@ -697,7 +735,12 @@ def main() -> None:
     parser.add_argument("--solo-speaker", type=str, default=None, help="Regenerar solo IAGO o MARIA")
     parser.add_argument("--solo-montar", action="store_true", help="Montar desde archivos existentes")
     parser.add_argument("--generar-musica", action="store_true", help="Generar nueva musica de fondo")
+    parser.add_argument("--workers", type=int, default=1,
+                        help="Bloques de audio a generar en paralelo "
+                             "(1 = secuencial, comportamiento por defecto)")
     args = parser.parse_args()
+    if args.workers < 1:
+        raise SystemExit("--workers debe ser >= 1")
 
     api_key = os.getenv("ELEVENLABS_API_KEY")
     if not api_key:
@@ -774,23 +817,26 @@ def main() -> None:
     else:
         bloques_a_generar = bloques
 
-    client = ElevenLabs(api_key=api_key)
+    # Timeout explícito: sin él, una conexión colgada bloquea el bucle de
+    # generación indefinidamente. Configurable vía spec, por defecto 120 s.
+    request_timeout_s = float(spec["audio_rules"].get("request_timeout_s", 120.0) or 120.0)
+    client = ElevenLabs(api_key=api_key, timeout=request_timeout_s)
     print(f"\nGenerando audio con ElevenLabs {spec['audio_rules']['model']}...")
     start_time = time.time()
 
-    archivos_generados: dict[int, tuple[Path | None, dict]] = {}
-    archivos_ok = 0
-    archivos_fallidos = 0
+    # Estado persistido: solo en la corrida completa (no en solo-bloque /
+    # solo-speaker, que son regeneraciones parciales y falsearían el progreso).
+    track_state = args.solo_bloque is None and args.solo_speaker is None
+    ep_state = (
+        episode_state.mark_running(args.ep, len(bloques_a_generar))
+        if track_state else None
+    )
 
-    for position, bloque in enumerate(bloques_a_generar):
-        ruta = generar_bloque(client, bloque, args.ep, temp_dir, spec)
-        archivos_generados[bloque["index"]] = (ruta, bloque)
-        if ruta:
-            archivos_ok += 1
-        else:
-            archivos_fallidos += 1
-        if position < len(bloques_a_generar) - 1:
-            time.sleep(0.5)
+    archivos_generados = generar_bloques(
+        client, bloques_a_generar, args.ep, temp_dir, spec, workers=args.workers,
+    )
+    archivos_ok = sum(1 for ruta, _ in archivos_generados.values() if ruta)
+    archivos_fallidos = len(archivos_generados) - archivos_ok
 
     elapsed = time.time() - start_time
 
@@ -802,6 +848,11 @@ def main() -> None:
         return
 
     if archivos_ok == 0:
+        if ep_state is not None:
+            episode_state.mark_finished(
+                ep_state, blocks_done=0, blocks_failed=archivos_fallidos,
+                duration_s=None, ok=False, error="no se generó ningún bloque",
+            )
         raise SystemExit("No se genero ningun bloque. Revisa la API key y la conexion.")
 
     if args.solo_bloque is not None:
@@ -849,7 +900,14 @@ def main() -> None:
         escaleta=escaleta,
     )
 
-    if verification_issues or asset_issues:
+    audio_ok = not (verification_issues or asset_issues)
+    if ep_state is not None:
+        episode_state.mark_finished(
+            ep_state, blocks_done=archivos_ok, blocks_failed=archivos_fallidos,
+            duration_s=duracion, ok=audio_ok,
+            error=None if audio_ok else "la validación final del audio falló",
+        )
+    if not audio_ok:
         raise SystemExit("La validacion final del audio ha fallado. Revisa el log.")
 
     print(f"\nAudio final: {ruta_final}")

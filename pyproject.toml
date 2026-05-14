@@ -4,6 +4,30 @@ version = "0.1.0"
 description = "Sistema de generación automática de podcasts/vídeos con IA."
 requires-python = ">=3.10"
 
+# Dependencias base de los pipelines top-level (generar_guion / generar_episodio
+# / validar_episodio). Las extras del cockpit web están en el grupo opcional
+# `cockpit` y, con versiones pineadas, en requirements-cockpit.txt.
+dependencies = [
+    "anthropic>=0.40",
+    "elevenlabs>=1.0",
+    "pydub>=0.25",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+# Cockpit web (web_server.py + Streamlit). Instalar con: pip install -e ".[cockpit]"
+# o, con versiones reproducibles, pip install -r requirements-cockpit.txt
+cockpit = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "streamlit>=1.32",
+    "streamlit-autorefresh>=1.0",
+    "psutil>=5.9",
+    "pdfplumber>=0.11",
+    "openai>=1.40",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
