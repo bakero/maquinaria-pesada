@@ -162,6 +162,32 @@ def test_episode_detail_unknown(fake_repo):
     assert web_server.load_episode_detail("M999") is None
 
 
+def test_pizarra_load_save_roundtrip(fake_repo):
+    """save_pizarra persiste el lienzo y load_pizarra lo recupera."""
+    import web_server
+    assert web_server.load_pizarra() == {"ok": True, "board": None}
+    board = {"nodes": [{"id": "a", "label": "A", "kind": "ai"}], "edges": [["a", "a"]]}
+    assert web_server.save_pizarra(board)["ok"] is True
+    out = web_server.load_pizarra()
+    assert out["ok"] is True
+    assert out["board"]["nodes"][0]["id"] == "a"
+
+
+def test_pizarra_generate_component_validates(fake_repo):
+    import web_server
+    out = web_server.pizarra_generate_component("", "", "ai")
+    assert out["ok"] is False
+    assert "requeridos" in out["error"]
+
+
+def test_pizarra_generate_component_no_key(fake_repo, monkeypatch):
+    """Sin ANTHROPIC_API_KEY, degrada con ok:false sin crashear."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    import web_server
+    out = web_server.pizarra_generate_component("resumir_pdf", "extrae 5 ideas", "ai")
+    assert "ok" in out and "code" in out
+
+
 def test_episode_checks_real(fake_repo):
     """load_episode_checks ejecuta verifications.run_all sobre el episodio."""
     import web_server

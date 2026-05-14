@@ -143,8 +143,43 @@ function PagePizarra({ onNav, onOpenAI }) {
   const [dragging, setDragging] = React.useState(null);
   const [adding, setAdding] = React.useState(false);
   const canvasRef = React.useRef(null);
+  const loadedRef = React.useRef(false);
 
   const CW = 1640, CH = 800;
+
+  // Carga el lienzo persistido (cockpit/pizarra_board.json). Si no hay,
+  // se queda con el pipeline por defecto. Marca loadedRef para no
+  // sobrescribir el archivo con el default antes de leerlo.
+  React.useEffect(() => {
+    let alive = true;
+    fetch("/api/pizarra", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive) return;
+        const b = d && d.board;
+        if (b && Array.isArray(b.nodes) && b.nodes.length) {
+          setNodes(b.nodes);
+          setEdges(Array.isArray(b.edges) ? b.edges : []);
+        }
+      })
+      .catch(() => {})
+      .finally(() => { loadedRef.current = true; });
+    return () => { alive = false; };
+  }, []);
+
+  // Persiste el lienzo tras cualquier cambio (add/quitar/reset/arrastrar),
+  // con debounce para no escribir en cada frame de un arrastre.
+  React.useEffect(() => {
+    if (!loadedRef.current) return undefined;
+    const id = setTimeout(() => {
+      fetch("/api/pizarra", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nodes, edges }),
+      }).catch(() => {});
+    }, 600);
+    return () => clearTimeout(id);
+  }, [nodes, edges]);
 
   // Drag handlers
   const onNodeMouseDown = (e, nodeId) => {
@@ -512,26 +547,33 @@ function AddComponentForm({ onAdd, onCancel }) {
     ? ["episodios/", "videopodcast/"]
     : ["PDFs/", "PDFs/resumenes/"];
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!name.trim() || !desc.trim()) return;
-    if (kind === "ai") {
-      // Simulate Claude generating code
-      setStage("generating");
-      const generated = generateMockCode(name, desc);
-      let i = 0;
-      const tick = () => {
-        i += Math.floor(Math.random() * 8) + 4;
-        setStreamed(generated.slice(0, i));
-        if (i < generated.length) setTimeout(tick, 16);
-        else {
-          setCode(generated);
-          setStage("done");
-        }
-      };
-      setTimeout(tick, 300);
-    } else {
+    if (kind !== "ai") {
       finish("");
+      return;
+    }
+    // Generación real con Claude vía /api/pizarra/generate-component.
+    setStage("generating");
+    setStreamed("");
+    try {
+      const res = await fetch("/api/pizarra/generate-component", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, description: desc, kind }),
+      });
+      const data = await res.json();
+      if (data.ok && data.code) {
+        setCode(data.code);
+        setStage("done");
+      } else {
+        setStreamed(data.error || data.code || "Claude no disponible");
+        setStage("error");
+      }
+    } catch (err) {
+      setStreamed(String(err));
+      setStage("error");
     }
   };
 
@@ -565,8 +607,9 @@ function AddComponentForm({ onAdd, onCancel }) {
       <div className="row" style={{ justifyContent: "space-between", marginBottom: 12 }}>
         <div className="display" style={{ fontSize: 11, color: "var(--y)", letterSpacing: "0.16em" }}>
           {stage === "form"       && "NUEVO COMPONENTE"}
-          {stage === "generating" && "✨ CLAUDE INTERPRETANDO…"}
+          {stage === "generating" && "✨ CLAUDE GENERANDO…"}
           {stage === "done"       && "✓ CÓDIGO GENERADO"}
+          {stage === "error"      && "✕ NO SE PUDO GENERAR"}
         </div>
         <button type="button" className="btn ghost sm" onClick={onCancel} style={{ padding: "2px 6px" }}>
           <Icon name="close" size={10}/>
@@ -690,11 +733,25 @@ function AddComponentForm({ onAdd, onCancel }) {
       {stage === "generating" && (
         <div>
           <div className="mono dim" style={{ fontSize: 11, marginBottom: 8, color: "var(--info)" }}>
-            <Icon name="spark" size={10}/> claude-sonnet-4.5 · streaming…
+            <Icon name="spark" size={10}/> claude-sonnet-4-6 · generando código…
           </div>
           <pre className="code" style={{ fontSize: 10.5, maxHeight: 320, overflow: "auto" }}>
-            {streamed}<span className="ai-cursor"/>
+            <span className="ai-cursor"/>
           </pre>
+        </div>
+      )}
+
+      {stage === "error" && (
+        <div>
+          <div className="mono" style={{ fontSize: 11, color: "var(--alert)", marginBottom: 8 }}>
+            No se pudo generar el componente.
+          </div>
+          <pre className="code" style={{ fontSize: 10.5, maxHeight: 200, overflow: "auto", marginBottom: 12 }}>
+            {streamed}
+          </pre>
+          <div className="row gap-3" style={{ justifyContent: "flex-end" }}>
+            <Btn sm kind="ghost" onClick={() => setStage("form")}>← Volver</Btn>
+          </div>
         </div>
       )}
 
@@ -702,8 +759,7 @@ function AddComponentForm({ onAdd, onCancel }) {
         <div>
           <div className="row gap-4" style={{ marginBottom: 10 }}>
             <span className="badge ok">✓ {code.split("\n").length} líneas</span>
-            <span className="badge">claude-sonnet-4.5</span>
-            <span className="badge">~0.024€</span>
+            <span className="badge">generado por Claude</span>
           </div>
           <pre className="code" style={{ fontSize: 10.5, maxHeight: 240, overflow: "auto", marginBottom: 12 }}>
             {code}
@@ -718,97 +774,6 @@ function AddComponentForm({ onAdd, onCancel }) {
       )}
     </form>
   );
-}
-
-// ── Mock code generator: realistic Python for the prototype ──
-function generateMockCode(name, desc) {
-  const safe = name.toLowerCase().replace(/[^a-z0-9]+/g, "_") || "componente";
-  // try to infer model from description
-  const usesHaiku  = /haiku|r[aá]pido|simple|extracci[oó]n/i.test(desc);
-  const usesGpt    = /gpt|openai|valid|debate/i.test(desc);
-  const usesEleven = /audio|voz|tts|elevenlabs/i.test(desc);
-  const usesWhisper= /whisper|transcrib|subtitul/i.test(desc);
-
-  let imports, model, body;
-  if (usesEleven) {
-    imports = `from elevenlabs.client import ElevenLabs\nfrom pathlib import Path`;
-    model = `eleven_v3`;
-    body = `eleven = ElevenLabs()
-    audio = eleven.text_to_speech.convert(
-        text=text_input,
-        voice_id="EXAVITQu4vr4xnSDxMaL",
-        model_id="eleven_v3",
-    )
-    out_path.write_bytes(b"".join(audio))`;
-  } else if (usesWhisper) {
-    imports = `import whisper\nfrom pathlib import Path`;
-    model = `whisper-large-v3`;
-    body = `model = whisper.load_model("large-v3")
-    result = model.transcribe(
-        str(audio_path),
-        word_timestamps=True,
-        language="es",
-    )
-    return result["segments"]`;
-  } else if (usesGpt) {
-    imports = `from openai import OpenAI\nfrom pathlib import Path`;
-    model = `gpt-4o-mini`;
-    body = `client = OpenAI()
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response.choices[0].message.content`;
-  } else {
-    imports = `from anthropic import Anthropic\nfrom pathlib import Path\nimport json`;
-    model = usesHaiku ? `claude-haiku-4-5` : `claude-sonnet-4-5`;
-    body = `client = Anthropic()
-    prompt = build_prompt(input_data)
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=${usesHaiku ? "4_000" : "16_000"},
-        messages=[{"role": "user", "content": prompt}],
-    )
-    output_text = response.content[0].text
-    out_path.write_text(output_text, encoding="utf-8")
-    return out_path`;
-  }
-
-  return `#!/usr/bin/env python3
-"""${safe}.py
-
-${desc.trim()}
-
-Generado por Claude · interpretado desde descripción del usuario.
-"""
-from __future__ import annotations
-
-${imports}
-
-MODEL = "${model}"
-
-
-def run(input_path: Path, out_path: Path) -> Path:
-    """Punto de entrada del componente."""
-    ${body}
-
-
-def build_prompt(data) -> str:
-    return f"""Eres un asistente del pipeline MaquinarIA Pesada.
-Tarea: ${desc.trim()}
-
-Input:
-{data}
-"""
-
-
-if __name__ == "__main__":
-    import sys
-    in_p  = Path(sys.argv[1])
-    out_p = Path(sys.argv[2]) if len(sys.argv) > 2 else in_p.with_suffix(".out")
-    run(in_p, out_p)
-    print(f"[ok] {in_p} -> {out_p}")
-`;
 }
 
 export { PagePizarra };

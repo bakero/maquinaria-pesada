@@ -90,3 +90,6 @@ Thumbs.db
 # ─── Backups y temporales de produccion ─────────────────────
 Guiones/_backup_v3/
 episodios/temp/
+
+# Lienzo editable de la Pizarra (estado runtime, no fuente)
+cockpit/pizarra_board.json

@@ -27,6 +27,7 @@ que la página renderiza en un panel lateral.
 """
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -164,3 +165,37 @@ def to_dot(piezas: list[Pieza], flechas: list[Flecha]) -> str:
         lines.append(f'  "{f.src}" -> "{f.dst}" [label="{f.label}"];')
     lines.append("}")
     return "\n".join(lines)
+
+
+# ---- Persistencia del lienzo editable -----------------------------------
+# La página Pizarra deja editar el grafo (arrastrar, añadir, quitar). El
+# lienzo se persiste como JSON para que sobreviva entre sesiones.
+
+
+def board_path() -> Path:
+    return paths.repo_root() / "cockpit" / "pizarra_board.json"
+
+
+def load_board() -> dict | None:
+    """Lee el lienzo guardado, o None si no existe (la página usa su default)."""
+    p = board_path()
+    if not p.exists():
+        return None
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    return data
+
+
+def save_board(data: dict) -> None:
+    """Persiste el lienzo (nodes + edges) tal cual lo manda la página."""
+    p = board_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "nodes": data.get("nodes", []),
+        "edges": data.get("edges", []),
+    }
+    p.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

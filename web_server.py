@@ -29,6 +29,7 @@ Endpoints (todos JSON salvo donde se indique):
                                    reales sobre ai_usage.jsonl)
     GET  /api/components-map     → grafo de cockpit/components_map.json
     GET  /api/connectors         → estado real de los conectores registrados
+    GET  /api/pizarra            → lienzo guardado de la Pizarra (o null)
     GET  /api/logs               → archivos de logs/ (path, size, mtime)
     GET  /api/live               → procesos en producción (psutil best-effort)
     GET  /api/recent-files       → últimos artefactos modificados
@@ -44,6 +45,9 @@ Endpoints (todos JSON salvo donde se indique):
     POST /api/episode/<id>/generate → Genera el guion de UN episodio concreto.
                                    Resuelve PDF + script vía episode_sources y
                                    redirige la traza a Guiones/logs/<id>_gen.log.
+    POST /api/pizarra            → Persiste el lienzo de la Pizarra (nodes/edges).
+    POST /api/pizarra/generate-component → Genera código de un componente con
+                                   Claude (ai_client). Body: {name, description, kind}.
     POST /api/reveal             → Body: {path} (relativo a REPO_ROOT)
                                    Abre la carpeta/archivo en el explorador.
     POST /api/economics/topup    → Body: {provider, amount, note}
@@ -397,6 +401,79 @@ def load_episode_checks(ep_id: str) -> dict:
                 for c in v
             ]
             for k, v in results.items()
+        },
+    }
+
+
+def load_pizarra() -> dict:
+    """Lienzo guardado de la Pizarra (cockpit/pizarra_board.json) o None."""
+    try:
+        from cockpit.core import pizarra
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "board": None}
+    try:
+        return {"ok": True, "board": pizarra.load_board()}
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "board": None}
+
+
+def save_pizarra(data: dict) -> dict:
+    """Persiste el lienzo de la Pizarra."""
+    try:
+        from cockpit.core import pizarra
+    except Exception as exc:
+        return {"ok": False, "error": str(exc)}
+    try:
+        pizarra.save_board(data or {})
+        return {"ok": True}
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc)}
+
+
+def pizarra_generate_component(name: str, description: str, kind: str) -> dict:
+    """Genera código real de un componente con Claude (vía ai_client).
+
+    Sin API key, ai_client devuelve usage.ok=False y un texto de fallback —
+    el front lo trata como error mostrando el mensaje."""
+    if not (name or "").strip() or not (description or "").strip():
+        return {"ok": False, "error": "name y description requeridos", "code": ""}
+    try:
+        from cockpit.core import ai_client
+    except Exception as exc:
+        return {"ok": False, "error": f"ai_client no disponible: {exc}", "code": ""}
+
+    system = (
+        "Eres un ingeniero senior del pipeline 'MaquinarIA Pesada' (Python 3.10+). "
+        "Genera UN script Python autocontenido para el componente que se describe. "
+        "Convenciones: type hints, función run() como entry-point, docstring inicial, "
+        "sin dependencias exóticas. Devuelve SOLO el código, sin explicaciones ni "
+        "bloques markdown."
+    )
+    user = (
+        f"Nombre del componente: {name}\n"
+        f"Tipo: {kind}\n"
+        f"Qué debe hacer:\n{description}"
+    )
+    try:
+        text, usage = ai_client.improve_with_claude(
+            system=system,
+            user=user,
+            source="web_pizarra:generate",
+            kind="generation",
+            model="claude-sonnet-4-6",
+            max_tokens=2000,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "code": ""}
+    return {
+        "ok": bool(usage.ok),
+        "code": text,
+        "error": "" if usage.ok else "Claude no disponible (¿falta ANTHROPIC_API_KEY?)",
+        "usage": {
+            "model": usage.model,
+            "input_tokens": usage.input_tokens,
+            "output_tokens": usage.output_tokens,
+            "cost_usd": usage.cost_usd,
         },
     }
 
@@ -906,6 +983,8 @@ class CockpitHandler(BaseHTTPRequestHandler):
             return self._send_json(200, load_components_map())
         if path == "/api/connectors":
             return self._send_json(200, load_connectors())
+        if path == "/api/pizarra":
+            return self._send_json(200, load_pizarra())
         if path == "/api/logs":
             return self._send_json(200, load_logs_list())
         if path == "/api/live":
@@ -946,6 +1025,15 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/episode/") and path.endswith("/generate"):
             ep_id = path[len("/api/episode/"):-len("/generate")]
             return self._send_json(200, generate_episode_guion(ep_id))
+
+        if path == "/api/pizarra":
+            return self._send_json(200, save_pizarra(body))
+
+        if path == "/api/pizarra/generate-component":
+            return self._send_json(200, pizarra_generate_component(
+                body.get("name", ""), body.get("description", ""),
+                body.get("kind", "ai"),
+            ))
 
         if path == "/api/reveal":
             return self._send_json(200, reveal_path(body.get("path", "")))
