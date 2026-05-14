@@ -7,7 +7,7 @@ Pesada. Si tienes que tocar la generación, empieza aquí.
 
 | Tipo | Script | Spec | Salida |
 |---|---|---|---|
-| **T** — Tema individual | `generar_guion_t.py` | `PODCAST_T_SPEC.md` | `Guiones/M{n}_TX_{tema}.txt` |
+| **T** — Tema individual | `generar_guion_t.py` | `PODCAST_T_SPEC.md` | `Guiones/M{n}_T{k}_{slug}.txt` (mismo stem que el PDF) |
 | **M** — Resumen de módulo | `generar_guion.py` | `PODCAST_M_SPEC.md` | `Guiones/M{n}_{Nombre}.txt` |
 
 Ambos usan la **API de Anthropic Claude** (Sonnet 4.5 para generación, Haiku

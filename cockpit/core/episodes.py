@@ -10,7 +10,7 @@ Convención de nomenclatura del repo:
     - log:      episodios/Mn_produccion.log, episodios/Mn_E_*_cmd.log
 
   * Tema Tk del módulo Mn → episodio tipo «T» (corto)
-    - guion:    Guiones/Mn_TX_Tk_<slug>.txt
+    - guion:    Guiones/Mn_Tk_<slug>.txt  (legacy: Guiones/Mn_TX_Tk_<slug>.txt)
     - pdf:      PDFs/temas/Mn_TX_<slug>.pdf  (si existe)
     - escaleta: escaletas/Mn_TX_Tk_*.md
     - audio:    episodios/Mn_Tk.mp3
@@ -29,8 +29,9 @@ from pathlib import Path
 
 from . import paths
 
-_T_GUION = re.compile(r"^M(\d+)_TX_T(\d+)_(.+)\.txt$", re.IGNORECASE)
-_M_GUION = re.compile(r"^M(\d+)_(?!TX_)(.+)\.txt$", re.IGNORECASE)
+# Naming actual: Mn_Tk_slug. Legacy aún soportado: Mn_TX_Tk_slug ("TX_" opcional).
+_T_GUION = re.compile(r"^M(\d+)_(?:TX_)?T(\d+)_(.+)\.txt$", re.IGNORECASE)
+_M_GUION = re.compile(r"^M(\d+)_(?!TX_)(?!T\d+_)(.+)\.txt$", re.IGNORECASE)
 _T_AUDIO = re.compile(r"^M(\d+)_T(\d+)\.mp3$", re.IGNORECASE)
 _M_AUDIO = re.compile(r"^M(\d+)\.mp3$", re.IGNORECASE)
 
@@ -168,7 +169,7 @@ def _find_pdf(module: str, kind: str, number: int | None) -> Path | None:
     if sub.exists():
         for p in sub.glob("*.pdf"):
             if re.search(
-                rf"\bM0*{digits}_TX_T0*{number}\b", p.name, re.IGNORECASE
+                rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE
             ) or re.search(rf"\bT0*{number}_", p.name, re.IGNORECASE):
                 return p
     return None
@@ -190,7 +191,7 @@ def _find_escaleta(module: str, kind: str, number: int | None) -> Path | None:
                 return p
         return None
     for p in edir.glob("*.md"):
-        if re.search(rf"\bM0*{digits}_TX_T0*{number}\b", p.name, re.IGNORECASE):
+        if re.search(rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE):
             return p
     return None
 

@@ -15,14 +15,20 @@ EPISODIOS.mkdir(exist_ok=True)
 
 def ep_code_from_filename(name: str) -> str:
     base = name.replace(".txt", "")
-    if "_TX_T" in base:
+    if "_TX_T" in base:  # legacy Mn_TX_Tk_...
         m = re.match(r"(M\d+)_TX_(T\d+)", base)
+        return f"{m.group(1)}_{m.group(2)}"
+    m = re.match(r"(M\d+)_(T\d+)_", base)  # naming actual Mn_Tk_slug
+    if m:
         return f"{m.group(1)}_{m.group(2)}"
     return re.match(r"(M\d+)", base).group(1)
 
 
 def detect_type(name: str) -> str:
-    return "T" if "_TX_T" in name else "M"
+    # Naming actual (Mn_Tk_slug) y legacy (Mn_TX_Tk_...).
+    if "_TX_T" in name or re.match(r"^M\d+_T\d+_", name, re.IGNORECASE):
+        return "T"
+    return "M"
 
 
 def already_done(ep: str) -> bool:

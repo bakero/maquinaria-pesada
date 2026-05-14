@@ -32,7 +32,10 @@ SPEC_T = load_spec(Path("PODCAST_T_SPEC.md"))
 
 
 def _detect_type(name: str) -> str:
-    return "T" if "_TX_T" in name else "M"
+    # Reconoce naming actual (M{n}_T{k}_slug) y legacy (M{n}_TX_T{k}_...).
+    if "_TX_T" in name or re.match(r"^M\d+_T\d+_", name, re.IGNORECASE):
+        return "T"
+    return "M"
 
 
 # ----------------------------------------------------------------------

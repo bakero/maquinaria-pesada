@@ -27,8 +27,13 @@ def fake_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (tmp_path / "episodios" / "M3.mp3").write_bytes(b"ID3" + b"x" * 300_000)
     (tmp_path / "episodios" / "M3_produccion.log").write_text("ok\n", encoding="utf-8")
 
-    # M3_T2 — solo guion
+    # M3_T2 — solo guion, naming LEGACY (Mn_TX_Tk_slug)
     (tmp_path / "Guiones" / "M3_TX_T2_modelos_clasicos.txt").write_text(
+        "Iago: x.\nMaría: y." * 100, encoding="utf-8"
+    )
+
+    # M7_T1 — solo guion, naming ACTUAL (Mn_Tk_slug)
+    (tmp_path / "Guiones" / "M7_T1_que_es_rag.txt").write_text(
         "Iago: x.\nMaría: y." * 100, encoding="utf-8"
     )
 
@@ -63,6 +68,16 @@ def test_m3_t2_partial(fake_repo: Path):
     assert not t2.has("audio")
     assert not t2.complete
     assert 0 < t2.progress < 1
+
+
+def test_naming_actual_t_episode_detectado(fake_repo: Path):
+    """El naming actual Mn_Tk_slug (sin TX_) se descubre como episodio T."""
+    t1 = next((e for e in episodes.scan_all() if e.id == "M7_T1"), None)
+    assert t1 is not None, "M7_T1 (naming Mn_Tk_) no fue detectado"
+    assert t1.kind == "T"
+    assert t1.number == 1
+    assert t1.slug == "que_es_rag"
+    assert t1.has("guion")
 
 
 def test_module_status_listo(fake_repo: Path):

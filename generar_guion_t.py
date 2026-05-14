@@ -7,9 +7,9 @@ Genera guiones de episodios T usando:
   - claude-sonnet-4-5 para generación, claude-haiku para conceptos
   - Estructura: BLOQUE_PANORAMA / BLOQUE_COMO / BLOQUE_REALIDAD (v5)
 
-Nomenclatura de salida:
-  Guiones/M{n}_TX_{topic_name}.txt
-  (ej: M1_TX_T11_limitaciones_llms.txt)
+Nomenclatura de salida (igual que el PDF fuente):
+  Guiones/M{n}_T{k}_{slug}.txt
+  (ej: M1_T11_limitaciones_llms.txt)
 
 Uso:
   python generar_guion_t.py --pdf PDFs/temas/M1_T11_limitaciones_llms.pdf
@@ -307,9 +307,13 @@ def main() -> None:
     modulo_n      = infer_module_n(pdf_path)
     topic_name    = infer_topic_name_from_pdf(pdf_path)   # T11_limitaciones_llms
     topic_display = infer_topic_display(pdf_path)          # Limitaciones LLMs
+    if not re.match(r"^T\d+_", topic_name, re.IGNORECASE):
+        raise ValueError(
+            f"El PDF debe seguir la convencion M{{n}}_T{{k}}_slug: {pdf_path.name}"
+        )
 
-    # ── Naming de salida ─────────────────────────────────────────────────────
-    guion_filename = f"M{modulo_n}_TX_{topic_name}.txt"   # M1_TX_T11_limitaciones_llms.txt
+    # ── Naming de salida (M{n}_T{k}_slug, mismo stem que el PDF) ─────────────
+    guion_filename = f"M{modulo_n}_{topic_name}.txt"      # M1_T11_limitaciones_llms.txt
     guion_path     = BASE_DIR / spec["directories"]["scripts_dir"] / guion_filename
     ep_code        = guion_to_ep_code(Path(guion_filename).stem)  # M1_TX_E_T11_limitaciones_llms
 

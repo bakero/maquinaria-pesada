@@ -39,13 +39,19 @@ SPEC_T = load_spec(BASE / "PODCAST_T_SPEC.md")
 
 
 def detect_type(name: str) -> str:
-    return "T" if "_TX_T" in name else "M"
+    # Reconoce naming actual (M{n}_T{k}_slug) y legacy (M{n}_TX_T{k}_...).
+    if "_TX_T" in name or re.match(r"^M\d+_T\d+_", name, re.IGNORECASE):
+        return "T"
+    return "M"
 
 
 def ep_code(name: str) -> str:
     base = name.replace(".txt", "")
     if "_TX_T" in base:
         m = re.match(r"(M\d+)_TX_(T\d+)", base)
+        return f"{m.group(1)}_{m.group(2)}"
+    m = re.match(r"(M\d+)_(T\d+)_", base)
+    if m:
         return f"{m.group(1)}_{m.group(2)}"
     return re.match(r"(M\d+)", base).group(1)
 

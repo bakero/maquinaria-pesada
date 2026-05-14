@@ -976,9 +976,13 @@ def validate_script_text(
 def guion_to_ep_code(guion_stem: str) -> str:
     """Convierte nombre de guion en código de episodio de audio.
 
-    M0_TX_Nombre   →  M0_TX_E_Nombre   (T-type)
-    M0_Nombre      →  M0_E_Nombre      (M-type)
+    M0_T1_Nombre   →  M0_TX_E_T1_Nombre   (T-type, naming actual)
+    M0_TX_Nombre   →  M0_TX_E_Nombre      (T-type, naming legacy)
+    M0_Nombre      →  M0_E_Nombre         (M-type)
     """
+    m = re.match(r"^(M\d+)_T(\d+)_(.+)$", guion_stem, re.IGNORECASE)
+    if m:
+        return f"{m.group(1)}_TX_E_T{m.group(2)}_{m.group(3)}"
     m = re.match(r"^(M\d+)_TX_(.+)$", guion_stem, re.IGNORECASE)
     if m:
         return f"{m.group(1)}_TX_E_{m.group(2)}"
@@ -989,7 +993,10 @@ def guion_to_ep_code(guion_stem: str) -> str:
 
 
 def ep_code_to_guion_stem(ep_code: str) -> str:
-    """Inverso de guion_to_ep_code."""
+    """Inverso de guion_to_ep_code (devuelve siempre el naming actual M{n}_T{k}_)."""
+    m = re.match(r"^(M\d+)_TX_E_T(\d+)_(.+)$", ep_code, re.IGNORECASE)
+    if m:
+        return f"{m.group(1)}_T{m.group(2)}_{m.group(3)}"
     m = re.match(r"^(M\d+)_TX_E_(.+)$", ep_code, re.IGNORECASE)
     if m:
         return f"{m.group(1)}_TX_{m.group(2)}"
@@ -1000,7 +1007,12 @@ def ep_code_to_guion_stem(ep_code: str) -> str:
 
 
 def episode_type(guion_stem: str) -> str:
-    """Devuelve 'T' para episodios TX, 'M' para episodios de módulo."""
+    """Devuelve 'T' para episodios de tema, 'M' para episodios de módulo.
+
+    Reconoce el naming actual (M{n}_T{k}_slug) y el legacy (M{n}_TX_...).
+    """
+    if re.match(r"^M\d+_T\d+_", guion_stem, re.IGNORECASE):
+        return "T"
     if re.match(r"^M\d+_TX_", guion_stem, re.IGNORECASE):
         return "T"
     return "M"

@@ -36,14 +36,18 @@ def guion_exists(src: EpisodeSource) -> Path | None:
     if src.kind == "M":
         modulo_n = src.module[1:]
         for f in guion_dir.glob(f"M{modulo_n}_*.txt"):
-            if not f.name.startswith(f"M{modulo_n}_TX_"):
+            # Excluir guiones T (naming actual Mn_Tk_ y legacy Mn_TX_Tk_).
+            if not re.match(rf"M{modulo_n}_(?:TX_)?T\d+_", f.name, re.IGNORECASE):
                 return f
         return None
-    # T: "M7_T1" → Guiones/M7_TX_T1_*.txt
+    # T: "M7_T1" → Guiones/M7_T1_*.txt (legacy: Guiones/M7_TX_T1_*.txt)
     m = re.fullmatch(r"M(\d+)_T(\d+)", src.ep_id)
     if not m:
         return None
-    matches = list(guion_dir.glob(f"M{m.group(1)}_TX_T{m.group(2)}_*.txt"))
+    matches = (
+        list(guion_dir.glob(f"M{m.group(1)}_T{m.group(2)}_*.txt"))
+        + list(guion_dir.glob(f"M{m.group(1)}_TX_T{m.group(2)}_*.txt"))
+    )
     return matches[0] if matches else None
 
 

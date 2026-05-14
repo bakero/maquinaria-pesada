@@ -65,7 +65,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M3_T2_modelos_clasicos.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M3_TX_T2_modelos_clasicos.txt",
+        "guion": "Guiones/M3_T2_modelos_clasicos.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
     {
@@ -76,7 +76,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M7_T1_que_es_rag.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M7_TX_T1_que_es_rag.txt",
+        "guion": "Guiones/M7_T1_que_es_rag.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
     {
@@ -87,7 +87,7 @@ EPISODES = [
             "--pdf", "PDFs/temas/M10_T5_tool_use_function_calling.pdf",
             "--max-intentos", "3",
         ],
-        "guion": "Guiones/M10_TX_T5_tool_use_function_calling.txt",
+        "guion": "Guiones/M10_T5_tool_use_function_calling.txt",
         "spec": "PODCAST_T_SPEC.md",
     },
 ]
