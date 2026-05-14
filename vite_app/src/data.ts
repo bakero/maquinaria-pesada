@@ -7,7 +7,10 @@
 // Esto reemplaza el patrón anterior `window.MODULES = …`: nada de globals,
 // una sola fuente de verdad importable.
 
-import type { BootstrapPayload, Episode, EpisodeState, Module, Status } from "./types";
+import type {
+  BootstrapPayload, Episode, EpisodeState, LiveProc, Module,
+  RecentFile, Status, TokenData, UsageLogRow,
+} from "./types";
 
 // Helper para construir el estado por contenido de un episodio.
 const st = (
@@ -83,15 +86,66 @@ export const CHECKS_M3: Check[] = [
   { id: "c10",name: "Validación dual (Claude vs GPT)",  status: "ok",    detail: "Acuerdo 94% · 6 discrepancias menores" },
 ];
 
+export const FIXTURE_LIVE_PROC: LiveProc[] = [
+  { id: "p1", cmd: "generar_episodio_v2.py M5", pid: 41207, t: "00:04:22", cost: "0.42€" },
+  { id: "p2", cmd: "validar_episodio.py M3",    pid: 41318, t: "00:00:14", cost: "0.01€" },
+];
+
+export const FIXTURE_RECENT_FILES: RecentFile[] = [
+  { path: "Guiones/M5_guion.txt",     t: "hace 12 s",  by: "Claude" },
+  { path: "episodios/M3_T1_v4.mp3",   t: "hace 1 min", by: "ElevenLabs" },
+  { path: "escaletas/M5.md",          t: "hace 3 min", by: "Claude" },
+  { path: "logs/2026-05-12_M3.jsonl", t: "hace 4 min", by: "runner" },
+];
+
+export const FIXTURE_AI_LOG: UsageLogRow[] = [
+  { t: "12:42:18", model: "haiku-4.5",   kind: "Mejorar con IA", tok:  1240, cost: 0.003 },
+  { t: "12:41:50", model: "sonnet-4.6",  kind: "Generar guion",  tok: 14820, cost: 0.198 },
+  { t: "12:39:02", model: "haiku-4.5",   kind: "Asistente",      tok:   820, cost: 0.002 },
+  { t: "12:36:11", model: "sonnet-4.6",  kind: "Generar guion",  tok: 12100, cost: 0.162 },
+  { t: "12:32:48", model: "gpt-4o-mini", kind: "Debate dual",    tok:  4400, cost: 0.001 },
+];
+
+export const FIXTURE_TOKEN_DATA: TokenData = {
+  total_30d: 18_420_000,
+  cost_30d: 142.18,
+  budget: 250,
+  byModel: [
+    { model: "claude-haiku-4.5",  tokens: 8_120_000, cost: 18.40, share: 44 },
+    { model: "claude-sonnet-4.6", tokens: 5_840_000, cost: 78.20, share: 32 },
+    { model: "claude-opus-4.7",   tokens:   780_000, cost: 36.80, share:  4 },
+    { model: "gpt-4o-mini",       tokens: 2_960_000, cost:  4.80, share: 16 },
+    { model: "whisper-local",     tokens:   720_000, cost:  0.00, share:  4 },
+  ],
+  byKind: [
+    { kind: "Generación de guiones", pct: 52 },
+    { kind: "Validación dual",       pct: 28 },
+    { kind: "Mejorar con IA",        pct: 12 },
+    { kind: "Asistente",             pct:  5 },
+    { kind: "Otros",                 pct:  3 },
+  ],
+  log: FIXTURE_AI_LOG,
+};
+
 // ── Estado mutable: fixtures por defecto, sustituidos por el bootstrap ──
 let _modules: Module[] = FIXTURE_MODULES;
 let _episodes: Episode[] = FIXTURE_EPISODES;
+let _liveProc: LiveProc[] = FIXTURE_LIVE_PROC;
+let _recentFiles: RecentFile[] = FIXTURE_RECENT_FILES;
+let _tokenData: TokenData = FIXTURE_TOKEN_DATA;
+let _aiLog: UsageLogRow[] = FIXTURE_AI_LOG;
 
 /** Sustituye los datos con la respuesta real de /api/bootstrap. */
 export function applyBootstrap(d: Partial<BootstrapPayload> | null): void {
   if (!d) return;
   if (Array.isArray(d.MODULES) && d.MODULES.length) _modules = d.MODULES;
   if (Array.isArray(d.EPISODES) && d.EPISODES.length) _episodes = d.EPISODES;
+  if (Array.isArray(d.LIVE_PROC)) _liveProc = d.LIVE_PROC;
+  if (Array.isArray(d.RECENT_FILES) && d.RECENT_FILES.length) _recentFiles = d.RECENT_FILES;
+  if (d.TOKEN_DATA && Array.isArray(d.TOKEN_DATA.byModel) && d.TOKEN_DATA.byModel.length) {
+    _tokenData = d.TOKEN_DATA;
+    if (Array.isArray(d.TOKEN_DATA.log) && d.TOKEN_DATA.log.length) _aiLog = d.TOKEN_DATA.log;
+  }
 }
 
 export function getModules(): Module[] { return _modules; }
@@ -102,3 +156,7 @@ export function getModule(id: string | null | undefined): Module | undefined {
 export function getEpisode(id: string | null | undefined): Episode | undefined {
   return _episodes.find((e) => e.id === id);
 }
+export function getLiveProc(): LiveProc[] { return _liveProc; }
+export function getRecentFiles(): RecentFile[] { return _recentFiles; }
+export function getTokenData(): TokenData { return _tokenData; }
+export function getAILog(): UsageLogRow[] { return _aiLog; }
