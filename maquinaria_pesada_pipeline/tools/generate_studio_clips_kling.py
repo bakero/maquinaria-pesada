@@ -25,7 +25,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.logger import get_logger
 from pipeline.scene_library import SceneLibrary
@@ -231,7 +231,7 @@ def main():
     args = parser.parse_args()
 
     log = get_logger("generate_studio_clips_kling")
-    library_base = Path(r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca")
+    library_base = ROOT.parent / "Videos" / "escenas_biblioteca"
     library = SceneLibrary(library_base)
 
     target = [c for c in CLIPS if (args.slug is None or c["slug"] == args.slug)]

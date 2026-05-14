@@ -19,14 +19,14 @@ sys.path.insert(0, str(ROOT))
 
 # Cargar .env
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.scene_library import SceneLibrary
 from pipeline.luma_generator import LumaGenerator
 from pipeline.logger import get_logger
 
 
-LIBRARY_BASE = r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca"
+LIBRARY_BASE = str(ROOT.parent / "Videos" / "escenas_biblioteca")
 REFS_INDEX = Path(LIBRARY_BASE) / "refs" / "_refs_index.json"
 
 

@@ -9,8 +9,8 @@ conceptos clave por modulo y tema, listo para alimentar:
 Uso programatico:
     from pipeline.concept_extractor import extract_all_concepts
     extract_all_concepts(
-        pdfs_folder="C:/Users/Asus/maquinaria_pesada/PDFs",
-        output_path="C:/Users/Asus/maquinaria_pesada/Videos/escenas_biblioteca/_concepts_index.json",
+        pdfs_folder="PDFs",
+        output_path="Videos/escenas_biblioteca/_concepts_index.json",
     )
 
 Uso CLI:
@@ -282,9 +282,9 @@ if __name__ == "__main__":
         parser.add_argument("--no-skip", action="store_true")
         args = parser.parse_args()
 
-        # Cargar .env de la raiz real del proyecto
+        # Cargar .env de la raiz real del proyecto (parents[2] = <repo>/)
         from dotenv import load_dotenv
-        load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=True)
 
         extract_all_concepts(args.pdfs, args.out, model=args.model,
                              skip_existing=not args.no_skip)

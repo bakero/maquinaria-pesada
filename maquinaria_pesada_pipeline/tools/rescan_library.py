@@ -19,7 +19,7 @@ from pipeline.logger import get_logger
 from tools.generate_studio_clips import STUDIO_CLIPS
 
 
-LIBRARY_BASE = Path(r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca")
+LIBRARY_BASE = ROOT.parent / "Videos" / "escenas_biblioteca"
 
 
 def main():

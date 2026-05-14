@@ -121,8 +121,10 @@ def analyze_episode_audio(audio_path: str | Path,
     sintonia_range_correlation = None
     try:
         from .sintonia_detector import detect_sintonia_range
+        # parents[2] = raíz del repo (este archivo: <repo>/maquinaria_pesada_pipeline/pipeline/)
+        _repo_root = Path(__file__).resolve().parents[2]
         sintonia_candidates = [
-            Path(r"C:\Users\Asus\maquinaria_pesada\Música\Sintonia Maquinaria pesada.mp3"),
+            _repo_root / "Música" / "Sintonia Maquinaria pesada.mp3",
         ]
         if intro_video_path:
             iv = Path(intro_video_path)

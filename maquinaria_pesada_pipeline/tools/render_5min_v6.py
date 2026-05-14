@@ -20,7 +20,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
@@ -33,7 +33,7 @@ from pipeline.video_compositor import compose_video, derive_video_basename
 from pipeline.scene_library import SceneLibrary
 
 
-PROJECT = Path(r"C:\Users\Asus\maquinaria_pesada")
+PROJECT = ROOT.parent
 LIB = SceneLibrary(PROJECT / "Videos" / "escenas_biblioteca")
 
 

@@ -27,7 +27,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.logger import get_logger
 from pipeline.scene_library import SceneLibrary
@@ -51,7 +51,7 @@ def main():
     args = p.parse_args()
 
     log = get_logger("kling_recover")
-    lib = SceneLibrary(Path(r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca"))
+    lib = SceneLibrary(ROOT.parent / "Videos" / "escenas_biblioteca")
     g = KlingGenerator(lib)
 
     last_video_id = args.extend_from_video_id

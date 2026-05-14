@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 from pipeline.scene_library import SceneLibrary
 
-LIBRARY_BASE = r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca"
+LIBRARY_BASE = str(ROOT.parent / "Videos" / "escenas_biblioteca")
 CONCEPTS_PATH = Path(LIBRARY_BASE) / "_concepts_index.json"
 
 

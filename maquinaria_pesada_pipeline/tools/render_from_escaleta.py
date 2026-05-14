@@ -22,7 +22,7 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
-load_dotenv(r"C:\Users\Asus\maquinaria_pesada\.env", override=True)
+load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
@@ -39,7 +39,7 @@ from pipeline.escaleta_parser import parse_escaleta
 from pipeline.escaleta_to_pipeline import write_pipeline_files
 
 
-PROJECT_ROOT = Path(r"C:\Users\Asus\maquinaria_pesada")
+PROJECT_ROOT = ROOT.parent
 ESCALETAS_DIR = PROJECT_ROOT / "escaletas"
 
 

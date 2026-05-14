@@ -82,7 +82,7 @@ def main():
     args = p.parse_args()
 
     log = get_logger("reverse_clips")
-    library_base = Path(r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca")
+    library_base = ROOT.parent / "Videos" / "escenas_biblioteca"
     library = SceneLibrary(library_base)
 
     # Tomar todos los clips registrados.

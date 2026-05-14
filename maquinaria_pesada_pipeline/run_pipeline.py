@@ -32,11 +32,11 @@ ROOT = Path(__file__).parent.resolve()
 sys.path.insert(0, str(ROOT))
 
 # Cargar .env. Buscamos en orden de prioridad:
-#   1) raiz REAL del proyecto C:\Users\Asus\maquinaria_pesada\.env
+#   1) raiz REAL del proyecto (<repo>/.env, un nivel por encima de ROOT)
 #   2) cualquier .env en ROOT o ancestros
 try:
     from dotenv import load_dotenv, find_dotenv
-    PROJECT_ROOT_ENV = Path(r"C:\Users\Asus\maquinaria_pesada\.env")
+    PROJECT_ROOT_ENV = ROOT.parent / ".env"
     if PROJECT_ROOT_ENV.exists():
         load_dotenv(str(PROJECT_ROOT_ENV), override=True)
     else:
