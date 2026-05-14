@@ -138,6 +138,36 @@ def test_connectors_returns_registry(fake_repo):
         assert "status" in c and "ok" in c["status"]
 
 
+def test_pipelines_have_fields(fake_repo):
+    """load_pipelines lista los connectors 'pipeline' con sus flags."""
+    import web_server
+    out = web_server.load_pipelines()
+    assert out["ok"] is True
+    assert len(out["pipelines"]) > 0
+    for p in out["pipelines"]:
+        assert "script" in p and isinstance(p["fields"], list)
+
+
+def test_sources_list_real_files(fake_repo):
+    """load_sources lista los archivos reales de cada connector source."""
+    import web_server
+    out = web_server.load_sources()
+    assert out["ok"] is True
+    guion = next((s for s in out["sources"] if s["id"] == "guion"), None)
+    assert guion is not None
+    names = [it["name"] for it in guion["items"]]
+    assert "M3_Transformers.txt" in names
+
+
+def test_api_keys_all_providers(fake_repo, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    import web_server
+    out = web_server.load_api_keys()
+    assert out["ok"] is True
+    provs = {p["provider"] for p in out["providers"]}
+    assert "anthropic" in provs and "openai" in provs
+
+
 def test_metrics_platforms(fake_repo, monkeypatch):
     """load_metrics consulta los 3 conectores de analytics; sin credenciales
     cada uno reporta configured=False (degradación honesta)."""

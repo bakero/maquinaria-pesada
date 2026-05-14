@@ -29,6 +29,9 @@ Endpoints (todos JSON salvo donde se indique):
                                    reales sobre ai_usage.jsonl)
     GET  /api/components-map     → grafo de cockpit/components_map.json
     GET  /api/connectors         → estado real de los conectores registrados
+    GET  /api/api-keys           → presencia de las API keys por proveedor
+    GET  /api/pipelines          → pipelines lanzables + sus flags (form real)
+    GET  /api/sources            → fuentes de contenido + archivos reales
     GET  /api/pizarra            → lienzo guardado de la Pizarra (o null)
     GET  /api/metrics            → métricas de difusión reales (Spotify /
                                    iVoox / LinkedIn vía connectors/analytics)
@@ -478,6 +481,89 @@ def pizarra_generate_component(name: str, description: str, kind: str) -> dict:
             "cost_usd": usage.cost_usd,
         },
     }
+
+
+def load_api_keys() -> dict:
+    """Estado de las API keys de todos los proveedores conocidos.
+
+    Reutiliza ping_api_key (comprueba presencia en .env / env vars, sin
+    validar contra la API remota)."""
+    providers = ["anthropic", "openai", "elevenlabs", "kling", "spotify"]
+    return {
+        "ok": True,
+        "providers": [{"provider": p, **ping_api_key(p)} for p in providers],
+    }
+
+
+def load_pipelines() -> dict:
+    """Pipelines lanzables: connectors de categoría 'pipeline' con sus flags."""
+    try:
+        from cockpit import connectors
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "pipelines": []}
+    out = []
+    for c in connectors.by_category("pipeline"):
+        try:
+            ok = bool(c.status().ok)
+        except Exception:  # noqa: BLE001
+            ok = False
+        out.append({
+            "id": c.id,
+            "label": c.label or c.id,
+            "icon": c.icon or "",
+            "description": c.description or "",
+            "script": getattr(c, "script", "") or "",
+            "ok": ok,
+            "fields": [
+                {
+                    "flag": f.flag, "label": f.label, "kind": f.kind,
+                    "required": f.required, "default": f.default,
+                    "help": f.help, "options": list(f.options or []),
+                    "placeholder": f.placeholder,
+                }
+                for f in (getattr(c, "fields", None) or [])
+            ],
+        })
+    out.sort(key=lambda p: p["id"])
+    return {"ok": True, "pipelines": out}
+
+
+def load_sources() -> dict:
+    """Fuentes de contenido: connectors 'source' con sus archivos reales."""
+    try:
+        from cockpit import connectors
+        from cockpit.core import paths
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "sources": []}
+    root = paths.repo_root().resolve()
+    out = []
+    for c in connectors.by_category("source"):
+        items: list[dict] = []
+        try:
+            for p in c.list_items():
+                try:
+                    stt = p.stat()
+                    rel = Path(p).resolve().relative_to(root).as_posix()
+                except (OSError, ValueError):
+                    continue
+                items.append({
+                    "name": p.name, "path": rel, "size": stt.st_size,
+                    "mtime": stt.st_mtime, "t": _human_ago(stt.st_mtime),
+                })
+        except Exception:  # noqa: BLE001
+            pass
+        items.sort(key=lambda x: -x["mtime"])
+        out.append({
+            "id": c.id,
+            "label": c.label or c.id,
+            "icon": c.icon or "",
+            "description": c.description or "",
+            "suffixes": list(getattr(c, "suffixes", ()) or []),
+            "count": len(items),
+            "items": items,
+        })
+    out.sort(key=lambda s: s["id"])
+    return {"ok": True, "sources": out}
 
 
 def load_metrics() -> dict:
@@ -1042,6 +1128,12 @@ class CockpitHandler(BaseHTTPRequestHandler):
             return self._send_json(200, load_components_map())
         if path == "/api/connectors":
             return self._send_json(200, load_connectors())
+        if path == "/api/api-keys":
+            return self._send_json(200, load_api_keys())
+        if path == "/api/pipelines":
+            return self._send_json(200, load_pipelines())
+        if path == "/api/sources":
+            return self._send_json(200, load_sources())
         if path == "/api/pizarra":
             return self._send_json(200, load_pizarra())
         if path == "/api/metrics":
