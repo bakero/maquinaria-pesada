@@ -11,15 +11,15 @@ Esto es MUCHISIMO mas barato que renderizar 30fps de frames.
 """
 
 import json
+import sys as _sys
 from pathlib import Path
+from pathlib import Path as _Path
 
 from PIL import Image
 
+from .brand import LOGO_WATERMARK, RESOLUTIONS
 from .logger import get_logger
-from .brand import POSITIONS_1080P, LOGO_WATERMARK, RESOLUTIONS
 
-import sys as _sys
-from pathlib import Path as _Path
 _ROOT = _Path(__file__).parent.parent
 if str(_ROOT) not in _sys.path:
     _sys.path.insert(0, str(_ROOT))

@@ -11,14 +11,13 @@ Persiste todo en `Videos/escenas_biblioteca/media/<slug_concepto>/` con
 sus metadatos en `_media_index.json` (mapa concepto -> lista de medios).
 """
 
-import hashlib
 import json
 import os
 import re
 import time
 import unicodedata
 from pathlib import Path
-from urllib.parse import quote, urlparse
+from urllib.parse import urlparse
 
 from .logger import get_logger
 

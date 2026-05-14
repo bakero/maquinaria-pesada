@@ -5,6 +5,7 @@ Cada generador devuelve una PIL.Image RGB del tamano (w, h).
 
 import math
 import random
+
 from PIL import Image, ImageDraw
 
 

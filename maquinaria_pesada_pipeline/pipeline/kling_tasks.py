@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import json
 import os
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -127,7 +126,7 @@ class KlingTaskTracker:
     def read_all(self) -> list[dict]:
         if not self.path.exists():
             return []
-        with open(self.path, "r", encoding="utf-8") as f:
+        with open(self.path, encoding="utf-8") as f:
             return [json.loads(line) for line in f if line.strip()]
 
     def aggregate(self) -> dict[str, dict]:
@@ -166,7 +165,7 @@ class KlingTaskTracker:
                     entry["base_status"] = "complete"
                     entry["base_video_id"] = r.get("video_id")
                 else:
-                    for step, ext in entry["extends"].items():
+                    for _step, ext in entry["extends"].items():
                         if ext["task_id"] == tid:
                             ext["status"] = "complete"
                             ext["video_id"] = r.get("video_id")

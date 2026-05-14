@@ -33,10 +33,10 @@ import os
 import time
 from pathlib import Path
 
+from . import qa
+from .kling_tasks import get_tracker
 from .logger import get_logger
 from .scene_library import SceneLibrary, _slugify
-from .kling_tasks import get_tracker
-from . import qa
 
 KLING_BASE = "https://api.klingai.com"
 KLING_IMG2VIDEO_PATH = "/v1/videos/image2video"
@@ -232,7 +232,10 @@ class KlingGenerator:
         """Descarga robusta. Reintenta hasta 4 veces, valida tamano minimo
         (>1MB) para detectar truncamientos, y verifica integridad mp4
         (moov atom) si ffprobe esta disponible."""
-        import requests, shutil, subprocess
+        import shutil
+        import subprocess
+
+        import requests
         Path(dest).parent.mkdir(parents=True, exist_ok=True)
 
         last_err = None
@@ -247,7 +250,7 @@ class KlingGenerator:
                                 f.write(chunk)
                 size = tmp.stat().st_size
                 if size < 1_000_000:  # <1MB indica truncamiento (clip 20s pesa ~45MB)
-                    raise IOError(f"download truncado: {size} bytes")
+                    raise OSError(f"download truncado: {size} bytes")
                 # Verificar integridad mp4 con ffprobe si esta disponible
                 if shutil.which("ffprobe"):
                     res = subprocess.run(
@@ -256,7 +259,7 @@ class KlingGenerator:
                         capture_output=True, text=True,
                     )
                     if res.returncode != 0:
-                        raise IOError(f"mp4 corrupto: {res.stderr.strip()[:200]}")
+                        raise OSError(f"mp4 corrupto: {res.stderr.strip()[:200]}")
                 # OK: rename atomico
                 if dest.exists():
                     dest.unlink()
@@ -426,7 +429,7 @@ class KlingGenerator:
             max_phase_seconds: timeout por fase
         """
         import time
-        import requests
+
 
         EXTEND_INCREMENT = 5
         results = {"generated": [], "errors": [], "skipped": []}
@@ -565,8 +568,10 @@ class KlingGenerator:
                 self.tracker.log_qa(it["slug"], qa_res["ok"], qa_res["checks"])
                 if not qa_res["ok"]:
                     self.log.error(f"    QA FAILED {it['slug']}: {qa_res['errors']}")
-                    try: dest.unlink()
-                    except Exception: pass
+                    try:
+                        dest.unlink()
+                    except Exception:  # noqa: BLE001
+                        pass
                     results["errors"].append({"slug": it["slug"],
                                               "error": f"QA: {qa_res['errors']}"})
                     continue
@@ -639,7 +644,7 @@ class KlingGenerator:
                 elapsed += poll_interval
         # Marca timeouts (NO loguea como fail en tracker porque puede que en el
         # futuro complete; el reconcile lo recogera)
-        for slug, it in pending.items():
+        for _slug, it in pending.items():
             it["_error"] = f"timeout fase tras {max_seconds}s"
 
     def generate_batch(self, items: list[dict],

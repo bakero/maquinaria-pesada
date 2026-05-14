@@ -20,12 +20,10 @@ Uso CLI:
 import json
 import os
 import re
-import sys
 import time
 from pathlib import Path
 
 from .logger import get_logger
-
 
 SYSTEM_PROMPT = """Eres un extractor de conceptos didacticos para un master de IA.
 Recibes el texto de un PDF de un tema concreto del master y devuelves los
@@ -65,7 +63,7 @@ def _read_pdf(pdf_path: Path) -> str:
     try:
         import pdfplumber
     except ImportError:
-        raise RuntimeError("pdfplumber no esta instalado")
+        raise RuntimeError("pdfplumber no esta instalado") from None
     parts = []
     total = 0
     with pdfplumber.open(str(pdf_path)) as pdf:
@@ -111,7 +109,7 @@ def _ask_claude_for_concepts(pdf_text: str, modulo: str, tema: str,
     try:
         import anthropic
     except ImportError:
-        raise RuntimeError("Paquete 'anthropic' no instalado")
+        raise RuntimeError("Paquete 'anthropic' no instalado") from None
 
     client = anthropic.Anthropic()
     user_msg = (

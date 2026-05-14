@@ -26,7 +26,6 @@ from pathlib import Path
 
 from .logger import get_logger
 
-
 CHUNK_NAME_RE = re.compile(
     r"^(?P<prefix>EP-MOD\d+|M\d+_E_[\w]+|EP\d+(?:_test|_promo)?)_(?P<num>\d{3,4})_(?P<speaker>[A-ZÑÁÉÍÓÚ]+)\.mp3$",
     re.IGNORECASE,
@@ -117,7 +116,7 @@ def reconstruct_timeline(chunks: list[dict],
     # Separar chunks segun seccion de su intervencion correspondiente
     hook_chunks = []
     content_chunks = []
-    for ch, iv in zip(chunks_used, spoken_ivs):
+    for ch, iv in zip(chunks_used, spoken_ivs, strict=False):
         if (iv.get("section") or "").upper() == "HOOK":
             hook_chunks.append((ch, iv))
         else:

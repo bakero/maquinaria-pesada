@@ -26,15 +26,18 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
-from pipeline.logger import get_logger
-from pipeline.scene_library import SceneLibrary
+from pipeline import qa
 from pipeline.kling_generator import (
-    KlingGenerator, KLING_BASE, KLING_IMG2VIDEO_PATH, KLING_EXTEND_PATH,
+    KLING_EXTEND_PATH,
+    KLING_IMG2VIDEO_PATH,
+    KlingGenerator,
 )
 from pipeline.kling_tasks import get_tracker
-from pipeline import qa
+from pipeline.logger import get_logger
+from pipeline.scene_library import SceneLibrary
 
 
 def _last_task_id(entry: dict) -> tuple[str, str] | None:
@@ -113,7 +116,7 @@ def main():
 
         videos = (result.get("task_result") or {}).get("videos") or []
         if not videos:
-            log.warning(f"    succeed sin videos")
+            log.warning("    succeed sin videos")
             tracker.log_failure(slug, task_id, "reconcile: succeed sin videos")
             failed += 1
             continue
@@ -152,7 +155,7 @@ def main():
             tracker.log_register(slug, ok=False, error=str(exc))
             failed += 1
 
-    log.info(f"\n=== Reconcile completo ===")
+    log.info("\n=== Reconcile completo ===")
     log.info(f"  recuperados: {recovered}")
     log.info(f"  fallidos:    {failed}")
     log.info(f"  total slugs: {len(pending)}")

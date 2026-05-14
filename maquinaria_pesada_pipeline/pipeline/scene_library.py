@@ -14,7 +14,6 @@ El _scenes_index.json mapea slug -> ruta + metadata. El scene_builder y
 el video_compositor pueden buscar aqui antes de generar de cero.
 """
 
-import hashlib
 import json
 import re
 import shutil
@@ -24,7 +23,6 @@ import unicodedata
 from pathlib import Path
 
 from .logger import get_logger
-
 
 CATEGORIES = ["conceptos", "transiciones", "b_roll", "cierres",
               "stickers_anim", "estudio"]

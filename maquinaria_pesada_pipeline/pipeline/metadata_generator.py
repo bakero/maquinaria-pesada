@@ -3,14 +3,12 @@ Paso 07 - Metadata YouTube + thumbnail.
 """
 
 import json
-import shutil
-import subprocess
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from .logger import get_logger
 from .brand import SECTION_LABELS
+from .logger import get_logger
 
 
 def _format_ts(seconds: float) -> str:

@@ -22,22 +22,20 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
-from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
-from pipeline.transcriber import transcribe_episode
-from pipeline.content_extractor import extract_content
 from pipeline.audio_analyzer import analyze_episode_audio
-from pipeline.subtitle_generator import generate_srt
-from pipeline.overlay_renderer import render_frames
-from pipeline.video_compositor import compose_video, derive_video_basename
-from pipeline.metadata_generator import generate_metadata
-from pipeline.scene_library import SceneLibrary
-
+from pipeline.content_extractor import extract_content
 from pipeline.escaleta_parser import parse_escaleta
 from pipeline.escaleta_to_pipeline import write_pipeline_files
-
+from pipeline.logger import get_logger
+from pipeline.overlay_renderer import render_frames
+from pipeline.scene_library import SceneLibrary
+from pipeline.subtitle_generator import generate_srt
+from pipeline.transcriber import transcribe_episode
+from pipeline.video_compositor import compose_video, derive_video_basename
 
 PROJECT_ROOT = ROOT.parent
 ESCALETAS_DIR = PROJECT_ROOT / "escaletas"

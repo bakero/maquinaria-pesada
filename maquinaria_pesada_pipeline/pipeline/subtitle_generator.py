@@ -12,7 +12,6 @@ NUEVO COMPORTAMIENTO (v2):
   segun audio_structure si esta disponible).
 """
 
-import json
 import re
 import unicodedata
 from pathlib import Path

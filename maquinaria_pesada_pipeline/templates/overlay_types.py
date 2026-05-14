@@ -4,8 +4,9 @@ Cada funcion recibe un dict de datos y devuelve PIL.Image RGBA con transparencia
 Los overlays se componen luego sobre el background del frame.
 """
 
-from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont
 
 # Colores de marca
 YELLOW = (245, 196, 0, 255)
@@ -102,8 +103,6 @@ def name_tag(data: dict) -> Image.Image:
 
 def section_indicator(data: dict) -> Image.Image:
     label = data.get("label", "BLOQUE")
-    color = data.get("color", "#F5C400")
-    rgb = tuple(int(color.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4))
 
     f = _get_font(22, bold=True)
     img_tmp = Image.new("RGBA", (10, 10))
@@ -133,7 +132,7 @@ def hierarchy_diagram(data: dict) -> Image.Image:
     d.text((20, 18), title.upper(), font=f_title, fill=YELLOW)
     cx = w // 2
     y = 60
-    for i, it in enumerate(items):
+    for it in items:
         d.line([(cx, y), (cx, y + 20)], fill=GREY, width=2)
         y += 24
         d.rectangle((20, y, w - 20, y + 36), fill=(26, 26, 26, 255), outline=YELLOW)

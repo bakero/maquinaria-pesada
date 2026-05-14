@@ -14,10 +14,9 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from pipeline.scene_library import SceneLibrary
 from pipeline.logger import get_logger
+from pipeline.scene_library import SceneLibrary
 from tools.generate_studio_clips import STUDIO_CLIPS
-
 
 LIBRARY_BASE = ROOT.parent / "Videos" / "escenas_biblioteca"
 

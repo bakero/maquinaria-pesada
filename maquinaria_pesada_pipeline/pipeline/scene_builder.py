@@ -7,7 +7,6 @@ Si no, usa un constructor heuristico que ya genera un timeline funcional.
 
 import json
 import os
-import random
 import re
 from pathlib import Path
 
@@ -146,14 +145,15 @@ def _build_heuristic_timeline(content: dict, transcription: dict,
         m_users = re.search(
             r"\b\d{1,3}(?:[.,]\d+)?\s*(M|millones|mil|billones)\s*(usuarios?|empresas?|users?)\b",
             text, re.IGNORECASE)
-        m_year = re.search(r"\b(19[7-9]\d|20[0-3]\d)\b", text)
-
         if m_pct:
             label = "DATO"
             sub = ""
-            if "empresa" in text_norm: sub = "empresas"
-            elif "usuario" in text_norm: sub = "usuarios"
-            elif "adopcion" in text_norm: label = "ADOPCION"
+            if "empresa" in text_norm:
+                sub = "empresas"
+            elif "usuario" in text_norm:
+                sub = "usuarios"
+            elif "adopcion" in text_norm:
+                label = "ADOPCION"
             overlays.append({
                 "type": "stat_card", "position": "MID_LEFT",
                 "data": {"label": label, "value": m_pct.group(1).strip(),

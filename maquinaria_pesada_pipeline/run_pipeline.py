@@ -23,8 +23,6 @@ CLI:
 
 import argparse
 import json
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -35,7 +33,7 @@ sys.path.insert(0, str(ROOT))
 #   1) raiz REAL del proyecto (<repo>/.env, un nivel por encima de ROOT)
 #   2) cualquier .env en ROOT o ancestros
 try:
-    from dotenv import load_dotenv, find_dotenv
+    from dotenv import find_dotenv, load_dotenv
     PROJECT_ROOT_ENV = ROOT.parent / ".env"
     if PROJECT_ROOT_ENV.exists():
         load_dotenv(str(PROJECT_ROOT_ENV), override=True)
@@ -46,22 +44,22 @@ try:
 except ImportError:
     pass
 
-from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
-from pipeline.transcriber import transcribe_episode
-from pipeline.content_extractor import extract_content
 from pipeline.audio_analyzer import analyze_episode_audio
-from pipeline.scene_builder import build_scene_timeline
-from pipeline.overlay_renderer import render_frames
-from pipeline.subtitle_generator import (
-    generate_srt,
-    _flatten_interventions,
-    _align_interventions_with_whisper,
-)
-from pipeline.video_compositor import compose_video, derive_video_basename
+from pipeline.content_extractor import extract_content
+from pipeline.logger import get_logger
 from pipeline.metadata_generator import generate_metadata
-from pipeline.scene_track_builder import build_scene_track
+from pipeline.overlay_renderer import render_frames
+from pipeline.scene_builder import build_scene_timeline
 from pipeline.scene_library import SceneLibrary
+from pipeline.scene_track_builder import build_scene_track
+from pipeline.subtitle_generator import (
+    _align_interventions_with_whisper,
+    _flatten_interventions,
+    generate_srt,
+)
+from pipeline.transcriber import transcribe_episode
+from pipeline.video_compositor import compose_video, derive_video_basename
 
 
 def _load_or_compute(path: Path, compute, *args, **kwargs):

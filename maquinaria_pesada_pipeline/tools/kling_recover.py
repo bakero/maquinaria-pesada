@@ -27,14 +27,17 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
+from pipeline.kling_generator import (
+    DEFAULT_NEGATIVE,
+    KLING_EXTEND_PATH,
+    KLING_IMG2VIDEO_PATH,
+    KlingGenerator,
+)
 from pipeline.logger import get_logger
 from pipeline.scene_library import SceneLibrary
-from pipeline.kling_generator import (
-    KlingGenerator, KLING_BASE, KLING_IMG2VIDEO_PATH, KLING_EXTEND_PATH,
-    DEFAULT_NEGATIVE,
-)
 
 
 def main():

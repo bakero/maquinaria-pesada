@@ -61,9 +61,10 @@ def detect_sintonia_offset(episode_audio: str | Path,
     log = get_logger("sintonia_detector")
 
     try:
+        import wave
+
         import numpy as np
         from scipy.signal import correlate
-        import wave
     except ImportError as exc:
         log.warning(f"numpy/scipy no disponible: {exc}")
         return None, 0.0
@@ -83,7 +84,6 @@ def detect_sintonia_offset(episode_audio: str | Path,
 
         # Leer episodio limitado a search_max_seconds
         with wave.open(str(ep_wav), "rb") as w:
-            n_channels = w.getnchannels()
             sr = w.getframerate()
             n_frames_total = w.getnframes()
             n_frames_read = min(n_frames_total, int(search_max_seconds * sr))

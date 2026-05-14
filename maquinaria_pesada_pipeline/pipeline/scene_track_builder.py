@@ -22,7 +22,6 @@ from pathlib import Path
 
 from .logger import get_logger
 
-
 # Tipos de overlay considerados "ricos" (justifican mostrar pizarra)
 RICH_OVERLAY_TYPES = {
     "stat_card", "hierarchy_diagram", "two_column_compare",

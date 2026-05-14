@@ -8,16 +8,14 @@ Estructura:
 Concatenamos ambos en MP4 final con libx264 + aac.
 """
 
-import json
 import os
 import re
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 
-from .logger import get_logger
 from .brand import RESOLUTIONS
+from .logger import get_logger
 
 
 def derive_video_basename(audio_path: str | Path | None,

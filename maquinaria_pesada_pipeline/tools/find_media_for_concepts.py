@@ -19,10 +19,10 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
 from pipeline.media_finder import find_media_for_concepts
-
 
 _LIBRARY_DIR = ROOT.parent / "Videos" / "escenas_biblioteca"
 CONCEPTS_PATH = _LIBRARY_DIR / "_concepts_index.json"

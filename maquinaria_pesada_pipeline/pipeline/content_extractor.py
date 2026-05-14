@@ -8,8 +8,8 @@ Combina todo en content_data.json.
 
 import json
 import re
-from pathlib import Path
 from collections import OrderedDict
+from pathlib import Path
 
 from .logger import get_logger
 

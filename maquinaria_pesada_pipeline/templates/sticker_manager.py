@@ -5,8 +5,8 @@ Gestor de stickers de humor.
 """
 
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
 
+from PIL import Image, ImageDraw, ImageFont
 
 STICKER_LABELS = {
     "nobody_reads_tos":  "TOS\n📜",

@@ -1,6 +1,7 @@
 """Genera placeholders minimos para los assets faltantes (logo, intro, sintonia, music)."""
 import subprocess
 from pathlib import Path
+
 from PIL import Image, ImageDraw, ImageFont
 
 OUT = Path(__file__).parent / "outputs" / "_placeholders"

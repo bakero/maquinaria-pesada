@@ -20,18 +20,18 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
-from pipeline.logger import get_logger
 from pipeline.asset_validator import validate_project_config
-from pipeline.transcriber import transcribe_episode
-from pipeline.content_extractor import extract_content
 from pipeline.audio_analyzer import analyze_episode_audio
+from pipeline.content_extractor import extract_content
+from pipeline.logger import get_logger
 from pipeline.overlay_renderer import render_frames
-from pipeline.subtitle_generator import generate_srt
-from pipeline.video_compositor import compose_video, derive_video_basename
 from pipeline.scene_library import SceneLibrary
-
+from pipeline.subtitle_generator import generate_srt
+from pipeline.transcriber import transcribe_episode
+from pipeline.video_compositor import compose_video, derive_video_basename
 
 PROJECT = ROOT.parent
 LIB = SceneLibrary(PROJECT / "Videos" / "escenas_biblioteca")
@@ -578,7 +578,6 @@ def build_scene_track(interventions: list[dict]) -> list[dict]:
             piz_abs_in = tc_in + piz_t_in
             # Pre-pizarra: studio segs cuyo scene_t_out <= piz_t_in
             pre_segs = []
-            mid_seg = None
             post_segs = []
             for slug, s_in, s_out in iv["clips_studio"]:
                 abs_in = tc_in + s_in

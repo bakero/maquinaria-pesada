@@ -9,10 +9,9 @@ Uso:
     python setup_project.py --episode-only # solo actualizar assets del episodio
 """
 
-import os
-import sys
-import json
 import argparse
+import json
+import sys
 from pathlib import Path
 
 
@@ -28,24 +27,24 @@ def ask_path(prompt: str, asset_type: str, required: bool = True,
         if valid_extensions:
             print(f"  Formatos validos: {', '.join(valid_extensions)}")
         if not required:
-            print(f"  (Opcional - pulsa ENTER para saltar)")
+            print("  (Opcional - pulsa ENTER para saltar)")
         print(f"{'='*60}")
 
         raw = input("  Ruta: ").strip().strip('"').strip("'")
 
         if not raw and not required:
-            print(f"  [SKIP] Saltado (opcional)")
+            print("  [SKIP] Saltado (opcional)")
             return None
 
         if not raw and required:
-            print(f"  [ERROR] Este asset es obligatorio. Introduce una ruta valida.")
+            print("  [ERROR] Este asset es obligatorio. Introduce una ruta valida.")
             continue
 
         path = Path(raw).expanduser().resolve()
 
         if not path.exists():
             print(f"  [ERROR] No encontrado: {path}")
-            print(f"          Comprueba la ruta e intentalo de nuevo.")
+            print("          Comprueba la ruta e intentalo de nuevo.")
             continue
 
         if valid_extensions and path.suffix.lower() not in valid_extensions:
@@ -64,7 +63,7 @@ def ask_folder(prompt: str, required: bool = True) -> str | None:
         print(f"\n{'='*60}")
         print(f"  {prompt}")
         if not required:
-            print(f"  (Opcional - pulsa ENTER para saltar)")
+            print("  (Opcional - pulsa ENTER para saltar)")
         print(f"{'='*60}")
 
         raw = input("  Ruta de carpeta: ").strip().strip('"').strip("'")
@@ -72,7 +71,7 @@ def ask_folder(prompt: str, required: bool = True) -> str | None:
         if not raw and not required:
             return None
         if not raw and required:
-            print(f"  [ERROR] Carpeta obligatoria.")
+            print("  [ERROR] Carpeta obligatoria.")
             continue
 
         path = Path(raw).expanduser().resolve()
@@ -321,7 +320,7 @@ def run_setup_full() -> dict:
 
     config_path = Path(__file__).parent / "project_config.json"
     save_config(config, config_path)
-    print(f"\n  [LISTO] Ahora ejecuta: python run_pipeline.py")
+    print("\n  [LISTO] Ahora ejecuta: python run_pipeline.py")
     print("\n" + "#" * 60 + "\n")
     return config
 
@@ -360,7 +359,7 @@ def run_setup_episode_only() -> dict:
         sys.exit(0)
 
     save_config(config, config_path)
-    print(f"\n  [LISTO] Ahora ejecuta: python run_pipeline.py")
+    print("\n  [LISTO] Ahora ejecuta: python run_pipeline.py")
     return config
 
 

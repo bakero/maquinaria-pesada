@@ -33,7 +33,6 @@ from pathlib import Path
 
 from .logger import get_logger
 
-
 # ─── Plantillas y constantes ─────────────────────────────────────────────
 
 PLANOS_DISPONIBLES = """
@@ -255,7 +254,7 @@ def _format_tc(seconds: float) -> str:
 def _filter_concepts_by_module(concepts_index: dict, modulo: str) -> list[dict]:
     """Devuelve la lista de conceptos del catalogo que pertenecen a `modulo`."""
     out = []
-    for fname, data in concepts_index.get("by_pdf", {}).items():
+    for _fname, data in concepts_index.get("by_pdf", {}).items():
         if data.get("modulo", "").upper() == modulo.upper():
             for c in data.get("concepts", []):
                 out.append({
@@ -429,7 +428,7 @@ def generate_escaleta(episode_id: str,
     try:
         import anthropic
     except ImportError:
-        raise RuntimeError("Paquete 'anthropic' no instalado")
+        raise RuntimeError("Paquete 'anthropic' no instalado") from None
 
     client = anthropic.Anthropic()
     user_msg = (

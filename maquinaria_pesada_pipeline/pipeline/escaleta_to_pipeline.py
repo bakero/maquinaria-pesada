@@ -15,7 +15,6 @@ from pathlib import Path
 
 from .logger import get_logger
 
-
 # ─── Mapeos ─────────────────────────────────────────────────────────────
 
 # Plano de la escaleta -> tipo de segmento del track. El SLUG concreto se

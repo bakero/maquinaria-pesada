@@ -10,7 +10,6 @@ Uso:
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -19,12 +18,12 @@ sys.path.insert(0, str(ROOT))
 
 # Cargar .env
 from dotenv import load_dotenv
+
 load_dotenv(ROOT.parent / ".env", override=True)
 
-from pipeline.scene_library import SceneLibrary
-from pipeline.luma_generator import LumaGenerator
 from pipeline.logger import get_logger
-
+from pipeline.luma_generator import LumaGenerator
+from pipeline.scene_library import SceneLibrary
 
 LIBRARY_BASE = str(ROOT.parent / "Videos" / "escenas_biblioteca")
 REFS_INDEX = Path(LIBRARY_BASE) / "refs" / "_refs_index.json"

@@ -18,7 +18,6 @@ Uso:
 """
 
 import argparse
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -28,7 +27,6 @@ sys.path.insert(0, str(ROOT))
 
 from pipeline.logger import get_logger
 from pipeline.scene_library import SceneLibrary
-
 
 # Solo reversamos two-shots (donde uno escucha) y outros/details/establishing.
 # NO reversamos solo_v* porque el speaker activo se vera con boca invertida.
