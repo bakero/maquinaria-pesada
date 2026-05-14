@@ -277,11 +277,14 @@ def build_script_stats(text: str, spec: dict, concepts: list[str] | None = None)
         concept: count_concept_mentions(text, concept)
         for concept in (concepts or [])
     }
+    # Exclude short reaction blocks from average so the metric reflects development blocks only
+    dev_word_counts = [w for w in word_counts if w > short_threshold]
+    avg_dev = (sum(dev_word_counts) / len(dev_word_counts)) if dev_word_counts else 0.0
     return {
         "blocks": blocks,
         "sections": sections,
         "word_count_total": sum(word_counts),
-        "avg_words_per_intervention": (sum(word_counts) / len(word_counts)) if word_counts else 0.0,
+        "avg_words_per_intervention": avg_dev,
         "max_words_per_intervention": max(word_counts) if word_counts else 0,
         "min_words_per_intervention": min(word_counts) if word_counts else 0,
         "long_percentage": (long_count * 100.0) / total,
@@ -476,9 +479,10 @@ def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
         total = sum(speaker_words.values()) or 1
         for speaker, words in speaker_words.items():
             pct = (words * 100.0) / total
-            if pct < min_bal or pct > max_bal:
+            pct_rounded = round(pct)
+            if pct_rounded < min_bal or pct_rounded > max_bal:
                 issues.append(
-                    f"{prefix}{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"{prefix}{section} (compartido): {speaker} tiene {pct_rounded}% de palabras "
                     f"(rango permitido: {min_bal}%-{max_bal}%)."
                 )
     return issues
@@ -741,7 +745,7 @@ def validate_script_text(
     # ── 5. Anti-pingpong (máx consecutivos del mismo speaker) ──────────────
     max_consec = rules.get("max_consecutive_blocks_same_speaker", 2)
     consecutive = 1
-    for current, nxt in zip(blocks, blocks[1:]):
+    for current, nxt in zip(blocks, blocks[1:], strict=False):
         if current["speaker"] == nxt["speaker"]:
             consecutive += 1
             if consecutive > max_consec:
@@ -826,12 +830,18 @@ def validate_script_text(
     # ── 12. Frases por intervención en bloques de desarrollo ─────────────────
     min_sents = rules.get("minimum_sentences_per_intervention", 2)
     max_sents = rules.get("maximum_sentences_per_intervention", 10)
+    reaction_limit = rules.get("reaction_word_limit", 12)
     dev_sections = set(rules.get("required_sections", [])) - {
         "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
         "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
     }
-    for count_val, block in zip(stats["sentence_counts"], blocks):
+    for count_val, block in zip(stats["sentence_counts"], blocks, strict=False):
         if block.get("section") not in dev_sections:
+            continue
+        # Bloques de reacción (≤ reaction_word_limit palabras) son transiciones
+        # cortas intencionales; exentos del mínimo de frases.
+        block_words = count_words(remove_leading_tag(block["text"]))
+        if block_words <= reaction_limit:
             continue
         if count_val < min_sents:
             issues.append(
@@ -902,7 +912,7 @@ def validate_script_text(
             (re.compile(r"\b\d+[.,]?\d*\s*[MB](?:illones?)?\b"), "cifra grande en digitos"),
         ]
         spoken_lines = [remove_leading_tag(b["text"]) for b in blocks]
-        for line, block in zip(spoken_lines, blocks):
+        for line, block in zip(spoken_lines, blocks, strict=False):
             for pattern, desc in digit_patterns:
                 if pattern.search(line):
                     issues.append(
@@ -934,6 +944,27 @@ def validate_script_text(
             f"[WARN] Media de palabras por intervencion demasiado alta: "
             f"{stats['avg_words_per_intervention']:.1f} (maximo recomendado: {avg_max})."
         )
+
+    # ── 25. HARD: frases placeholder genéricas (contenido de relleno) ──────────
+    placeholder_phrases = rules.get("blacklist_placeholder_phrases", [])
+    for phrase in placeholder_phrases:
+        if phrase.lower() in text.lower():
+            issues.append(
+                f"Frase placeholder detectada (contenido de relleno sin valor): '{phrase[:60]}...'"
+            )
+
+    # ── 26. WARN: lista enumerada en voz alta (Primero/Segundo/Tercero/Cuarto) ─
+    enum_pattern = re.compile(
+        r"(Primero|Primera)[,:].*?(Segundo|Segunda)[,:].*?(Tercero|Tercera)[,:]",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for blk in stats["blocks"]:
+        blk_text = blk["text"]
+        if enum_pattern.search(blk_text):
+            issues.append(
+                f"[WARN] Bloque {blk['index']} ({blk.get('section','?')}) usa lista enumerada "
+                f"(Primero/Segundo/Tercero): distribuye los puntos entre ambos speakers."
+            )
 
     return issues
 

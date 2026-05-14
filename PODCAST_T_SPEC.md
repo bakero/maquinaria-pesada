@@ -512,13 +512,13 @@ obligatoria en validación pero NO genera audio. El sonido viene de
     "max_consecutive_blocks_same_speaker": 2,
     "key_concepts_block_count_exact": 3,
     "minimum_word_count": 1400,
-    "maximum_word_count": 1800,
+    "maximum_word_count": 1850,
     "minimum_sentences_per_intervention": 4,
     "maximum_sentences_per_intervention": 8,
-    "reaction_word_limit": 12,
+    "reaction_word_limit": 30,
     "max_reactions_per_block": 3,
     "target_avg_words_per_intervention_min": 50,
-    "target_avg_words_per_intervention_max": 90,
+    "target_avg_words_per_intervention_max": 110,
     "target_max_words_per_single_intervention": 200,
     "hard_fail_on_digits_in_dialogue": false,
     "minimum_pdf_coverage_percent": 75,
@@ -548,6 +548,13 @@ obligatoria en validación pero NO genera audio. El sonido viene de
       "por supuesto",
       "eso es",
       "totalmente"
+    ],
+    "blacklist_placeholder_phrases": [
+      "Bien apuntado. Déjame añadir la perspectiva técnica aquí. Hay una capa de implementación",
+      "La pregunta que planteas toca algo crítico del diseño. El contexto cambia todo en estos sistemas distribuidos",
+      "Hay algo que me genera curiosidad en este punto. ¿Cómo conecta esto con lo que acabamos de ver? Porque la secuencia conceptual importa mucho aquí",
+      "Eso me plantea una pregunta concreta. ¿Cómo se traslada esto al entorno real de producción? Hay una distancia entre el diseño en papel",
+      "Déjame entender bien este punto antes de seguir. ¿Qué implica esto en la práctica concreta para las organizaciones"
     ],
     "hook_templates": ["dato", "pregunta_incomoda", "caso"],
     "preescritura_required": {

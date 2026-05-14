@@ -34,7 +34,16 @@ BASE_DIR  = Path(__file__).parent
 SPEC_PATH = BASE_DIR / "PODCAST_T_SPEC.md"
 
 sys.path.insert(0, str(BASE_DIR))
-from podcast_spec import (
+# Post-procesadores compartidos con generar_guion.py (M-type)
+from generar_guion import (  # noqa: E402
+    _fix_antipingpong,
+    _fix_digit_numbers_in_dialogue,
+    _rebalance_shared_block,
+    _split_oversized_blocks,
+    _split_oversized_sentence_blocks,
+    _trim_cierre_conceptos_if_excess,
+)
+from podcast_spec import (  # noqa: E402
     build_script_stats,
     extract_theme_concepts,
     guion_to_ep_code,
@@ -136,8 +145,8 @@ def make_anthropic_client():
         if not api_key:
             raise SystemExit("ANTHROPIC_API_KEY no encontrada en .env")
         return anthropic.Anthropic(api_key=api_key)
-    except ImportError:
-        raise SystemExit("Faltan dependencias: pip install anthropic")
+    except ImportError as err:
+        raise SystemExit("Faltan dependencias: pip install anthropic") from err
 
 
 def call_claude(
@@ -262,22 +271,26 @@ INSTRUCCIONES CRÍTICAS:
    # HOOK → # INTRO_SONIDO → # SALUDO_Y_PRESENTACION → # BLOQUE_PANORAMA → # BLOQUE_COMO → # BLOQUE_REALIDAD → # CIERRE_CONCEPTOS → # CIERRE_FINAL
 5. Secciones PROHIBIDAS (NO generes): BLOQUE_QUE, BLOQUE_LIMITES, BLOQUE_1, BLOQUE_2, BLOQUE_3, BLOQUE_4, APLICACION_PRACTICA, INSERCION_1, INSERCION_2, INSERCION_3
 6. ROLES POR BLOQUE (obligatorio):
-   - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤12 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
-   - BLOQUE_COMO: COMPARTIDO (40-60% cada uno). Líder rota por sub-concepto. Si hay 2 sub-conceptos: sub1 lidera IAGO (150-180 palabras), sub2 lidera MARIA (150-180 palabras). Explica CÓMO funciona: mecanismo técnico.
+   - BLOQUE_PANORAMA: IAGO es la voz principal (min 65% palabras). MARIA hace 1-2 preguntas de matiz (≤20 palabras cada una). IAGO abre el bloque. Explica QUÉ es el concepto, definición precisa, por qué importa.
+   - BLOQUE_COMO: COMPARTIDO. OBLIGATORIO: IAGO y MARIA deben tener ENTRE 40%-60% cada uno del total de palabras del bloque. Para lograrlo: si hay 2+ sub-conceptos, sub1 lo lidera IAGO (4-6 frases, 70-120 palabras), sub2 lo lidera MARIA (4-6 frases, 70-120 palabras). PROHIBIDO que MARIA solo haga preguntas en BLOQUE_COMO; MARIA debe explicar al menos un sub-concepto completo.
    - BLOQUE_REALIDAD: MARIA es la VOZ EXPERTA de empresa en este bloque. MARIA presenta los casos reales, datos de adopción y retos empresariales (mínimo 5 intervenciones de desarrollo, cada una con ≥4 frases). IAGO solo aporta contexto técnico breve cuando sea estrictamente necesario (máximo 2 intervenciones, ≤3 frases cada una). Si IAGO habla más que MARIA en este bloque, el guion está INCORRECTO. Usa prioritariamente la FUENTE DE CASOS EMPRESARIALES VERIFICADOS. Incluye al menos 2 de: dato adopción con fuente, caso empresa real con resultado, reto documentado, oportunidad de negocio.
 7. Interjecciones PROHIBIDAS: {json.dumps(rules['blacklist_validation_interjections'], ensure_ascii=False)}
-8. # CIERRE_CONCEPTOS abre con: {rules['concepts_closing_phrase']}
-   Exactamente 3 conceptos (ni 2 ni 4 — hard-fail si hay otra cantidad).
-   Alternados: líder-apoyo-líder o apoyo-líder-apoyo según paridad del TEMA.
-   Cada concepto en una sola frase, no expandidos.
+8. # CIERRE_CONCEPTOS — ESTRUCTURA OBLIGATORIA (hard-fail si no cumple):
+   Exactamente 3 bloques hablados. El speaker que ABRE el episodio (HOOK) es el "líder".
+   BLOQUE 1 (líder): Dice "{rules['concepts_closing_phrase']}" + inmediatamente "Primero: [concepto 1]" — TODO EN UN SOLO BLOQUE.
+   BLOQUE 2 (apoyo): "Segundo: [concepto 2]"
+   BLOQUE 3 (líder): "Tercero: [concepto 3]"
+   PROHIBIDO: opener en bloque separado. El "No te puedes ir..." y el primer concepto VAN JUNTOS en un único bloque del líder.
+   Cada concepto en una sola frase concisa, no expandidos.
 9. # CIERRE_FINAL incluye exactamente: {rules['final_closing_phrase']}
    SOLO {other if opener != "IAGO" else "IAGO" if opener == "IAGO" else other} pronuncia el cierre según paridad. El otro speaker NO responde, NO añade nada. El guion termina cuando el closer dice su última frase. HARD-FAIL si hay intervención adicional tras el cierre.
 10. Usa "Yago" en el texto hablado, nunca "Iago".
-11. REGLA DE LONGITUD — DURA:
-    El diálogo total NO debe superar {rules['maximum_word_count']} palabras.
-    Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
+11. REGLA DE LONGITUD — DURA (BIDIRECCIONAL):
+    El diálogo total DEBE estar entre {rules['minimum_word_count']} y {rules['maximum_word_count']} palabras.
+    MÍNIMO OBLIGATORIO: {rules['minimum_word_count']} palabras totales. Si llegas a CIERRE_CONCEPTOS con menos de {rules['minimum_word_count']-150} palabras de diálogo, AMPLÍA los bloques centrales antes de continuar.
+    MÁXIMO: {rules['maximum_word_count']} palabras. Si llegas a BLOQUE_REALIDAD habiendo gastado más de {int(rules['maximum_word_count'] * 0.72)} palabras, RECORTA ese bloque.
     NUNCA recortes HOOK ni CIERRE_CONCEPTOS.
-    Escribe CIERRE_CONCEPTOS en borrador mental ANTES de expandir los bloques centrales.
+    CONTROL: cada bloque de desarrollo (no preguntas ni reacciones) debe tener EXACTAMENTE 4-6 frases (60-100 palabras). Está PROHIBIDO escribir un bloque de desarrollo con 3 frases o menos. Si tienes menos de 4, amplía antes de continuar.
 12. REGLA CIERRE — PRIMERA:
     Antes de escribir BLOQUE_PANORAMA, redacta mentalmente los 3 puntos del CIERRE_CONCEPTOS.
     Esos puntos deben derivarse directamente de los bloques centrales.
@@ -289,8 +302,9 @@ INSTRUCCIONES CRÍTICAS:
     Marcadores válidos: "imagina que", "es como cuando", "piensa en", "el equivalente sería", "igual que".
 14. REGLA AUDIO — LONGITUD DE INTERVENCIÓN:
     Intervención de desarrollo: 60-120 palabras (4-6 frases) — zona óptima TTS a 1.32x velocidad.
-    Máximo absoluto por intervención: 200 palabras. Si necesitas más, divide en dos.
-    Reacciones/preguntas: máximo 12 palabras. NO usar interjecciones de validación.
+    Máximo absoluto por intervención: 190 palabras. Si un concepto necesita más, pártelo en DOS bloques:
+    el primero ≤190 palabras, el otro speaker hace una pregunta breve, y el primero retoma ≤190 palabras.
+    Reacciones/preguntas: máximo 20 palabras (preferiblemente 8-15). NO usar interjecciones de validación.
 15. REGLA AUDIO — NÚMEROS EN PALABRAS:
     TODOS los números van en palabras. El TTS a 1.32x pronuncia mal "3.7%" o "$3M".
     MAL: "el 3.7% de empresas", "costó $3M", "en Q3 2026".
@@ -301,6 +315,12 @@ INSTRUCCIONES CRÍTICAS:
     MAL: "backpropagation es el algoritmo que..."
     BIEN: "El algoritmo clave, que llamamos backpropagation, es..."
 17. ANTIPINGPONG: nunca pongas 3 intervenciones del MISMO speaker seguidas. Intercala.
+18. REGLA DE DIÁLOGO NATURAL — PROHIBICIONES:
+    PROHIBIDO: enumeraciones "Primero... Segundo... Tercero... Cuarto..." en el turno de un solo speaker.
+    Si necesitas listar 3+ puntos, distribúyelos entre ambos speakers con reacciones entre ellos.
+    PROHIBIDO: que un speaker se haga una pregunta y la responda él mismo en el turno siguiente.
+    PROHIBIDO: intervenciones genéricas de relleno sin contenido específico del tema ("Bien apuntado,
+    déjame añadir la perspectiva técnica...", "Hay algo que me genera curiosidad en este punto...").
 18. REFERENCIAS TEMPORALES — REGLA DURA:
     Cuando hables del ESTADO ACTUAL, NO cites año: usa "hoy", "actualmente", "en este momento".
     Solo cita un año cuando esté pegado a una publicación identificable por nombre propio.
@@ -454,12 +474,6 @@ def extract_leading_tag(text: str) -> str | None:
     return f"[{m.group(1).strip()}]" if m else None
 
 
-def remove_leading_tag(text: str) -> str:
-    """Elimina [tag] al inicio si existe."""
-    import re as _re
-    return _re.sub(r"^\[(.+?)\]\s*", "", text.strip(), count=1)
-
-
 def build_verification_section(
     script_body: str,
     spec: dict,
@@ -503,7 +517,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generador de guiones T — MaquinarIA Pesada")
     parser.add_argument("--pdf",          required=True,  help="Ruta al PDF del tema (ej: PDFs/temas/M1_T11_limitaciones_llms.pdf)")
     parser.add_argument("--spec",         default=str(SPEC_PATH), help="Ruta a PODCAST_T_SPEC.md")
-    parser.add_argument("--max-intentos", type=int, default=2)
+    parser.add_argument("--max-intentos", type=int, default=3)
     args = parser.parse_args()
 
     # ── Cargar spec ─────────────────────────────────────────────────────────
@@ -558,17 +572,75 @@ def main() -> None:
 
     local_issues: list[str] = []
     draft = ""
+    best_draft = ""
+    best_issues: list[str] = []
+    best_score: tuple[int, int, int] = (999, 999, 999)  # (hard_count, word_deficit, soft_count)
 
     for attempt in range(1, args.max_intentos + 1):
         print(f"\n  [2/3] Generando guion (intento {attempt}/{args.max_intentos})...")
 
-        if attempt > 1:
-            hard_issues = [i for i in local_issues if not i.startswith("[WARN]")]
-            if hard_issues:
+        feedback_issues = best_issues if best_issues else local_issues
+        if attempt > 1 and feedback_issues:
+            all_hard = [i for i in feedback_issues if not i.startswith("[WARN]")]
+            if all_hard:
+                feedback_parts = []
+                for issue in all_hard:
+                    wc_min = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", issue)
+                    wc_max = re.search(r"tiene (\d+) palabras \(maximo recomendado: (\d+)\)", issue)
+                    if wc_min:
+                        actual, needed = int(wc_min.group(1)), int(wc_min.group(2))
+                        diff = needed - actual
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: añade {diff} palabras más. Amplía BLOQUE_PANORAMA "
+                            f"(+1 bloque IAGO de 4+ frases) y BLOQUE_COMO (+2-3 frases). NO recortes nada."
+                        )
+                    elif wc_max:
+                        actual, limit = int(wc_max.group(1)), int(wc_max.group(2))
+                        diff = actual - limit
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: elimina {diff} palabras. Recorta BLOQUE_REALIDAD "
+                            f"quitando el ejemplo menos relevante."
+                        )
+                    elif "BLOQUE_COMO" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: MARIA debe liderar al menos UN sub-concepto completo "
+                            f"en BLOQUE_COMO con 4-6 frases (70-120 palabras)."
+                        )
+                    elif "CIERRE_CONCEPTOS" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: CIERRE_CONCEPTOS debe tener EXACTAMENTE 3 bloques. "
+                            f"El opener 'No te puedes ir...' y el primer concepto van EN UN SOLO bloque del líder."
+                        )
+                    elif "consecutivos del mismo speaker" in issue:
+                        feedback_parts.append(
+                            f"- {issue}\n"
+                            f"  ACCIÓN: NUNCA escribas 3 bloques seguidos del mismo speaker. "
+                            f"Después de cada 2 bloques de IAGO, MARIA debe intervenir (al menos 1 bloque). "
+                            f"Revisa toda la sección y alterna obligatoriamente."
+                        )
+                    else:
+                        feedback_parts.append(f"- {issue}")
+                # Include soft warns about short blocks and enumerated lists
+                soft_retry = [i for i in feedback_issues if i.startswith("[WARN]")]
+                for s in [x for x in soft_retry if re.search(r"solo [123] frase", x)][:3]:
+                    feedback_parts.append(
+                        f"- {s}\n"
+                        f"  ACCIÓN: amplía ese bloque a mínimo 4 frases completas (70-100 palabras)."
+                    )
+                for s in [x for x in soft_retry if "lista enumerada" in x][:3]:
+                    feedback_parts.append(
+                        f"- {s}\n"
+                        f"  ACCIÓN: NO uses Primero/Segundo/Tercero en un mismo turno. "
+                        f"Distribuye: un speaker explica un punto, el otro reacciona, continúa."
+                    )
                 user_prompt_ext = (
                     user_prompt
-                    + "\n\nFEEDBACK (corrige todos estos puntos):\n"
-                    + "\n".join(f"- {i}" for i in hard_issues)
+                    + "\n\nFEEDBACK OBLIGATORIO (corrige TODOS estos puntos antes de generar):\n"
+                    + "\n".join(feedback_parts)
                 )
             else:
                 user_prompt_ext = user_prompt
@@ -582,6 +654,12 @@ def main() -> None:
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)
         draft = enforce_fixed_phrases(draft, spec)
+        draft = _fix_digit_numbers_in_dialogue(draft)
+        draft = _trim_cierre_conceptos_if_excess(draft, spec)
+        draft = _rebalance_shared_block(draft, spec)
+        draft = _split_oversized_blocks(draft, spec=spec)
+        draft = _split_oversized_sentence_blocks(draft, spec=spec)
+        draft = _fix_antipingpong(draft, spec)
 
         verification = build_verification_section(draft, spec, concept_list, usage)
         draft_with_ver = draft.rstrip() + "\n\n" + verification
@@ -590,11 +668,32 @@ def main() -> None:
         hard_issues  = [i for i in local_issues if not i.startswith("[WARN]")]
         soft_issues  = [i for i in local_issues if i.startswith("[WARN]")]
 
+        # Promover ciertos soft warns a hard para forzar retry
+        extra_hard = [
+            i.removeprefix("[WARN] ") for i in soft_issues
+            if ("maximo recomendado" in i and "palabras" in i and "por intervencion" not in i)
+        ]
+        if extra_hard:
+            hard_issues = hard_issues + extra_hard
+
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
         for issue in hard_issues:
             print(f"         FAIL: {issue}")
         for issue in soft_issues:
             print(f"         WARN: {issue}")
+
+        # Track best attempt by (hard_count, word_deficit, soft_count)
+        wc_issue = next((i for i in hard_issues if "palabras (minimo:" in i), None)
+        word_deficit = 0
+        if wc_issue:
+            m_wc = re.search(r"tiene (\d+) palabras \(minimo: (\d+)\)", wc_issue)
+            if m_wc:
+                word_deficit = max(0, int(m_wc.group(2)) - int(m_wc.group(1)))
+        score = (len(hard_issues), word_deficit, len(soft_issues))
+        if score < best_score:
+            best_score = score
+            best_draft = draft_with_ver
+            best_issues = local_issues[:]
 
         if not hard_issues:
             draft = draft_with_ver
@@ -602,8 +701,8 @@ def main() -> None:
             break
 
         if attempt == args.max_intentos:
-            print(f"\n  [WARN] Max intentos. Guardando con {len(hard_issues)} issue(s) hard.")
-            draft = draft_with_ver
+            print(f"\n  [WARN] Max intentos. Guardando mejor intento ({best_score[0]} hard, {best_score[2]} soft).")
+            draft = best_draft
 
     # ── Guardar ──────────────────────────────────────────────────────────────
     print("\n  [3/3] Guardando...")
