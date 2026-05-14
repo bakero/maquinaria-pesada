@@ -30,6 +30,8 @@ Endpoints (todos JSON salvo donde se indique):
     GET  /api/components-map     → grafo de cockpit/components_map.json
     GET  /api/connectors         → estado real de los conectores registrados
     GET  /api/pizarra            → lienzo guardado de la Pizarra (o null)
+    GET  /api/metrics            → métricas de difusión reales (Spotify /
+                                   iVoox / LinkedIn vía connectors/analytics)
     GET  /api/logs               → archivos de logs/ (path, size, mtime)
     GET  /api/live               → procesos en producción (psutil best-effort)
     GET  /api/recent-files       → últimos artefactos modificados
@@ -476,6 +478,63 @@ def pizarra_generate_component(name: str, description: str, kind: str) -> dict:
             "cost_usd": usage.cost_usd,
         },
     }
+
+
+def load_metrics() -> dict:
+    """Métricas de difusión reales (Spotify / iVoox / LinkedIn).
+
+    Cada conector hace HTTP real y cachea en logs/analytics/. Sin credenciales
+    en .env el conector reporta configured=False y la página lo muestra como
+    "no configurado" — degradación honesta, sin datos sintéticos."""
+    import importlib
+    from dataclasses import asdict, is_dataclass
+
+    try:
+        from cockpit.connectors.analytics.base import AnalyticsConnector, Unavailable
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "platforms": {}}
+
+    def ser(o):
+        return asdict(o) if is_dataclass(o) else o
+
+    platforms: dict[str, dict] = {}
+    for src in ("spotify", "ivoox", "linkedin"):
+        entry: dict = {
+            "source": src, "label": src, "configured": False, "detail": "",
+            "show": None, "episodes": [], "posts": [],
+        }
+        try:
+            mod = importlib.import_module(f"cockpit.connectors.analytics.{src}")
+            cls = next(
+                (o for o in vars(mod).values()
+                 if isinstance(o, type) and issubclass(o, AnalyticsConnector)
+                 and o is not AnalyticsConnector),
+                None,
+            )
+            if cls is None:
+                entry["error"] = "conector no encontrado"
+                platforms[src] = entry
+                continue
+            conn = cls()
+            entry["label"] = getattr(conn, "label", src)
+            entry["icon"] = getattr(conn, "icon", "")
+            entry["configured"] = conn.is_configured()
+            entry["detail"] = conn.status_detail()
+            entry["missing"] = conn.missing_config()
+            if conn.is_configured():
+                try:
+                    show = conn.fetch_show()
+                    entry["show"] = ser(show) if show else None
+                    entry["episodes"] = [ser(e) for e in conn.fetch_episodes()]
+                    entry["posts"] = [ser(p) for p in conn.fetch_posts()]
+                except Unavailable as exc:
+                    entry["detail"] = str(exc)
+                except Exception as exc:  # noqa: BLE001
+                    entry["error"] = str(exc)
+        except Exception as exc:  # noqa: BLE001
+            entry["error"] = str(exc)
+        platforms[src] = entry
+    return {"ok": True, "platforms": platforms}
 
 
 def load_logs_list() -> dict:
@@ -985,6 +1044,8 @@ class CockpitHandler(BaseHTTPRequestHandler):
             return self._send_json(200, load_connectors())
         if path == "/api/pizarra":
             return self._send_json(200, load_pizarra())
+        if path == "/api/metrics":
+            return self._send_json(200, load_metrics())
         if path == "/api/logs":
             return self._send_json(200, load_logs_list())
         if path == "/api/live":

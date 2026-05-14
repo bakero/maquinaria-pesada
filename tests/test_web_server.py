@@ -138,6 +138,20 @@ def test_connectors_returns_registry(fake_repo):
         assert "status" in c and "ok" in c["status"]
 
 
+def test_metrics_platforms(fake_repo, monkeypatch):
+    """load_metrics consulta los 3 conectores de analytics; sin credenciales
+    cada uno reporta configured=False (degradación honesta)."""
+    for k in ("SPOTIFY_SP_DC", "SPOTIFY_SP_KEY", "SPOTIFY_PODCAST_ID"):
+        monkeypatch.delenv(k, raising=False)
+    import web_server
+    out = web_server.load_metrics()
+    assert out["ok"] is True
+    assert set(out["platforms"]) == {"spotify", "ivoox", "linkedin"}
+    for p in out["platforms"].values():
+        assert "configured" in p
+        assert isinstance(p["episodes"], list)
+
+
 def test_logs_list(fake_repo):
     """load_logs_list lista los archivos reales de logs/."""
     import web_server
