@@ -3,6 +3,15 @@
 """
 normalizar_guiones.py
 ---------------------
+LEGACY / STANDALONE — NO forma parte del pipeline de generación.
+Los episodios se generan ÚNICAMENTE con generar_guion.py (M) y
+generar_guion_t.py (T). Ver GENERACION.md.
+
+⚠️  Este script genera el formato PRE-v5 (# BLOQUE_1..4, # INSERCION_1/2), que
+los specs T/M v5 marcan como secciones PROHIBIDAS. NO ejecutar sobre guiones
+ya en formato v5: el resultado sería rechazado por el validador. Se conserva
+solo como conversor de guiones de codex antiguo (formato B legado).
+
 Convierte guiones del formato B (legado) al formato A requerido por podcast_spec.py,
 y corrige los problemas estructurales de los guiones en formato A.
 
@@ -47,11 +56,15 @@ if hasattr(sys.stderr, "reconfigure"):
 BASE_DIR   = Path(__file__).parent
 GUIONES_DIR = BASE_DIR / "Guiones"
 
-HOOK_CLOSING_PHRASE      = "Esto es MaquinarIA Pesada. Arrancamos."
-INTRO_COMMENT            = "# [INTRO - SONIDO DE MAQUINAS ARRANCANDO - 8-10 segundos]"
-CONCEPTS_CLOSING_PHRASE  = "No te puedes ir de este capitulo sin haber entendido estos conceptos"
-FINAL_CLOSING_PHRASE     = ("Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. "
-                             "Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.")
+# Fuente única de verdad de las frases fijas: el spec JSON (ver podcast_spec.py).
+sys.path.insert(0, str(BASE_DIR))
+from podcast_spec import load_spec  # noqa: E402
+
+_RULES = load_spec(BASE_DIR / "PODCAST_M_SPEC.md")["script_rules"]
+HOOK_CLOSING_PHRASE      = _RULES["hook_closing_phrase"]
+INTRO_COMMENT            = "# " + _RULES["intro_comment"]
+CONCEPTS_CLOSING_PHRASE  = _RULES["concepts_closing_phrase"]
+FINAL_CLOSING_PHRASE     = _RULES["final_closing_phrase"]
 
 SPEAKER_RE = re.compile(r"^(IAGO|MAR[IÍ]A)\s*:", re.IGNORECASE)
 # Captura nombres de seccion: MAYUSCULAS, digitos, guion_bajo, espacio, guion, em-dash, en-dash

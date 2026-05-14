@@ -6,27 +6,22 @@ from cockpit.connectors.base import Field_, PipelineConnector, register
 @register
 class GenerarGuion(PipelineConnector):
     id = "generar_guion"
-    label = "Generar guion"
+    label = "Generar guion M"
     icon = "📝"
-    description = "Genera un guion .txt desde un PDF fuente con OpenAI."
+    description = (
+        "Genera un guion .txt de episodio M (módulo) con Anthropic Claude "
+        "(Sonnet 4.5). Episodios T → generar_guion_t.py. Ver GENERACION.md."
+    )
     script = "generar_guion.py"
+    # Flags alineados con el argparse real de generar_guion.py.
     fields = [
-        Field_("--pdf", "PDF fuente", kind="path", required=True,
-               help="Ruta relativa al repo, p.ej. PDFs/RESUMEN_M3_Machine_Learning_Clasico.pdf"),
-        Field_("--ep", "Código de episodio", required=True,
-               placeholder="M3_T_ML_Clasico"),
-        Field_("--modulo", "Módulo", placeholder="M3"),
-        Field_("--tema", "Tema (título)"),
-        Field_("--objetivo", "Objetivo del episodio"),
-        Field_("--duracion-min", "Duración (min)", kind="int", default=15),
-        Field_("--master-pdf", "PDF maestro (opcional)", kind="path"),
-        Field_("--contexto-file", "Fichero de contexto adicional", kind="path"),
-        Field_("--estudios", "Estudios/citas a incluir"),
-        Field_("--aplicacion-empresarial", "Caso de aplicación empresarial"),
-        Field_("--modelo", "Modelo OpenAI", default="gpt-4.1",
-               kind="select", options=["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini"]),
-        Field_("--modelo-review", "Modelo revisión", default="gpt-4.1-mini",
-               kind="select", options=["gpt-4.1-mini", "gpt-4.1", "gpt-4o-mini"]),
-        Field_("--token-budget", "Token budget", kind="int"),
-        Field_("--max-attempts", "Max intentos", kind="int", default=3),
+        Field_("--modulo", "Módulo (0-14)", kind="int", required=True,
+               placeholder="6"),
+        Field_("--pdf", "PDF RESUMEN del módulo", kind="path", required=True,
+               help="Ruta relativa al repo, p.ej. PDFs/resumenes/RESUMEN_M6_Ingenieria_Prompts.pdf"),
+        Field_("--nombre", "Nombre del módulo (archivo)",
+               placeholder="Ingenieria_de_Prompts",
+               help="Opcional. Si se omite se infiere del nombre del PDF."),
+        Field_("--spec", "Ruta al spec M", default="PODCAST_M_SPEC.md"),
+        Field_("--max-intentos", "Max intentos", kind="int", default=3),
     ]

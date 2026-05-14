@@ -9,13 +9,19 @@ Sistema de generación automática de podcasts y vídeos con IA en Python.
 - **Pipelines top-level (CLI)**: `generar_guion.py`, `generar_episodio_v2.py`,
   `validar_episodio.py`, `normalizar_guiones.py`, `podcast_spec.py`, etc.
   Producen contenido a partir de PDFs fuente.
+- **Generación de guiones**: ver `GENERACION.md` — los episodios se generan
+  SOLO con `generar_guion.py` (M) y `generar_guion_t.py` (T), que comparten
+  `guion_common.py` y validan con `podcast_spec.py`. `fix_guiones_v4.py`,
+  `rebalance_blocks.py` y `normalizar_guiones.py` son utilidades legacy
+  manuales: NO generan episodios.
 - **Cockpit Streamlit** (`cockpit/`): centro de control para ejecutar pipelines,
   inspeccionar logs, gestionar API keys, controlar gasto IA, ver mapa de
   componentes, conversar con Claude para mejorar contenido.
 - **Proveedores IA**: Anthropic Claude (guiones), OpenAI GPT (debate dual),
   Whisper local (transcripción), ElevenLabs (TTS), Kling (vídeo).
 
-Lee `BIBLIA_SISTEMA.md` y `PODCAST_M_SPEC.md` para detalles funcionales.
+Lee `GENERACION.md`, `BIBLIA_SISTEMA.md` y `PODCAST_M_SPEC.md` para detalles
+funcionales.
 
 ## Sandbox de Claude DENTRO de la app
 

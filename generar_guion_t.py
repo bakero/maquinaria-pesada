@@ -19,13 +19,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
-import pdfplumber
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -34,77 +31,31 @@ BASE_DIR  = Path(__file__).parent
 SPEC_PATH = BASE_DIR / "PODCAST_T_SPEC.md"
 
 sys.path.insert(0, str(BASE_DIR))
-# Post-procesadores compartidos con generar_guion.py (M-type)
-from generar_guion import (  # noqa: E402
+# Núcleo compartido de generación (ver guion_common.py y GENERACION.md).
+from guion_common import (  # noqa: E402
+    TokenUsage,
     _fix_antipingpong,
     _fix_digit_numbers_in_dialogue,
     _rebalance_shared_block,
     _split_oversized_blocks,
     _split_oversized_sentence_blocks,
     _trim_cierre_conceptos_if_excess,
+    call_claude,
+    enforce_fixed_phrases,
+    extract_pdf_text,
+    make_anthropic_client,
+    normalize_generated_script,
+    strip_verification_block,
 )
 from podcast_spec import (  # noqa: E402
     build_script_stats,
     extract_theme_concepts,
     guion_to_ep_code,
     load_spec,
-    normalize_text_for_match,
     opening_speaker,
     read_text,
-    remove_leading_tag,
     validate_script_text,
 )
-
-# ---------------------------------------------------------------------------
-# Uso de tokens Anthropic
-# ---------------------------------------------------------------------------
-
-@dataclass
-class TokenUsage:
-    input_tokens:  int = 0
-    output_tokens: int = 0
-    cache_read:    int = 0
-    cache_create:  int = 0
-
-    @property
-    def total(self) -> int:
-        return self.input_tokens + self.output_tokens
-
-    def add(self, response) -> None:
-        usage = getattr(response, "usage", None)
-        if not usage:
-            return
-        self.input_tokens  += getattr(usage, "input_tokens",             0) or 0
-        self.output_tokens += getattr(usage, "output_tokens",            0) or 0
-        self.cache_read    += getattr(usage, "cache_read_input_tokens",  0) or 0
-        self.cache_create  += getattr(usage, "cache_creation_input_tokens", 0) or 0
-
-    def report(self) -> str:
-        return (
-            f"input={self.input_tokens} output={self.output_tokens} "
-            f"cache_read={self.cache_read} total={self.total}"
-        )
-
-
-# ---------------------------------------------------------------------------
-# PDF
-# ---------------------------------------------------------------------------
-
-def extract_pdf_text(path: str | Path) -> str:
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(f"PDF no encontrado: {path}")
-    parts: list[str] = []
-    with pdfplumber.open(path) as pdf:
-        for page in pdf.pages:
-            t = page.extract_text() or ""
-            if t.strip():
-                parts.append(t.strip())
-    text = "\n\n".join(parts)
-    if not text:
-        raise ValueError(f"No se pudo extraer texto de {path}")
-    return text
-
 
 # ---------------------------------------------------------------------------
 # Naming helpers
@@ -135,45 +86,6 @@ def infer_topic_display(pdf_path: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Anthropic client
-# ---------------------------------------------------------------------------
-
-def make_anthropic_client():
-    try:
-        import anthropic
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if not api_key:
-            raise SystemExit("ANTHROPIC_API_KEY no encontrada en .env")
-        return anthropic.Anthropic(api_key=api_key)
-    except ImportError as err:
-        raise SystemExit("Faltan dependencias: pip install anthropic") from err
-
-
-def call_claude(
-    client, model: str, system: str, user: str,
-    max_tokens: int, temperature: float
-) -> tuple[str, object]:
-    import time as _t
-    _t0 = _t.monotonic()
-    response = client.messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
-    try:
-        from cockpit.core.usage_tracker import track_anthropic
-        track_anthropic(
-            response, model=model, source="generar_guion_t.py", kind="generation",
-            latency_ms=int((_t.monotonic() - _t0) * 1000),
-        )
-    except ImportError:
-        pass
-    return response.content[0].text, response
-
-
-# ---------------------------------------------------------------------------
 # Extracción de conceptos
 # ---------------------------------------------------------------------------
 
@@ -191,7 +103,10 @@ def extract_concepts_with_claude(
         "Devuelve JSON: {\"key_concepts\": [\"concepto1\", \"concepto2\"]}"
     )
     try:
-        text, resp = call_claude(client, model, system, user, max_tokens=800, temperature=0.0)
+        text, resp = call_claude(
+            client, model, system, user, max_tokens=800, temperature=0.0,
+            source="generar_guion_t.py",
+        )
         usage.add(resp)
         data = json.loads(text)
         return [c.strip() for c in data.get("key_concepts", []) if c.strip()][:8]
@@ -331,147 +246,6 @@ INSTRUCCIONES CRÍTICAS:
     NUNCA inventes nombres de empresa, estadísticas exactas o citas a estudios que no puedas verificar.
 """
     return system, user
-
-
-def _fix_tts_closing_tags(content: str) -> str:
-    open_match = re.search(r"<([a-zA-Z_]+)>", content)
-    if open_match:
-        tag = open_match.group(1).lower()
-        content = re.sub(r"</(iago|maria|yago|IAGO|MARIA|YAGO)>", f"</{tag}>", content, flags=re.IGNORECASE)
-    return content
-
-
-_TAG_REMAP = {
-    "curiosa": "curioso", "esceptica": "esceptico", "ironica": "ironico",
-    "didactica": "didactico", "explicativa": "explicativo", "directa": "directo",
-    "seria": "serio", "contundenta": "contundente", "reflexiva": "reflexivo",
-    "natural": "natural", "pausada": "pausado", "calida": "calido",
-    "clara": "claro", "analitico": "analitica",
-}
-
-
-def _fix_gendered_tags(content: str) -> str:
-    def _remap_sq(m: re.Match) -> str:
-        canonical = _TAG_REMAP.get(m.group(1).lower(), m.group(1).lower())
-        return f"[{canonical}]"
-    def _remap_ang(m: re.Match) -> str:
-        slash = m.group(1) or ""
-        canonical = _TAG_REMAP.get(m.group(2).lower(), m.group(2).lower())
-        return f"<{slash}{canonical}>"
-    content = re.sub(r"\[([a-zA-Z_]+)\]", _remap_sq, content)
-    content = re.sub(r"<(/?)([a-zA-Z_]+)>", _remap_ang, content)
-    return content
-
-
-def _remove_blacklisted_opening(content: str, spec: dict) -> str:
-    rules = spec.get("script_rules", {})
-    blacklist = rules.get("blacklist_validation_interjections") or rules.get("blacklisted_interjections") or []
-    short_limit = rules.get("reaction_word_limit", 12)
-    plain = re.sub(r"^\[[^\]]+\]\s*", "", content.strip())
-    word_count = len(plain.split())
-    is_short = word_count <= short_limit
-    LEADING_TAG = r"(?:(\[[^\]]+\])\s*)?"
-    for phrase in blacklist:
-        pat_start = re.compile(r"^" + LEADING_TAG + re.escape(phrase) + r"[.,!]?\s*", re.IGNORECASE)
-        content = pat_start.sub(r"\1 ", content).strip()
-        if is_short:
-            pat_any = re.compile(r"\b" + re.escape(phrase) + r"\b[.,!]?\s*", re.IGNORECASE)
-            content = pat_any.sub("", content).strip()
-    return content
-
-
-def normalize_generated_script(script_text: str, spec: dict) -> str:
-    SPEAKER_PAT = re.compile(r"^(IAGO|MARIA|MARÍA)\s*:\s*(.*)$", re.IGNORECASE)
-    lines = script_text.replace("\r\n", "\n").split("\n")
-    normalized: list[str] = []
-    for line in lines:
-        stripped = line.rstrip().strip()
-        m = SPEAKER_PAT.match(stripped)
-        if m:
-            speaker = m.group(1).upper().replace("Í", "I")
-            content = re.sub(r"\bIago\b", "Yago", m.group(2).strip(), flags=re.IGNORECASE)
-            content = _fix_tts_closing_tags(content)
-            content = _fix_gendered_tags(content)
-            content = _remove_blacklisted_opening(content, spec)
-            normalized.append(f"{speaker}: {content}")
-        else:
-            normalized.append(stripped)
-    cleaned = "\n".join(normalized)
-    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)
-    return cleaned.strip()
-
-
-def strip_verification_block(text: str) -> str:
-    return re.sub(r"\n# VERIFICACIONES[\s\S]*$", "", text.strip(), flags=re.MULTILINE).strip()
-
-
-def enforce_fixed_phrases(text: str, spec: dict) -> str:
-    """Inyecta frases fijas del spec si el modelo no las incluyo exactamente.
-
-    Idéntica a la de generar_guion.py; opera sin bloque de verificaciones.
-    """
-    rules = spec["script_rules"]
-    SPEAKER_RE = re.compile(r"^(IAGO|MARIA)\s*:\s*(.*)$", re.IGNORECASE | re.MULTILINE)
-
-    def _inject_into_section(
-        body: str,
-        section_marker: str,
-        phrase: str,
-        position: str,  # "first_block" | "last_block"
-    ) -> str:
-        norm_phrase = normalize_text_for_match(phrase)
-        if norm_phrase in normalize_text_for_match(body):
-            return body
-        lines = body.split("\n")
-        sec_idx = None
-        for i, ln in enumerate(lines):
-            if ln.strip().upper() == f"# {section_marker}":
-                sec_idx = i
-                break
-        if sec_idx is None:
-            return body
-        next_sec_idx = len(lines)
-        for i in range(sec_idx + 1, len(lines)):
-            if lines[i].strip().startswith("# ") and not lines[i].strip().startswith("## "):
-                next_sec_idx = i
-                break
-        block_indices = [
-            i for i in range(sec_idx + 1, next_sec_idx)
-            if SPEAKER_RE.match(lines[i].strip())
-        ]
-        if not block_indices:
-            return body
-        target_idx = block_indices[0] if position == "first_block" else block_indices[-1]
-        target_line = lines[target_idx].strip()
-        m = SPEAKER_RE.match(target_line)
-        if not m:
-            return body
-        speaker = m.group(1).upper()
-        content = m.group(2).strip()
-        tag = extract_leading_tag(content)
-        if position == "last_block":
-            new_content = f"[calido]{phrase}" if not tag else f"{tag}{phrase}"
-            lines[target_idx] = f"{speaker}: {new_content}"
-        else:
-            plain = remove_leading_tag(content)
-            new_content = f"{tag}{phrase} {plain}" if tag else f"{phrase} {plain}"
-            lines[target_idx] = f"{speaker}: {new_content}"
-        return "\n".join(lines)
-
-    if rules.get("final_closing_phrase"):
-        text = _inject_into_section(text, "CIERRE_FINAL", rules["final_closing_phrase"], "last_block")
-    if rules.get("concepts_closing_phrase"):
-        text = _inject_into_section(text, "CIERRE_CONCEPTOS", rules["concepts_closing_phrase"], "first_block")
-    if rules.get("hook_closing_phrase"):
-        text = _inject_into_section(text, "HOOK", rules["hook_closing_phrase"], "last_block")
-    return text
-
-
-def extract_leading_tag(text: str) -> str | None:
-    """Extrae [tag] al inicio si existe."""
-    import re as _re
-    m = _re.match(r"^\[(.+?)\]\s*", text.strip())
-    return f"[{m.group(1).strip()}]" if m else None
 
 
 def build_verification_section(
@@ -650,6 +424,7 @@ def main() -> None:
         text, resp = call_claude(
             client, gen_model, system_prompt, user_prompt_ext,
             max_tokens=max_tokens, temperature=temperature,
+            source="generar_guion_t.py",
         )
         usage.add(resp)
         draft = normalize_generated_script(strip_verification_block(text), spec)

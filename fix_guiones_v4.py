@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Correcciones mecánicas de hard-fails en guiones existentes (spec v4).
 
+LEGACY / STANDALONE — NO forma parte del pipeline de generación.
+Los episodios se generan ÚNICAMENTE con generar_guion.py (M) y
+generar_guion_t.py (T). Este script es una utilidad manual para reparar
+guiones .txt ya escritos. Ver GENERACION.md.
+
 Aplica:
 1. CIERRE_CONCEPTOS: trim a 5 (M) o 3 (T) bloques.
 2. Antipingpong: fusiona runs de 3+ del mismo speaker en un único bloque.
@@ -22,8 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from podcast_spec import (
     load_spec,
     opening_speaker,
-    extract_sections,
-    parse_script_blocks,
+    strip_accents,
     validate_script_text,
 )
 
@@ -241,18 +245,13 @@ def fix_pingpong_cross_section(text: str) -> str:
 # ------------------------------------------------------------
 # Fix 3 — Remove blacklist interjections from any position
 # ------------------------------------------------------------
-BLACKLIST = [
-    "exactamente",
-    "claro que si",
-    "claro que sí",
-    "muy bien dicho",
-    "tienes toda la razon",
-    "tienes toda la razón",
-    "exacto",
-    "por supuesto",
-    "eso es",
-    "totalmente",
-]
+# Fuente única de verdad: spec JSON. Se añaden variantes sin acentos porque
+# `fix_blacklist` matchea con re.IGNORECASE (que no normaliza tildes).
+_SPEC_BLACKLIST = SPEC_M["script_rules"]["blacklist_validation_interjections"]
+BLACKLIST = sorted(
+    {p.lower() for p in _SPEC_BLACKLIST}
+    | {strip_accents(p).lower() for p in _SPEC_BLACKLIST}
+)
 
 
 def fix_blacklist(text: str) -> str:
@@ -354,13 +353,15 @@ def fix_tecnico_tag(text: str) -> str:
 # ------------------------------------------------------------
 # Fix 7 — refs temporales 2025→2026 (estado actual)
 # ------------------------------------------------------------
-PUB_MARKERS = [
-    "paper", "informe", "estudio", "reporte", "publicacion", "publicación",
-    "encuesta", "segun", "según", "lanzamiento",
-    "mckinsey", "hugging face", "anthropic", "openai", "google",
-    "meta", "gartner", "ibm", "idc", "lucid", "forrester", "stanford",
-    "state of ai",
-]
+# Fuente única de verdad: spec JSON (temporal_references). Se añaden variantes
+# sin acentos (el match es case-insensitive pero no normaliza tildes) y el
+# marcador compuesto "state of ai" que no está en el spec pero sí en uso.
+_SPEC_PUB_MARKERS = SPEC_M["temporal_references"]["publication_context_markers"]
+PUB_MARKERS = sorted(
+    {m.lower() for m in _SPEC_PUB_MARKERS}
+    | {strip_accents(m).lower() for m in _SPEC_PUB_MARKERS}
+    | {"state of ai"}
+)
 
 
 def _is_publication_context(text_before: str) -> bool:

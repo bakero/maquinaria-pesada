@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """Rebalanceo mecanico para BLOQUE_DESTACADO / BLOQUE_COMO / BLOQUE_REALIDAD (v5).
 
+LEGACY / STANDALONE — NO forma parte del pipeline de generación.
+Los episodios se generan ÚNICAMENTE con generar_guion.py (M) y
+generar_guion_t.py (T), que ya aplican `_rebalance_shared_block` desde
+guion_common.py. Este script es una utilidad manual sobre guiones .txt
+existentes. Ver GENERACION.md.
+
 Estrategia:
 - BLOQUE compartido (M: BLOQUE_DESTACADO / T: BLOQUE_COMO): target = 40-60 cada speaker.
 - T-type BLOQUE_REALIDAD: leader = MARIA, target >= 60%.
