@@ -147,6 +147,32 @@ def test_logs_list(fake_repo):
     assert "ai_usage.jsonl" in paths_
 
 
+def test_episode_detail_real_paths(fake_repo):
+    """load_episode_detail devuelve las rutas reales del episodio."""
+    import web_server
+    d = web_server.load_episode_detail("M3")
+    assert d is not None
+    assert d["id"] == "M3"
+    assert d["paths"]["guion"] == "Guiones/M3_Transformers.txt"
+    assert d["paths"]["pdf"] is not None
+
+
+def test_episode_detail_unknown(fake_repo):
+    import web_server
+    assert web_server.load_episode_detail("M999") is None
+
+
+def test_episode_checks_real(fake_repo):
+    """load_episode_checks ejecuta verifications.run_all sobre el episodio."""
+    import web_server
+    out = web_server.load_episode_checks("M3")
+    assert out["ok"] is True
+    assert "guion" in out["groups"]
+    for group in out["groups"].values():
+        for c in group:
+            assert c["status"] in ("ok", "fail", "warn", "na")
+
+
 def test_ai_chat_fallback_no_key(fake_repo, monkeypatch):
     """Sin ANTHROPIC_API_KEY ni paquete real, devuelve ok:false sin crashear."""
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)

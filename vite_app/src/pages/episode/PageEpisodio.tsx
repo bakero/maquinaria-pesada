@@ -1,5 +1,5 @@
-// Página de detalle de un episodio (guion, pdf, escaleta, audio, vídeo,
-// logs, verificaciones). Extraída del bundle como módulo ES real.
+// Página de detalle de un episodio. Carga las rutas/estado reales de
+// GET /api/episode/<id> y las reparte a cada tab (Fase 2).
 import * as React from "react";
 import {
   Btn, GenGuionPanel, Icon, PageHeader, SourcePills, StatusDot,
@@ -7,7 +7,7 @@ import {
 import { getEpisode, getEpisodes, getModule } from "../../data";
 import { srcFor } from "../../lib/nav";
 import { SOURCES } from "../../lib/sources";
-import type { NavFn, OpenAIFn, OpenFixFn } from "./types";
+import type { EpisodeDetail, NavFn, OpenAIFn, OpenFixFn } from "./types";
 import { TabAudio } from "./tabs/TabAudio";
 import { TabChecks } from "./tabs/TabChecks";
 import { TabEscaleta } from "./tabs/TabEscaleta";
@@ -24,31 +24,44 @@ export interface PageEpisodioProps {
 }
 
 export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioProps) {
-  // epId viene de la selección; fallback a M3_T2 como demo.
+  // Fallback a fixtures para id/título mientras carga el detalle real.
   const ep = getEpisode(epId) || getEpisode("M3_T2") || getEpisodes()[0];
   const modName = getModule(ep.mod)?.name || ep.mod;
   const [tab, setTab] = React.useState("guion");
+  const [detail, setDetail] = React.useState<EpisodeDetail | null>(null);
 
+  React.useEffect(() => {
+    let alive = true;
+    setDetail(null);
+    fetch(`/api/episode/${encodeURIComponent(ep.id)}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive) setDetail(d); })
+      .catch(() => { if (alive) setDetail(null); });
+    return () => { alive = false; };
+  }, [ep.id]);
+
+  const paths = detail?.paths;
+  const state = detail?.state || ep.state;
   const tabs = [
-    { id: "guion",    label: "Guion",          icon: "doc",   status: ep.state.guion,    src: "guion" },
-    { id: "pdf",      label: "PDF fuente",     icon: "doc",   status: ep.state.pdf,      src: "pdf" },
-    { id: "escaleta", label: "Escaleta",       icon: "doc",   status: ep.state.escaleta, src: "escaleta" },
-    { id: "audio",    label: "Audio",          icon: "play",  status: ep.state.audio,    src: "audio" },
-    { id: "video",    label: "Vídeo",          icon: "play",  status: ep.state.video,    src: "video" },
-    { id: "logs",     label: "Logs",           icon: "log",   status: ep.state.logs,     src: "logs" },
-    { id: "checks",   label: "Verificaciones", icon: "check", status: "warn",            src: "checks" },
+    { id: "guion",    label: "Guion",          icon: "doc",   status: state.guion,    src: "guion" },
+    { id: "pdf",      label: "PDF fuente",     icon: "doc",   status: state.pdf,      src: "pdf" },
+    { id: "escaleta", label: "Escaleta",       icon: "doc",   status: state.escaleta, src: "escaleta" },
+    { id: "audio",    label: "Audio",          icon: "play",  status: state.audio,    src: "audio" },
+    { id: "video",    label: "Vídeo",          icon: "play",  status: state.video,    src: "video" },
+    { id: "logs",     label: "Logs",           icon: "log",   status: state.logs,     src: "logs" },
+    { id: "checks",   label: "Verificaciones", icon: "check", status: "warn",         src: "checks" },
   ];
 
   return (
     <div className="content">
       <PageHeader
-        title={ep.title}
+        title={detail?.title || ep.title}
         sub={`${ep.id} · Módulo ${ep.mod} — ${modName} · Tipo ${ep.kind} ${ep.kind === "T" ? "(tema corto)" : "(módulo largo)"}`}
         actions={
           <React.Fragment>
             <Btn sm kind="danger" onClick={() => onOpenFix({
               target: ep.id,
-              error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
+              error: `Revisar episodio ${ep.id}`,
               id: ep.id,
             })} icon={<Icon name="wrench" size={11} />}>
               Arreglar con Claude
@@ -67,33 +80,6 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
         <GenGuionPanel epId={ep.id} />
       </div>
 
-      {/* Banner de error */}
-      <div style={{
-        background: "rgba(204,34,0,0.08)",
-        border: "1px solid rgba(204,34,0,0.5)",
-        borderLeft: "3px solid var(--alert)",
-        padding: "10px 14px",
-        marginBottom: 24,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-      }}>
-        <span style={{ color: "var(--alert)", fontSize: 18, lineHeight: 1 }}>●</span>
-        <div className="fill">
-          <div className="display" style={{ fontSize: 12, color: "var(--alert)", letterSpacing: "0.12em" }}>
-            FALLO DETECTADO · 12:14:02
-          </div>
-          <div className="mono" style={{ fontSize: 12, color: "var(--text)", marginTop: 2 }}>
-            ElevenLabs 502 en M3_T2 · bloque 4 "Atención escalada" · 2 reintentos · audio incompleto.
-          </div>
-        </div>
-        <Btn sm kind="danger" onClick={() => onOpenFix({
-          target: ep.id,
-          error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-          id: ep.id,
-        })}>Arreglar</Btn>
-      </div>
-
       {/* Mapa de fuentes — filesystem como única fuente de verdad */}
       <div style={{
         background: "var(--panel)",
@@ -107,13 +93,18 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
             <Icon name="folder" size={11} /> &nbsp; FUENTES EN DISCO
           </div>
           <div className="mono" style={{ fontSize: 10, color: "var(--text-mute)", letterSpacing: "0.08em" }}>
-            filesystem-source-of-truth · scan auto
+            {detail ? "rutas reales del repo" : "cargando…"}
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
           {tabs.map((t) => {
             const src = SOURCES[t.src];
             const has = t.status !== "empty";
+            let realPath = "";
+            if (paths && t.src !== "checks") {
+              const v = paths[t.src as keyof typeof paths];
+              realPath = Array.isArray(v) ? `${v.length} archivo(s)` : (v || "—");
+            }
             return (
               <div
                 key={t.id}
@@ -135,7 +126,7 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
                 <div className="mono" style={{ fontSize: 10, color: has ? "var(--text-dim)" : "var(--text-mute)", letterSpacing: "0.02em", wordBreak: "break-all", lineHeight: 1.3 }}>
                   {t.src === "checks"
                     ? <span style={{ fontStyle: "italic" }}>todas las anteriores</span>
-                    : `${src.folder}${ep.id}${src.ext}`}
+                    : (realPath || `${src.folder}…`)}
                 </div>
               </div>
             );
@@ -154,12 +145,12 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
         ))}
       </div>
 
-      {tab === "guion"    && <TabGuion epId={ep.id} onOpenAI={onOpenAI} />}
-      {tab === "pdf"      && <TabPdf epId={ep.id} />}
-      {tab === "escaleta" && <TabEscaleta epId={ep.id} />}
-      {tab === "audio"    && <TabAudio epId={ep.id} onOpenFix={onOpenFix} />}
-      {tab === "video"    && <TabVideo epId={ep.id} onNav={onNav} />}
-      {tab === "logs"     && <TabLogs epId={ep.id} />}
+      {tab === "guion"    && <TabGuion epId={ep.id} path={paths?.guion ?? null} onOpenAI={onOpenAI} />}
+      {tab === "pdf"      && <TabPdf path={paths?.pdf ?? null} />}
+      {tab === "escaleta" && <TabEscaleta path={paths?.escaleta ?? null} />}
+      {tab === "audio"    && <TabAudio epId={ep.id} path={paths?.audio ?? null} onOpenFix={onOpenFix} />}
+      {tab === "video"    && <TabVideo path={paths?.video ?? null} onNav={onNav} />}
+      {tab === "logs"     && <TabLogs paths={paths?.logs ?? []} />}
       {tab === "checks"   && <TabChecks epId={ep.id} onOpenFix={onOpenFix} />}
     </div>
   );

@@ -18,7 +18,9 @@ Endpoints (todos JSON salvo donde se indique):
     GET  /api/bootstrap          → datos iniciales para data.jsx
                                    (MODULES, EPISODES, TOKEN_DATA, …)
     GET  /api/episodes           → lista de episodios escaneados del repo
-    GET  /api/episode/<id>       → metadatos del episodio + paths reales
+    GET  /api/episode/<id>       → metadatos del episodio + rutas reales de
+                                   pdf/guion/escaleta/audio/video/logs
+    GET  /api/episode/<id>/checks → verificaciones reales (verifications.run_all)
     GET  /api/episode/<id>/gen-log → traza de generación/validación del guion
                                    (intentos, issues hard/soft, veredicto)
     GET  /api/ai-usage           → eventos de logs/ai_usage.jsonl agregados
@@ -333,6 +335,70 @@ def load_connectors() -> dict:
         })
     out.sort(key=lambda c: (c["category"], c["id"]))
     return {"ok": True, "connectors": out}
+
+
+def load_episode_detail(ep_id: str) -> dict | None:
+    """Metadatos + rutas reales (relativas al repo) de un episodio."""
+    try:
+        from cockpit.core import episodes, paths
+    except Exception:
+        return None
+    ep = episodes.get_episode(ep_id)
+    if ep is None:
+        return None
+    root = paths.repo_root().resolve()
+
+    def rel(p) -> str | None:
+        if not p:
+            return None
+        try:
+            return Path(p).resolve().relative_to(root).as_posix()
+        except (ValueError, OSError):
+            return None
+
+    return {
+        "id": ep.id,
+        "mod": ep.module,
+        "kind": ep.kind,
+        "number": ep.number,
+        "slug": ep.slug,
+        "title": ep.label or f"Episodio {ep.id}",
+        "dur": "—",
+        "state": _state_for_episode(ep),
+        "paths": {
+            "pdf": rel(ep.pdf),
+            "guion": rel(ep.guion),
+            "escaleta": rel(ep.escaleta),
+            "audio": rel(ep.audio),
+            "video": rel(ep.video),
+            "logs": [r for r in (rel(p) for p in ep.logs) if r],
+        },
+    }
+
+
+def load_episode_checks(ep_id: str) -> dict:
+    """Verificaciones reales de un episodio (cockpit.core.verifications)."""
+    try:
+        from cockpit.core import episodes, verifications
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "groups": {}}
+    ep = episodes.get_episode(ep_id)
+    if ep is None:
+        return {"ok": False, "error": f"episodio no encontrado: {ep_id}", "groups": {}}
+    try:
+        results = verifications.run_all(ep)
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "groups": {}}
+    return {
+        "ok": True,
+        "groups": {
+            k: [
+                {"id": c.id, "label": c.label, "status": c.status, "detail": c.detail}
+                for c in v
+            ]
+            for k, v in results.items()
+        },
+    }
 
 
 def load_logs_list() -> dict:
@@ -821,13 +887,15 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if path.startswith("/api/episode/") and path.endswith("/gen-log"):
             ep_id = path[len("/api/episode/"):-len("/gen-log")]
             return self._send_json(200, read_gen_log(ep_id))
+        if path.startswith("/api/episode/") and path.endswith("/checks"):
+            ep_id = path[len("/api/episode/"):-len("/checks")]
+            return self._send_json(200, load_episode_checks(ep_id))
         if path.startswith("/api/episode/"):
             ep_id = path[len("/api/episode/"):]
-            _, eps = scan_modules_and_episodes()
-            for ep in eps:
-                if ep["id"] == ep_id:
-                    return self._send_json(200, ep)
-            return self._send_json(404, {"error": "not found"})
+            detail = load_episode_detail(ep_id)
+            if detail is None:
+                return self._send_json(404, {"error": "not found"})
+            return self._send_json(200, detail)
         if path == "/api/ai-usage":
             return self._send_json(200, load_ai_usage())
         if path == "/api/economics":

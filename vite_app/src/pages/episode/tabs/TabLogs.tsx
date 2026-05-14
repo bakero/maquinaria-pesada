@@ -1,26 +1,64 @@
-import { Panel, SourceTitle } from "../../../components";
+// TabLogs — logs reales de producción del episodio (Fase 2).
+import * as React from "react";
+import { Icon, Panel } from "../../../components";
 
 export interface TabLogsProps {
-  epId: string;
+  paths: string[];
 }
 
-export function TabLogs({ epId }: TabLogsProps) {
+export function TabLogs({ paths }: TabLogsProps) {
+  const [sel, setSel] = React.useState<string | null>(paths[0] ?? null);
+  const [text, setText] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setSel(paths[0] ?? null);
+  }, [paths.join("|")]);
+
+  React.useEffect(() => {
+    setText(null);
+    if (!sel) return;
+    fetch(`/files/${sel}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(setText)
+      .catch((e) => setText(`[error] ${e}`));
+  }, [sel]);
+
+  if (!paths.length) {
+    return (
+      <Panel title="Logs de producción">
+        <div className="mono dim" style={{ fontSize: 12, padding: "24px 0", textAlign: "center" }}>
+          Este episodio aún no tiene logs de producción.
+        </div>
+      </Panel>
+    );
+  }
+
   return (
-    <Panel
-      title={<SourceTitle kind="logs" epId={epId} customPath={`logs/2026-05-12_${epId}.jsonl`} />}
-      meta="auto-refresh 3s"
-    >
-      <pre className="code" style={{ maxHeight: 480, overflow: "auto" }}>
-{`{"t":"12:14:02","lvl":"ERROR","src":"eleven","msg":"502 Bad Gateway","blk":4,"retry":2}
-{"t":"12:13:38","lvl":"WARN", "src":"eleven","msg":"502 Bad Gateway","blk":4,"retry":1}
-{"t":"12:13:14","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":3,"dur":1.04,"cost":0.018}
-{"t":"12:12:50","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":2,"dur":1.88,"cost":0.032}
-{"t":"12:12:18","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":1,"dur":0.42,"cost":0.008}
-{"t":"12:12:02","lvl":"INFO", "src":"runner","msg":"starting audio generation","blocks":7}
-{"t":"12:11:48","lvl":"INFO", "src":"escaleta","msg":"7 blocks parsed","total_words":5530}
-{"t":"12:11:30","lvl":"INFO", "src":"guion","msg":"script loaded","words":9842,"turns":142}
-{"t":"12:11:24","lvl":"INFO", "src":"runner","msg":"M3_T2 pipeline start","mode":"v2"}`}
-      </pre>
-    </Panel>
+    <div className="grid gap-8" style={{ gridTemplateColumns: "260px 1fr" }}>
+      <Panel title={<span><Icon name="folder" size={12} /> &nbsp;Logs</span>} meta={`${paths.length}`} noPad>
+        <div className="col gap-2" style={{ padding: 10 }}>
+          {paths.map((p) => (
+            <div key={p}
+                 onClick={() => setSel(p)}
+                 style={{
+                   padding: "8px 10px",
+                   border: "1px solid",
+                   borderColor: sel === p ? "var(--y)" : "var(--border)",
+                   background: sel === p ? "var(--y-soft)" : "var(--panel-2)",
+                   cursor: "pointer",
+                 }}>
+              <span className="mono" style={{ fontSize: 11, color: sel === p ? "var(--y)" : "var(--text)", wordBreak: "break-all" }}>
+                {p.split("/").pop()}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Panel>
+      <Panel title={<span><Icon name="log" size={12} /> &nbsp;{sel || "—"}</span>} noPad>
+        <pre className="code" style={{ maxHeight: 480, overflow: "auto", fontSize: 11.5, margin: 0 }}>
+          {text === null ? <span className="dim">Cargando…</span> : text || <span className="dim">(vacío)</span>}
+        </pre>
+      </Panel>
+    </div>
   );
 }
