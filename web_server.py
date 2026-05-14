@@ -44,6 +44,9 @@ Endpoints (todos JSON salvo donde se indique):
     POST /api/api-key/ping       → Body: {provider}
                                    Comprueba si la API key del proveedor está
                                    presente en .env o env vars.
+    POST /api/log                → Body: {level, message, ...contexto}
+                                   Registra en la bitácora central un evento
+                                   o error enviado por el frontend JS.
 
     GET  /files/<ruta>           → Sirve archivos del repo (PDFs, Guiones,
                                    episodios, escaletas, logs). Solo lectura
@@ -83,6 +86,13 @@ WEB_DIR = _resolve_web_dir()
 
 # Permitir importar cockpit/core sin Streamlit
 sys.path.insert(0, str(ROOT))
+
+# Sistema único de logs: todo evento del backend va a la bitácora diaria
+# (logs/run/), correlacionado con el RunLog del servidor (campo run=).
+from daylog import get_logger  # noqa: E402
+
+_log = get_logger("web_server")
+_frontend_log = get_logger("web_frontend")
 
 
 # ---- API helpers ------------------------------------------------------
@@ -500,10 +510,12 @@ def launch_pipeline(script: str, flags: list) -> dict:
     try:
         from cockpit.core import paths, runner
     except Exception as exc:
+        _log.error(f"launch_pipeline: runner no disponible: {exc!r}")
         return {"ok": False, "error": f"runner no disponible: {exc}"}
 
     script_path = paths.repo_root() / script
     if not script_path.exists():
+        _log.warning(f"launch_pipeline: script no existe: {script}")
         return {"ok": False, "error": f"script no existe: {script}"}
 
     argv = runner.build_argv(str(script_path), list(flags or []))
@@ -520,6 +532,8 @@ def launch_pipeline(script: str, flags: list) -> dict:
         stderr=subprocess.STDOUT,
         env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
+    _log.info(f"pipeline lanzado: {script} flags={list(flags or [])} "
+              f"pid={proc.pid} log={log_path.name}")
     return {"ok": True, "pid": proc.pid, "cmd": argv, "log": log_path.name}
 
 
@@ -583,6 +597,30 @@ def read_gen_log(ep_id: str) -> dict:
     return gen_log.read(ep_id)
 
 
+def frontend_log(body: dict) -> dict:
+    """Registra en la bitácora central un evento/error enviado por el front JS.
+
+    Body: {level, message, ...contexto}. `level` ∈ {debug,info,warn,error}
+    (por defecto info). Cualquier clave extra (url, componente, stack…) se
+    anexa al mensaje como contexto.
+    """
+    level = str(body.get("level", "info")).strip().lower()
+    message = str(body.get("message", "")).strip()
+    if not message:
+        return {"ok": False, "error": "message requerido"}
+    ctx = {k: v for k, v in body.items() if k not in ("level", "message")}
+    if ctx:
+        message = f"{message} | {ctx}"
+    emit = {
+        "error": _frontend_log.error,
+        "warn": _frontend_log.warning,
+        "warning": _frontend_log.warning,
+        "debug": _frontend_log.debug,
+    }.get(level, _frontend_log.info)
+    emit(message[:1500])
+    return {"ok": True}
+
+
 # ---- HTTP handler -----------------------------------------------------
 
 
@@ -640,8 +678,24 @@ class CockpitHandler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             return {}
 
+    def _safe_500(self, exc: Exception) -> None:
+        """Devuelve un 500 JSON sin reventar si la conexión ya se cerró."""
+        try:
+            self._send_json(500, {"ok": False, "error": "internal",
+                                  "detail": str(exc)})
+        except Exception:  # noqa: BLE001
+            pass
+
     # ---- Routes ----
     def do_GET(self) -> None:  # noqa: N802
+        try:
+            self._handle_get()
+        except Exception as exc:  # noqa: BLE001 - todo error de request va al log
+            _log.error(f"GET {urlparse(self.path).path} → "
+                       f"{type(exc).__name__}: {exc}")
+            self._safe_500(exc)
+
+    def _handle_get(self) -> None:
         path = urlparse(self.path).path
 
         if path == "/api/health":
@@ -678,6 +732,14 @@ class CockpitHandler(BaseHTTPRequestHandler):
         return self._send_static(path)
 
     def do_POST(self) -> None:  # noqa: N802
+        try:
+            self._handle_post()
+        except Exception as exc:  # noqa: BLE001 - todo error de request va al log
+            _log.error(f"POST {urlparse(self.path).path} → "
+                       f"{type(exc).__name__}: {exc}")
+            self._safe_500(exc)
+
+    def _handle_post(self) -> None:
         path = urlparse(self.path).path
         body = self._read_json()
 
@@ -708,6 +770,9 @@ class CockpitHandler(BaseHTTPRequestHandler):
 
         if path == "/api/api-key/ping":
             return self._send_json(200, ping_api_key(body.get("provider", "")))
+
+        if path == "/api/log":
+            return self._send_json(200, frontend_log(body))
 
         return self._send_json(404, {"error": "route not found"})
 
@@ -775,4 +840,14 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el servidor
+    # sigue igual gracias al nullcontext de respaldo.
+    import sys as _sys
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="web_server.py", params=_sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        main()

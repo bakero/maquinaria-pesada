@@ -273,12 +273,21 @@ Dame un plan de acción por fases con decisiones claras.
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        problema = " ".join(sys.argv[1:])
-        print(f"📋 Problema personalizado: {problema[:80]}...")
-    else:
-        problema = PROBLEMA_DEFAULT
-        print("📋 Usando problema por defecto: estrategia Maquinaria Pesada")
+    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el script
+    # sigue igual gracias al nullcontext de respaldo.
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="dual_debate_maquinaria.py", params=sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        if len(sys.argv) > 1:
+            problema = " ".join(sys.argv[1:])
+            print(f"📋 Problema personalizado: {problema[:80]}...")
+        else:
+            problema = PROBLEMA_DEFAULT
+            print("📋 Usando problema por defecto: estrategia Maquinaria Pesada")
 
-    print("\n🚀 Iniciando debate Claude ↔ ChatGPT (4 rondas)...\n")
-    debate(problema, verbose=True)
+        print("\n🚀 Iniciando debate Claude ↔ ChatGPT (4 rondas)...\n")
+        debate(problema, verbose=True)

@@ -210,4 +210,14 @@ Validacion de la propuesta combinada:
 
 
 if __name__ == "__main__":
-    debate(PROBLEMA, R1_CLAUDE, r3_claude)
+    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el script
+    # sigue igual gracias al nullcontext de respaldo.
+    import sys as _sys
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="dual_debate.py", params=_sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        debate(PROBLEMA, R1_CLAUDE, r3_claude)

@@ -298,3 +298,39 @@ def test_live_traversal_blocked(live_server):
         raise AssertionError("traversal no bloqueado")
     except urllib.error.HTTPError as e:
         assert e.code in (400, 403, 404)
+
+
+# ---- Logging del frontend (POST /api/log) -----------------------------
+
+
+def _post_json(url: str, payload: dict) -> dict:
+    req = urllib.request.Request(
+        url, data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"}, method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=2) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def test_frontend_log_records(fake_repo):
+    import web_server
+    out = web_server.frontend_log({"level": "error", "message": "fallo en el front",
+                                   "url": "/episodios", "componente": "Modulo"})
+    assert out["ok"] is True
+
+
+def test_frontend_log_requires_message(fake_repo):
+    import web_server
+    assert web_server.frontend_log({"level": "info"}).get("ok") is False
+    assert web_server.frontend_log({"message": "   "}).get("ok") is False
+
+
+def test_live_api_log_endpoint(live_server):
+    out = _post_json(live_server + "/api/log",
+                     {"level": "warn", "message": "evento de prueba del front"})
+    assert out["ok"] is True
+
+
+def test_live_api_log_rejects_empty(live_server):
+    out = _post_json(live_server + "/api/log", {"level": "info"})
+    assert out["ok"] is False

@@ -78,5 +78,21 @@ def validate_project_config(config_path: str | Path = "project_config.json") -> 
 
 
 if __name__ == "__main__":
-    cfg = validate_project_config()
-    print(json.dumps(cfg, indent=2, ensure_ascii=False))
+    # Bitácora diaria centralizada (logs/run/). Localiza daylog.py subiendo
+    # directorios; si fallara, el script sigue con un nullcontext de respaldo.
+    import sys as _sys
+    from pathlib import Path as _Path
+    for _p in _Path(__file__).resolve().parents:
+        if (_p / "daylog.py").exists():
+            if str(_p) not in _sys.path:
+                _sys.path.insert(0, str(_p))
+            break
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script=_Path(__file__).name, params=_sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        cfg = validate_project_config()
+        print(json.dumps(cfg, indent=2, ensure_ascii=False))

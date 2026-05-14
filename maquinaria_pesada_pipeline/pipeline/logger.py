@@ -1,36 +1,28 @@
-"""Logger compartido para todos los pasos del pipeline."""
+"""Puente al sistema único de logs de la app (`daylog.py` en la raíz del repo).
 
-import logging
-import sys
-from pathlib import Path
+Histórico: este módulo configuraba su propio `logging` (consola + fichero).
+Ya no: la app tiene una sola bitácora central (`daylog`). Este fichero solo
+resuelve el path de `daylog` y reexporta `get_logger`, para no romper los
+imports existentes `from .logger import get_logger` y
+`from pipeline.logger import get_logger`.
 
+`get_logger(name)` devuelve un `logging.Logger` estándar cuyas llamadas
+`.info/.warning/.error/.debug` van al fichero del día-log, correlacionadas con
+el RunLog activo (campo `run=`).
+"""
+from __future__ import annotations
 
-def get_logger(name: str, log_file: Path | str | None = None,
-               level: int = logging.INFO) -> logging.Logger:
-    """
-    Devuelve un logger configurado con handlers de consola y archivo.
-    Si ya estaba configurado, lo reutiliza sin duplicar handlers.
-    """
-    logger = logging.getLogger(name)
-    if logger.handlers:
-        return logger
+import sys as _sys
+from pathlib import Path as _Path
 
-    logger.setLevel(level)
-    fmt = logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+# Asegura que la raíz del repo (donde vive daylog.py) es importable, tanto si
+# el paquete se ejecuta suelto como si lo importa la cockpit.
+for _p in _Path(__file__).resolve().parents:
+    if (_p / "daylog.py").exists():
+        if str(_p) not in _sys.path:
+            _sys.path.insert(0, str(_p))
+        break
 
-    sh = logging.StreamHandler(sys.stdout)
-    sh.setFormatter(fmt)
-    logger.addHandler(sh)
+from daylog import get_logger  # noqa: E402
 
-    if log_file is not None:
-        log_path = Path(log_file)
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        fh = logging.FileHandler(log_path, mode="a", encoding="utf-8")
-        fh.setFormatter(fmt)
-        logger.addHandler(fh)
-
-    logger.propagate = False
-    return logger
+__all__ = ["get_logger"]

@@ -355,13 +355,29 @@ def _parse_intervention_body(iv_id: str, speaker: str, body: str) -> dict | None
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("escaleta")
-    parser.add_argument("--out", default=None)
-    args = parser.parse_args()
-    parsed = parse_escaleta(args.escaleta)
-    out = args.out or args.escaleta.replace(".md", "_parsed.json")
-    Path(out).write_text(json.dumps(parsed, indent=2, ensure_ascii=False),
-                         encoding="utf-8")
-    print(f"OK -> {out}")
+    # Bitácora diaria centralizada (logs/run/). Localiza daylog.py subiendo
+    # directorios; si fallara, el script sigue con un nullcontext de respaldo.
+    import sys as _sys
+    from pathlib import Path as _Path
+    for _p in _Path(__file__).resolve().parents:
+        if (_p / "daylog.py").exists():
+            if str(_p) not in _sys.path:
+                _sys.path.insert(0, str(_p))
+            break
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script=_Path(__file__).name, params=_sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        import argparse
+        parser = argparse.ArgumentParser()
+        parser.add_argument("escaleta")
+        parser.add_argument("--out", default=None)
+        args = parser.parse_args()
+        parsed = parse_escaleta(args.escaleta)
+        out = args.out or args.escaleta.replace(".md", "_parsed.json")
+        Path(out).write_text(json.dumps(parsed, indent=2, ensure_ascii=False),
+                             encoding="utf-8")
+        print(f"OK -> {out}")

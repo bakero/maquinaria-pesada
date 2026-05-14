@@ -80,4 +80,13 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el pipeline
+    # sigue igual gracias al nullcontext de respaldo.
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="produce_pending.py", params=sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        sys.exit(main())

@@ -289,4 +289,14 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el pipeline
+    # sigue igual gracias al nullcontext de respaldo.
+    import sys as _sys
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="lanzar_produccion.py", params=_sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        main()

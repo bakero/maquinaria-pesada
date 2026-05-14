@@ -1470,4 +1470,13 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # Bitácora diaria centralizada: traza START (con parámetros), END (ok/error)
+    # y cualquier excepción en logs/run/maquinaria_AAAA-MM-DD.log. Capa nueva,
+    # independiente de runlog.py; un fallo de logging nunca rompe la ejecución.
+    try:
+        from daylog import RunLog
+    except Exception:  # noqa: BLE001 - sin daylog, el pipeline sigue funcionando
+        main()
+    else:
+        with RunLog(script="generar_guion.py", params=sys.argv[1:]):
+            main()
