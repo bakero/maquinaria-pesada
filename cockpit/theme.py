@@ -338,6 +338,7 @@ def render_logo() -> None:
     can't be found.
     """
     import streamlit as st
+
     from cockpit.core import paths
 
     logo_path = paths.logos_dir() / "logo sin fondo.png"

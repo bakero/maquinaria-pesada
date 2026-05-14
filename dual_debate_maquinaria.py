@@ -87,6 +87,8 @@ SYSTEM_COMPRESSOR = (
 
 # ── Funciones de debate ───────────────────────────────────────────────────────
 def comprimir(texto: str) -> str:
+    import time as _t
+    _t0 = _t.monotonic()
     r = gpt_client.chat.completions.create(
         model=GPT_FAST,
         max_tokens=MAX_TOKENS_COMPRESS,
@@ -95,6 +97,12 @@ def comprimir(texto: str) -> str:
             {"role": "user",   "content": texto}
         ]
     )
+    try:
+        from cockpit.core.usage_tracker import track_openai
+        track_openai(r, model=GPT_FAST, source="dual_debate_maquinaria.py",
+                     kind="generation", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     return r.choices[0].message.content.strip()
 
 
@@ -105,12 +113,20 @@ def ronda_claude(problema: str, contexto_previo: str, instruccion_extra: str = "
     if instruccion_extra:
         prompt += f"\n\nINSTRUCCIÓN PARA ESTA RONDA:\n{instruccion_extra}"
 
+    import time as _t
+    _t0 = _t.monotonic()
     r = claude_client.messages.create(
         model=CLAUDE_FAST,
         max_tokens=MAX_TOKENS_RONDA,
         system=SYSTEM_EXPERTO,
         messages=[{"role": "user", "content": prompt}]
     )
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(r, model=CLAUDE_FAST, source="dual_debate_maquinaria.py",
+                        kind="generation", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     return r.content[0].text.strip()
 
 
@@ -122,6 +138,8 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion_extra: str = "",
     if instruccion_extra:
         prompt += f"\n\nINSTRUCCIÓN PARA ESTA RONDA:\n{instruccion_extra}"
 
+    import time as _t
+    _t0 = _t.monotonic()
     r = gpt_client.chat.completions.create(
         model=modelo,
         max_tokens=max_tokens,
@@ -130,6 +148,12 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion_extra: str = "",
             {"role": "user",   "content": prompt}
         ]
     )
+    try:
+        from cockpit.core.usage_tracker import track_openai
+        track_openai(r, model=modelo, source="dual_debate_maquinaria.py",
+                     kind="generation", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
     return r.choices[0].message.content.strip()
 
 

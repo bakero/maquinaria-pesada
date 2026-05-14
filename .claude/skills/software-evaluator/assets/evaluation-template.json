@@ -1,0 +1,226 @@
+{
+  "eval_id": "YYYY-MM-DD_HH-MM",
+  "repos": [],
+  "stack": {
+    "frontend_framework": null,
+    "backend_framework": null,
+    "database": null,
+    "deployment": null,
+    "package_manager": null,
+    "language": null,
+    "monorepo": false,
+    "total_lines_of_code": 0
+  },
+  "scores": {
+    "code_quality": 0,
+    "patterns": 0,
+    "tests": 0,
+    "frontend": 0,
+    "database": 0,
+    "security": 0,
+    "cicd": 0,
+    "documentation": 0,
+    "dependencies": 0,
+    "observability": 0,
+    "global": 0,
+    "ai_systems": 0
+  },
+  "semaphores": {
+    "code_quality": "🔴",
+    "patterns": "🔴",
+    "tests": "🔴",
+    "frontend": "🔴",
+    "database": "🔴",
+    "security": "🔴",
+    "cicd": "🔴",
+    "documentation": "🔴",
+    "dependencies": "🔴",
+    "observability": "🔴",
+    "global": "🔴",
+    "ai_systems": "⚪"
+  },
+  "metrics": {
+    "code_quality": {
+      "total_lines_of_code": 0,
+      "files_over_300_lines": 0,
+      "any_count": 0,
+      "ts_ignore_count": 0,
+      "eslint_errors": 0,
+      "eslint_warnings": 0,
+      "catch_empty_count": 0,
+      "todo_fixme_count": 0,
+      "dead_exports_count": 0
+    },
+    "patterns": {
+      "has_layer_separation": false,
+      "business_logic_in_components_count": 0,
+      "validation_library_present": false,
+      "direct_db_calls_from_frontend_count": 0,
+      "async_await_consistency_ratio": 0,
+      "monorepo": false
+    },
+    "tests": {
+      "unit_test_files_count": 0,
+      "integration_test_files_count": 0,
+      "e2e_test_files_count": 0,
+      "auth_test_count": 0,
+      "coverage_lines_pct": 0,
+      "coverage_functions_pct": 0,
+      "coverage_branches_pct": 0,
+      "skipped_tests_count": 0,
+      "tests_in_ci": false,
+      "smoke_tests_present": false
+    },
+    "frontend": {
+      "total_component_files": 0,
+      "shared_components_count": 0,
+      "ad_hoc_components_count": 0,
+      "large_components_count": 0,
+      "protected_routes_present": false,
+      "design_system_library": null,
+      "inline_styles_count": 0,
+      "lazy_loading_usage": false,
+      "accessibility_attrs_count": 0,
+      "images_without_alt_count": 0
+    },
+    "database": {
+      "migrations_count": 0,
+      "tables_with_rls_count": 0,
+      "tables_without_rls_count": 0,
+      "has_audit_log": false,
+      "has_deployment_version_table": false,
+      "pre_pro_separated": false,
+      "service_role_in_frontend": false,
+      "has_seed_data": false,
+      "indexes_count": 0,
+      "has_backup_strategy": false
+    },
+    "security": {
+      "hardcoded_secrets_count": 0,
+      "env_files_in_git": false,
+      "unprotected_api_routes_count": 0,
+      "dangerously_set_inner_html_count": 0,
+      "npm_critical_vulns": 0,
+      "npm_high_vulns": 0,
+      "npm_moderate_vulns": 0,
+      "cors_configured": false,
+      "security_headers_configured": false,
+      "service_role_in_frontend": false,
+      "public_env_with_secrets": false
+    },
+    "cicd": {
+      "has_main_branch": false,
+      "has_develop_branch": false,
+      "has_ai_branches": false,
+      "branch_protection_main": false,
+      "branch_protection_develop": false,
+      "ci_has_lint": false,
+      "ci_has_tests": false,
+      "ci_has_build": false,
+      "ci_has_deploy": false,
+      "ci_has_migration_check": false,
+      "ci_has_security_scan": false,
+      "vercel_envs_separated": false,
+      "deployment_version_table": false,
+      "commits_last_4_weeks": 0,
+      "direct_commits_to_main_count": 0,
+      "workflow_files_count": 0
+    },
+    "documentation": {
+      "readme_lines": 0,
+      "has_architecture_docs": false,
+      "has_adrs": false,
+      "jsdoc_count": 0,
+      "has_api_docs": false,
+      "has_env_example": false,
+      "has_changelog": false,
+      "has_migration_plan": false,
+      "docs_files_count": 0
+    },
+    "dependencies": {
+      "prod_deps_count": 0,
+      "dev_deps_count": 0,
+      "critical_vulns_count": 0,
+      "high_vulns_count": 0,
+      "moderate_vulns_count": 0,
+      "outdated_deps_count": 0,
+      "unused_deps_count": 0,
+      "problematic_licenses_count": 0
+    },
+    "observability": {
+      "frontend_monitoring_tool": null,
+      "backend_logging_tool": null,
+      "console_log_count": 0,
+      "has_correlation_id": false,
+      "has_error_boundary": false,
+      "has_deployment_version_table": false,
+      "has_audit_log": false,
+      "has_health_check": false,
+      "has_web_vitals": false,
+      "pii_in_logs_risk": false
+    },
+    "ai_systems": {
+      "detected": false,
+      "providers": [],
+      "model_names": [],
+      "integration_type": "unknown",
+      "api_key_exposed_in_frontend": false,
+      "data_sent_to_ai": {
+        "user_data_included": false,
+        "pii_detected_in_prompts": false,
+        "sensitive_data_types": [],
+        "conversations_stored": false,
+        "logs_contain_prompts": false,
+        "retention_policy_defined": false
+      },
+      "architecture": {
+        "has_ai_service_layer": false,
+        "prompts_centralized": false,
+        "has_error_handling": false,
+        "has_retry_logic": false,
+        "has_timeout_config": false,
+        "has_rate_limiting": false,
+        "has_fallback": false,
+        "uses_streaming": false,
+        "has_conversation_history": false
+      },
+      "user_interaction": {
+        "user_sees_ai_output": false,
+        "ai_output_labeled": false,
+        "human_oversight_mechanism": false,
+        "user_can_reject_ai": false,
+        "content_moderation": false,
+        "user_feedback_mechanism": false
+      },
+      "legal": {
+        "ai_act_classification": "unknown",
+        "legal_basis_identified": false,
+        "dpa_with_provider": false,
+        "international_transfer_documented": false,
+        "users_informed_of_ai": false,
+        "ai_in_rat": false,
+        "provider_trains_on_data": "unknown",
+        "minors_data_risk": false
+      }
+    }
+  },
+  "critical_count": 0,
+  "improvable_count": 0,
+  "correct_count": 0,
+  "top_actions": [
+    {
+      "priority": 1,
+      "semaphore": "🔴",
+      "area": "",
+      "action": "",
+      "migration_plan_pr": "",
+      "migration_plan_block": ""
+    }
+  ],
+  "migration_plan_status": {
+    "current_block": null,
+    "completed_prs": [],
+    "pending_prs": [],
+    "blocked_by": []
+  }
+}

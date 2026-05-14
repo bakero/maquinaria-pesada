@@ -91,22 +91,71 @@ El video tiene DOS modos visuales:
    TWO_SHOT del speaker.
 
 6. **REGLA DE LA PIZARRA (critica)**:
-   - Cuando marcas `PIZARRA: SI` para una intervencion, la pizarra dura
-     **MINIMO 15 segundos** aunque la intervencion sea mas corta.
-   - Si la intervencion dura mas de 15s, la pizarra dura toda la
-     intervencion.
-   - **Aparece un elemento visual nuevo cada 4 segundos** durante todo
-     el tiempo que la pizarra esta activa. Es decir, en una pizarra de
-     20s necesitas 5 elementos (en t=0, 4, 8, 12, 16).
-   - Los elementos pueden ser: stat_card, hierarchy_diagram,
-     two_column_compare, bar_chart, timeline_visual, regulation_alert,
-     warning_badge, concept_card_image, recap_grid, sticker (meme/gif).
-   - **El contenido de la pizarra debe estar VINCULADO al parrafo que
-     dice el presentador en ese momento.** No es decoracion: es el
-     visual que ilustra lo que se dice.
-   - **NO PONGAS texto del guion en la pizarra**. Nada de citar lo que
-     dice el presentador. La pizarra muestra DATOS, GRAFICOS, IMAGENES,
-     MEMES, COMPARACIONES, no transcripciones.
+   - Cuando marcas `PIZARRA: SI` la pizarra dura **MINIMO 15s** y se
+     mantiene durante toda la intervencion si dura mas.
+   - **Un elemento nuevo cada 4 segundos**. Pizarra de 20s = 5 elementos
+     en t=0, 4, 8, 12, 16. NO menos.
+   - El contenido VINCULA al parrafo que se esta diciendo, pero NO
+     transcribe lo que dice. Es la INFOGRAFIA que acompana al texto.
+
+# ⛔ PROHIBIDO ABSOLUTAMENTE EN LA PIZARRA ⛔
+
+**Piensa en la pizarra como las infografias de un libro de texto. NUNCA
+es un teleprompter ni un subtitulado.** Los subtitulos van abajo
+(automaticos desde Whisper); la pizarra es OTRA cosa.
+
+NUNCA pongas en la pizarra:
+- ❌ Las preguntas que el presentador hace ("¿Que es la IA?", "¿Por que
+  ahora?", "¿De donde viene?")
+- ❌ Frases literales de lo que dice el presentador
+- ❌ Subtitulos / transcripcion de la intervencion
+- ❌ Tag-lines o lemas del propio podcast como overlay (excepto en outro)
+
+SOLO pon en la pizarra:
+- ✅ Datos cuantitativos (porcentajes, anyos, cifras de mercado)
+- ✅ Comparaciones (A vs B, antes vs ahora, util vs riesgo)
+- ✅ Listas de items conceptuales (no preguntas, items)
+- ✅ Definiciones cortas de conceptos tecnicos (RAG, Transformer, LLM)
+- ✅ Logos / iconos / referencias visuales
+- ✅ Memes/stickers que ilustren la emocion ironica
+- ✅ Lineas de tiempo (1957→2017→2024)
+- ✅ Diagramas de jerarquia (IA ⊃ ML ⊃ DL ⊃ LLMs)
+- ✅ Citas externas atribuidas (estudios McKinsey, papers, expertos
+  con nombre)
+
+# EJEMPLOS GOOD vs BAD
+
+**Intervencion**: "¿Que es la IA? ¿De donde viene? ¿Como se estructura?
+¿Y que implica para cualquier organizacion que no quiera quedarse atras?"
+
+❌ MAL (LO QUE NO HACER):
+| 00.0s | highlight_quote "¿Que es la IA?" | TOP_CENTER | hasta fin |
+| 04.0s | highlight_quote "¿De donde viene?" | MID_LEFT | hasta fin |
+| 08.0s | highlight_quote "¿Como se estructura?" | MID_RIGHT | hasta fin |
+
+✅ BIEN (LO QUE SI HACER):
+| 00.0s | hierarchy_diagram "IA ⊃ ML ⊃ DL ⊃ LLMs" amarillo | MID_CENTER | hasta fin |
+| 04.0s | timeline_visual "1957 Dartmouth · 2017 Transformers · 2024 GPT-4" amarillo | BOTTOM_FULL_WIDTH | hasta fin |
+| 08.0s | stat_card "INVERSION GLOBAL IA · $200B 2026" amarillo | MID_LEFT | hasta fin |
+| 12.0s | recap_grid "Que es · De donde · Estructura · Implicacion" gris | MID_RIGHT | hasta fin |
+| 16.0s | sticker "AI_meme_competing" | BOTTOM_LEFT | hasta fin |
+
+**Intervencion**: "El otro 12% dice que lo esta evaluando."
+
+❌ MAL: highlight_quote "El otro 12% dice que lo esta evaluando"
+✅ BIEN: stat_card "EVALUANDO · 12% siguen estudiandolo" gris
+
+# REGLA DE ORO
+
+Antes de poner cualquier elemento en la tabla on-screen, preguntate:
+**"¿Esto agrega informacion VISUAL que el subtitulo NO da?"**
+
+- Si la respuesta es SI (es un dato, grafico, imagen, comparacion) -> ponlo.
+- Si la respuesta es NO (es lo mismo que dice el presentador) -> BORRA.
+
+El elemento `highlight_quote` queda RESERVADO para citas EXTERNAS
+atribuidas (ej. "Andrew Ng, Stanford, 2024") con autor obligatorio.
+NUNCA para frases del propio guion.
 
 7. **DENSIDAD MINIMA DE PIZARRA**: en cualquier ventana de 3 minutos
    de podcast debe haber al menos UNA pizarra. No dejes pasar mas
@@ -422,6 +471,12 @@ def generate_escaleta(episode_id: str,
     msg.usage.input_tokens = usage_in
     msg.usage.output_tokens = usage_out
     elapsed = time.time() - t0
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(msg, model=model, source="pipeline.escaleta_generator",
+                        kind="generation", latency_ms=int(elapsed * 1000))
+    except ImportError:
+        pass
 
     if not msg.content:
         raise RuntimeError("Respuesta vacia de Claude")
@@ -434,4 +489,111 @@ def generate_escaleta(episode_id: str,
     log.info(f"  escaleta generada en {elapsed:.1f}s "
              f"(in_tok={msg.usage.input_tokens} out_tok={msg.usage.output_tokens}) "
              f"-> {out_path}")
+
+    # ── QA POST-GENERACION ─────────────────────────────────────────
+    # Verificacion de que el LLM no haya copiado texto del guion en
+    # la pizarra. Si falla, intenta auto-corregir con un segundo pass.
+    from . import qa as _qa
+    sem = _qa.check_escaleta_semantic(out_path, max_overlap_ratio=0.4)
+    log.info(f"  [QA semantic] ok={sem['ok']} overlays={sem['checks']['total_overlays']} "
+             f"questions_as_quote={sem['checks']['quote_with_question']} "
+             f"script_overlap={sem['checks']['overlap_with_script']}")
+    if not sem["ok"]:
+        for e in sem["errors"]:
+            log.warning(f"    QA FAIL: {e}")
+        for ex in sem["checks"].get("examples", [])[:5]:
+            log.warning(f"    {ex}")
+        log.info("  Lanzando auto-heal: pidiendo a Claude que corrija los overlays...")
+        out_path = _autoheal_escaleta(client, model, out_path, sem,
+                                       skeleton_text, concepts_text, log)
+
+    return out_path
+
+
+def _autoheal_escaleta(client, model: str, out_path: Path,
+                       sem_qa: dict, skeleton_text: str,
+                       concepts_text: str, log) -> Path:
+    """Segundo pass: pide a Claude que corrija los overlays mal puestos.
+    Le pasa la escaleta mala + los errores QA + las reglas duras."""
+    bad_md = out_path.read_text(encoding="utf-8")
+    bad_examples = "\n".join(sem_qa["checks"].get("examples", [])[:15])
+
+    fix_prompt = f"""La siguiente escaleta tiene overlays mal puestos en
+la pizarra. Falla el QA semantico:
+
+- Total overlays: {sem_qa['checks']['total_overlays']}
+- Overlays que son preguntas literales del guion: {sem_qa['checks']['quote_with_question']}
+- Overlays que solapan >40% con texto del guion: {sem_qa['checks']['overlap_with_script']}
+
+Ejemplos detectados:
+{bad_examples}
+
+REGLA INVIOLABLE: la pizarra NUNCA contiene texto que el presentador
+diga. Si una intervencion es "¿Que es la IA? ¿De donde viene?", la
+pizarra NO puede tener esas preguntas como overlay. Tiene que mostrar
+DATOS / GRAFICOS / IMAGENES / DEFINICIONES (no las preguntas literales).
+
+Reemplazos validos para el patron "preguntas como overlays":
+- En lugar de highlight_quote "¿Que es la IA?" -> hierarchy_diagram
+  "IA ⊃ ML ⊃ DL ⊃ LLMs"
+- En lugar de highlight_quote "¿De donde viene?" -> timeline_visual
+  "1957 Dartmouth · 2017 Transformer · 2024 GPT-4o"
+- En lugar de highlight_quote "¿Como se estructura?" -> recap_grid
+  "Datos · Algoritmos · Modelos · Aplicaciones"
+
+# CONTEXTO ESQUELETO (no cambies textos ni TCs)
+{skeleton_text}
+
+# CONCEPTOS DEL TEMARIO (usalos para reemplazar las preguntas como
+# overlays informativos)
+{concepts_text}
+
+# ESCALETA QUE TIENES QUE CORREGIR
+```markdown
+{bad_md}
+```
+
+Devuelve la escaleta CORREGIDA completa en markdown. CAMBIA solo las
+filas de la tabla on-screen donde hay overlays mal puestos. Mantiene
+TODOS los demas campos identicos (TC, TEXTO, PLANO, PIZARRA, TONO,
+TRANSICION OUT, NOTA DIRECCION).
+"""
+    log.info("  auto-heal: streaming respuesta...")
+    chunks = []
+    import time as _t
+    _t0 = _t.monotonic()
+    with client.messages.stream(
+        model=model,
+        max_tokens=32000,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": fix_prompt}],
+    ) as stream:
+        for text in stream.text_stream:
+            chunks.append(text)
+        final = stream.get_final_message()
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(final, model=model, source="pipeline.escaleta_generator.auto_heal",
+                        kind="update", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
+    fixed = "".join(chunks).strip()
+    if fixed.startswith("```"):
+        fixed = re.sub(r"^```(?:markdown)?\s*", "", fixed)
+        fixed = re.sub(r"\s*```$", "", fixed)
+
+    # Backup el malo y escribe el corregido
+    backup = out_path.with_suffix(".pre_heal.md.bak")
+    backup.write_text(bad_md, encoding="utf-8")
+    out_path.write_text(fixed, encoding="utf-8")
+    log.info(f"  auto-heal: escrito (in_tok={final.usage.input_tokens} "
+             f"out_tok={final.usage.output_tokens}). Backup en {backup.name}")
+
+    # Re-validar
+    from . import qa as _qa
+    sem2 = _qa.check_escaleta_semantic(out_path, max_overlap_ratio=0.4)
+    log.info(f"  [QA post-heal] ok={sem2['ok']} questions={sem2['checks']['quote_with_question']} "
+             f"overlap={sem2['checks']['overlap_with_script']}")
+    if not sem2["ok"]:
+        log.warning(f"  auto-heal NO recupero todos los errores: {sem2['errors']}")
     return out_path

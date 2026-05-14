@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Rebalanceo mecanico para BLOQUE_TEMAS_CLAVE / BLOQUE_COMO / BLOQUE_LIMITES.
+"""Rebalanceo mecanico para BLOQUE_DESTACADO / BLOQUE_COMO / BLOQUE_REALIDAD (v5).
 
 Estrategia:
-- BLOQUE compartido (TEMAS_CLAVE / COMO): target = 40-60 cada speaker.
-- BLOQUE_LIMITES: leader = MARIA, target >= 65 %.
+- BLOQUE compartido (M: BLOQUE_DESTACADO / T: BLOQUE_COMO): target = 40-60 cada speaker.
+- T-type BLOQUE_REALIDAD: leader = MARIA, target >= 60%.
+- T-type BLOQUE_PANORAMA: leader = IAGO, target >= 65%.
 
 Para corregir, partimos las intervenciones mas largas del speaker dominante en
 dos: la primera mitad la mantiene el speaker original; la segunda se reasigna
@@ -18,8 +19,7 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from podcast_spec import load_spec, parse_script_blocks, count_words, remove_leading_tag
-
+from podcast_spec import count_words, load_spec, parse_script_blocks, remove_leading_tag
 
 SPEC_M = load_spec(Path("PODCAST_M_SPEC.md"))
 SPEC_T = load_spec(Path("PODCAST_T_SPEC.md"))
@@ -159,7 +159,7 @@ def process_file(path: Path) -> tuple[int, int]:
     lines = text.split("\n")
 
     # Bloque compartido
-    shared_section = "BLOQUE_TEMAS_CLAVE" if ep_type == "M" else "BLOQUE_COMO"
+    shared_section = "BLOQUE_DESTACADO" if ep_type == "M" else "BLOQUE_COMO"
     bal_min, bal_max = spec["script_rules"].get("shared_block_balance_range_percent", [40, 60])
     # Aplicamos al under-speaker
     # Identificar speaker over y under desde stats actuales
@@ -179,30 +179,32 @@ def process_file(path: Path) -> tuple[int, int]:
             target = "MARIA" if i_pct > bal_max else "IAGO"
             lines = rebalance_section(lines, shared_section, target, bal_min, bal_max, leader_mode=False)
 
-    # Limites: Maria liderazgo >= 65
-    text_now = "\n".join(lines)
-    blocks2 = parse_script_blocks(text_now, spec)
-    sw_lim = defaultdict(int)
-    for b in blocks2:
-        if b.get("section") == "BLOQUE_LIMITES":
-            sw_lim[b["speaker"]] += count_words(remove_leading_tag(b["text"]))
-    tot_lim = sum(sw_lim.values()) or 1
-    m_pct_lim = sw_lim.get("MARIA", 0) * 100 / tot_lim
-    if m_pct_lim < 65:
-        lines = rebalance_section(lines, "BLOQUE_LIMITES", "MARIA", 65, 100, leader_mode=True)
+    # T-type BLOQUE_REALIDAD: Maria liderazgo >= 60
+    # M-type: BLOQUE_LIMITES eliminado, no aplica
+    if ep_type == "T":
+        text_now = "\n".join(lines)
+        blocks2 = parse_script_blocks(text_now, spec)
+        sw_lim = defaultdict(int)
+        for b in blocks2:
+            if b.get("section") == "BLOQUE_REALIDAD":
+                sw_lim[b["speaker"]] += count_words(remove_leading_tag(b["text"]))
+        tot_lim = sum(sw_lim.values()) or 1
+        m_pct_lim = sw_lim.get("MARIA", 0) * 100 / tot_lim
+        if m_pct_lim < 60:
+            lines = rebalance_section(lines, "BLOQUE_REALIDAD", "MARIA", 60, 100, leader_mode=True)
 
-    # T-type BLOQUE_QUE leader = IAGO >=65
+    # T-type BLOQUE_PANORAMA leader = IAGO >=65
     if ep_type == "T":
         text_now = "\n".join(lines)
         blocks3 = parse_script_blocks(text_now, spec)
         sw_q = defaultdict(int)
         for b in blocks3:
-            if b.get("section") == "BLOQUE_QUE":
+            if b.get("section") == "BLOQUE_PANORAMA":
                 sw_q[b["speaker"]] += count_words(remove_leading_tag(b["text"]))
         tot_q = sum(sw_q.values()) or 1
         i_pct_q = sw_q.get("IAGO", 0) * 100 / tot_q
         if i_pct_q < 65:
-            lines = rebalance_section(lines, "BLOQUE_QUE", "IAGO", 65, 100, leader_mode=True)
+            lines = rebalance_section(lines, "BLOQUE_PANORAMA", "IAGO", 65, 100, leader_mode=True)
     else:
         # M-type BLOQUE_PANORAMA leader = IAGO >=65
         text_now = "\n".join(lines)
