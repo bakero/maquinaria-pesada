@@ -1,35 +1,22 @@
-// PageAjustes — extraído del monolito (Fase 1b).
+// PageAjustes — API keys reales (Fase 2f).
+// Estado desde /api/api-keys: presencia de cada key en .env / env vars.
 import * as React from "react";
 import { Btn, Icon, Panel, StatusDot, PageHeader, SourcePills } from "../components";
 import { srcFor } from "../lib/nav";
-import { CONNECTORS } from "./fixtures";
 
 function PageAjustes({ onNav, onOpenAI }) {
-  const [checking, setChecking] = React.useState(false);
-  const [keys, setKeys] = React.useState(CONNECTORS.service);
+  const [checking, setChecking] = React.useState(true);
+  const [keys, setKeys] = React.useState([]);
 
-  const recheck = async () => {
+  const recheck = React.useCallback(() => {
     setChecking(true);
-    // Llama a /api/api-key/ping para cada proveedor y actualiza el estado
-    const updated = await Promise.all(CONNECTORS.service.map(async (k) => {
-      const t0 = performance.now();
-      try {
-        const res = await fetch("/api/api-key/ping", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ provider: (k.id || k.label || "").toLowerCase() }),
-        });
-        const data = await res.json();
-        const latency = Math.round(performance.now() - t0);
-        return { ...k, latency, status: data.ok ? "ok" : "warn",
-                 detail: data.ok ? `${data.found.length}/${data.expected.length} keys` : (data.error || k.detail) };
-      } catch {
-        return { ...k, status: "alert", detail: "sin conexión con backend" };
-      }
-    }));
-    setKeys(updated);
-    setChecking(false);
-  };
+    fetch("/api/api-keys", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { setKeys((d && d.providers) || []); setChecking(false); })
+      .catch(() => setChecking(false));
+  }, []);
+
+  React.useEffect(() => { recheck(); }, [recheck]);
 
   return (
     <div className="content">
@@ -51,42 +38,44 @@ function PageAjustes({ onNav, onOpenAI }) {
       </div>
 
       <div className="grid gap-8 mb-12" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+        {checking && keys.length === 0 && (
+          <div className="mono dim" style={{ fontSize: 12, padding: "16px 0" }}>Verificando…</div>
+        )}
         {keys.map((k) => {
-          const badge = k.status === "ok" ? "🟢 OK" : k.status === "warn" ? "🟡 AVISO" : "🔴 ERROR";
+          const expected = k.expected || [];
+          const found = k.found || [];
+          const status = k.ok ? "ok" : "warn";
+          const badge = k.ok ? "🟢 OK" : "🟡 FALTAN KEYS";
+          const missing = expected.filter((n) => !found.some((f) => f.name === n));
+          const detail = k.ok
+            ? `${found.length}/${expected.length} keys presentes`
+            : (k.error || `faltan: ${missing.join(", ") || "—"}`);
           return (
-            <div key={k.id} className="panel" style={{ padding: "14px 16px" }}>
+            <div key={k.provider} className="panel" style={{ padding: "14px 16px" }}>
               <div className="row" style={{ justifyContent: "space-between", marginBottom: 6 }}>
-                <div className="display" style={{ fontSize: 14, letterSpacing: "0.04em" }}>{k.label}</div>
-                <StatusDot status={k.status}/>
+                <div className="display" style={{ fontSize: 14, letterSpacing: "0.04em", textTransform: "capitalize" }}>
+                  {k.provider}
+                </div>
+                <StatusDot status={status}/>
               </div>
               <div className="mono dim" style={{ fontSize: 10, marginBottom: 8 }}>{badge}</div>
-              <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-                <span className="badge">{k.env}</span>
-                <span className="mono" style={{ fontSize: 10, color: "var(--text-mute)" }}>
-                  {checking ? "…" : `${k.latency}ms`}
-                </span>
+              <div className="row" style={{ marginBottom: 8, flexWrap: "wrap", gap: 4 }}>
+                {expected.map((n) => (
+                  <span key={n} className="badge" style={{
+                    color: found.some((f) => f.name === n) ? "var(--ok)" : "var(--warn)",
+                  }}>{n}</span>
+                ))}
               </div>
               <div className="mono" style={{ fontSize: 10, color: "var(--text-dim)", lineHeight: 1.4, minHeight: 28 }}>
-                {k.detail}
+                {detail}
               </div>
               <div className="row gap-3 mt-8">
                 <Btn sm kind="ghost" style={{ flex: 1 }}
-                     onClick={() => window.alert(`Rota la API key de ${k.label} editando .env y reinicia el servidor.`)}>
+                     onClick={() => window.alert(`Rota la API key de ${k.provider} editando .env y reinicia el servidor.`)}>
                   <Icon name="settings" size={10}/> Rotar
                 </Btn>
-                <Btn sm kind="ghost" style={{ flex: 1 }}
-                     onClick={async () => {
-                       const res = await fetch("/api/api-key/ping", {
-                         method: "POST",
-                         headers: { "Content-Type": "application/json" },
-                         body: JSON.stringify({ provider: (k.id || k.label || "").toLowerCase() }),
-                       });
-                       const data = await res.json();
-                       window.alert(data.ok
-                         ? `OK · ${data.found.length}/${data.expected.length} keys presentes`
-                         : `Faltan: ${(data.expected || []).filter(n => !(data.found || []).some(f => f.name === n)).join(", ") || data.error}`);
-                     }}>
-                  <Icon name="check" size={10}/> Ping
+                <Btn sm kind="ghost" style={{ flex: 1 }} onClick={recheck}>
+                  <Icon name="check" size={10}/> Re-verificar
                 </Btn>
               </div>
             </div>

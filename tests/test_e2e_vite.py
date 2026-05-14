@@ -257,23 +257,21 @@ def test_vite_fuentes_descargar_links_to_files(page, live_url):
     assert any("/files/" in u for u in opened), f"no se abrió /files/...: {opened}"
 
 
-def test_vite_ajustes_ping_calls_api_key_endpoint(page, live_url):
-    """En Ajustes, click en Ping debe llamar a /api/api-key/ping."""
+def test_vite_ajustes_loads_api_keys(page, live_url):
+    """Ajustes consulta /api/api-keys al montar y al Re-verificar."""
+    seen = []
+    page.on("request", lambda r: seen.append(r.url) if "/api/api-keys" in r.url else None)
     _wait_for_app(page, live_url)
     page.locator(".sb-item", has_text="Ajustes").first.click()
     page.wait_for_url(lambda u: "ajustes" in u, timeout=5_000)
-    page.wait_for_timeout(400)
+    page.wait_for_timeout(600)
+    assert any("/api/api-keys" in u for u in seen), f"no /api/api-keys al montar: {seen}"
 
-    posted = []
-    page.on("request", lambda r: posted.append(r.url) if "/api/api-key/ping" in r.url else None)
+    seen.clear()
     page.evaluate("() => { window.alert = () => {}; }")
-
-    pings = page.get_by_role("button", name="Ping")
-    if pings.count() == 0:
-        pytest.skip("botón Ping no presente en Ajustes")
-    pings.first.click()
-    page.wait_for_timeout(1500)
-    assert any("/api/api-key/ping" in u for u in posted), f"no /api/api-key/ping: {posted}"
+    page.get_by_role("button", name="Re-verificar").first.click()
+    page.wait_for_timeout(800)
+    assert any("/api/api-keys" in u for u in seen), f"Re-verificar no re-consultó: {seen}"
 
 
 def test_vite_dist_assets_have_hashed_names(page, live_url):
