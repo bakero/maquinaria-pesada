@@ -37,6 +37,7 @@ from guion_common import (  # noqa: E402
     _fix_antipingpong,
     _fix_digit_numbers_in_dialogue,
     _rebalance_shared_block,
+    _soften_inline_enumerations,
     _split_oversized_blocks,
     _split_oversized_sentence_blocks,
     _trim_cierre_conceptos_if_excess,
@@ -430,6 +431,7 @@ def main() -> None:
         draft = normalize_generated_script(strip_verification_block(text), spec)
         draft = enforce_fixed_phrases(draft, spec)
         draft = _fix_digit_numbers_in_dialogue(draft)
+        draft = _soften_inline_enumerations(draft)
         draft = _trim_cierre_conceptos_if_excess(draft, spec)
         draft = _rebalance_shared_block(draft, spec)
         draft = _split_oversized_blocks(draft, spec=spec)

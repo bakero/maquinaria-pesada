@@ -161,6 +161,86 @@ def _fix_digit_numbers_in_dialogue(script_text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Suavizado de enumeraciones rígidas ("Primero,... Segundo,...")
+# ---------------------------------------------------------------------------
+
+# Conectores naturales que sustituyen al ordinal en una enumeración. Dos
+# variantes por ordinal para que una lista de 3+ no suene repetitiva.
+_ENUM_CONNECTORS: dict[str, list[str]] = {
+    "Primero": ["Para empezar,", "Lo primero,"],
+    "Segundo": ["Luego,", "Después,"],
+    "Tercero": ["Y después,", "A continuación,"],
+    "Cuarto":  ["Y también,", "Además,"],
+    "Quinto":  ["Y por último,", "Por último,"],
+}
+
+# Ordinal de enumeración: capitalizado (=> inicio de frase), al principio de la
+# intervención o tras un signo de fin de frase, y seguido de coma o dos puntos.
+# Es CASE-SENSITIVE a propósito: "por segundo" o "el segundo árbol" (minúscula)
+# nunca matchean — sólo el "Segundo," capitalizado de una lista real.
+_ENUM_ORDINAL_RE = re.compile(
+    r"(?:^|(?<=[.!?])\s+)(Primero|Segundo|Tercero|Cuarto|Quinto)\s*[:,]\s+"
+)
+
+_ENUM_PROTECTED_SECTIONS = {
+    "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
+    "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
+}
+
+
+def _soften_inline_enumerations(script_text: str) -> str:
+    """Suaviza enumeraciones rígidas dentro de una misma intervención
+    ("Primero,... Segundo,... Tercero,...") sustituyendo el ordinal por un
+    conector natural. El spec prohíbe esas listas en un solo turno.
+
+    Seguro por diseño (a diferencia del intento previo que corrompía texto):
+      - Sólo toca ordinales CAPITALIZADOS en posición inicial de frase y
+        seguidos de coma o dos puntos. "por segundo" / "el segundo árbol"
+        (minúscula) nunca se tocan.
+      - Sólo actúa si hay >=2 ordinales en la intervención (lista real, no un
+        "Primero," suelto).
+      - No toca HOOK/SALUDO/CIERRE_*/VERIFICACIONES (CIERRE_CONCEPTOS usa
+        "Primero/Segundo/Tercero" de forma obligatoria por el spec).
+      - Reescribe de derecha a izquierda para no descuadrar offsets.
+    """
+    lines = script_text.split("\n")
+    out: list[str] = []
+    current_section: str | None = None
+    speaker_pat = re.compile(r"^(IAGO|MARIA)\s*:\s*(\[[^\]]+\])?\s*(.*)", re.DOTALL)
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            current_section = stripped[2:].strip()
+            out.append(line)
+            continue
+
+        m = speaker_pat.match(stripped)
+        if not m or current_section in _ENUM_PROTECTED_SECTIONS:
+            out.append(line)
+            continue
+
+        text = m.group(3)
+        matches = list(_ENUM_ORDINAL_RE.finditer(text))
+        if len(matches) < 2:
+            out.append(line)
+            continue
+
+        for idx, mt in reversed(list(enumerate(matches))):
+            connector = _ENUM_CONNECTORS[mt.group(1)][idx % 2]
+            # Conserva todo hasta el ordinal (incluido el límite de frase);
+            # sustituye "Ordinal[:,] " por "Conector ".
+            text = text[:mt.start(1)] + connector + " " + text[mt.end():]
+
+        speaker = m.group(1).upper()
+        tag = (m.group(2) or "").strip()
+        prefix = f"{speaker}: {tag}" if tag else f"{speaker}:"
+        out.append(f"{prefix} {text}".rstrip())
+
+    return "\n".join(out)
+
+
+# ---------------------------------------------------------------------------
 # Anti-pingpong
 # ---------------------------------------------------------------------------
 
@@ -849,6 +929,7 @@ __all__ = [
     "remove_leading_tag",
     "normalize_text_for_match",
     "_fix_digit_numbers_in_dialogue",
+    "_soften_inline_enumerations",
     "_fix_antipingpong",
     "_trim_cierre_conceptos_if_excess",
     "_rebalance_shared_block",
