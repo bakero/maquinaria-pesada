@@ -31,27 +31,55 @@ if hasattr(sys.stdout, "reconfigure") and sys.stdout.encoding and sys.stdout.enc
 
 
 def setup_ffmpeg() -> None:
+    """Añade ffmpeg al PATH si no está ya disponible.
+
+    Orden de búsqueda, portable a cualquier máquina/usuario:
+      1. FFMPEG_PATH en el entorno (carpeta o ruta al .exe) — útil para CI.
+      2. ffmpeg ya presente en el PATH del sistema.
+      3. Instalación de WinGet (Gyan.FFmpeg) bajo el home del usuario.
+      4. ffmpeg embebido en CapCut, también bajo el home.
+    """
     import shutil
 
+    def _add_dir(d: str) -> None:
+        os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
+
+    # 1. Override explícito por entorno.
+    env_override = os.environ.get("FFMPEG_PATH", "").strip()
+    if env_override:
+        p = Path(env_override)
+        ffmpeg_dir = str(p.parent) if p.is_file() else str(p)
+        _add_dir(ffmpeg_dir)
+        return
+
+    # 2. Ya en el PATH del sistema.
+    if shutil.which("ffmpeg"):
+        return
+
+    home = Path.home()
+    # 3. WinGet (Gyan.FFmpeg).
     winget_candidates = sorted(
         _glob.glob(
-            r"C:\Users\Asus\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg*\ffmpeg-*\bin\ffmpeg.exe"
+            str(home / "AppData" / "Local" / "Microsoft" / "WinGet" / "Packages"
+                / "Gyan.FFmpeg*" / "ffmpeg-*" / "bin" / "ffmpeg.exe")
         ),
         reverse=True,
     )
     if winget_candidates:
-        ffmpeg_dir = str(Path(winget_candidates[0]).parent)
-        os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+        _add_dir(str(Path(winget_candidates[0]).parent))
         return
-    if shutil.which("ffmpeg"):
-        return
+
+    # 4. ffmpeg embebido en CapCut.
     capcut_candidates = sorted(
-        _glob.glob(r"C:\Users\Asus\AppData\Local\CapCut\Apps\*\ffmpeg.exe"),
+        _glob.glob(str(home / "AppData" / "Local" / "CapCut" / "Apps" / "*" / "ffmpeg.exe")),
         reverse=True,
     )
     if capcut_candidates:
-        ffmpeg_dir = str(Path(capcut_candidates[0]).parent)
-        os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+        _add_dir(str(Path(capcut_candidates[0]).parent))
+        return
+
+    print("[setup_ffmpeg] AVISO: ffmpeg no encontrado. "
+          "Instálalo o define FFMPEG_PATH en el entorno.")
 
 
 setup_ffmpeg()
@@ -272,6 +300,30 @@ def build_spoken_sequence(
     return sequence, timestamps
 
 
+def build_atempo_chain(multiplier: float) -> str:
+    """Construye una cadena de filtros `atempo` válida para cualquier velocidad.
+
+    El filtro `atempo` de ffmpeg solo acepta valores en [0.5, 2.0]; para
+    velocidades fuera de ese rango hay que encadenar varios filtros
+    (p.ej. 3.0 → 'atempo=2.0,atempo=1.5'). Sin esto, un multiplicador fuera
+    de rango hace fallar a ffmpeg con un error críptico.
+    """
+    if not 0.1 <= multiplier <= 10.0:
+        raise ValueError(
+            f"post_speed_multiplier {multiplier} fuera del rango soportado [0.1, 10.0]"
+        )
+    filters: list[str] = []
+    remaining = multiplier
+    while remaining > 2.0:
+        filters.append("atempo=2.0")
+        remaining /= 2.0
+    while remaining < 0.5:
+        filters.append("atempo=0.5")
+        remaining /= 0.5
+    filters.append(f"atempo={remaining:.4f}")
+    return ",".join(filters)
+
+
 def loop_music_segment(source: AudioSegment, duration_ms: int) -> AudioSegment:
     if duration_ms <= 0:
         return AudioSegment.silent(duration=0)
@@ -408,7 +460,7 @@ def montar_audio(
                 "-i",
                 str(ruta_final),
                 "-filter:a",
-                f"atempo={post_speed_multiplier:.3f}",
+                build_atempo_chain(post_speed_multiplier),
                 "-b:a",
                 spec["audio_rules"]["export_bitrate"],
                 str(ruta_tmp),

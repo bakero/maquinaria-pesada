@@ -228,6 +228,62 @@ def test_launch_pipeline_nonexistent_script(fake_repo):
     assert out["ok"] is False
 
 
+def test_launch_pipeline_rejects_non_whitelisted(fake_repo):
+    """Un script válido como nombre pero fuera de la whitelist se rechaza."""
+    import web_server
+    out = web_server.launch_pipeline("daylog.py", [])
+    assert out["ok"] is False
+    assert "no permitido" in out["error"]
+
+
+def test_launch_pipeline_rejects_path_traversal(fake_repo):
+    """Cualquier componente de ruta en `script` se rechaza (no solo nombres)."""
+    import web_server
+    for evil in ("../web_server.py", "subdir/generar_guion.py",
+                 "..\\web_server.py", "/etc/passwd"):
+        out = web_server.launch_pipeline(evil, [])
+        assert out["ok"] is False, evil
+        assert "no permitido" in out["error"]
+
+
+def test_launch_pipeline_rejects_host_port_flags(fake_repo):
+    """--host / --port nunca deben llegar desde el front (evita reexponer red)."""
+    import web_server
+    for flag in (["--host", "0.0.0.0"], ["--port=9000"], ["--host=0.0.0.0"]):
+        out = web_server.launch_pipeline("estado_proyecto.py", flag)
+        assert out["ok"] is False, flag
+        assert "no permitido" in out["error"]
+
+
+def test_launch_pipeline_rejects_control_chars_in_flags(fake_repo):
+    import web_server
+    out = web_server.launch_pipeline("estado_proyecto.py", ["--ep\nM3"])
+    assert out["ok"] is False
+    assert "control" in out["error"]
+
+
+def test_live_post_body_too_large_returns_413(live_server):
+    """Un Content-Length por encima del límite se rechaza con 413 sin leer el cuerpo."""
+    big = web_server_max_body() + 1
+    req = urllib.request.Request(
+        live_server + "/api/log",
+        data=b"x" * 16,  # cuerpo real pequeño; mentimos en el header
+        headers={"Content-Type": "application/json", "Content-Length": str(big)},
+        method="POST",
+    )
+    # urllib usa el Content-Length que le pasamos; el server debe cortar antes de leer.
+    try:
+        urllib.request.urlopen(req, timeout=2)
+        raise AssertionError("debería rechazar con 413")
+    except urllib.error.HTTPError as e:
+        assert e.code == 413
+
+
+def web_server_max_body() -> int:
+    import web_server
+    return web_server.MAX_REQUEST_BODY
+
+
 def test_generate_episode_unknown(fake_repo):
     import web_server
     out = web_server.generate_episode_guion("M999")

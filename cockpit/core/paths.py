@@ -1,14 +1,16 @@
 """Central path resolution.
 
-REPO_ROOT default points to the live repo at C:/Users/Asus/maquinaria_pesada.
-Override via env var REPO_ROOT to run the cockpit against a different checkout.
+REPO_ROOT default is derived from this file's location (cockpit/core/paths.py
+→ repo root is two levels up), so the cockpit runs on any checkout/machine.
+Override via env var REPO_ROOT to point at a different checkout.
 """
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
-DEFAULT_REPO_ROOT = Path(r"C:\Users\Asus\maquinaria_pesada")
+# paths.py vive en <repo>/cockpit/core/paths.py → parents[2] es la raíz del repo.
+DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def repo_root() -> Path:

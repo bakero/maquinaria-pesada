@@ -97,6 +97,35 @@ def _resolve_web_dir() -> Path:
 
 WEB_DIR = _resolve_web_dir()
 
+# Tamaño máximo de cuerpo aceptado en POST (1 MiB). Cualquier payload del
+# cockpit cabe de sobra; el límite evita agotar memoria con un Content-Length
+# arbitrariamente grande.
+MAX_REQUEST_BODY = 1 * 1024 * 1024
+
+# Tamaño de chunk al servir archivos del repo / estáticos. Mantiene la memoria
+# plana sin importar el tamaño del archivo (vídeos, MP3, PDFs grandes).
+FILE_CHUNK_SIZE = 64 * 1024
+
+# Pipelines que /api/run puede lanzar. El endpoint NO acepta rutas arbitrarias:
+# solo nombres de esta lista (sin componente de ruta). Esto evita que un POST
+# pueda ejecutar cualquier script del repo o del sistema.
+ALLOWED_SCRIPTS: frozenset[str] = frozenset({
+    "generar_guion.py",
+    "generar_guion_t.py",
+    "generar_episodio_v2.py",
+    "validar_episodio.py",
+    "normalizar_guiones.py",
+    "estado_proyecto.py",
+    "lanzar_guiones.py",
+    "lanzar_produccion.py",
+    "produce_pending.py",
+    "producir_episodio.py",
+})
+
+# Flags prohibidos: nunca deben llegar desde el front. --host/--port permitirían
+# relanzar el propio server expuesto a la red; el resto son saneo defensivo.
+_FORBIDDEN_FLAG_PREFIXES = ("--host", "--port")
+
 # Permitir importar cockpit/core sin Streamlit
 sys.path.insert(0, str(ROOT))
 
@@ -820,20 +849,43 @@ def ping_api_key(provider: str) -> dict:
     }
 
 
+def _validate_flags(flags: list) -> str | None:
+    """Devuelve un mensaje de error si algún flag es inadmisible, o None si todo OK."""
+    for flag in flags:
+        s = str(flag)
+        if s.lower().startswith(_FORBIDDEN_FLAG_PREFIXES):
+            return f"flag no permitido: {s}"
+        if "\x00" in s or "\n" in s or "\r" in s:
+            return "flag con caracteres de control"
+    return None
+
+
 def launch_pipeline(script: str, flags: list) -> dict:
-    """Lanza un script python en background sin bloquear el server."""
+    """Lanza un script python (de la whitelist) en background sin bloquear el server."""
     try:
         from cockpit.core import paths, runner
     except Exception as exc:
         _log.error(f"launch_pipeline: runner no disponible: {exc!r}")
         return {"ok": False, "error": f"runner no disponible: {exc}"}
 
-    script_path = paths.repo_root() / script
-    if not script_path.exists():
-        _log.warning(f"launch_pipeline: script no existe: {script}")
-        return {"ok": False, "error": f"script no existe: {script}"}
+    # Solo nombre de archivo, nunca rutas: rechaza traversal y subdirectorios.
+    script_name = Path(script).name
+    if script_name != script or script_name not in ALLOWED_SCRIPTS:
+        _log.warning(f"launch_pipeline: script no permitido: {script!r}")
+        return {"ok": False, "error": f"script no permitido: {script}"}
 
-    argv = runner.build_argv(str(script_path), list(flags or []))
+    flags = list(flags or [])
+    flag_error = _validate_flags(flags)
+    if flag_error:
+        _log.warning(f"launch_pipeline: {flag_error}")
+        return {"ok": False, "error": flag_error}
+
+    script_path = paths.repo_root() / script_name
+    if not script_path.exists():
+        _log.warning(f"launch_pipeline: script no existe: {script_name}")
+        return {"ok": False, "error": f"script no existe: {script_name}"}
+
+    argv = runner.build_argv(str(script_path), flags)
     log_dir = paths.logs_dir()
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"web_run_{int(time.time())}.log"
@@ -847,7 +899,7 @@ def launch_pipeline(script: str, flags: list) -> dict:
         stderr=subprocess.STDOUT,
         env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
-    _log.info(f"pipeline lanzado: {script} flags={list(flags or [])} "
+    _log.info(f"pipeline lanzado: {script_name} flags={flags} "
               f"pid={proc.pid} log={log_path.name}")
     return {"ok": True, "pid": proc.pid, "cmd": argv, "log": log_path.name}
 
@@ -939,6 +991,11 @@ def frontend_log(body: dict) -> dict:
 # ---- HTTP handler -----------------------------------------------------
 
 
+class _RequestTooLarge(Exception):
+    """El cuerpo del POST supera MAX_REQUEST_BODY. La respuesta 413 ya se envió;
+    el handler solo debe abortar el procesamiento sin emitir un 500 encima."""
+
+
 class CockpitHandler(BaseHTTPRequestHandler):
     server_version = "MaquinariaCockpit/0.1"
 
@@ -972,25 +1029,45 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if not candidate.exists() or not candidate.is_file():
             self.send_error(404, f"not found: {rel}")
             return
+        self._stream_file(candidate)
+
+    def _stream_file(self, candidate: Path) -> None:
+        """Envía un archivo en chunks: memoria plana sin importar el tamaño."""
         ctype, _ = mimetypes.guess_type(candidate.name)
         if ctype is None:
             ctype = "application/octet-stream"
-        data = candidate.read_bytes()
+        try:
+            size = candidate.stat().st_size
+        except OSError:
+            self.send_error(404, "no encontrado")
+            return
         self.send_response(200)
         self.send_header("Content-Type", ctype)
-        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Content-Length", str(size))
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(data)
+        with candidate.open("rb") as fh:
+            while True:
+                chunk = fh.read(FILE_CHUNK_SIZE)
+                if not chunk:
+                    break
+                self.wfile.write(chunk)
 
     def _read_json(self) -> dict:
-        length = int(self.headers.get("Content-Length", 0) or 0)
+        try:
+            length = int(self.headers.get("Content-Length", 0) or 0)
+        except ValueError:
+            return {}
         if length <= 0:
             return {}
+        if length > MAX_REQUEST_BODY:
+            # No leemos el cuerpo: descartar y rechazar evita agotar memoria.
+            self.send_error(413, f"request body too large (max {MAX_REQUEST_BODY} bytes)")
+            raise _RequestTooLarge()
         raw = self.rfile.read(length)
         try:
             return json.loads(raw.decode("utf-8"))
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             return {}
 
     def _safe_500(self, exc: Exception) -> None:
@@ -1063,6 +1140,9 @@ class CockpitHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         try:
             self._handle_post()
+        except _RequestTooLarge:
+            # La respuesta 413 ya se envió en _read_json; nada más que hacer.
+            return
         except Exception as exc:  # noqa: BLE001 - todo error de request va al log
             _log.error(f"POST {urlparse(self.path).path} → "
                        f"{type(exc).__name__}: {exc}")
@@ -1138,16 +1218,7 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if not candidate.exists() or not candidate.is_file():
             self.send_error(404, "no encontrado")
             return
-        ctype, _ = mimetypes.guess_type(candidate.name)
-        if ctype is None:
-            ctype = "application/octet-stream"
-        data = candidate.read_bytes()
-        self.send_response(200)
-        self.send_header("Content-Type", ctype)
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(data)
+        self._stream_file(candidate)
 
 
 def run(host: str = "127.0.0.1", port: int = 8765, verbose: bool = False) -> None:
