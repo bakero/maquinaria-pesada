@@ -22,7 +22,10 @@ Endpoints (todos JSON salvo donde se indique):
     GET  /api/episode/<id>/gen-log → traza de generación/validación del guion
                                    (intentos, issues hard/soft, veredicto)
     GET  /api/ai-usage           → eventos de logs/ai_usage.jsonl agregados
-    GET  /api/economics          → estado de logs/economics.json
+    GET  /api/economics          → estado de logs/economics.json + summary
+    GET  /api/optimization       → recomendaciones de ahorro (heurísticas
+                                   reales sobre ai_usage.jsonl)
+    GET  /api/components-map     → grafo de cockpit/components_map.json
     GET  /api/live               → procesos en producción (psutil best-effort)
     GET  /api/recent-files       → últimos artefactos modificados
 
@@ -234,7 +237,8 @@ def load_economics() -> dict:
     try:
         from cockpit.core import economics
     except Exception:
-        return {"topups": [], "spends": [], "subscriptions": [], "balance_by_provider": {}}
+        return {"topups": [], "spends": [], "subscriptions": [],
+                "balance_by_provider": {}, "summary": {}}
 
     state = economics.load()
     balance: dict[str, float] = {}
@@ -242,12 +246,62 @@ def load_economics() -> dict:
         balance[t.provider] = balance.get(t.provider, 0.0) + t.amount_usd
     for s in state.spends:
         balance[s.provider] = balance.get(s.provider, 0.0) - s.amount_usd
+    try:
+        summary = economics.summary()
+    except Exception:
+        summary = {}
     return {
         "topups": [t.__dict__ for t in state.topups],
         "spends": [s.__dict__ for s in state.spends],
         "subscriptions": [s.__dict__ for s in state.subscriptions],
         "balance_by_provider": {k: round(v, 2) for k, v in balance.items()},
+        # summary: provider → {topped_up, spent, spent_tracked, balance, calls, …}
+        "summary": summary,
     }
+
+
+def load_optimization() -> dict:
+    """Recomendaciones de ahorro: heurísticas reales sobre ai_usage.jsonl."""
+    try:
+        from cockpit.core import optimization_advisor, usage_tracker
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "recommendations": []}
+
+    try:
+        events = list(usage_tracker.iter_events())
+        recs = optimization_advisor.analyze(events)
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "recommendations": []}
+
+    total_savings = round(sum(r.savings_estimate_usd for r in recs), 2)
+    return {
+        "ok": True,
+        "events_analyzed": len(events),
+        "total_savings_usd": total_savings,
+        "recommendations": [
+            {
+                "rule_id": r.rule_id,
+                "severity": r.severity,
+                "title": r.title,
+                "evidence": r.evidence,
+                "action": r.action,
+                "savings": round(r.savings_estimate_usd, 2),
+            }
+            for r in recs
+        ],
+    }
+
+
+def load_components_map() -> dict:
+    """Grafo de componentes del cockpit desde cockpit/components_map.json."""
+    try:
+        from cockpit.core import components_map
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "nodes": [], "edges": []}
+    try:
+        return {"ok": True, **components_map.load().to_dict()}
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "nodes": [], "edges": []}
 
 
 def load_recent_files() -> list[dict]:
@@ -719,6 +773,10 @@ class CockpitHandler(BaseHTTPRequestHandler):
             return self._send_json(200, load_ai_usage())
         if path == "/api/economics":
             return self._send_json(200, load_economics())
+        if path == "/api/optimization":
+            return self._send_json(200, load_optimization())
+        if path == "/api/components-map":
+            return self._send_json(200, load_components_map())
         if path == "/api/live":
             return self._send_json(200, load_live_procs())
         if path == "/api/recent-files":

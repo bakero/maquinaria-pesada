@@ -99,6 +99,33 @@ def test_economics_empty(fake_repo):
     assert eco["balance_by_provider"] == {}
 
 
+def test_optimization_returns_recommendations(fake_repo):
+    """load_optimization analiza los eventos reales de ai_usage.jsonl."""
+    import web_server
+    out = web_server.load_optimization()
+    assert out["ok"] is True
+    assert "recommendations" in out
+    assert isinstance(out["recommendations"], list)
+    assert "total_savings_usd" in out
+    assert out["events_analyzed"] >= 1
+
+
+def test_components_map_loads(fake_repo):
+    """load_components_map devuelve el grafo (default si no hay json)."""
+    import web_server
+    out = web_server.load_components_map()
+    assert out["ok"] is True
+    assert isinstance(out["nodes"], list)
+    assert isinstance(out["edges"], list)
+
+
+def test_economics_includes_summary(fake_repo):
+    import web_server
+    eco = web_server.load_economics()
+    assert "summary" in eco
+    assert isinstance(eco["summary"], dict)
+
+
 def test_ai_chat_fallback_no_key(fake_repo, monkeypatch):
     """Sin ANTHROPIC_API_KEY ni paquete real, devuelve ok:false sin crashear."""
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
