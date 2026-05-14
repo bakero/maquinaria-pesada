@@ -365,6 +365,60 @@ HARD_KEYWORDS = (
 
 ---
 
+## 2026-05-14
+
+### Migración v6 — rediseño de formatos y arquitectura (Fase 0)
+
+Sesión de diseño cerrada con 18 decisiones a lo largo de 4 bloques (alineación
+M/T · diseño del formato S · arquitectura de validaciones · plan de migración).
+Esta entrada documenta la **Fase 0** de la migración v6.
+
+#### [DECISIÓN] Tres formatos M/T/S con specs v6
+
+- **M (Módulo):** 18-22 min · 2700-3300 palabras · 4 bloques de contenido
+  (PANORAMA + DESTACADO + APLICACION_PRACTICA + **BLOQUE_FUENTES nuevo**).
+  `BLOQUE_FUENTES` = 3-4 fuentes-marco del módulo desde
+  `PDFs/auxiliares/fuentes_marco_modulo_M{n}.md` (Variante A).
+- **T (Tema):** 25-28 min · 3700-4500 palabras · 6 bloques de contenido
+  (PANORAMA + COMO + **CASOS nuevo** + **LIMITES recuperado** + **FUENTES nuevo**).
+- **S (Short):** formato nuevo · 60-90s · 157-198 palabras · 4 bloques internos ·
+  una sola voz · fuente única `glosario_unificado.md` · selección y ordenación
+  100% automáticas · nomenclatura `S{N}_nombre.mp3` · voz por paridad de N.
+- **Invariante de calidad TTS sintética** incorporado a los tres specs: longitud
+  de intervención, densidad conceptual, frases cortas/largas, pausas SSML.
+- Loudness unificado a **-14 LUFS** (estándar Spotify) en M, T y S.
+
+#### [DECISIÓN] Arquitectura validadores + generadores
+
+- `validators/` y `generadores/`: base + 3 especialistas por **composición**
+  (no herencia). Output estructurado `ValidationResult`.
+- Tests unitarios obligatorios, cobertura ≥85%, sin tests no hay merge.
+- `podcast_spec.py` y `generar_episodio_v2.py` se eliminan en la migración.
+- Modelo LLM: Sonnet para M/T, Haiku para S. Retry 1 vez con feedback.
+- Tracking de coste obligatorio en `costes_generacion.log`.
+
+#### [DECISIÓN] Borrón limpio de episodios actuales
+
+Ningún guion/episodio actual está publicado: se borran. La spec v6 es la única.
+Backup del estado pre-v6 en la rama `archive/pre-v6-migration`.
+
+#### [CAMBIO] Fase 0 ejecutada
+
+- Ramas creadas: `feature/v6-migration` (trabajo) y `archive/pre-v6-migration`
+  (estado pre-v6 congelado).
+- `PODCAST_M_SPEC.md` actualizado a v6.
+- `PODCAST_T_SPEC.md` actualizado a v6.
+- `PODCAST_S_SPEC.md` creado desde cero.
+- `MIGRACION_V6_PLAN.md` creado — plan de batalla con 10 fases y 42 pasos,
+  consolidando las 18 decisiones. Es el documento que guía el resto de la
+  migración; se ejecuta **fase por fase**, no de golpe.
+
+**Pendiente:** Fases 1-10 del `MIGRACION_V6_PLAN.md` (infraestructura compartida,
+validadores, generadores, selector de Shorts, integración, CI/CD, borrado y
+producción inicial).
+
+---
+
 ## Pendientes abiertos (al 2026-05-10)
 
 | # | Pendiente | Bloqueado por |
