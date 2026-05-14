@@ -7,8 +7,6 @@ from __future__ import annotations
 
 import json
 import sys
-import threading
-import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -419,23 +417,11 @@ def test_files_endpoint_blocks_traversal(live_server):
 
 @pytest.fixture
 def live_server(fake_repo):
-    """Levanta web_server.run en un thread y devuelve la URL base."""
-    from http.server import ThreadingHTTPServer
-
+    """Levanta la app FastAPI con uvicorn en un thread y devuelve la URL base."""
     import web_server
 
-    server = ThreadingHTTPServer(("127.0.0.1", 0), web_server.CockpitHandler)
-    server.verbose = False  # type: ignore[attr-defined]
-    port = server.server_address[1]
-    t = threading.Thread(target=server.serve_forever, daemon=True)
-    t.start()
-    # warm up
-    time.sleep(0.05)
-    try:
-        yield f"http://127.0.0.1:{port}"
-    finally:
-        server.shutdown()
-        server.server_close()
+    with web_server.ThreadedServer(web_server.app) as srv:
+        yield srv.url
 
 
 def _get_json(url: str) -> dict:

@@ -65,20 +65,25 @@ Endpoints (todos JSON salvo donde se indique):
                                    episodios, escaletas, logs). Solo lectura
                                    y solo dentro de REPO_ROOT.
 
-El servidor es deliberadamente sin dependencias externas: usa solo
-http.server de la stdlib. Diseñado para localhost; no expone CORS amplio.
+El servidor es una app FastAPI servida con uvicorn. Diseñado para localhost;
+no expone CORS amplio. Las funciones `load_*` / `bootstrap_payload` son
+agnósticas del framework — la capa FastAPI es solo el glue HTTP.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import mimetypes
 import os
+import socket
 import sys
+import threading
 import time
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent
 WEB_DIST = ROOT / "vite_app" / "dist"
@@ -101,10 +106,6 @@ WEB_DIR = _resolve_web_dir()
 # cockpit cabe de sobra; el límite evita agotar memoria con un Content-Length
 # arbitrariamente grande.
 MAX_REQUEST_BODY = 1 * 1024 * 1024
-
-# Tamaño de chunk al servir archivos del repo / estáticos. Mantiene la memoria
-# plana sin importar el tamaño del archivo (vídeos, MP3, PDFs grandes).
-FILE_CHUNK_SIZE = 64 * 1024
 
 # Pipelines que /api/run puede lanzar. El endpoint NO acepta rutas arbitrarias:
 # solo nombres de esta lista (sin componente de ruta). Esto evita que un POST
@@ -850,13 +851,24 @@ def ping_api_key(provider: str) -> dict:
 
 
 def _validate_flags(flags: list) -> str | None:
-    """Devuelve un mensaje de error si algún flag es inadmisible, o None si todo OK."""
-    for flag in flags:
-        s = str(flag)
-        if s.lower().startswith(_FORBIDDEN_FLAG_PREFIXES):
-            return f"flag no permitido: {s}"
-        if "\x00" in s or "\n" in s or "\r" in s:
-            return "flag con caracteres de control"
+    """Valida los flags que llegan del front antes de construir el argv.
+
+    El front envía pares (flag, valor) — list[tuple[str, Any]] — pero también
+    aceptamos flags sueltos como string por robustez. Devuelve un mensaje de
+    error si algún flag es inadmisible, o None si todo OK.
+    """
+    for entry in flags:
+        if isinstance(entry, (list, tuple)):
+            name = str(entry[0]) if entry else ""
+            parts = [str(x) for x in entry]
+        else:
+            name = str(entry)
+            parts = [name]
+        if name.lower().startswith(_FORBIDDEN_FLAG_PREFIXES):
+            return f"flag no permitido: {name}"
+        for s in parts:
+            if "\x00" in s or "\n" in s or "\r" in s:
+                return "flag con caracteres de control"
     return None
 
 
@@ -988,237 +1000,256 @@ def frontend_log(body: dict) -> dict:
     return {"ok": True}
 
 
-# ---- HTTP handler -----------------------------------------------------
+# ---- FastAPI app ------------------------------------------------------
+# La capa HTTP es fina: cada ruta delega en las funciones load_* / *_pipeline
+# de arriba, que son agnósticas del framework.
 
 
-class _RequestTooLarge(Exception):
-    """El cuerpo del POST supera MAX_REQUEST_BODY. La respuesta 413 ya se envió;
-    el handler solo debe abortar el procesamiento sin emitir un 500 encima."""
-
-
-class CockpitHandler(BaseHTTPRequestHandler):
-    server_version = "MaquinariaCockpit/0.1"
-
-    def log_message(self, format: str, *args) -> None:  # noqa: A002
-        # Silencioso por defecto; activa con --verbose
-        if getattr(self.server, "verbose", False):
-            super().log_message(format, *args)
-
-    # ---- JSON helpers ----
-    def _send_json(self, status: int, payload) -> None:
-        body = json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(body)
-
-    def _send_static(self, rel: str) -> None:
-        # Normalizar y prevenir traversal
-        if rel.startswith("/"):
-            rel = rel[1:]
-        if rel == "":
-            rel = "index.html"
-        candidate = (WEB_DIR / rel).resolve()
+async def _json_body(request: Request) -> dict:
+    """Lee el cuerpo JSON de un POST con las mismas garantías que el server
+    anterior: cuerpo vacío o JSON inválido → {}; cuerpo demasiado grande → 413.
+    """
+    cl = request.headers.get("content-length")
+    if cl is not None:
         try:
-            candidate.relative_to(WEB_DIR.resolve())
+            if int(cl) > MAX_REQUEST_BODY:
+                raise HTTPException(status_code=413, detail="request body too large")
         except ValueError:
-            self.send_error(403, "forbidden")
-            return
-        if not candidate.exists() or not candidate.is_file():
-            self.send_error(404, f"not found: {rel}")
-            return
-        self._stream_file(candidate)
-
-    def _stream_file(self, candidate: Path) -> None:
-        """Envía un archivo en chunks: memoria plana sin importar el tamaño."""
-        ctype, _ = mimetypes.guess_type(candidate.name)
-        if ctype is None:
-            ctype = "application/octet-stream"
-        try:
-            size = candidate.stat().st_size
-        except OSError:
-            self.send_error(404, "no encontrado")
-            return
-        self.send_response(200)
-        self.send_header("Content-Type", ctype)
-        self.send_header("Content-Length", str(size))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        with candidate.open("rb") as fh:
-            while True:
-                chunk = fh.read(FILE_CHUNK_SIZE)
-                if not chunk:
-                    break
-                self.wfile.write(chunk)
-
-    def _read_json(self) -> dict:
-        try:
-            length = int(self.headers.get("Content-Length", 0) or 0)
-        except ValueError:
-            return {}
-        if length <= 0:
-            return {}
-        if length > MAX_REQUEST_BODY:
-            # No leemos el cuerpo: descartar y rechazar evita agotar memoria.
-            self.send_error(413, f"request body too large (max {MAX_REQUEST_BODY} bytes)")
-            raise _RequestTooLarge()
-        raw = self.rfile.read(length)
-        try:
-            return json.loads(raw.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            return {}
-
-    def _safe_500(self, exc: Exception) -> None:
-        """Devuelve un 500 JSON sin reventar si la conexión ya se cerró."""
-        try:
-            self._send_json(500, {"ok": False, "error": "internal",
-                                  "detail": str(exc)})
-        except Exception:  # noqa: BLE001
             pass
+    raw = await request.body()
+    if len(raw) > MAX_REQUEST_BODY:
+        raise HTTPException(status_code=413, detail="request body too large")
+    if not raw:
+        return {}
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
 
-    # ---- Routes ----
-    def do_GET(self) -> None:  # noqa: N802
-        try:
-            self._handle_get()
-        except Exception as exc:  # noqa: BLE001 - todo error de request va al log
-            _log.error(f"GET {urlparse(self.path).path} → "
-                       f"{type(exc).__name__}: {exc}")
-            self._safe_500(exc)
 
-    def _handle_get(self) -> None:
-        path = urlparse(self.path).path
+def _api_json(payload, status: int = 200) -> Response:
+    """Respuesta JSON con Cache-Control: no-store. Usa `default=str` para
+    serializar Paths/dataclasses igual que el server anterior."""
+    body = json.dumps(payload, ensure_ascii=False, default=str)
+    return Response(content=body, status_code=status,
+                    media_type="application/json",
+                    headers={"Cache-Control": "no-store"})
 
-        if path == "/api/health":
-            return self._send_json(200, {"ok": True, "ts": time.time()})
-        if path == "/api/bootstrap":
-            return self._send_json(200, bootstrap_payload())
-        if path == "/api/episodes":
-            _, eps = scan_modules_and_episodes()
-            return self._send_json(200, eps)
-        if path.startswith("/api/episode/") and path.endswith("/gen-log"):
-            ep_id = path[len("/api/episode/"):-len("/gen-log")]
-            return self._send_json(200, read_gen_log(ep_id))
-        if path.startswith("/api/episode/") and path.endswith("/checks"):
-            ep_id = path[len("/api/episode/"):-len("/checks")]
-            return self._send_json(200, load_episode_checks(ep_id))
-        if path.startswith("/api/episode/"):
-            ep_id = path[len("/api/episode/"):]
-            detail = load_episode_detail(ep_id)
-            if detail is None:
-                return self._send_json(404, {"error": "not found"})
-            return self._send_json(200, detail)
-        if path == "/api/ai-usage":
-            return self._send_json(200, load_ai_usage())
-        if path == "/api/economics":
-            return self._send_json(200, load_economics())
-        if path == "/api/optimization":
-            return self._send_json(200, load_optimization())
-        if path == "/api/components-map":
-            return self._send_json(200, load_components_map())
-        if path == "/api/connectors":
-            return self._send_json(200, load_connectors())
-        if path == "/api/pizarra":
-            return self._send_json(200, load_pizarra())
-        if path == "/api/metrics":
-            return self._send_json(200, load_metrics())
-        if path == "/api/logs":
-            return self._send_json(200, load_logs_list())
-        if path == "/api/live":
-            return self._send_json(200, load_live_procs())
-        if path == "/api/recent-files":
-            return self._send_json(200, load_recent_files())
 
-        # Archivos del repo (PDFs, Guiones, audio, logs)
-        if path.startswith("/files/"):
-            return self._send_repo_file(path[len("/files/"):])
+def create_app() -> FastAPI:
+    """Construye la app FastAPI.
 
-        # Static (web/dist o web/legacy)
-        return self._send_static(path)
+    Se llama en import time para que los tests que recargan el módulo (tras
+    fijar REPO_ROOT / COCKPIT_WEB_DIR) obtengan una app fresca apuntando a los
+    paths correctos.
+    """
+    app = FastAPI(title="MaquinariaCockpit", version="0.2",
+                  docs_url=None, redoc_url=None)
 
-    def do_POST(self) -> None:  # noqa: N802
-        try:
-            self._handle_post()
-        except _RequestTooLarge:
-            # La respuesta 413 ya se envió en _read_json; nada más que hacer.
-            return
-        except Exception as exc:  # noqa: BLE001 - todo error de request va al log
-            _log.error(f"POST {urlparse(self.path).path} → "
-                       f"{type(exc).__name__}: {exc}")
-            self._safe_500(exc)
+    # ---- API: GET ----
+    @app.get("/api/health")
+    def health() -> Response:
+        return _api_json({"ok": True, "ts": time.time()})
 
-    def _handle_post(self) -> None:
-        path = urlparse(self.path).path
-        body = self._read_json()
+    @app.get("/api/bootstrap")
+    def bootstrap() -> Response:
+        return _api_json(bootstrap_payload())
 
-        if path == "/api/ai/chat":
-            mode = body.get("mode", "improve")
-            target = body.get("target")
-            message = body.get("message", "")
-            return self._send_json(200, ai_chat(mode, target, message))
+    @app.get("/api/episodes")
+    def episodes() -> Response:
+        _, eps = scan_modules_and_episodes()
+        return _api_json(eps)
 
-        if path == "/api/run":
-            script = body.get("script", "")
-            flags = body.get("flags", [])
-            return self._send_json(200, launch_pipeline(script, flags))
+    @app.get("/api/episode/{ep_id}/gen-log")
+    def episode_gen_log(ep_id: str) -> Response:
+        return _api_json(read_gen_log(ep_id))
 
-        if path.startswith("/api/episode/") and path.endswith("/generate"):
-            ep_id = path[len("/api/episode/"):-len("/generate")]
-            return self._send_json(200, generate_episode_guion(ep_id))
+    @app.get("/api/episode/{ep_id}/checks")
+    def episode_checks(ep_id: str) -> Response:
+        return _api_json(load_episode_checks(ep_id))
 
-        if path == "/api/pizarra":
-            return self._send_json(200, save_pizarra(body))
+    @app.get("/api/episode/{ep_id}")
+    def episode_detail(ep_id: str) -> Response:
+        detail = load_episode_detail(ep_id)
+        if detail is None:
+            return _api_json({"error": "not found"}, status=404)
+        return _api_json(detail)
 
-        if path == "/api/pizarra/generate-component":
-            return self._send_json(200, pizarra_generate_component(
-                body.get("name", ""), body.get("description", ""),
-                body.get("kind", "ai"),
-            ))
+    @app.get("/api/ai-usage")
+    def ai_usage() -> Response:
+        return _api_json(load_ai_usage())
 
-        if path == "/api/reveal":
-            return self._send_json(200, reveal_path(body.get("path", "")))
+    @app.get("/api/economics")
+    def economics() -> Response:
+        return _api_json(load_economics())
 
-        if path == "/api/economics/topup":
-            return self._send_json(200, topup_economics(
-                provider=body.get("provider", ""),
-                amount=float(body.get("amount", 0) or 0),
-                note=body.get("note", ""),
-            ))
+    @app.get("/api/optimization")
+    def optimization() -> Response:
+        return _api_json(load_optimization())
 
-        if path == "/api/api-key/ping":
-            return self._send_json(200, ping_api_key(body.get("provider", "")))
+    @app.get("/api/components-map")
+    def components_map() -> Response:
+        return _api_json(load_components_map())
 
-        if path == "/api/log":
-            return self._send_json(200, frontend_log(body))
+    @app.get("/api/connectors")
+    def connectors() -> Response:
+        return _api_json(load_connectors())
 
-        return self._send_json(404, {"error": "route not found"})
+    @app.get("/api/pizarra")
+    def pizarra_get() -> Response:
+        return _api_json(load_pizarra())
 
-    # ---- repo files ----
-    def _send_repo_file(self, rel: str) -> None:
-        """Sirve archivos dentro de REPO_ROOT como solo lectura."""
+    @app.get("/api/metrics")
+    def metrics() -> Response:
+        return _api_json(load_metrics())
+
+    @app.get("/api/logs")
+    def logs() -> Response:
+        return _api_json(load_logs_list())
+
+    @app.get("/api/live")
+    def live() -> Response:
+        return _api_json(load_live_procs())
+
+    @app.get("/api/recent-files")
+    def recent_files() -> Response:
+        return _api_json(load_recent_files())
+
+    # ---- API: POST ----
+    @app.post("/api/ai/chat")
+    async def api_ai_chat(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(ai_chat(
+            body.get("mode", "improve"), body.get("target"),
+            body.get("message", ""),
+        ))
+
+    @app.post("/api/run")
+    async def api_run(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(launch_pipeline(
+            body.get("script", ""), body.get("flags", []),
+        ))
+
+    @app.post("/api/episode/{ep_id}/generate")
+    def api_episode_generate(ep_id: str) -> Response:
+        return _api_json(generate_episode_guion(ep_id))
+
+    @app.post("/api/pizarra")
+    async def api_pizarra_save(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(save_pizarra(body))
+
+    @app.post("/api/pizarra/generate-component")
+    async def api_pizarra_gen(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(pizarra_generate_component(
+            body.get("name", ""), body.get("description", ""),
+            body.get("kind", "ai"),
+        ))
+
+    @app.post("/api/reveal")
+    async def api_reveal(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(reveal_path(body.get("path", "")))
+
+    @app.post("/api/economics/topup")
+    async def api_topup(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(topup_economics(
+            provider=body.get("provider", ""),
+            amount=float(body.get("amount", 0) or 0),
+            note=body.get("note", ""),
+        ))
+
+    @app.post("/api/api-key/ping")
+    async def api_ping(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(ping_api_key(body.get("provider", "")))
+
+    @app.post("/api/log")
+    async def api_log(request: Request) -> Response:
+        body = await _json_body(request)
+        return _api_json(frontend_log(body))
+
+    # ---- Archivos del repo (solo lectura, carpetas en lista blanca) ----
+    @app.get("/files/{rel:path}")
+    def repo_file(rel: str) -> FileResponse:
         try:
             from cockpit.core import paths
-        except Exception:
-            self.send_error(500, "paths no disponible")
-            return
-        root = paths.repo_root().resolve()
-        # Permitir lectura solo de carpetas conocidas
+        except Exception:  # noqa: BLE001
+            raise HTTPException(status_code=500, detail="paths no disponible") from None
         allowed_prefixes = ("PDFs", "Guiones", "escaletas", "episodios",
                             "videopodcast", "Videos", "logs", "output", "RRSS")
-        if not rel or not any(rel.startswith(p + "/") or rel == p for p in allowed_prefixes):
-            self.send_error(403, "carpeta no permitida")
-            return
+        if not rel or not any(rel == p or rel.startswith(p + "/")
+                              for p in allowed_prefixes):
+            raise HTTPException(status_code=403, detail="carpeta no permitida")
+        root = paths.repo_root().resolve()
         candidate = (root / rel).resolve()
         try:
             candidate.relative_to(root)
         except ValueError:
-            self.send_error(403, "fuera de REPO_ROOT")
-            return
+            raise HTTPException(status_code=403, detail="fuera de REPO_ROOT") from None
         if not candidate.exists() or not candidate.is_file():
-            self.send_error(404, "no encontrado")
-            return
-        self._stream_file(candidate)
+            raise HTTPException(status_code=404, detail="no encontrado")
+        # FileResponse hace streaming y soporta Range (seeking de vídeo/audio).
+        return FileResponse(candidate, headers={"Cache-Control": "no-store"})
+
+    # ---- Estáticos del build de Vite (se monta el último: captura el resto) ----
+    if WEB_DIR.exists():
+        app.mount("/", StaticFiles(directory=str(WEB_DIR), html=True), name="static")
+
+    return app
+
+
+app = create_app()
+
+
+# ---- Servidor (uvicorn) ----------------------------------------------
+
+
+def _free_port() -> int:
+    """Reserva un puerto libre en localhost (para ThreadedServer en tests)."""
+    s = socket.socket()
+    try:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+    finally:
+        s.close()
+
+
+class ThreadedServer:
+    """uvicorn corriendo en un thread daemon.
+
+    Para tests (urllib y Playwright necesitan un puerto real) y para usos
+    embebidos. Úsalo como context manager: el __enter__ espera a que uvicorn
+    esté listo y __exit__ lo detiene limpiamente.
+    """
+
+    def __init__(self, application: FastAPI, host: str = "127.0.0.1",
+                 port: int | None = None) -> None:
+        self.host = host
+        self.port = port or _free_port()
+        config = uvicorn.Config(application, host=self.host, port=self.port,
+                                log_level="warning", access_log=False)
+        self._server = uvicorn.Server(config)
+        self._thread = threading.Thread(target=self._server.run, daemon=True)
+
+    @property
+    def url(self) -> str:
+        return f"http://{self.host}:{self.port}"
+
+    def __enter__(self) -> ThreadedServer:
+        self._thread.start()
+        deadline = time.time() + 10
+        while not self._server.started and time.time() < deadline:
+            time.sleep(0.02)
+        return self
+
+    def __exit__(self, *exc) -> None:
+        self._server.should_exit = True
+        self._thread.join(timeout=5)
 
 
 def run(host: str = "127.0.0.1", port: int = 8765, verbose: bool = False) -> None:
@@ -1227,16 +1258,12 @@ def run(host: str = "127.0.0.1", port: int = 8765, verbose: bool = False) -> Non
             f"build del frontend no existe: {WEB_DIR}\n"
             "  Ejecuta:  cd vite_app && npm install && npm run build"
         )
-    server = ThreadingHTTPServer((host, port), CockpitHandler)
-    server.verbose = verbose  # type: ignore[attr-defined]
     print(f"Cockpit web en http://{host}:{port}/")
     print(f"  static : {WEB_DIR}")
     print("  API    : /api/bootstrap, /api/ai/chat, /api/run …")
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print("\nCerrando…")
-        server.server_close()
+    uvicorn.run(app, host=host, port=port,
+                log_level="info" if verbose else "warning",
+                access_log=verbose)
 
 
 def main() -> None:

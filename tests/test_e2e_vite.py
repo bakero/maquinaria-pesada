@@ -25,9 +25,6 @@ from __future__ import annotations
 import json
 import re
 import sys
-import threading
-import time
-from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 import pytest
@@ -83,17 +80,8 @@ def fake_repo(tmp_path, monkeypatch):
 @pytest.fixture
 def live_url(fake_repo):
     import web_server
-    server = ThreadingHTTPServer(("127.0.0.1", 0), web_server.CockpitHandler)
-    server.verbose = False  # type: ignore[attr-defined]
-    port = server.server_address[1]
-    t = threading.Thread(target=server.serve_forever, daemon=True)
-    t.start()
-    time.sleep(0.1)
-    try:
-        yield f"http://127.0.0.1:{port}"
-    finally:
-        server.shutdown()
-        server.server_close()
+    with web_server.ThreadedServer(web_server.app) as srv:
+        yield srv.url
 
 
 @pytest.fixture(scope="session")
