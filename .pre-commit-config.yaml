@@ -1,0 +1,35 @@
+# Pre-commit hooks. Instala con:  pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix", "cockpit/", "tests/"]
+      - id: ruff-format
+        args: ["cockpit/", "tests/"]
+
+  - repo: local
+    hooks:
+      - id: pytest-smoke
+        name: pytest (cockpit + tests)
+        entry: pytest tests/ -q --tb=line
+        language: system
+        pass_filenames: false
+        types_or: [python, toml]
+
+      - id: forbid-env-commits
+        name: bloquear .env reales
+        entry: bash -c 'for f; do case "$f" in .env|.env.local|.env.production) echo "❌ $f no debe commitearse"; exit 1;; esac; done'
+        language: system
+        files: ^\.env
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]

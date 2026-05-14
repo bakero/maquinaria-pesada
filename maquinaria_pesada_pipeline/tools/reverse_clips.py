@@ -85,8 +85,13 @@ def main():
     library_base = Path(r"C:\Users\Asus\maquinaria_pesada\Videos\escenas_biblioteca")
     library = SceneLibrary(library_base)
 
-    # Tomar todos los clips registrados
-    scenes = list(library._index.values()) if hasattr(library, "_index") else []
+    # Tomar todos los clips registrados.
+    # _index estructura: {"version":..., "scenes": {slug: {...}}}
+    scenes = []
+    idx = getattr(library, "_index", {})
+    raw_scenes = idx.get("scenes", {}) if isinstance(idx, dict) else {}
+    if isinstance(raw_scenes, dict):
+        scenes = list(raw_scenes.values())
     if not scenes:
         # Fallback: walk filesystem
         for p_mp4 in library_base.rglob("*.mp4"):

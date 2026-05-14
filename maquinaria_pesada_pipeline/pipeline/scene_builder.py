@@ -345,6 +345,8 @@ def _try_anthropic_timeline(content: dict, transcription: dict,
     model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-5")
     log.info(f"Solicitando scene_timeline a Claude ({model})...")
 
+    import time as _t
+    _t0 = _t.monotonic()
     try:
         msg = client.messages.create(
             model=model,
@@ -362,6 +364,12 @@ def _try_anthropic_timeline(content: dict, transcription: dict,
     except Exception as exc:
         log.warning(f"Error llamando a Anthropic: {exc}. Fallback a heuristico.")
         return None
+    try:
+        from cockpit.core.usage_tracker import track_anthropic
+        track_anthropic(msg, model=model, source="pipeline.scene_builder",
+                        kind="generation", latency_ms=int((_t.monotonic() - _t0) * 1000))
+    except ImportError:
+        pass
 
     try:
         text = msg.content[0].text if msg.content else ""

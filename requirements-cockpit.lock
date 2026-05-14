@@ -1,0 +1,22 @@
+# Lockfile generado a mano con versiones pineadas conservadoras.
+# Regenerar con: pip-compile --output-file=requirements-cockpit.lock requirements-cockpit.txt
+# (requiere conexión y resolución de la red de PyPI).
+#
+# Las versiones aquí son mínimos validados en mayo 2026. CI usa
+# requirements-cockpit.txt (rangos) para detectar drift; este lock se usa
+# para reproducibilidad estricta en producción.
+
+streamlit==1.39.0
+python-dotenv==1.0.1
+pdfplumber==0.11.4
+pydub==0.25.1
+streamlit-autorefresh==1.0.1
+psutil==6.1.0
+anthropic==0.40.0
+openai==1.55.0
+
+# Transitive críticas que conviene pinear:
+pydantic==2.9.2
+httpx==0.27.2
+requests==2.32.3
+typing-extensions==4.12.2

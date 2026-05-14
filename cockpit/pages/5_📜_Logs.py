@@ -13,6 +13,7 @@ from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import SourceConnector  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Logs", page_icon="📜", layout="wide")
 inject_theme()
@@ -42,3 +43,28 @@ if auto:
 
 st.divider()
 src.render_viewer(sel)
+
+
+def _tail_for_ai() -> str:
+    try:
+        text = sel.read_text(encoding="utf-8", errors="replace")
+    except OSError as e:
+        return f"(no se pudo leer: {e})"
+    lines = text.splitlines()
+    return "\n".join(lines[-150:])
+
+
+render_improve_block(
+    source=f"log:{sel.name}",
+    context=(
+        f"Log de producción «{sel.name}» ({sel.stat().st_size} bytes). "
+        "Al pulsar Generar, se añaden las últimas 150 líneas como contexto."
+    ),
+    extra_context_builder=_tail_for_ai,
+    title="✨ Diagnóstico con IA",
+    default_prompt=(
+        "Analiza estas últimas líneas del log y detecta: errores recurrentes, "
+        "warnings que ignorar, próximas acciones recomendadas."
+    ),
+    kind="improvement",
+)

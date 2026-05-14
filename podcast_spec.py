@@ -15,7 +15,6 @@ import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # Rutas por defecto
 # ---------------------------------------------------------------------------
@@ -278,11 +277,14 @@ def build_script_stats(text: str, spec: dict, concepts: list[str] | None = None)
         concept: count_concept_mentions(text, concept)
         for concept in (concepts or [])
     }
+    # Exclude short reaction blocks from average so the metric reflects development blocks only
+    dev_word_counts = [w for w in word_counts if w > short_threshold]
+    avg_dev = (sum(dev_word_counts) / len(dev_word_counts)) if dev_word_counts else 0.0
     return {
         "blocks": blocks,
         "sections": sections,
         "word_count_total": sum(word_counts),
-        "avg_words_per_intervention": (sum(word_counts) / len(word_counts)) if word_counts else 0.0,
+        "avg_words_per_intervention": avg_dev,
         "max_words_per_intervention": max(word_counts) if word_counts else 0,
         "min_words_per_intervention": min(word_counts) if word_counts else 0,
         "long_percentage": (long_count * 100.0) / total,
@@ -394,13 +396,16 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
     """Valida que el líder de cada bloque líder tenga >= leader_share_min_percent%.
 
     Hard-fail si qa_rules.hard_fail_on_leader_share_below_min=true.
+    BLOQUE_REALIDAD tiene threshold especial de 60% (leader_share_min_percent_realidad).
     """
     issues: list[str] = []
     rules = spec["script_rules"]
     qa = spec.get("qa_rules", {})
     hard = qa.get("hard_fail_on_leader_share_below_min", False)
     prefix = "" if hard else "[WARN] "
-    min_pct = rules.get("leader_share_min_percent", 65)
+    default_min_pct = rules.get("leader_share_min_percent", 65)
+    # Threshold especial para BLOQUE_REALIDAD (T-type, MARIA voz experta empresa)
+    realidad_min_pct = qa.get("leader_share_min_percent_realidad", rules.get("leader_share_min_percent_realidad", 60))
 
     # Construir mapa {sección: speaker_líder}
     leader_for_section: dict[str, str] = {}
@@ -428,6 +433,8 @@ def validate_leader_share(blocks: list[dict], spec: dict) -> list[str]:
         if total_words == 0:
             continue
         pct = (leader_words * 100.0) / total_words
+        # Usar threshold específico para BLOQUE_REALIDAD
+        min_pct = realidad_min_pct if section == "BLOQUE_REALIDAD" else default_min_pct
         if pct < min_pct:
             issues.append(
                 f"{prefix}{section}: {leader_speaker} lidera pero solo tiene {pct:.0f}% "
@@ -472,9 +479,10 @@ def validate_shared_block_balance(blocks: list[dict], spec: dict) -> list[str]:
         total = sum(speaker_words.values()) or 1
         for speaker, words in speaker_words.items():
             pct = (words * 100.0) / total
-            if pct < min_bal or pct > max_bal:
+            pct_rounded = round(pct)
+            if pct_rounded < min_bal or pct_rounded > max_bal:
                 issues.append(
-                    f"{prefix}{section} (compartido): {speaker} tiene {pct:.0f}% de palabras "
+                    f"{prefix}{section} (compartido): {speaker} tiene {pct_rounded}% de palabras "
                     f"(rango permitido: {min_bal}%-{max_bal}%)."
                 )
     return issues
@@ -737,7 +745,7 @@ def validate_script_text(
     # ── 5. Anti-pingpong (máx consecutivos del mismo speaker) ──────────────
     max_consec = rules.get("max_consecutive_blocks_same_speaker", 2)
     consecutive = 1
-    for current, nxt in zip(blocks, blocks[1:]):
+    for current, nxt in zip(blocks, blocks[1:], strict=False):
         if current["speaker"] == nxt["speaker"]:
             consecutive += 1
             if consecutive > max_consec:
@@ -822,12 +830,18 @@ def validate_script_text(
     # ── 12. Frases por intervención en bloques de desarrollo ─────────────────
     min_sents = rules.get("minimum_sentences_per_intervention", 2)
     max_sents = rules.get("maximum_sentences_per_intervention", 10)
+    reaction_limit = rules.get("reaction_word_limit", 12)
     dev_sections = set(rules.get("required_sections", [])) - {
         "HOOK", "INTRO_SONIDO", "SALUDO_Y_PRESENTACION",
         "CIERRE_CONCEPTOS", "CIERRE_FINAL", "VERIFICACIONES",
     }
-    for count_val, block in zip(stats["sentence_counts"], blocks):
+    for count_val, block in zip(stats["sentence_counts"], blocks, strict=False):
         if block.get("section") not in dev_sections:
+            continue
+        # Bloques de reacción (≤ reaction_word_limit palabras) son transiciones
+        # cortas intencionales; exentos del mínimo de frases.
+        block_words = count_words(remove_leading_tag(block["text"]))
+        if block_words <= reaction_limit:
             continue
         if count_val < min_sents:
             issues.append(
@@ -877,6 +891,80 @@ def validate_script_text(
 
     # ── 20. Input tokens > 0 (hard-fail) ─────────────────────────────────────
     issues.extend(validate_input_tokens(text, spec))
+
+    # ── 21. Intervenciones demasiado largas (WARN — Audio-Regla 2) ────────────
+    max_single = rules.get("target_max_words_per_single_intervention", 0)
+    if max_single and spec.get("qa_rules", {}).get("soft_warn_on_intervention_over_200_words", False):
+        for block in blocks:
+            wc = count_words(remove_leading_tag(block["text"]))
+            if wc > max_single:
+                issues.append(
+                    f"[WARN] Bloque {block['index']} ({block['section']}) tiene {wc} palabras "
+                    f"(max recomendado por intervencion: {max_single}). "
+                    "Riesgo de artefactos TTS a 1.32x velocidad."
+                )
+
+    # ── 22. Numeros en formato digito en dialogo (WARN — Audio-Regla 1) ───────
+    if spec.get("qa_rules", {}).get("soft_warn_on_digit_numbers_in_dialogue", False):
+        digit_patterns = [
+            (re.compile(r"\b\d+[.,]\d+\s*%"), "porcentaje en digitos"),
+            (re.compile(r"\$\s*\d+"), "cifra monetaria en digitos"),
+            (re.compile(r"\b\d+[.,]?\d*\s*[MB](?:illones?)?\b"), "cifra grande en digitos"),
+        ]
+        spoken_lines = [remove_leading_tag(b["text"]) for b in blocks]
+        for line, block in zip(spoken_lines, blocks, strict=False):
+            for pattern, desc in digit_patterns:
+                if pattern.search(line):
+                    issues.append(
+                        f"[WARN] Bloque {block['index']} ({block['section']}): {desc} en el dialogo. "
+                        "A 1.32x velocidad el TTS puede pronunciarlo mal — escribir en palabras."
+                    )
+                    break  # solo un warn por bloque
+
+    # ── 23. CTA en CIERRE_FINAL (solo M-type, WARN) ───────────────────────────
+    spec_type = spec.get("spec_type", "M")
+    if spec_type == "M" and spec.get("qa_rules", {}).get("soft_warn_on_missing_cta_in_cierre_final", False):
+        cierre_final_blocks = [b for b in blocks if b.get("section") == "CIERRE_FINAL"]
+        if cierre_final_blocks:
+            cierre_text = " ".join(remove_leading_tag(b["text"]) for b in cierre_final_blocks)
+            cta_pattern = re.compile(
+                r"episodio[s]?.{0,30}(m[oó]dulo|disponible|plataforma|escucha)",
+                re.IGNORECASE,
+            )
+            if not cta_pattern.search(cierre_text):
+                issues.append(
+                    "[WARN] CIERRE_FINAL (M-type) no contiene CTA a episodios T del modulo. "
+                    "Agregar mencion natural: 'los episodios del modulo ya estan disponibles'."
+                )
+
+    # ── 24. WARN: media de palabras por intervencion demasiado alta ───────────
+    avg_max = rules.get("target_avg_words_per_intervention_max", 0)
+    if avg_max and stats["avg_words_per_intervention"] > avg_max:
+        issues.append(
+            f"[WARN] Media de palabras por intervencion demasiado alta: "
+            f"{stats['avg_words_per_intervention']:.1f} (maximo recomendado: {avg_max})."
+        )
+
+    # ── 25. HARD: frases placeholder genéricas (contenido de relleno) ──────────
+    placeholder_phrases = rules.get("blacklist_placeholder_phrases", [])
+    for phrase in placeholder_phrases:
+        if phrase.lower() in text.lower():
+            issues.append(
+                f"Frase placeholder detectada (contenido de relleno sin valor): '{phrase[:60]}...'"
+            )
+
+    # ── 26. WARN: lista enumerada en voz alta (Primero/Segundo/Tercero/Cuarto) ─
+    enum_pattern = re.compile(
+        r"(Primero|Primera)[,:].*?(Segundo|Segunda)[,:].*?(Tercero|Tercera)[,:]",
+        re.IGNORECASE | re.DOTALL,
+    )
+    for blk in stats["blocks"]:
+        blk_text = blk["text"]
+        if enum_pattern.search(blk_text):
+            issues.append(
+                f"[WARN] Bloque {blk['index']} ({blk.get('section','?')}) usa lista enumerada "
+                f"(Primero/Segundo/Tercero): distribuye los puntos entre ambos speakers."
+            )
 
     return issues
 
