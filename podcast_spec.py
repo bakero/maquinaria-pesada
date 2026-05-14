@@ -361,6 +361,162 @@ def count_concept_mentions(script_text: str, concept: str) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Glosario unificado: parsing y cobertura de conceptos
+# ---------------------------------------------------------------------------
+#
+# El glosario (PDFs/auxiliares/glosario_unificado.md) tiene entradas con forma:
+#
+#     ## Término del concepto
+#     **Fuentes:** M1_T8, M5_T2, M5_RESUMEN
+#     Definición en una o dos líneas.
+#
+# La línea `**Fuentes:**` es de lectura programática: indica en qué PDFs fuente
+# (formato MX_TY o MX_RESUMEN) aparece el concepto. `generar_guion.py` la usa
+# para alimentar conceptos del glosario al prompt y `validar_episodio.py` para
+# medir qué porcentaje de ellos aparece realmente en el guion generado.
+
+DEFAULT_GLOSSARY_PATH = Path("PDFs/auxiliares/glosario_unificado.md")
+
+_GLOSSARY_HEADING_RE = re.compile(r"^##\s+(.+?)\s*$")
+_GLOSSARY_SOURCES_RE = re.compile(r"^\*\*Fuentes:\*\*\s*(.+?)\s*$")
+
+
+def source_code_from_pdf_path(pdf_path: str | Path) -> str | None:
+    """Deriva el código de fuente del glosario a partir del nombre de un PDF.
+
+    PDFs/temas/M7_T1_que_es_rag.pdf           → "M7_T1"
+    PDFs/resumenes/RESUMEN_M3_Machine...pdf   → "M3_RESUMEN"
+    PDFs/M3_T_Machine_Learning_Clasico.pdf    → "M3"  (PDF de módulo completo)
+    """
+    stem = Path(pdf_path).stem
+    m = re.match(r"RESUMEN_M(\d+)_", stem, re.IGNORECASE)
+    if m:
+        return f"M{int(m.group(1))}_RESUMEN"
+    m = re.match(r"M(\d+)_T(\d+)(?:_|$)", stem, re.IGNORECASE)
+    if m:
+        return f"M{int(m.group(1))}_T{int(m.group(2))}"
+    m = re.match(r"M(\d+)(?:_T)?(?:_|$)", stem, re.IGNORECASE)
+    if m:
+        return f"M{int(m.group(1))}"
+    return None
+
+
+def parse_glossary(path: str | Path = DEFAULT_GLOSSARY_PATH) -> dict[str, list[str]]:
+    """Parsea el glosario unificado y devuelve ``{término: [códigos de fuente]}``.
+
+    Lee las entradas ``## Término`` seguidas de ``**Fuentes:** M1_T2, M3_RESUMEN``.
+    Ignora los encabezados de sección (``## Conceptos base``, ``## Módulo N — …``).
+    Devuelve un dict vacío si el archivo no existe.
+    """
+    path = Path(path)
+    if not path.exists():
+        return {}
+    result: dict[str, list[str]] = {}
+    current_term: str | None = None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        heading = _GLOSSARY_HEADING_RE.match(line)
+        if heading:
+            term = heading.group(1).strip()
+            low = normalize_text_for_match(term)
+            if low.startswith(("conceptos base", "modulo ")):
+                current_term = None
+            else:
+                current_term = term
+                result.setdefault(current_term, [])
+            continue
+        sources = _GLOSSARY_SOURCES_RE.match(line)
+        if sources and current_term:
+            codes = [c.strip().upper() for c in sources.group(1).split(",") if c.strip()]
+            result[current_term] = codes
+            current_term = None  # solo una línea de Fuentes por término
+    return result
+
+
+def glossary_concepts_for_sources(
+    sources: str | list[str],
+    glossary: dict[str, list[str]] | None = None,
+    path: str | Path = DEFAULT_GLOSSARY_PATH,
+) -> list[str]:
+    """Devuelve los conceptos del glosario cuyas Fuentes incluyen alguno de ``sources``.
+
+    ``sources`` puede ser un único código ("M7_T1") o una lista de códigos.
+    """
+    if glossary is None:
+        glossary = parse_glossary(path)
+    wanted = {sources.upper()} if isinstance(sources, str) else {s.upper() for s in sources}
+    return [term for term, codes in glossary.items() if wanted & set(codes)]
+
+
+def glossary_term_aliases(term: str) -> list[str]:
+    """Genera variantes normalizadas para detectar un término del glosario en texto.
+
+    "LoRA (Low-Rank Adaptation)"  → ["lora", "low-rank adaptation"]
+    "BFS / DFS (...)"             → ["bfs", "dfs", ...]
+    """
+    raw_variants: list[str] = []
+    main = re.sub(r"\(.*?\)", "", term).strip()
+    if main:
+        raw_variants.append(main)
+    # El contenido entre paréntesis se trata como alias solo cuando la parte
+    # principal es un único token (acrónimo o término corto: "LoRA", "BERT",
+    # "Chain-of-Thought"). Así "LoRA (Low-Rank Adaptation)" añade la expansión,
+    # pero "Gap prototipo-producción (RAG)" NO añade "RAG" como alias —ahí el
+    # paréntesis es una referencia cruzada, no un sinónimo.
+    paren = re.search(r"\(([^)]+)\)", term)
+    if paren and len(main.split()) == 1:
+        inner = paren.group(1).strip()
+        if "," not in inner and len(inner.split()) <= 6:
+            raw_variants.append(inner)
+    extra: list[str] = []
+    for variant in list(raw_variants):
+        for piece in re.split(r"\s+/\s+|\s+—\s+", variant):
+            piece = piece.strip()
+            if piece and piece not in raw_variants and piece not in extra:
+                extra.append(piece)
+    raw_variants.extend(extra)
+    aliases: list[str] = []
+    for variant in raw_variants:
+        norm = re.sub(
+            r"\s+",
+            " ",
+            re.sub(r"[^a-z0-9áéíóúüñ\s-]", " ", normalize_text_for_match(variant)),
+        ).strip()
+        if norm and len(norm) >= 3 and norm not in aliases:
+            aliases.append(norm)
+    return aliases
+
+
+def concept_in_text(text: str, concept: str) -> bool:
+    """True si algún alias del concepto del glosario aparece en el texto.
+
+    Tolera el plural (``embedding`` / ``embeddings``) con un sufijo opcional.
+    """
+    normalized = normalize_text_for_match(text)
+    for alias in glossary_term_aliases(concept):
+        if re.search(r"\b" + re.escape(alias) + r"(?:e?s)?\b", normalized):
+            return True
+    return False
+
+
+def compute_glossary_coverage(text: str, concepts: list[str]) -> dict:
+    """Mide la cobertura de una lista de conceptos del glosario en un texto.
+
+    Devuelve ``{'total', 'covered', 'missing', 'coverage_pct'}``.
+    """
+    if not concepts:
+        return {"total": 0, "covered": [], "missing": [], "coverage_pct": 0}
+    covered = [c for c in concepts if concept_in_text(text, c)]
+    missing = [c for c in concepts if c not in covered]
+    pct = int(round(len(covered) / len(concepts) * 100))
+    return {
+        "total": len(concepts),
+        "covered": covered,
+        "missing": missing,
+        "coverage_pct": pct,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Validación de blacklist de interjecciones
 # ---------------------------------------------------------------------------
 

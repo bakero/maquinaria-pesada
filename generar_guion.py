@@ -51,12 +51,16 @@ from guion_common import (
 )
 from podcast_spec import (
     build_script_stats,
+    compute_glossary_coverage,
     extract_theme_concepts,
+    glossary_concepts_for_sources,
     guion_to_ep_code,
     load_spec,
     normalize_text_for_match,
     opening_speaker,
+    parse_glossary,
     read_text,
+    source_code_from_pdf_path,
     validate_script_text,
 )
 
@@ -226,8 +230,10 @@ def build_generation_prompt(
     concept_list: list[str],
     ficha: dict,
     hard_audio: list[str],
+    glossary_concepts: list[str] | None = None,
 ) -> tuple[str, str]:
     """Construye system + user para la generación del guion M."""
+    glossary_concepts = glossary_concepts or []
 
     other = "IAGO" if opener == "MARIA" else "MARIA"
 
@@ -264,6 +270,12 @@ PDF RESUMEN DEL MÓDULO (fuente primaria para bloques conceptuales):
 
 CONCEPTOS CLAVE EXTRAÍDOS DEL PDF (cubre al menos el 75%):
 {json.dumps(concept_list, ensure_ascii=False)}
+
+CONCEPTOS DEL GLOSARIO UNIFICADO ASOCIADOS A ESTA FUENTE
+(son los términos canónicos del corpus presentes en el PDF fuente; intégralos de
+forma natural en el guion con su definición canónica — el validador medirá qué
+porcentaje aparece realmente, objetivo >= 75%):
+{json.dumps(glossary_concepts, ensure_ascii=False)}
 
 TÉRMINOS DIFÍCILES PARA AUDIO (traduce y aterriza en el guion):
 {json.dumps(hard_audio, ensure_ascii=False)}
@@ -381,6 +393,7 @@ def build_verification_section(
     concept_list: list[str],
     usage: TokenUsage,
     ficha: dict,
+    glossary_concepts: list[str] | None = None,
 ) -> str:
     stats = build_script_stats(script_body, spec, concept_list)
     rules = spec["script_rules"]
@@ -401,6 +414,20 @@ def build_verification_section(
         marker = "[OK]" if mentions >= 1 else "[--]"
         lines.append(f"## {marker} {concept}: {mentions} menciones")
     lines.append(f"## Cobertura total: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
+
+    # Cobertura de conceptos del glosario unificado asociados a la fuente.
+    if glossary_concepts:
+        gloss = compute_glossary_coverage(script_body, glossary_concepts)
+        lines.extend([
+            "##",
+            "## COBERTURA DE CONCEPTOS DEL GLOSARIO UNIFICADO:",
+            f"## Conceptos del glosario en la fuente: {gloss['total']}",
+            f"## Cubiertos en el guion: {len(gloss['covered'])}",
+            f"## Cobertura glosario: {gloss['coverage_pct']}%",
+        ])
+        if gloss["missing"]:
+            lines.append(f"## Sin mencionar: {', '.join(gloss['missing'][:10])}")
+
     lines.extend([
         "##",
         "## APLICACION_PRACTICA:",
@@ -486,6 +513,23 @@ def main() -> None:
         concept_list = extract_theme_concepts(pdf_text, limit=8)
     print(f"         Conceptos: {concept_list[:5]}...")
 
+    # ── Conceptos del glosario unificado asociados a la fuente ───────────────
+    source_code = source_code_from_pdf_path(pdf_path)
+    glossary_concepts: list[str] = []
+    if source_code:
+        # El PDF fuente es el RESUMEN del módulo; si no hubiera conceptos
+        # etiquetados con MX_RESUMEN, se cae a todos los del módulo (MX y MX_TY).
+        glossary_path = BASE_DIR / "PDFs" / "auxiliares" / "glosario_unificado.md"
+        glossary_concepts = glossary_concepts_for_sources(source_code, path=glossary_path)
+        if not glossary_concepts and "_RESUMEN" in source_code:
+            mod_prefix = source_code.split("_")[0]  # "M3"
+            full = parse_glossary(glossary_path)
+            glossary_concepts = [
+                term for term, codes in full.items()
+                if any(c == mod_prefix or c.startswith(mod_prefix + "_") for c in codes)
+            ]
+        print(f"         Glosario ({source_code}): {len(glossary_concepts)} conceptos")
+
     # ── Documentos vivos ─────────────────────────────────────────────────────
     print("  [2/4] Cargando documentos vivos y extrayendo APLICACION_PRACTICA...")
     live_docs = load_live_docs(BASE_DIR)
@@ -511,7 +555,7 @@ def main() -> None:
 
     system_prompt, user_prompt = build_generation_prompt(
         spec, spec_markdown, modulo_n, topic, pdf_text,
-        opener, concept_list, ficha, hard_audio,
+        opener, concept_list, ficha, hard_audio, glossary_concepts,
     )
 
     local_issues: list[str] = []
@@ -626,7 +670,9 @@ def main() -> None:
         draft = _fix_antipingpong(draft, spec)
 
         # ── Validación ───────────────────────────────────────────────────────
-        verification = build_verification_section(draft, spec, concept_list, usage, ficha)
+        verification = build_verification_section(
+            draft, spec, concept_list, usage, ficha, glossary_concepts,
+        )
         draft_with_ver = draft.rstrip() + "\n\n" + verification
 
         local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)

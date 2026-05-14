@@ -50,11 +50,14 @@ from guion_common import (  # noqa: E402
 )
 from podcast_spec import (  # noqa: E402
     build_script_stats,
+    compute_glossary_coverage,
     extract_theme_concepts,
+    glossary_concepts_for_sources,
     guion_to_ep_code,
     load_spec,
     opening_speaker,
     read_text,
+    source_code_from_pdf_path,
     validate_script_text,
 )
 
@@ -128,8 +131,10 @@ def build_generation_prompt(
     pdf_text: str,
     opener: str,
     concept_list: list[str],
+    glossary_concepts: list[str] | None = None,
 ) -> tuple[str, str]:
     """Construye system + user para el guion T."""
+    glossary_concepts = glossary_concepts or []
 
     # Asignación de roles por bloque según T-spec v5
     # Yago lidera BLOQUE_PANORAMA, compartido BLOQUE_COMO, Maria lidera BLOQUE_REALIDAD
@@ -169,6 +174,12 @@ PDF DEL TEMA (fuente principal):
 
 CONCEPTOS CLAVE DEL PDF (cubre al menos el 75%):
 {json.dumps(concept_list, ensure_ascii=False)}
+
+CONCEPTOS DEL GLOSARIO UNIFICADO ASOCIADOS A ESTE TEMA
+(son los términos canónicos del corpus presentes en el PDF fuente; intégralos de
+forma natural en el guion con su definición canónica — el validador medirá qué
+porcentaje aparece realmente, objetivo >= 75%):
+{json.dumps(glossary_concepts, ensure_ascii=False)}
 
 FUENTE DE CASOS EMPRESARIALES VERIFICADOS (usar prioritariamente en BLOQUE_REALIDAD):
 {casos_text if casos_text else "(archivo no disponible — usar formulaciones prudentes sin cifras inventadas)"}
@@ -254,6 +265,7 @@ def build_verification_section(
     spec: dict,
     concept_list: list[str],
     usage: TokenUsage,
+    glossary_concepts: list[str] | None = None,
 ) -> str:
     stats = build_script_stats(script_body, spec, concept_list)
     rules = spec["script_rules"]
@@ -273,6 +285,20 @@ def build_verification_section(
         marker = "OK" if mentions >= 1 else "FALTA"
         lines.append(f"## [{marker}] {concept}: {mentions} menciones")
     lines.append(f"## Cobertura: {coverage_pct}% (objetivo: {rules.get('minimum_pdf_coverage_percent', 75)}%)")
+
+    # Cobertura de conceptos del glosario unificado asociados al PDF del tema.
+    if glossary_concepts:
+        gloss = compute_glossary_coverage(script_body, glossary_concepts)
+        lines.extend([
+            "##",
+            "## COBERTURA DE CONCEPTOS DEL GLOSARIO UNIFICADO:",
+            f"## Conceptos del glosario en el tema: {gloss['total']}",
+            f"## Cubiertos en el guion: {len(gloss['covered'])}",
+            f"## Cobertura glosario: {gloss['coverage_pct']}%",
+        ])
+        if gloss["missing"]:
+            lines.append(f"## Sin mencionar: {', '.join(gloss['missing'][:10])}")
+
     lines.extend([
         "##",
         "## TOKENS ANTHROPIC:",
@@ -336,6 +362,14 @@ def main() -> None:
         concept_list = extract_theme_concepts(pdf_text, limit=8)
     print(f"         Conceptos: {concept_list[:4]}...")
 
+    # ── Conceptos del glosario unificado asociados al PDF del tema ───────────
+    source_code = source_code_from_pdf_path(pdf_path)  # p. ej. "M7_T1"
+    glossary_concepts: list[str] = []
+    if source_code:
+        glossary_path = BASE_DIR / "PDFs" / "auxiliares" / "glosario_unificado.md"
+        glossary_concepts = glossary_concepts_for_sources(source_code, path=glossary_path)
+        print(f"         Glosario ({source_code}): {len(glossary_concepts)} conceptos")
+
     # ── Apertura ─────────────────────────────────────────────────────────────
     opener = opening_speaker(ep_code, spec)
 
@@ -346,7 +380,7 @@ def main() -> None:
 
     system_prompt, user_prompt = build_generation_prompt(
         spec, spec_markdown, modulo_n, topic_display,
-        pdf_text, opener, concept_list,
+        pdf_text, opener, concept_list, glossary_concepts,
     )
 
     local_issues: list[str] = []
@@ -442,7 +476,9 @@ def main() -> None:
         draft = _split_oversized_sentence_blocks(draft, spec=spec)
         draft = _fix_antipingpong(draft, spec)
 
-        verification = build_verification_section(draft, spec, concept_list, usage)
+        verification = build_verification_section(
+            draft, spec, concept_list, usage, glossary_concepts,
+        )
         draft_with_ver = draft.rstrip() + "\n\n" + verification
 
         local_issues = validate_script_text(draft_with_ver, ep_code, spec, concept_list, base_dir=BASE_DIR)

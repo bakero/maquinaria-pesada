@@ -41,6 +41,15 @@ load_dotenv(override=True)
 
 from pydub import AudioSegment
 
+sys.path.insert(0, str(Path(__file__).parent))
+from podcast_spec import (  # noqa: E402
+    compute_glossary_coverage,
+    episode_number,
+    glossary_concepts_for_sources,
+    parse_glossary,
+    source_code_from_pdf_path,
+)
+
 # ----------------------------
 # Utilidades de consola
 # ----------------------------
@@ -253,6 +262,84 @@ def check_blocks(log_text: Optional[str], guion_text: Optional[str]) -> Tuple[Ch
 
 
 # ----------------------------
+# Cobertura de conceptos del glosario
+# ----------------------------
+
+GLOSSARY_DEFAULT_PATH = Path(__file__).parent / "PDFs" / "auxiliares" / "glosario_unificado.md"
+
+
+def extract_spoken_text(guion_text: str) -> str:
+    """Texto hablado del guion: solo líneas IAGO:/MARÍA:, sin el prefijo del speaker.
+
+    Excluye la sección # VERIFICACIONES y los encabezados de sección, de modo que
+    la cobertura mida el diálogo real y no los nombres de conceptos listados al final.
+    """
+    spoken: list[str] = []
+    for line in iter_lines(guion_text):
+        if GUION_LINE_RE.match(line):
+            spoken.append(re.sub(r"^(IAGO|MAR[IÍ]A)\s*:\s*", "", line, flags=re.IGNORECASE))
+    return "\n".join(spoken)
+
+
+def resolve_glossary_sources(ep: str, guion_path: Path, pdf_fuente: str | None) -> list[str]:
+    """Determina los códigos de fuente del glosario (MX_TY / MX_RESUMEN) a evaluar.
+
+    Si se pasa --pdf-fuente se deriva de su nombre; si no, se infiere el número de
+    módulo desde el ep o el nombre del guion y se usa el RESUMEN del módulo, que es
+    el PDF que `generar_guion.py` usa como fuente.
+    """
+    if pdf_fuente:
+        code = source_code_from_pdf_path(pdf_fuente)
+        return [code] if code else []
+    for candidate in (ep, guion_path.stem):
+        try:
+            n = episode_number(candidate)
+            return [f"M{n}_RESUMEN"]
+        except ValueError:
+            continue
+    return []
+
+
+def check_glossary_coverage(
+    guion_text: str | None,
+    ep: str,
+    guion_path: Path,
+    pdf_fuente: str | None,
+    glosario_path: Path,
+) -> tuple[CheckResult, str]:
+    """Mide qué % de conceptos del glosario asociados al PDF fuente aparecen en el guion."""
+    name = "Cobertura de conceptos del glosario en el guion"
+    if guion_text is None:
+        return CheckResult(name, "WARN", "Guion no disponible"), "n/a"
+    glossary = parse_glossary(glosario_path)
+    if not glossary:
+        return CheckResult(name, "WARN", f"Glosario no encontrado: {glosario_path}"), "n/a"
+    sources = resolve_glossary_sources(ep, guion_path, pdf_fuente)
+    if not sources:
+        return CheckResult(name, "WARN", "No se pudo inferir el PDF fuente (usa --pdf-fuente)"), "n/a"
+    concepts = glossary_concepts_for_sources(sources, glossary=glossary)
+    # Fallback: si el RESUMEN no tiene conceptos etiquetados, usar todos los del módulo.
+    if not concepts and sources[0].endswith("_RESUMEN"):
+        mod = sources[0].split("_")[0]
+        concepts = [
+            t for t, codes in glossary.items()
+            if any(c == mod or c.startswith(mod + "_") for c in codes)
+        ]
+    if not concepts:
+        return CheckResult(name, "WARN", f"Sin conceptos de glosario para {', '.join(sources)}"), "n/a"
+    cov = compute_glossary_coverage(extract_spoken_text(guion_text), concepts)
+    bar = progress_bar(len(cov["covered"]), cov["total"])
+    detail = (
+        f"{cov['coverage_pct']}% — {len(cov['covered'])}/{cov['total']} conceptos "
+        f"de {', '.join(sources)}"
+    )
+    if cov["missing"]:
+        detail += f" | sin mencionar: {', '.join(cov['missing'][:6])}"
+    status = "OK" if cov["coverage_pct"] >= 75 else "WARN"
+    return CheckResult(name, status, detail), bar
+
+
+# ----------------------------
 # Estimacion de creditos
 # ----------------------------
 
@@ -326,6 +413,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--log",   default=None,  help="Ruta log (opcional, se infiere de --ep)")
     p.add_argument("--min",   dest="min_min", type=float, default=8.0,  help="Duracion minima en minutos")
     p.add_argument("--max",   dest="max_min", type=float, default=60.0, help="Duracion maxima en minutos")
+    p.add_argument(
+        "--pdf-fuente", default=None,
+        help="Ruta al PDF fuente del guion (para medir cobertura de conceptos del glosario). "
+             "Si se omite, se infiere el RESUMEN del modulo desde el ep/guion.",
+    )
+    p.add_argument(
+        "--glosario", default=None,
+        help="Ruta al glosario unificado (por defecto PDFs/auxiliares/glosario_unificado.md)",
+    )
     return p.parse_args()
 
 
@@ -377,6 +473,12 @@ def main() -> int:
     r_blocks, bar = check_blocks(log_text, guion_text)
     results.append(r_blocks)
 
+    glosario_path = Path(args.glosario) if args.glosario else GLOSSARY_DEFAULT_PATH
+    r_glossary, gloss_bar = check_glossary_coverage(
+        guion_text, args.ep, guion_path, args.pdf_fuente, glosario_path
+    )
+    results.append(r_glossary)
+
     # Imprimir checklist
     print(c("  CHECKLIST", FG_CYAN))
     print(c("  " + "─" * 38, FG_CYAN))
@@ -387,6 +489,9 @@ def main() -> int:
     # Barra de progreso
     if bar != "n/a":
         print(f"  {c('Progreso bloques', FG_GRAY)}: {bar}")
+        print()
+    if gloss_bar != "n/a":
+        print(f"  {c('Cobertura glosario', FG_GRAY)}: {gloss_bar}")
         print()
 
     verdict, severity = summarize(results)
