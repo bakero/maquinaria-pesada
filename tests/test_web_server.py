@@ -126,6 +126,27 @@ def test_economics_includes_summary(fake_repo):
     assert isinstance(eco["summary"], dict)
 
 
+def test_connectors_returns_registry(fake_repo):
+    """load_connectors itera el REGISTRY real y devuelve su .status()."""
+    import web_server
+    out = web_server.load_connectors()
+    assert out["ok"] is True
+    assert len(out["connectors"]) > 0
+    cats = {c["category"] for c in out["connectors"]}
+    assert cats <= {"service", "pipeline", "source"}
+    for c in out["connectors"]:
+        assert "status" in c and "ok" in c["status"]
+
+
+def test_logs_list(fake_repo):
+    """load_logs_list lista los archivos reales de logs/."""
+    import web_server
+    out = web_server.load_logs_list()
+    assert out["ok"] is True
+    paths_ = [f["path"] for f in out["files"]]
+    assert "ai_usage.jsonl" in paths_
+
+
 def test_ai_chat_fallback_no_key(fake_repo, monkeypatch):
     """Sin ANTHROPIC_API_KEY ni paquete real, devuelve ok:false sin crashear."""
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)

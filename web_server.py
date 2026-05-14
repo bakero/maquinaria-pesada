@@ -26,6 +26,8 @@ Endpoints (todos JSON salvo donde se indique):
     GET  /api/optimization       → recomendaciones de ahorro (heurísticas
                                    reales sobre ai_usage.jsonl)
     GET  /api/components-map     → grafo de cockpit/components_map.json
+    GET  /api/connectors         → estado real de los conectores registrados
+    GET  /api/logs               → archivos de logs/ (path, size, mtime)
     GET  /api/live               → procesos en producción (psutil best-effort)
     GET  /api/recent-files       → últimos artefactos modificados
 
@@ -302,6 +304,63 @@ def load_components_map() -> dict:
         return {"ok": True, **components_map.load().to_dict()}
     except Exception as exc:
         return {"ok": False, "error": str(exc), "nodes": [], "edges": []}
+
+
+def load_connectors() -> dict:
+    """Estado real de los conectores registrados (services/pipelines/sources).
+
+    Cada conector expone .status() — para servicios comprueba credenciales
+    en .env, para pipelines que el script exista, etc."""
+    try:
+        from cockpit import connectors
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "connectors": []}
+    out = []
+    for cid, c in connectors.REGISTRY.items():
+        try:
+            s = c.status()
+            st = {"ok": bool(s.ok), "detail": s.detail or ""}
+        except Exception as exc:  # noqa: BLE001
+            st = {"ok": False, "detail": f"error: {exc}"}
+        out.append({
+            "id": cid,
+            "category": c.category,
+            "label": c.label or cid,
+            "icon": c.icon or "",
+            "description": c.description or "",
+            "script": getattr(c, "script", "") or "",
+            "status": st,
+        })
+    out.sort(key=lambda c: (c["category"], c["id"]))
+    return {"ok": True, "connectors": out}
+
+
+def load_logs_list() -> dict:
+    """Lista los archivos de logs/ (jsonl/log/json) ordenados por mtime."""
+    try:
+        from cockpit.core import paths
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "files": []}
+    logs_dir = paths.repo_root() / "logs"
+    if not logs_dir.exists():
+        return {"ok": True, "files": []}
+    rows: list[tuple[float, dict]] = []
+    for p in logs_dir.rglob("*"):
+        if not p.is_file() or p.suffix.lower() not in (".jsonl", ".log", ".json"):
+            continue
+        try:
+            stt = p.stat()
+        except OSError:
+            continue
+        rel = p.relative_to(logs_dir).as_posix()
+        rows.append((stt.st_mtime, {
+            "path": rel,
+            "size": stt.st_size,
+            "mtime": stt.st_mtime,
+            "t": _human_ago(stt.st_mtime),
+        }))
+    rows.sort(key=lambda r: -r[0])
+    return {"ok": True, "files": [r[1] for r in rows]}
 
 
 def load_recent_files() -> list[dict]:
@@ -777,6 +836,10 @@ class CockpitHandler(BaseHTTPRequestHandler):
             return self._send_json(200, load_optimization())
         if path == "/api/components-map":
             return self._send_json(200, load_components_map())
+        if path == "/api/connectors":
+            return self._send_json(200, load_connectors())
+        if path == "/api/logs":
+            return self._send_json(200, load_logs_list())
         if path == "/api/live":
             return self._send_json(200, load_live_procs())
         if path == "/api/recent-files":
