@@ -12,6 +12,7 @@ Uso:
 """
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -23,41 +24,27 @@ if hasattr(sys.stdout, "reconfigure"):
 BASE_DIR = Path(__file__).parent
 LOG_DIR  = BASE_DIR / "Guiones" / "logs"
 
-# ---------------------------------------------------------------------------
-# Episodios M a generar (M0–M14)
-# ---------------------------------------------------------------------------
+# El mapeo episodio → PDF + script vive en un único sitio compartido con
+# web_server.py (generación bajo demanda desde la app visual).
+sys.path.insert(0, str(BASE_DIR))
+from cockpit.core.episode_sources import EpisodeSource, all_sources  # noqa: E402
 
-M_EPISODES = [
-    (0,  "PDFs/resumenes/RESUMEN_M0_Introduccion_Estrategica.pdf"),
-    (1,  "PDFs/resumenes/RESUMEN_M1_Fundamentos_Razonamiento.pdf"),
-    (2,  "PDFs/resumenes/RESUMEN_M2_Matematicas_Fundamentos.pdf"),
-    (3,  "PDFs/resumenes/RESUMEN_M3_Machine_Learning_Clasico.pdf"),
-    (4,  "PDFs/resumenes/RESUMEN_M4_Deep_Learning.pdf"),
-    (5,  "PDFs/resumenes/RESUMEN_M5_NLP_LLMs.pdf"),
-    (6,  "PDFs/resumenes/RESUMEN_M6_Ingenieria_Prompts.pdf"),
-    (7,  "PDFs/resumenes/RESUMEN_M7_Sistemas_RAG.pdf"),
-    (8,  "PDFs/resumenes/RESUMEN_M8_Ingenieria_LLMOps.pdf"),
-    (9,  "PDFs/resumenes/RESUMEN_M9_Infraestructura_Despliegue.pdf"),
-    (10, "PDFs/resumenes/RESUMEN_M10_Sistemas_Agentes.pdf"),
-    (11, "PDFs/resumenes/RESUMEN_M11_Automatizacion.pdf"),
-    (12, "PDFs/resumenes/RESUMEN_M12_Seguridad_IA.pdf"),
-    (13, "PDFs/resumenes/RESUMEN_M13_Gobernanza_Etica.pdf"),
-    (14, "PDFs/resumenes/RESUMEN_M14_Estrategia_Empresa.pdf"),
-]
 
-# ---------------------------------------------------------------------------
-# Episodios T a generar
-# ---------------------------------------------------------------------------
-
-T_EPISODES = [
-    "PDFs/temas/M1_T10_tokenizacion.pdf",
-    "PDFs/temas/M1_T11_limitaciones_llms.pdf",
-    "PDFs/temas/M12_T2_prompt_injection.pdf",
-    "PDFs/temas/M8_T1_ciclo_vida_modelos_llm.pdf",
-    "PDFs/temas/M7_T1_que_es_rag.pdf",
-    "PDFs/temas/M3_T2_modelos_clasicos.pdf",
-    "PDFs/temas/M10_T5_tool_use_function_calling.pdf",
-]
+def guion_exists(src: EpisodeSource) -> Path | None:
+    """Devuelve el guion ya generado para esta fuente, o None."""
+    guion_dir = BASE_DIR / "Guiones"
+    if src.kind == "M":
+        modulo_n = src.module[1:]
+        for f in guion_dir.glob(f"M{modulo_n}_*.txt"):
+            if not f.name.startswith(f"M{modulo_n}_TX_"):
+                return f
+        return None
+    # T: "M7_T1" → Guiones/M7_TX_T1_*.txt
+    m = re.fullmatch(r"M(\d+)_T(\d+)", src.ep_id)
+    if not m:
+        return None
+    matches = list(guion_dir.glob(f"M{m.group(1)}_TX_T{m.group(2)}_*.txt"))
+    return matches[0] if matches else None
 
 
 def ts() -> str:
@@ -139,70 +126,43 @@ def run_cmd(label: str, cmd: list[str], log_name: str, dry_run: bool) -> bool:
 def main() -> None:
     dry_run = "--dry-run" in sys.argv
 
+    sources = all_sources()
+    n_m = sum(1 for s in sources if s.kind == "M")
+    n_t = sum(1 for s in sources if s.kind == "T")
+    total = len(sources)
+
     run_ts = ts()
-    total  = len(M_EPISODES) + len(T_EPISODES)
     print(f"\n{'='*60}")
-    print(f"  LANZADOR DE GUIONES — MaquinarIA Pesada")
+    print("  LANZADOR DE GUIONES — MaquinarIA Pesada")
     print(f"  {run_ts}")
-    print(f"  Total a generar: {total} ({len(M_EPISODES)} M + {len(T_EPISODES)} T)")
+    print(f"  Total a generar: {total} ({n_m} M + {n_t} T)")
     print(f"{'='*60}")
 
     append_master_log(
-        f"\n{'='*60}\nINICIO: {run_ts}\nTotal: {total} ({len(M_EPISODES)} M + {len(T_EPISODES)} T)\n{'='*60}"
+        f"\n{'='*60}\nINICIO: {run_ts}\nTotal: {total} ({n_m} M + {n_t} T)\n{'='*60}"
     )
 
     ok_list:   list[str] = []
     fail_list: list[str] = []
 
-    # ── Episodios M ──────────────────────────────────────────────────────────
-    for modulo_n, pdf_rel in M_EPISODES:
+    for src in sources:
         # Si ya existe el guion, saltar
-        guion_dir = BASE_DIR / "Guiones"
-        existing = list(guion_dir.glob(f"M{modulo_n}_*.txt"))
-        existing = [f for f in existing if not f.name.startswith(f"M{modulo_n}_TX_")]
+        existing = guion_exists(src)
         if existing:
-            label = f"M{modulo_n} — ya existe ({existing[0].name})"
+            label = f"{src.ep_id} — ya existe ({existing.name})"
             print(f"\n  [SKIP] {label}")
             append_master_log(f"[SKIP]  {label}")
-            ok_list.append(f"M{modulo_n}")
+            ok_list.append(src.ep_id)
             continue
 
-        label    = f"M{modulo_n} ({Path(pdf_rel).stem})"
-        log_name = f"M{modulo_n}_gen.log"
-        cmd      = [sys.executable, "generar_guion.py", "--modulo", str(modulo_n), "--pdf", pdf_rel]
+        label    = f"{src.ep_id} ({Path(src.pdf).stem})"
+        log_name = f"{src.ep_id}_gen.log"
+        cmd      = [sys.executable, src.script, *src.flags]
 
         if run_cmd(label, cmd, log_name, dry_run):
-            ok_list.append(f"M{modulo_n}")
+            ok_list.append(src.ep_id)
         else:
-            fail_list.append(f"M{modulo_n}")
-
-    # ── Episodios T ──────────────────────────────────────────────────────────
-    for pdf_rel in T_EPISODES:
-        pdf_path  = Path(pdf_rel)
-        stem      = pdf_path.stem  # M1_T11_limitaciones_llms
-        label     = f"T: {stem}"
-        log_name  = f"{stem}_gen.log"
-
-        # Si ya existe el guion, saltar
-        import re as _re
-        mod_match = _re.match(r"M(\d+)_", stem)
-        if mod_match:
-            modulo_n = mod_match.group(1)
-            topic    = _re.sub(r"^M\d+_", "", stem)
-            guion_dir = BASE_DIR / "Guiones"
-            expected  = guion_dir / f"M{modulo_n}_TX_{topic}.txt"
-            if expected.exists():
-                print(f"\n  [SKIP] {label} — ya existe ({expected.name})")
-                append_master_log(f"[SKIP]  {label}")
-                ok_list.append(stem)
-                continue
-
-        cmd = [sys.executable, "generar_guion_t.py", "--pdf", pdf_rel]
-
-        if run_cmd(label, cmd, log_name, dry_run):
-            ok_list.append(stem)
-        else:
-            fail_list.append(stem)
+            fail_list.append(src.ep_id)
 
     end_ts = ts()
     sep = "=" * 60
@@ -211,8 +171,8 @@ def main() -> None:
     print(f"  OK    ({len(ok_list)}): {', '.join(ok_list) or '--'}")
     print(f"  FALLO ({len(fail_list)}): {', '.join(fail_list) or '--'}")
     if fail_list:
-        print(f"\n  Logs en: Guiones/logs/")
-    print(f"\n  Log maestro: Guiones/logs/guiones_runs.log")
+        print("\n  Logs en: Guiones/logs/")
+    print("\n  Log maestro: Guiones/logs/guiones_runs.log")
 
     append_master_log(
         f"FIN: {end_ts}\nOK ({len(ok_list)}): {', '.join(ok_list) or '--'}\n"

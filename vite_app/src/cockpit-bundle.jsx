@@ -8,6 +8,19 @@ import { createRoot } from 'react-dom/client';
 // Expone React al window por compat con codigo legacy que usa React.useState etc.
 if (typeof window !== 'undefined') { window.React = React; }
 
+// ── Módulos extraídos del monolito (Fase 1a) ─────────────────────────
+import {
+  Btn, Icon, Panel, StatusDot, Kpi, Bar, Badge, Ring, Speaker, HazardTape,
+  KindCell, PageHeader, SourcePills, SourceTitle, GenGuionPanel,
+} from "./components";
+import { NAV_GROUPS, WIRED, srcFor, ghLink, REPO, REPO_REF } from "./lib/nav";
+import { SOURCES, KINDS, pathOf } from "./lib/sources";
+import {
+  FIXTURE_MODULES as MODULES, FIXTURE_EPISODES as EPISODES,
+  GUION_PREVIEW, CHECKS_M3, applyBootstrap,
+} from "./data";
+import { PageEpisodio } from "./pages/episode/PageEpisodio";
+
 
 // ============================ tweaks-panel.jsx ============================
 
@@ -586,89 +599,6 @@ Object.assign(window, {
 // data.jsx — Fixtures for Maquinaria Pesada cockpit
 // 22 episodios = 15 M + 7 T
 
-const MODULES = [
-  { id: "M0",  name: "Cimientos",              short: "Qué es la IA, historia, panorámica",          pct: 100, status: "ok" },
-  { id: "M1",  name: "Datos & ML clásico",     short: "Datasets, regresión, árboles, métricas",      pct: 100, status: "ok" },
-  { id: "M2",  name: "Redes neuronales",       short: "Perceptrón, backprop, optimización",          pct: 100, status: "ok" },
-  { id: "M3",  name: "Transformers",           short: "Atención, encoder/decoder, escalado",         pct:  72, status: "warn" },
-  { id: "M4",  name: "LLMs y emergencia",      short: "Pretraining, leyes de escala, capacidades",   pct:  85, status: "ok" },
-  { id: "M5",  name: "Fine-tuning & RLHF",     short: "SFT, DPO, RLHF, constitutional AI",           pct:  60, status: "warn" },
-  { id: "M6",  name: "Prompting avanzado",     short: "CoT, few-shot, role, system design",          pct: 100, status: "ok" },
-  { id: "M7",  name: "RAG & memoria",          short: "Embeddings, vector DBs, retrieval",           pct:  45, status: "warn" },
-  { id: "M8",  name: "Agentes & herramientas", short: "Tool use, ReAct, planning, loops",            pct:  30, status: "alert" },
-  { id: "M9",  name: "Evaluación",             short: "Benchmarks, evals, MMLU, humaneval",          pct:  10, status: "empty" },
-  { id: "M10", name: "Alineamiento",           short: "Safety, interpretabilidad, riesgos",          pct:   0, status: "empty" },
-  { id: "M11", name: "Multimodalidad",         short: "Vision, audio, video, generación",            pct:  20, status: "empty" },
-  { id: "M12", name: "Inferencia y eficiencia",short: "Quantization, KV-cache, batching",            pct:   0, status: "empty" },
-  { id: "M13", name: "Despliegue & MLOps",     short: "Serving, monitoring, drift",                  pct:   0, status: "empty" },
-  { id: "M14", name: "Estado del arte",        short: "Frontier models, AGI debate, futuro",         pct:   5, status: "empty" },
-];
-
-// Tipos de contenido por episodio
-const KINDS = ["pdf", "guion", "escaleta", "audio", "video", "logs"];
-
-// Carpeta canónica por tipo de contenido (filesystem es la única fuente de verdad)
-const SOURCES = {
-  pdf:      { folder: "PDFs/",         ext: ".pdf",   label: "PDF",          icon: "doc" },
-  guion:    { folder: "Guiones/",      ext: ".txt",   label: "Guion",        icon: "doc" },
-  escaleta: { folder: "escaletas/",    ext: ".md",    label: "Escaleta",     icon: "doc" },
-  audio:    { folder: "episodios/",    ext: ".mp3",   label: "Audio",        icon: "play" },
-  video:    { folder: "videopodcast/", ext: ".mp4",   label: "Vídeo",        icon: "play" },
-  logs:     { folder: "logs/",         ext: ".jsonl", label: "Logs",         icon: "log" },
-  checks:   { folder: "(cualquiera)",  ext: "",       label: "Verificaciones", icon: "check" },
-};
-
-function pathOf(kind, epId) {
-  const s = SOURCES[kind];
-  if (!s) return "";
-  return `${s.folder}${epId}${s.ext}`;
-}
-
-// Helper para construir estado por contenido
-function st(p, g, e, a, v, l) { return { pdf: p, guion: g, escaleta: e, audio: a, video: v, logs: l }; }
-// status values: "ok" "warn" "alert" "empty" "run"
-
-// 22 episodios = 15 M + 7 T
-const EPISODES = [
-  // M0 — completo
-  { id: "M0",    mod: "M0",  kind: "M", title: "Episodio M0 — Cimientos",                   dur: "47:12", state: st("ok","ok","ok","ok","ok","ok") },
-  // M1 — completo
-  { id: "M1",    mod: "M1",  kind: "M", title: "Episodio M1 — Datos y ML clásico",          dur: "52:08", state: st("ok","ok","ok","ok","ok","ok") },
-  // M2 — completo
-  { id: "M2",    mod: "M2",  kind: "M", title: "Episodio M2 — Redes neuronales",            dur: "61:24", state: st("ok","ok","ok","ok","ok","ok") },
-  // M3 — episodio principal + 2 T
-  { id: "M3",    mod: "M3",  kind: "M", title: "Episodio M3 — Transformers",                dur: "58:00", state: st("ok","ok","ok","ok","warn","ok") },
-  { id: "M3_T1", mod: "M3",  kind: "T", title: "T1 — Mecanismo de atención",                dur: "14:32", state: st("ok","ok","ok","ok","ok","ok") },
-  { id: "M3_T2", mod: "M3",  kind: "T", title: "T2 — Posicionales rotativos (RoPE)",        dur: "11:08", state: st("ok","ok","ok","alert","empty","alert") },
-  // M4 — completo + 0 T
-  { id: "M4",    mod: "M4",  kind: "M", title: "Episodio M4 — LLMs y emergencia",           dur: "63:45", state: st("ok","ok","ok","ok","warn","ok") },
-  // M5 — en producción
-  { id: "M5",    mod: "M5",  kind: "M", title: "Episodio M5 — Fine-tuning y RLHF",          dur: "54:00", state: st("ok","ok","ok","run","empty","ok") },
-  // M6 — completo
-  { id: "M6",    mod: "M6",  kind: "M", title: "Episodio M6 — Prompting avanzado",          dur: "41:18", state: st("ok","ok","ok","ok","ok","ok") },
-  // M7 — bloqueado + 1 T
-  { id: "M7",    mod: "M7",  kind: "M", title: "Episodio M7 — RAG y memoria",               dur: "—",     state: st("ok","ok","warn","empty","empty","warn") },
-  { id: "M7_T1", mod: "M7",  kind: "T", title: "T1 — Estrategias de chunking",              dur: "—",     state: st("ok","ok","empty","empty","empty","empty") },
-  // M8 — solo arranque + 2 T
-  { id: "M8",    mod: "M8",  kind: "M", title: "Episodio M8 — Agentes y herramientas",      dur: "—",     state: st("ok","alert","empty","empty","empty","alert") },
-  { id: "M8_T1", mod: "M8",  kind: "T", title: "T1 — ReAct y planning",                     dur: "—",     state: st("ok","warn","empty","empty","empty","empty") },
-  { id: "M8_T2", mod: "M8",  kind: "T", title: "T2 — Tool calling en Claude",               dur: "—",     state: st("ok","empty","empty","empty","empty","empty") },
-  // M9 — PDF solo
-  { id: "M9",    mod: "M9",  kind: "M", title: "Episodio M9 — Evaluación y benchmarks",     dur: "—",     state: st("ok","empty","empty","empty","empty","empty") },
-  // M10 — vacío
-  { id: "M10",   mod: "M10", kind: "M", title: "Episodio M10 — Alineamiento",               dur: "—",     state: st("empty","empty","empty","empty","empty","empty") },
-  // M11 — PDF + arranque + 1 T
-  { id: "M11",   mod: "M11", kind: "M", title: "Episodio M11 — Multimodalidad",             dur: "—",     state: st("ok","warn","empty","empty","empty","empty") },
-  { id: "M11_T1",mod: "M11", kind: "T", title: "T1 — Vision encoders",                      dur: "—",     state: st("ok","empty","empty","empty","empty","empty") },
-  // M12 vacío
-  { id: "M12",   mod: "M12", kind: "M", title: "Episodio M12 — Inferencia y eficiencia",    dur: "—",     state: st("empty","empty","empty","empty","empty","empty") },
-  // M13 vacío
-  { id: "M13",   mod: "M13", kind: "M", title: "Episodio M13 — Despliegue y MLOps",         dur: "—",     state: st("empty","empty","empty","empty","empty","empty") },
-  // M14 + 1 T
-  { id: "M14",   mod: "M14", kind: "M", title: "Episodio M14 — Estado del arte",            dur: "—",     state: st("warn","empty","empty","empty","empty","empty") },
-  { id: "M14_T1",mod: "M14", kind: "T", title: "T1 — Frontier models 2026",                 dur: "—",     state: st("empty","empty","empty","empty","empty","empty") },
-];
-
 // Live producción
 const LIVE_PROC = [
   { id: "p1", cmd: "generar_episodio_v2.py M5",   pid: 41207, t: "00:04:22", cost: "0.42€" },
@@ -735,30 +665,6 @@ const AI_LOG = [
   { t: "12:32:48", model: "gpt-4o-mini",kind: "Debate dual",      tok:  4400, cost: 0.001 },
 ];
 
-// Speakers preview lines
-const GUION_PREVIEW = [
-  { who: "iago",  text: "Vale María, hoy nos metemos con los Transformers. Pero antes de la arquitectura, una pregunta: ¿qué era lo que NO funcionaba en las RNN?" },
-  { who: "maria", text: "Buena entrada. El problema era el paralelismo. Las RNN procesaban tokens uno detrás de otro, en secuencia. No podías meterle 64 GPUs y que volaran." },
-  { who: "iago",  text: "Y aparece el paper de 2017, “Attention is all you need”. Atención como mecanismo central." },
-  { who: "maria", text: "Exacto. Lo bonito de la atención es que es una operación matricial, totalmente paralela. Cada token puede mirar a todos los otros en una sola pasada." },
-  { who: "iago",  text: "Vamos a desglosarlo: query, key, value. ¿Qué es cada uno en intuición?" },
-  { who: "maria", text: "Imagina una biblioteca. La query es la pregunta que llevas. Las keys son las etiquetas de los lomos. Los values, los libros. Atención = encontrar las etiquetas que matchean tu pregunta y devolverte los libros ponderados." },
-];
-
-// Verification checks
-const CHECKS_M3 = [
-  { id: "c1", name: "PDF presente y legible",            status: "ok",    detail: "PDFs/M3.pdf · 2.4 MB · 18 páginas" },
-  { id: "c2", name: "Guion completo (no truncado)",      status: "ok",    detail: "9842 palabras · 142 turnos" },
-  { id: "c3", name: "Diálogo balanceado Iago/María",     status: "ok",    detail: "Iago 48% · María 52%" },
-  { id: "c4", name: "Escaleta sin secciones vacías",     status: "ok",    detail: "8/8 bloques con contenido" },
-  { id: "c5", name: "Audio MP3 sin gaps",                status: "warn",  detail: "1 silencio de 4.2s @ 23:18" },
-  { id: "c6", name: "Audio respeta SSML pauses",         status: "ok",    detail: "12/12 pauses correctos" },
-  { id: "c7", name: "Loudness LUFS -16 ±1",              status: "ok",    detail: "-15.8 LUFS" },
-  { id: "c8", name: "Vídeo escena→texto alineado",       status: "alert", detail: "Drift de 1.8s @ 41:22 — re-render" },
-  { id: "c9", name: "Logs sin ERROR",                    status: "ok",    detail: "0 errors · 3 warnings" },
-  { id: "c10",name: "Validación dual (Claude vs GPT)",   status: "ok",    detail: "Acuerdo 94% · 6 discrepancias menores" },
-];
-
 Object.assign(window, {
   MODULES, EPISODES, LIVE_PROC, RECENT_FILES, TOKEN_DATA,
   PIPELINE, EDGES, AI_LOG, GUION_PREVIEW, CHECKS_M3, KINDS,
@@ -785,6 +691,7 @@ window.__BOOTSTRAP__ = (async function bootstrap() {
       }
     }
     if (d.ECONOMICS) window.ECONOMICS = d.ECONOMICS;
+    applyBootstrap(d);  // capa de datos sin globals (data.ts)
     window.__BOOTSTRAP_OK__ = true;
     return d;
   } catch (e) {
@@ -797,311 +704,9 @@ window.__BOOTSTRAP__ = (async function bootstrap() {
 
 // ============================ ui.jsx ============================
 
-// ui.jsx — Shared atoms for Maquinaria Pesada cockpit
-
-// ── Status dot ───────────────────────────────────────────
-function StatusDot({ status, sm }) {
-  const cls = `dot ${status}${sm ? " sm" : ""}`;
-  return <span className={cls} />;
-}
-
-// ── Badge ────────────────────────────────────────────────
-function Badge({ kind, children }) {
-  return <span className={`badge ${kind || ""}`}>{children}</span>;
-}
-
-// ── Progress bar ─────────────────────────────────────────
-function Bar({ pct, status }) {
-  const color = status === "ok"    ? "var(--ok)"
-              : status === "warn"  ? "var(--warn)"
-              : status === "alert" ? "var(--alert)"
-              : "var(--y)";
-  return (
-    <div className="bar">
-      <div className="bar-fill" style={{ width: `${pct}%`, background: color }} />
-    </div>
-  );
-}
-
-// ── KPI card ─────────────────────────────────────────────
-function Kpi({ label, value, unit, delta, deltaDir }) {
-  return (
-    <div className="kpi">
-      <div className="kpi-lbl">{label}</div>
-      <div className="kpi-val">
-        {value}
-        {unit && <span className="kpi-unit">{unit}</span>}
-      </div>
-      {delta && <div className={`kpi-delta ${deltaDir || ""}`}>{delta}</div>}
-    </div>
-  );
-}
-
-// ── Panel ────────────────────────────────────────────────
-function Panel({ title, meta, actions, children, noPad }) {
-  return (
-    <div className="panel">
-      {(title || actions) && (
-        <div className="panel-hd">
-          <div className="panel-hd-title">
-            {title}
-            {meta && <span className="panel-hd-meta" style={{ marginLeft: 8 }}>{meta}</span>}
-          </div>
-          {actions && <div className="row gap-3">{actions}</div>}
-        </div>
-      )}
-      <div style={{ padding: noPad ? 0 : "16px 18px" }}>{children}</div>
-    </div>
-  );
-}
-
-// ── Button ───────────────────────────────────────────────
-function Btn({ kind, sm, onClick, children, icon, title, style }) {
-  const cls = `btn ${kind || ""} ${sm ? "sm" : ""}`;
-  return (
-    <button className={cls} onClick={onClick} title={title} style={style}>
-      {icon && <span style={{ fontSize: 11 }}>{icon}</span>}
-      {children}
-    </button>
-  );
-}
-
-// ── Page header with hazard flag ─────────────────────────
-function PageHeader({ title, sub, actions }) {
-  return (
-    <div className="page-hd">
-      <div className="page-hd-l">
-        <div className="flag-bar" />
-        <div>
-          <h1 className="h1">{title}</h1>
-          {sub && <div className="h1-sub">{sub}</div>}
-        </div>
-      </div>
-      {actions && <div className="row gap-4">{actions}</div>}
-    </div>
-  );
-}
-
-// ── Hazard tape ──────────────────────────────────────────
-function HazardTape() { return <div className="hazard-stripes" />; }
-
-// ── Speaker ──────────────────────────────────────────────
-function Speaker({ who }) {
-  const name = who === "iago" ? "IAGO" : "MARÍA";
-  return (
-    <span className={`spk spk-${who}`}>
-      <span className="spk-dot" />
-      <span className="spk-name">{name}</span>
-    </span>
-  );
-}
-
-// ── Icon (tiny inline SVG, monoline) ─────────────────────
-function Icon({ name, size = 14 }) {
-  const s = size;
-  const stroke = { stroke: "currentColor", strokeWidth: 1.5, fill: "none", strokeLinecap: "round", strokeLinejoin: "round" };
-  switch (name) {
-    case "home":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 7l6-5 6 5v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7z"/><path d="M6 14V9h4v5"/></svg>;
-    case "grid":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>;
-    case "module":   return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M8 1l6 3v8l-6 3-6-3V4z"/><path d="M8 8l6-3M8 8L2 5M8 8v7"/></svg>;
-    case "episode":  return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="8" cy="8" r="6"/><path d="M6 5l5 3-5 3z" fill="currentColor"/></svg>;
-    case "pipe":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="3" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="13" r="1.5"/><path d="M4.5 8h7M8 4.5v7"/></svg>;
-    case "map":      return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 4l4-2 4 2 4-2v10l-4 2-4-2-4 2z"/><path d="M6 2v10M10 4v10"/></svg>;
-    case "plug":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M5 8V3M11 8V3M3 8h10v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z"/></svg>;
-    case "prompt":   return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 4l3 3-3 3M7 10h7"/></svg>;
-    case "folder":   return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 4a1 1 0 0 1 1-1h3l2 2h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>;
-    case "play":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M4 3l9 5-9 5z" fill="currentColor"/></svg>;
-    case "log":      return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M3 2h7l3 3v9H3z"/><path d="M5 7h6M5 10h6M5 13h4"/></svg>;
-    case "brain":    return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M6 3a2 2 0 0 0-2 2v1a2 2 0 0 0 0 4v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1a2 2 0 0 0 0-4V5a2 2 0 0 0-2-2z"/><path d="M8 3v10"/></svg>;
-    case "coin":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="8" cy="8" r="6"/><path d="M8 4v8M6 6h3a1.5 1.5 0 0 1 0 3H6a1.5 1.5 0 0 0 0 3h3"/></svg>;
-    case "key":      return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="5" cy="8" r="3"/><path d="M8 8h7M12 8v3M14 8v2"/></svg>;
-    case "chat":     return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H8l-3 3v-3H3a1 1 0 0 1-1-1z"/></svg>;
-    case "settings": return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/></svg>;
-    case "spark":    return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M8 1l1.5 5L14 8l-4.5 1.5L8 15l-1.5-5.5L2 8l4.5-2z"/></svg>;
-    case "wrench":   return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M10 3a3 3 0 1 1 3 3L7 12l-3-3z"/></svg>;
-    case "close":    return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M3 3l10 10M13 3L3 13"/></svg>;
-    case "arrow":    return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M3 8h10M9 4l4 4-4 4"/></svg>;
-    case "check":    return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M3 8l3 3 7-7"/></svg>;
-    case "dot":      return <svg width={s} height={s} viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="currentColor"/></svg>;
-    case "search":   return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><circle cx="7" cy="7" r="4"/><path d="M10 10l4 4"/></svg>;
-    case "refresh":  return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M2 8a6 6 0 0 1 10-4M14 8a6 6 0 0 1-10 4M12 4V1h3M4 12v3H1"/></svg>;
-    case "doc":      return <svg width={s} height={s} viewBox="0 0 16 16" {...stroke}><path d="M3 2h7l3 3v9H3z"/></svg>;
-    default:         return null;
-  }
-}
-
-// ── Mini % ring ──────────────────────────────────────────
-function Ring({ pct, size = 38, color }) {
-  const r = (size - 6) / 2;
-  const c = 2 * Math.PI * r;
-  const dash = (pct / 100) * c;
-  const stroke = color || "var(--y)";
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: "block" }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--panel-3)" strokeWidth="3"/>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={stroke} strokeWidth="3"
-              strokeDasharray={`${dash} ${c}`} strokeLinecap="butt"
-              transform={`rotate(-90 ${size/2} ${size/2})`}/>
-      <text x="50%" y="52%" textAnchor="middle" dominantBaseline="middle"
-            fill="var(--text)" fontFamily="var(--f-mono)" fontSize={size > 40 ? 11 : 9} fontWeight="500">
-        {pct}
-      </text>
-    </svg>
-  );
-}
-
-// ── Kind cell (PDF/Guion/Audio/Vídeo/Logs) ───────────────
-function KindCell({ status, onClick }) {
-  return (
-    <div onClick={onClick} style={{
-      width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center",
-      background: status === "empty" ? "transparent" : "var(--panel-2)",
-      border: status === "empty" ? "1px dashed var(--border-2)" : "1px solid var(--border)",
-      cursor: onClick ? "pointer" : "default",
-    }}>
-      <StatusDot status={status === "empty" ? "empty" : status} sm />
-    </div>
-  );
-}
-
-// ── Source pills (link app element → repo files) ─────────
-function SourcePills({ files, label = "Implementado en" }) {
-  if (!files || !files.length) return null;
-  const labelOf = (path) => {
-    if (path.endsWith("/")) return "DIR";
-    if (path.endsWith(".py")) return "PY";
-    if (path.endsWith(".md")) return "MD";
-    if (path.endsWith(".json")) return "JSON";
-    return "FILE";
-  };
-  const shortOf = (path) => {
-    // Strip leading cockpit/ for pages to reduce noise
-    return path;
-  };
-  return (
-    <div className="src-strip">
-      <span className="src-strip-label">
-        <Icon name="folder" size={10}/> {label}
-      </span>
-      {files.map((f) => (
-        <a
-          key={f}
-          href={ghLink(f)}
-          target="_blank"
-          rel="noopener"
-          className="src-pill"
-          title={`Abrir ${f} en GitHub`}
-        >
-          <span className="kind">{labelOf(f)}</span>
-          {shortOf(f)}
-          <span className="gh">↗</span>
-        </a>
-      ))}
-      <span style={{ marginLeft: "auto", color: "var(--text-mute)", fontSize: 10, letterSpacing: "0.08em" }}>
-        bakero/maquinaria-pesada @ {REPO_REF}
-      </span>
-    </div>
-  );
-}
-
-Object.assign(window, {
-  StatusDot, Badge, Bar, Kpi, Panel, Btn, PageHeader, HazardTape,
-  Speaker, Icon, Ring, KindCell, SourcePills,
-});
-
-
 // ============================ shell.jsx ============================
 
 // shell.jsx — Sidebar + topbar + AI drawer
-
-// Repo constants
-const REPO = "https://github.com/bakero/maquinaria-pesada";
-const REPO_REF = "master";
-const ghLink = (path) => `${REPO}/blob/${REPO_REF}/${path}`;
-
-// ─── Reorganized IA + source-file wiring ─────────────────
-// Every nav item carries `src`: the actual files in the repo that implement it.
-const NAV_GROUPS = [
-  {
-    label: "Producción",
-    items: [
-      { id: "home",     label: "Inicio",        icon: "home",    num: "00",
-        src: ["cockpit/app.py", "cockpit/theme.py"] },
-      { id: "master",   label: "Master",        icon: "grid",    num: "01", emph: true,
-        src: ["cockpit/pages/0_🎓_Master.py", "cockpit/core/state.py", "cockpit/core/episodes.py"] },
-      { id: "modulo",   label: "Módulo",        icon: "module",  num: "02",
-        src: ["cockpit/pages/13_🎬_Modulo.py", "cockpit/core/episodes.py", "cockpit/core/paths.py"] },
-      { id: "episodio", label: "Episodio",      icon: "episode", num: "03",
-        src: ["cockpit/pages/14_📼_Episodio.py", "cockpit/core/verifications.py", "cockpit/core/log_parser.py"] },
-    ],
-  },
-  {
-    label: "Pipeline",
-    items: [
-      { id: "pizarra",   label: "Pizarra",      icon: "pipe",    num: "04",
-        src: ["cockpit/pages/15_🎨_Pizarra.py", "cockpit/core/pizarra.py", "cockpit/core/components_map.py"] },
-      { id: "mapa",      label: "Mapa",         icon: "map",     num: "05",
-        src: ["cockpit/pages/12_🗺️_Mapa.py", "cockpit/core/components_map.py", "cockpit/ui_map.py"] },
-      { id: "conectores",label: "Conectores",   icon: "plug",    num: "06",
-        src: ["cockpit/pages/2_🔌_Conectores.py", "cockpit/connectors/"] },
-      { id: "lanzador",  label: "Lanzador",     icon: "prompt",  num: "07",
-        src: ["cockpit/pages/3_📝_Generar_Prompt.py", "cockpit/core/prompt_builder.py", "cockpit/core/runner.py"] },
-    ],
-  },
-  {
-    label: "Recursos",
-    items: [
-      { id: "fuentes", label: "Fuentes",        icon: "folder",  num: "08",
-        src: ["cockpit/pages/4_📚_Fuentes.py", "PDFs/", "Guiones/", "escaletas/", "episodios/", "videopodcast/"] },
-      { id: "player",  label: "Previsualizar",  icon: "play",    num: "09",
-        src: ["cockpit/pages/8_🎧_Previsualizar.py"] },
-    ],
-  },
-  {
-    label: "Observabilidad",
-    items: [
-      { id: "logs",      label: "Logs",         icon: "log",     num: "10",
-        src: ["cockpit/pages/5_📜_Logs.py", "cockpit/core/log_parser.py", "cockpit/core/logger.py", "cockpit/core/monitor.py"] },
-      { id: "optimizar", label: "Optimizar",    icon: "brain",   num: "11",
-        src: ["cockpit/pages/10_🧠_Optimizar.py", "cockpit/core/optimization_advisor.py"] },
-    ],
-  },
-  {
-    label: "Difusión",
-    items: [
-      { id: "metricas",  label: "Métricas",     icon: "map",     num: "12", emph: true,
-        src: ["cockpit/pages/16_📡_Metricas.py", "cockpit/connectors/services/spotify.py",
-              "cockpit/connectors/services/ivoox.py", "cockpit/connectors/services/linkedin.py",
-              "cockpit/core/metrics_aggregator.py"] },
-    ],
-  },
-  {
-    label: "Cuenta",
-    items: [
-      { id: "consumo", label: "Consumo",        icon: "coin",    num: "13",
-        src: ["cockpit/pages/7_💰_Tokens.py", "cockpit/pages/11_💳_Economics.py",
-              "cockpit/core/usage_tracker.py", "cockpit/core/economics.py"] },
-      { id: "ajustes", label: "Ajustes",        icon: "settings",num: "14",
-        src: ["cockpit/pages/6_🔑_API_Keys.py", "cockpit/core/api_keys.py", "cockpit/core/sandbox.py"] },
-    ],
-  },
-];
-
-// Helper: get sources for a wired page id
-function srcFor(pageId) {
-  for (const g of NAV_GROUPS) {
-    for (const it of g.items) if (it.id === pageId) return it.src || [];
-  }
-  return [];
-}
-
-// All 15 pages are now wired
-const WIRED = new Set([
-  "home", "master", "modulo", "episodio",
-  "pizarra", "mapa", "conectores", "lanzador",
-  "fuentes", "player", "logs", "optimizar",
-  "metricas", "consumo", "ajustes",
-]);
 
 function Sidebar({ current, onNav }) {
   return (
@@ -1539,12 +1144,12 @@ function PageInicio({ onNav, onOpenAI }) {
               <div className="row gap-4" style={{ padding: "6px 0", fontSize: 13 }}>
                 <StatusDot status="alert" sm/>
                 <span className="fill">M3_T2 · audio falló (502 ElevenLabs)</span>
-                <Btn sm kind="ghost" onClick={() => onNav("episodio")}>ABRIR</Btn>
+                <Btn sm kind="ghost" onClick={() => onNav("episodio", "M3_T2")}>ABRIR</Btn>
               </div>
               <div className="row gap-4" style={{ padding: "6px 0", fontSize: 13 }}>
                 <StatusDot status="warn" sm/>
                 <span className="fill">M8 · guion truncado en bloque 4</span>
-                <Btn sm kind="ghost" onClick={() => onNav("modulo")}>ABRIR</Btn>
+                <Btn sm kind="ghost" onClick={() => onNav("modulo", "M8")}>ABRIR</Btn>
               </div>
               <div className="row gap-4" style={{ padding: "6px 0", fontSize: 13 }}>
                 <StatusDot status="warn" sm/>
@@ -1621,7 +1226,7 @@ function MasterListView({ onNav, density }) {
           {MODULES.map((m) => {
             const eps = EPISODES.filter(e => e.mod === m.id);
             return (
-              <tr key={m.id} className="clickable" onClick={() => onNav("modulo")} style={{ height: rowH }}>
+              <tr key={m.id} className="clickable" onClick={() => onNav("modulo", m.id)} style={{ height: rowH }}>
                 <td>
                   <span className="mono" style={{ color: "var(--y)", fontSize: 13, fontWeight: 500 }}>{m.id}</span>
                 </td>
@@ -1704,7 +1309,7 @@ function MasterMatrixView({ onNav }) {
                 return "warn";
               };
               return (
-                <tr key={m.id} className="clickable" onClick={() => onNav("modulo")}>
+                <tr key={m.id} className="clickable" onClick={() => onNav("modulo", m.id)}>
                   <td><span className="mono" style={{ color: "var(--y)" }}>{m.id}</span></td>
                   <td className="display" style={{ fontSize: 13 }}>{m.name}</td>
                   <td className="mono dim">{eps.length}</td>
@@ -1769,7 +1374,7 @@ function MasterGanttView({ onNav }) {
                         m.status === "alert" ? "var(--alert)" : "var(--border-2)";
           return (
             <div key={m.id}
-                 onClick={() => onNav("modulo")}
+                 onClick={() => onNav("modulo", m.id)}
                  style={{
                    display: "grid",
                    gridTemplateColumns: "120px 1fr",
@@ -1813,9 +1418,12 @@ function MasterGanttView({ onNav }) {
 // ════════════════════════════════════════════════════════════
 // MÓDULO — detalle de un Mn (default M3)
 // ════════════════════════════════════════════════════════════
-function PageModulo({ onNav, onOpenAI }) {
-  const mod = MODULES.find(m => m.id === "M3");
-  const eps = EPISODES.filter(e => e.mod === "M3");
+function PageModulo({ onNav, onOpenAI, modId }) {
+  // modId viene de la selección (sidebar/Master); fallback a M3 como demo.
+  const mod = MODULES.find(m => m.id === modId)
+           || MODULES.find(m => m.id === "M3")
+           || MODULES[0];
+  const eps = EPISODES.filter(e => e.mod === mod.id);
 
   return (
     <div className="content">
@@ -1877,7 +1485,7 @@ function PageModulo({ onNav, onOpenAI }) {
               {eps.map(ep => {
                 const hasError = Object.values(ep.state).includes("alert");
                 return (
-                  <tr key={ep.id} className="clickable" onClick={() => onNav("episodio")}>
+                  <tr key={ep.id} className="clickable" onClick={() => onNav("episodio", ep.id)}>
                     <td>
                       <div className="row gap-3">
                         <span className="badge" style={{
@@ -1908,14 +1516,14 @@ function PageModulo({ onNav, onOpenAI }) {
 
         {/* ── Acciones del módulo ── */}
         <div className="col gap-8">
+          <GenGuionPanel epId={mod.id}/>
+
           <Panel title={<span><Icon name="prompt" size={12}/> &nbsp;Acciones</span>}>
             <div className="col gap-3">
-              <Btn icon={<Icon name="prompt" size={11}/>}
-                   onClick={() => onNav("lanzador")}>Regenerar guion (todos)</Btn>
               <Btn icon={<Icon name="play" size={11}/>}
                    onClick={() => onNav("lanzador")}>Generar audio pendiente</Btn>
               <Btn icon={<Icon name="check" size={11}/>}
-                   onClick={() => onOpenAI && onOpenAI({ target: "Módulo M3", purpose: "improve",
+                   onClick={() => onOpenAI && onOpenAI({ target: `Módulo ${mod.id}`, purpose: "improve",
                                                          hint: "validar módulo completo" })}>
                 Validar módulo completo
               </Btn>
@@ -1975,695 +1583,6 @@ Object.assign(window, { PageInicio, PageMaster, PageModulo });
 // ============================ pages-2.jsx ============================
 
 // pages-2.jsx — Episodio + Pizarra
-
-// ── Helper: panel title with explicit source path ───────
-function SourceTitle({ kind, epId, customPath }) {
-  const src = SOURCES[kind];
-  const path = customPath || (src ? `${src.folder}${epId}${src.ext}` : "");
-  return (
-    <span className="row gap-4" style={{ alignItems: "baseline" }}>
-      <Icon name={src ? src.icon : "doc"} size={12}/>
-      <span>{src ? src.label : kind}</span>
-      <span style={{
-        marginLeft: 8,
-        fontFamily: "var(--f-mono)",
-        fontSize: 11,
-        fontWeight: 400,
-        letterSpacing: 0,
-        textTransform: "none",
-        color: "var(--y)",
-        background: "var(--y-soft)",
-        padding: "2px 8px",
-        border: "1px solid rgba(245,196,0,0.3)",
-        borderRadius: 2,
-      }}>
-        {path}
-      </span>
-    </span>
-  );
-}
-
-// ════════════════════════════════════════════════════════════
-// EPISODIO — detalle de M3_T2 (con tabs y errores reales)
-// ════════════════════════════════════════════════════════════
-function PageEpisodio({ onNav, onOpenAI, onOpenFix }) {
-  const ep = EPISODES.find(e => e.id === "M3_T2");
-  const [tab, setTab] = React.useState("guion");
-
-  const tabs = [
-    { id: "guion",    label: "Guion",          icon: "doc",   status: ep.state.guion,    src: "guion" },
-    { id: "pdf",      label: "PDF fuente",     icon: "doc",   status: ep.state.pdf,      src: "pdf" },
-    { id: "escaleta", label: "Escaleta",       icon: "doc",   status: ep.state.escaleta, src: "escaleta" },
-    { id: "audio",    label: "Audio",          icon: "play",  status: ep.state.audio,    src: "audio" },
-    { id: "video",    label: "Vídeo",          icon: "play",  status: ep.state.video,    src: "video" },
-    { id: "logs",     label: "Logs",           icon: "log",   status: ep.state.logs,     src: "logs" },
-    { id: "checks",   label: "Verificaciones", icon: "check", status: "warn",            src: "checks" },
-  ];
-
-  return (
-    <div className="content">
-      <PageHeader
-        title={ep.title}
-        sub={`${ep.id} · Módulo M3 — Transformers · Tipo T (tema corto)`}
-        actions={
-          <React.Fragment>
-            <Btn sm kind="danger" onClick={() => onOpenFix({
-              target: ep.id,
-              error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-              id: ep.id,
-            })} icon={<Icon name="wrench" size={11}/>}>
-              Arreglar con Claude
-            </Btn>
-            <Btn sm kind="primary" onClick={() => onOpenAI({ target: ep.id, purpose: "improve" })}
-                 icon={<Icon name="spark" size={11}/>}>
-              Mejorar con IA
-            </Btn>
-          </React.Fragment>
-        }
-      />
-      <SourcePills files={srcFor("episodio")}/>
-
-      {/* Banner de error */}
-      <div style={{
-        background: "rgba(204,34,0,0.08)",
-        border: "1px solid rgba(204,34,0,0.5)",
-        borderLeft: "3px solid var(--alert)",
-        padding: "10px 14px",
-        marginBottom: 24,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-      }}>
-        <span style={{ color: "var(--alert)", fontSize: 18, lineHeight: 1 }}>●</span>
-        <div className="fill">
-          <div className="display" style={{ fontSize: 12, color: "var(--alert)", letterSpacing: "0.12em" }}>
-            FALLO DETECTADO · 12:14:02
-          </div>
-          <div className="mono" style={{ fontSize: 12, color: "var(--text)", marginTop: 2 }}>
-            ElevenLabs 502 en M3_T2 · bloque 4 "Atención escalada" · 2 reintentos · audio incompleto.
-          </div>
-        </div>
-        <Btn sm kind="danger" onClick={() => onOpenFix({
-          target: ep.id,
-          error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-          id: ep.id,
-        })}>Arreglar</Btn>
-      </div>
-
-      {/* Mapa de fuentes — filesystem como única fuente de verdad */}
-      <div style={{
-        background: "var(--panel)",
-        border: "1px solid var(--border)",
-        borderLeft: "3px solid var(--y)",
-        padding: "10px 14px",
-        marginBottom: 16,
-      }}>
-        <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-          <div className="display" style={{ fontSize: 11, color: "var(--text-dim)", letterSpacing: "0.16em" }}>
-            <Icon name="folder" size={11}/> &nbsp; FUENTES EN DISCO
-          </div>
-          <div className="mono" style={{ fontSize: 10, color: "var(--text-mute)", letterSpacing: "0.08em" }}>
-            filesystem-source-of-truth · scan auto
-          </div>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
-          {tabs.map((t) => {
-            const src = SOURCES[t.src];
-            const has = t.status !== "empty";
-            return (
-              <div
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                style={{
-                  padding: "8px 10px",
-                  background: tab === t.id ? "var(--y-soft)" : "var(--panel-2)",
-                  border: "1px solid",
-                  borderColor: tab === t.id ? "var(--y)" : "var(--border)",
-                  cursor: "pointer",
-                }}
-              >
-                <div className="row gap-3" style={{ marginBottom: 4 }}>
-                  <StatusDot status={t.status === "empty" ? "empty" : t.status} sm/>
-                  <span className="display" style={{ fontSize: 10, letterSpacing: "0.08em", color: tab === t.id ? "var(--y)" : "var(--text)" }}>
-                    {t.label}
-                  </span>
-                </div>
-                <div className="mono" style={{ fontSize: 10, color: has ? "var(--text-dim)" : "var(--text-mute)", letterSpacing: "0.02em", wordBreak: "break-all", lineHeight: 1.3 }}>
-                  {t.src === "checks"
-                    ? <span style={{ fontStyle: "italic" }}>todas las anteriores</span>
-                    : `${src.folder}${ep.id}${src.ext}`}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="tabs mb-12">
-        {tabs.map((t) => (
-          <div key={t.id} className={`tab ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>
-            <Icon name={t.icon} size={11}/>
-            {t.label}
-            <StatusDot status={t.status === "empty" ? "empty" : t.status} sm/>
-          </div>
-        ))}
-      </div>
-
-      {tab === "guion"    && <TabGuion epId={ep.id}/>}
-      {tab === "pdf"      && <TabPdf epId={ep.id}/>}
-      {tab === "escaleta" && <TabEscaleta epId={ep.id}/>}
-      {tab === "audio"    && <TabAudio onOpenFix={onOpenFix} epId={ep.id}/>}
-      {tab === "video"    && <TabVideo epId={ep.id}/>}
-      {tab === "logs"     && <TabLogs epId={ep.id}/>}
-      {tab === "checks"   && <TabChecks epId={ep.id}/>}
-    </div>
-  );
-}
-
-// ── Tab: Guion (file viewer) ─────────────────────────────
-function TabGuion({ epId }) {
-  const [mode, setMode] = React.useState("read"); // read | raw
-  const path = pathOf("guion", epId);
-
-  // Build raw text content from preview turns
-  const rawLines = [];
-  rawLines.push(`# ${epId} · guion`);
-  rawLines.push(`# generado: 2026-05-12 12:11`);
-  rawLines.push(`# turnos: 142 · palabras: 9842`);
-  rawLines.push(``);
-  GUION_PREVIEW.forEach((line) => {
-    rawLines.push(`[${line.who.toUpperCase()}] ${line.text}`);
-    rawLines.push(``);
-  });
-  rawLines.push(`# … 136 turnos más …`);
-
-  return (
-    <div className="grid gap-8" style={{ gridTemplateColumns: "1.8fr 1fr" }}>
-      <div className="fv">
-        <div className="fv-chrome">
-          <Icon name="doc" size={11}/>
-          <span className="fv-path">{path}</span>
-          <span className="fv-meta">9842 palabras · 142 turnos · 38.4 KB</span>
-          <span className="fill"/>
-          <div className="fv-toggle">
-            <button className={mode === "read" ? "on" : ""} onClick={() => setMode("read")}>Lectura</button>
-            <button className={mode === "raw"  ? "on" : ""} onClick={() => setMode("raw")}>Raw</button>
-          </div>
-          <button className="btn ghost sm" title="Abrir en editor"><Icon name="prompt" size={11}/></button>
-        </div>
-
-        {mode === "read" ? (
-          <div className="fv-body" style={{ padding: "20px 28px" }}>
-            <div className="col gap-6" style={{ fontFamily: "var(--f-body)", fontSize: 15, lineHeight: 1.6 }}>
-              {GUION_PREVIEW.map((line, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "92px 1fr", gap: 14, padding: "8px 0", borderBottom: "1px dashed var(--border)" }}>
-                  <Speaker who={line.who}/>
-                  <div>{line.text}</div>
-                </div>
-              ))}
-              <div className="mono dim" style={{ fontSize: 11, textAlign: "center", marginTop: 8, padding: "8px 0" }}>
-                … 136 turnos más en el archivo …
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="fv-body fv-text">
-            <div className="ln">
-              {rawLines.map((_, i) => <div key={i}>{i + 1}</div>)}
-            </div>
-            <div>
-              {rawLines.map((l, i) => {
-                let cls = "lc";
-                let tag = null;
-                if (l.startsWith("[IAGO]"))  { cls += " spk-iago";  tag = <span className="tag iago">IAGO</span>;  l = l.slice(6).trim(); }
-                if (l.startsWith("[MARIA]")) { cls += " spk-maria"; tag = <span className="tag maria">MARIA</span>; l = l.slice(7).trim(); }
-                if (l.startsWith("#")) cls = "lc"; // comments
-                return (
-                  <div key={i} className={cls} style={{ color: l.startsWith("#") ? "var(--text-mute)" : undefined }}>
-                    {tag}{l || "\u00A0"}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="col gap-8">
-        <Panel title="Métricas del guion">
-          <div className="col gap-4 mono" style={{ fontSize: 13 }}>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">Palabras totales</span><span>9 842</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">Turnos</span><span>142</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">Balance Iago/María</span>
-              <span style={{ color: "var(--ok)" }}>48% / 52%</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">Duración estimada</span><span>11:08</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">Coste generación</span><span>0.198€</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between", borderTop: "1px solid var(--border)", paddingTop: 8, marginTop: 4 }}>
-              <span className="muted">Modificado</span><span>hoy 12:11</span>
-            </div>
-            <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="muted">SHA</span><span style={{ color: "var(--text-dim)" }}>a4e1f8c</span>
-            </div>
-          </div>
-        </Panel>
-        <Panel title="Acciones">
-          <div className="col gap-3">
-            <Btn icon={<Icon name="prompt" size={11}/>}
-                 onClick={() => onOpenAI && onOpenAI({ target: "Guion M3_T2", purpose: "improve",
-                                                       hint: "regenerar preservando tono" })}>
-              Regenerar (preservar tono)
-            </Btn>
-            <Btn kind="ghost" icon={<Icon name="check" size={11}/>}
-                 onClick={() => onOpenAI && onOpenAI({ target: "Guion M3_T2", purpose: "improve",
-                                                       hint: "validación dual Claude vs GPT" })}>
-              Validar con GPT (dual)
-            </Btn>
-            <Btn kind="ghost" icon={<Icon name="doc" size={11}/>}
-                 onClick={() => window.open("/files/Guiones/M3_TX_T2_RoPE.txt", "_blank")}>
-              Exportar .txt
-            </Btn>
-          </div>
-        </Panel>
-      </div>
-    </div>
-  );
-}
-
-// ── Tab: PDF (file viewer) ───────────────────────────────
-function TabPdf({ epId }) {
-  const [mode, setMode]   = React.useState("embed"); // embed | text
-  const [page, setPage]   = React.useState(1);
-  const total = 18;
-  const path = pathOf("pdf", epId);
-  const pdfUrl = "assets/pdf/RESUMEN_M3.pdf"; // M3 resumen as stand-in
-
-  // Synthetic page content for first few pages
-  const pages = {
-    1: {
-      h1: "POSICIONALES ROTATIVOS (ROPE)",
-      h2: "1. Introducción",
-      paras: [
-        "Las codificaciones posicionales originales (Vaswani et al., 2017) son aditivas y absolutas. Cada posición de la secuencia recibe un vector posicional que se suma al embedding del token. Esta solución es funcional pero presenta dos problemas: no extrapola bien a longitudes no vistas en entrenamiento, y rompe la simetría translacional del modelo.",
-        "RoPE — introducido por Su et al. (2021) — propone una alternativa: rotar cada vector de embedding en función de su posición. La rotación se aplica en pares de dimensiones y respeta la propiedad fundamental de que el producto interno entre dos tokens depende sólo de su distancia relativa\u00B91.",
-        "Esta propiedad tiene tres consecuencias prácticas:",
-      ],
-      h22: "2. Propiedades",
-      paras2: [
-        "(i) extrapolación natural a contextos más largos que los vistos en entrenamiento;",
-        "(ii) mejor caché de K/V gracias a la invarianza translacional;",
-        "(iii) integración natural con atención causal.",
-      ],
-    },
-    2: {
-      h1: "FORMULACIÓN MATEMÁTICA",
-      h2: "3. Rotación 2D",
-      paras: [
-        "Sea x_m el vector de embedding en la posición m. RoPE aplica una rotación R_θ(m) sobre cada par de dimensiones (i, i+1). La matriz de rotación es la matriz 2D estándar parametrizada por un ángulo θ_i = 10000^(-2i/d).",
-        "La elegancia del método reside en que la atención escalada Q·K^T entre las posiciones m y n se convierte naturalmente en una función de (m - n) tras aplicar las rotaciones a Q y K. Es decir: ⟨R_θ(m)·q, R_θ(n)·k⟩ depende sólo de (m - n).",
-      ],
-    },
-    3: {
-      h1: "EXTRAPOLACIÓN",
-      paras: [
-        "Una de las propiedades más interesantes de RoPE es que el modelo, una vez entrenado con contextos de longitud L, puede operar con contextos de longitud 2L, 4L o más sin degradación catastrófica del rendimiento. Esto contrasta con las posicionales absolutas, que producen tokens fuera de distribución para posiciones no vistas.",
-      ],
-    },
-  };
-
-  const pg = pages[page] || pages[1];
-
-  return (
-    <div className="grid gap-8" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
-      <div className="fv">
-        <div className="fv-chrome">
-          <Icon name="doc" size={11}/>
-          <span className="fv-path">{path}</span>
-          <span className="fv-meta">2.4 MB · 18 páginas · v1</span>
-          <span className="fill"/>
-          <div className="fv-toggle">
-            <button className={mode === "embed" ? "on" : ""} onClick={() => setMode("embed")}>PDF</button>
-            <button className={mode === "text"  ? "on" : ""} onClick={() => setMode("text")}>Texto</button>
-          </div>
-          <a href={pdfUrl} target="_blank" rel="noopener" className="btn ghost sm" title="Abrir en nueva pestaña" style={{ textDecoration: "none" }}>
-            <Icon name="folder" size={11}/>
-          </a>
-        </div>
-
-        {mode === "embed" ? (
-          <div style={{ background: "#525659" }}>
-            <iframe
-              src={pdfUrl + "#view=FitH&toolbar=1&navpanes=0"}
-              style={{ width: "100%", height: 720, border: 0, display: "block" }}
-              title={`PDF · ${epId}`}
-            />
-          </div>
-        ) : (
-          <React.Fragment>
-            <div className="fv-body paper">
-              <div className="fv-page">
-                <h1>{pg.h1}</h1>
-                {pg.h2 && <h2>{pg.h2}</h2>}
-                {pg.paras && pg.paras.map((p, i) => <p key={i}>{p}</p>)}
-                {pg.h22 && <h2>{pg.h22}</h2>}
-                {pg.paras2 && pg.paras2.map((p, i) => <p key={"b" + i}>{p}</p>)}
-                <div className="footnum">— {page} —</div>
-              </div>
-            </div>
-
-            <div className="fv-pagenav">
-              <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>‹</button>
-              <span className="pageof">Página</span>
-              <input
-                className="pageinp"
-                value={page}
-                onChange={(e) => {
-                  const v = parseInt(e.target.value, 10);
-                  if (!isNaN(v) && v >= 1 && v <= total) setPage(v);
-                  else if (e.target.value === "") setPage(1);
-                }}
-              />
-              <span className="pageof">de {total}</span>
-              <button onClick={() => setPage((p) => Math.min(total, p + 1))} disabled={page >= total}>›</button>
-            </div>
-          </React.Fragment>
-        )}
-      </div>
-
-      <Panel title="Resumen IA del PDF" meta="haiku-4.5 · 0.002€">
-        <div style={{ fontSize: 13, color: "var(--text-dim)", lineHeight: 1.6 }}>
-          <p style={{ marginTop: 0 }}><b style={{ color: "var(--text)" }}>Tema central:</b> codificaciones posicionales rotativas en Transformers, alternativa a las posicionales absolutas del paper original.</p>
-          <p><b style={{ color: "var(--text)" }}>Conceptos clave:</b> rotación 2D por pares, distancia relativa, extrapolación, RoFormer, LLaMA, GPT-NeoX.</p>
-          <p><b style={{ color: "var(--text)" }}>Recomendación para el guion:</b> empezar por la intuición geométrica antes que las fórmulas. María lleva las matemáticas; Iago pregunta desde la analogía del reloj.</p>
-        </div>
-        <div className="mt-8">
-          <div className="h3 mb-4">Páginas con material clave</div>
-          <div className="row gap-3">
-            {[1, 2, 5, 9, 14].map((p) => (
-              <button key={p} className="btn sm" onClick={() => setPage(p)}>{p}</button>
-            ))}
-          </div>
-        </div>
-      </Panel>
-    </div>
-  );
-}
-
-// ── Tab: Escaleta (markdown viewer) ──────────────────────
-function TabEscaleta({ epId }) {
-  const [mode, setMode] = React.useState("render");
-  const path = pathOf("escaleta", epId);
-
-  const blocks = [
-    { n: 1, title: "Apertura",                  t: "0:00 → 0:42",  w: 320,  body: "Saludo, contexto del episodio, conexión con M3 (Transformers)." },
-    { n: 2, title: "El problema posicional",    t: "0:42 → 2:10",  w: 680,  body: "Por qué las posicionales absolutas fallan en extrapolación. María pone el ejemplo numérico." },
-    { n: 3, title: "Rotación 2D por pares",     t: "2:10 → 4:30",  w: 1240, body: "Intuición geométrica primero (reloj que gira), después la matriz 2D." },
-    { n: 4, title: "Atención escalada",         t: "4:30 → 6:20",  w: 1010, body: "Producto interno como medida de similitud, distancia relativa emerge naturalmente." },
-    { n: 5, title: "Distancia relativa",        t: "6:20 → 8:15",  w: 980,  body: "Por qué (m - n) es lo único que importa. Implicaciones para caché K/V." },
-    { n: 6, title: "Extrapolación",             t: "8:15 → 10:00", w: 920,  body: "Demostrar que un modelo con RoPE puede operar a 2× o 4× la longitud sin re-training." },
-    { n: 7, title: "Cierre y siguiente",        t: "10:00 → 11:08",w: 380,  body: "Recap, enlace al próximo episodio (M4 · LLMs y emergencia)." },
-  ];
-
-  const rawMd =
-`# Escaleta · M3_T2 — Posicionales rotativos (RoPE)
-> duración total: 11:08 · 7 bloques · 5530 palabras
-
-` + blocks.map((b) =>
-`## ${b.n.toString().padStart(2, "0")} · ${b.title}
-- tiempo: \`${b.t}\`
-- palabras: \`${b.w}\`
-- contenido: ${b.body}
-`).join("\n");
-
-  return (
-    <div className="grid gap-8" style={{ gridTemplateColumns: "1.5fr 1fr" }}>
-      <div className="fv">
-        <div className="fv-chrome">
-          <Icon name="doc" size={11}/>
-          <span className="fv-path">{path}</span>
-          <span className="fv-meta">7 bloques · 5 530 palabras · 11.2 KB</span>
-          <span className="fill"/>
-          <div className="fv-toggle">
-            <button className={mode === "render" ? "on" : ""} onClick={() => setMode("render")}>Render</button>
-            <button className={mode === "raw"    ? "on" : ""} onClick={() => setMode("raw")}>Raw</button>
-          </div>
-          <button className="btn ghost sm" title="Editar"><Icon name="prompt" size={11}/></button>
-        </div>
-
-        {mode === "render" ? (
-          <div className="fv-body fv-md">
-            <h1>Escaleta · M3_T2 — Posicionales rotativos (RoPE)</h1>
-            <div className="meta">duración total: 11:08 · 7 bloques · 5530 palabras</div>
-            {blocks.map((b) => (
-              <div key={b.n}>
-                <h2>{b.n.toString().padStart(2, "0")} · {b.title}</h2>
-                <ul>
-                  <li>tiempo: <code>{b.t}</code></li>
-                  <li>palabras: <code>{b.w}</code></li>
-                  <li>contenido: {b.body}</li>
-                </ul>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="fv-body fv-text">
-            <div className="ln">
-              {rawMd.split("\n").map((_, i) => <div key={i}>{i + 1}</div>)}
-            </div>
-            <div>
-              {rawMd.split("\n").map((l, i) => {
-                let cls = "lc";
-                let style = {};
-                if (l.startsWith("# ")) { cls += " "; style.color = "var(--y)"; style.fontWeight = 600; }
-                else if (l.startsWith("## ")) { style.color = "var(--y)"; }
-                else if (l.startsWith("> ")) { style.color = "var(--text-mute)"; style.fontStyle = "italic"; }
-                else if (l.startsWith("- ")) { style.color = "var(--text-dim)"; }
-                return <div key={i} className={cls} style={style}>{l || "\u00A0"}</div>;
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Panel title="Visión global">
-        <div className="col gap-3">
-          {blocks.map((b) => (
-            <div key={b.n} className="row" style={{
-              padding: "8px 10px",
-              border: "1px solid var(--border)",
-              background: "var(--panel-2)",
-              borderLeft: "3px solid var(--y)",
-              gap: 10,
-            }}>
-              <span className="mono" style={{ color: "var(--y)", fontSize: 11, width: 22 }}>{b.n.toString().padStart(2, "0")}</span>
-              <div className="fill">
-                <div className="display" style={{ fontSize: 12, letterSpacing: "0.04em" }}>{b.title}</div>
-                <div className="mono dim" style={{ fontSize: 10, marginTop: 1 }}>{b.t} · {b.w} pal.</div>
-              </div>
-              <StatusDot status="ok" sm/>
-            </div>
-          ))}
-        </div>
-      </Panel>
-    </div>
-  );
-}
-
-function TabAudio({ onOpenFix, epId }) {
-  return (
-    <div className="grid gap-8" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
-      <Panel title={<SourceTitle kind="audio" epId={epId}/>} meta="ElevenLabs eleven_v3 · 4.8 MB" >
-        <div className="col gap-8">
-          {/* Waveform mock */}
-          <div style={{
-            background: "#0A0A0A",
-            border: "1px solid var(--border)",
-            padding: "20px 16px",
-            position: "relative",
-            height: 120,
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}>
-            {Array.from({ length: 90 }).map((_, i) => {
-              const isFail = i > 60;
-              const h = isFail ? 4 : 12 + Math.abs(Math.sin(i * 0.4)) * 60 + Math.random() * 16;
-              return (
-                <div key={i} style={{
-                  flex: 1,
-                  height: `${h}px`,
-                  background: isFail ? "var(--alert)" : "var(--y)",
-                  opacity: isFail ? 0.5 : 0.85,
-                }}/>
-              );
-            })}
-            <div style={{
-              position: "absolute",
-              left: "67%", top: 0, bottom: 0,
-              width: 1, background: "var(--alert)",
-            }}/>
-            <div style={{
-              position: "absolute",
-              left: "calc(67% + 6px)",
-              top: 8,
-              background: "var(--alert)",
-              color: "#fff",
-              fontFamily: "var(--f-mono)",
-              fontSize: 9,
-              padding: "2px 6px",
-              letterSpacing: "0.1em",
-            }}>FALLO @ 03:14</div>
-          </div>
-
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <div className="row gap-4">
-              <Btn sm onClick={() => window.open(`/files/episodios/${epId}.mp3`, "_blank")}>
-                <Icon name="play" size={11}/> Play
-              </Btn>
-              <span className="mono dim" style={{ fontSize: 11 }}>00:00 / 03:14 (truncado)</span>
-            </div>
-            <Btn sm kind="danger" onClick={() => onOpenFix({
-              target: epId, error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14", id: epId,
-            })}><Icon name="wrench" size={11}/> Arreglar</Btn>
-          </div>
-
-          {/* Blocks */}
-          <div className="col gap-3">
-            <div className="h3">Bloques generados</div>
-            {[
-              { n: 1, ok: true,  t: "0:00 → 0:42"  },
-              { n: 2, ok: true,  t: "0:42 → 2:10"  },
-              { n: 3, ok: true,  t: "2:10 → 3:14"  },
-              { n: 4, ok: false, t: "3:14 → 6:20", err: "ElevenLabs 502 · 2 reintentos"  },
-              { n: 5, ok: null,  t: "—" },
-              { n: 6, ok: null,  t: "—" },
-              { n: 7, ok: null,  t: "—" },
-            ].map((b) => (
-              <div key={b.n} className="row" style={{
-                padding: "6px 10px",
-                background: "var(--panel-2)",
-                border: "1px solid var(--border)",
-                borderLeft: b.ok === false ? "2px solid var(--alert)" : b.ok ? "2px solid var(--ok)" : "2px solid var(--border-2)",
-                fontFamily: "var(--f-mono)",
-                fontSize: 11,
-              }}>
-                <span style={{ width: 24, color: "var(--text-mute)" }}>{b.n.toString().padStart(2, "0")}</span>
-                <span style={{ flex: 1 }}>{b.t}</span>
-                {b.err && <span style={{ color: "var(--alert)" }}>{b.err}</span>}
-                <StatusDot status={b.ok === false ? "alert" : b.ok ? "ok" : "empty"} sm/>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Panel>
-
-      <Panel title="Configuración de voz">
-        <div className="col gap-4">
-          <div>
-            <div className="h3 mb-4">Iago</div>
-            <div className="mono dim" style={{ fontSize: 11 }}>voice_id: pNInz6obpgDQGcFmaJgB</div>
-            <div className="mono" style={{ fontSize: 11, color: "var(--iago)" }}>stability 0.65 · similarity 0.78</div>
-          </div>
-          <div>
-            <div className="h3 mb-4">María</div>
-            <div className="mono dim" style={{ fontSize: 11 }}>voice_id: EXAVITQu4vr4xnSDxMaL</div>
-            <div className="mono" style={{ fontSize: 11, color: "var(--maria)" }}>stability 0.72 · similarity 0.81</div>
-          </div>
-          <div style={{ borderTop: "1px solid var(--border)", paddingTop: 10, marginTop: 4 }}>
-            <div className="mono dim" style={{ fontSize: 11 }}>Saldo ElevenLabs</div>
-            <div className="mono" style={{ fontSize: 16, color: "var(--warn)" }}>8.40€</div>
-            <div className="mono dim" style={{ fontSize: 10 }}>recargar antes de 10.00€</div>
-          </div>
-        </div>
-      </Panel>
-    </div>
-  );
-}
-
-function TabVideo({ epId }) {
-  return (
-    <Panel title={<SourceTitle kind="video" epId={epId}/>} meta="Kling · pendiente">
-      <div style={{
-        background: "#0A0A0A",
-        border: "1px dashed var(--border-2)",
-        padding: 60,
-        textAlign: "center",
-      }}>
-        <div className="display" style={{ fontSize: 14, color: "var(--text-mute)", letterSpacing: "0.16em" }}>VÍDEO NO GENERADO</div>
-        <div className="mono dim" style={{ fontSize: 11, marginTop: 8 }}>Requiere audio finalizado primero · bloqueado por bloque 4</div>
-        <div className="mt-12">
-          <Btn sm icon={<Icon name="play" size={11}/>}
-               onClick={() => onNav && onNav("lanzador")}>Lanzar generación</Btn>
-        </div>
-      </div>
-    </Panel>
-  );
-}
-
-function TabLogs({ epId }) {
-  return (
-    <Panel title={<SourceTitle kind="logs" epId={epId} customPath={`logs/2026-05-12_${epId}.jsonl`}/>} meta="auto-refresh 3s">
-      <pre className="code" style={{ maxHeight: 480, overflow: "auto" }}>
-{`{"t":"12:14:02","lvl":"ERROR","src":"eleven","msg":"502 Bad Gateway","blk":4,"retry":2}
-{"t":"12:13:38","lvl":"WARN", "src":"eleven","msg":"502 Bad Gateway","blk":4,"retry":1}
-{"t":"12:13:14","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":3,"dur":1.04,"cost":0.018}
-{"t":"12:12:50","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":2,"dur":1.88,"cost":0.032}
-{"t":"12:12:18","lvl":"INFO", "src":"eleven","msg":"block synthesized","blk":1,"dur":0.42,"cost":0.008}
-{"t":"12:12:02","lvl":"INFO", "src":"runner","msg":"starting audio generation","blocks":7}
-{"t":"12:11:48","lvl":"INFO", "src":"escaleta","msg":"7 blocks parsed","total_words":5530}
-{"t":"12:11:30","lvl":"INFO", "src":"guion","msg":"script loaded","words":9842,"turns":142}
-{"t":"12:11:24","lvl":"INFO", "src":"runner","msg":"M3_T2 pipeline start","mode":"v2"}`}
-      </pre>
-    </Panel>
-  );
-}
-
-function TabChecks({ epId }) {
-  return (
-    <Panel title={<SourceTitle kind="checks" epId={epId} customPath="todas las carpetas anteriores"/>} meta="9 OK · 1 WARN · 1 ALERT">
-      <div className="col gap-3">
-        {CHECKS_M3.map((c) => (
-          <div key={c.id} className="row" style={{
-            padding: "10px 12px",
-            background: "var(--panel-2)",
-            border: "1px solid var(--border)",
-            borderLeft: `3px solid ${
-              c.status === "ok" ? "var(--ok)" :
-              c.status === "warn" ? "var(--warn)" :
-              c.status === "alert" ? "var(--alert)" : "var(--border-2)"
-            }`,
-            gap: 14,
-          }}>
-            <StatusDot status={c.status}/>
-            <div className="fill">
-              <div className="display" style={{ fontSize: 12, letterSpacing: "0.06em" }}>{c.name}</div>
-              <div className="mono dim" style={{ fontSize: 11, marginTop: 2 }}>{c.detail}</div>
-            </div>
-            {c.status !== "ok" && (
-              <Btn sm kind="ghost"
-                   onClick={() => onOpenFix && onOpenFix({
-                     target: c.name, id: c.id,
-                     error: c.detail,
-                   })}>
-                Investigar
-              </Btn>
-            )}
-          </div>
-        ))}
-      </div>
-    </Panel>
-  );
-}
 
 // ════════════════════════════════════════════════════════════
 // PIZARRA — generador de episodios real (audio + video pipelines)
@@ -3476,7 +2395,7 @@ if __name__ == "__main__":
     print(f"[ok] {in_p} -> {out_p}")
 `;
 }
-Object.assign(window, { PageEpisodio, PagePizarra });
+Object.assign(window, { PagePizarra });
 
 
 // ============================ pages-3.jsx ============================
@@ -5439,7 +4358,7 @@ function PageMetricas({ onNav, onOpenAI }) {
                   const total = e.spotify + e.ivoox;
                   const pct = Math.round((e.spotify / total) * 100);
                   return (
-                    <tr key={e.id} className="clickable" onClick={() => onNav("episodio")}>
+                    <tr key={e.id} className="clickable" onClick={() => onNav("episodio", e.id)}>
                       <td className="mono dim" style={{ fontSize: 11 }}>{String(i + 1).padStart(2, "0")}</td>
                       <td className="mono" style={{ color: "var(--y)" }}>{e.id}</td>
                       <td style={{ fontSize: 13 }}>{e.title}</td>
@@ -5596,7 +4515,7 @@ function PlatformDetail({ id, m, onNav }) {
               const sorted = [...TOP_EPISODES].sort((a, b) => (b[id] || 0) - (a[id] || 0));
               const max = sorted[0][id];
               return sorted.map((e, i) => (
-                <tr key={e.id} className="clickable" onClick={() => onNav("episodio")}>
+                <tr key={e.id} className="clickable" onClick={() => onNav("episodio", e.id)}>
                   <td className="mono dim" style={{ fontSize: 11 }}>{String(i + 1).padStart(2, "0")}</td>
                   <td className="mono" style={{ color: "var(--y)" }}>{e.id}</td>
                   <td style={{ fontSize: 13 }}>{e.title}</td>
@@ -5658,11 +4577,27 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "masterView": "lista"
 }/*EDITMODE-END*/;
 
+// Parsea el hash de routing: "#modulo/M3" → { base: "modulo", payload: "M3" }
+function parseHash() {
+  const h = window.location.hash.replace("#", "");
+  const [base, payload] = h.split("/");
+  return { base, payload: payload ? decodeURIComponent(payload) : null };
+}
+
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [page, setPage] = React.useState(() => {
-    const h = window.location.hash.replace("#", "");
-    return WIRED.has(h) ? h : "home";
+    const { base } = parseHash();
+    return WIRED.has(base) ? base : "home";
+  });
+  // Selección activa: qué módulo / episodio se está viendo. Inicializada
+  // desde el hash para sobrevivir a un reload.
+  const [sel, setSel] = React.useState(() => {
+    const { base, payload } = parseHash();
+    return {
+      modulo:   base === "modulo"   ? payload : null,
+      episodio: base === "episodio" ? payload : null,
+    };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
 
@@ -5696,10 +4631,23 @@ function App() {
     root.setAttribute("data-density", t.density);
   }, [t]);
 
-  const nav = (id) => {
+  // nav(id) navega de página; nav("modulo", "M3") / nav("episodio", "M3_T2")
+  // además fija qué módulo/episodio mostrar. Al abrir un episodio se deriva
+  // también su módulo padre ("M3_T2" → "M3").
+  const nav = (id, payload) => {
     if (!WIRED.has(id)) return;
     setPage(id);
-    window.location.hash = id;
+    if (id === "modulo") {
+      setSel((s) => ({ ...s, modulo: payload || s.modulo }));
+    } else if (id === "episodio") {
+      setSel((s) => ({
+        ...s,
+        episodio: payload || s.episodio,
+        modulo: payload ? payload.split("_")[0] : s.modulo,
+      }));
+    }
+    const hasSel = payload && (id === "modulo" || id === "episodio");
+    window.location.hash = hasSel ? `${id}/${encodeURIComponent(payload)}` : id;
     window.scrollTo(0, 0);
   };
 
@@ -5707,12 +4655,12 @@ function App() {
   const openFix = (ctx) => setAIDrawer({ open: true, mode: "fix",     context: ctx });
   const closeAI = ()    => setAIDrawer((s) => ({ ...s, open: false }));
 
-  // Crumbs by page
+  // Crumbs by page — modulo/episodio reflejan la selección activa
   const CRUMBS = {
     home:       [{ label: "Inicio" }],
     master:     [{ label: "Inicio", id: "home" }, { label: "Master" }],
-    modulo:     [{ label: "Inicio", id: "home" }, { label: "Master", id: "master" }, { label: "M3 · Transformers" }],
-    episodio:   [{ label: "Inicio", id: "home" }, { label: "Master", id: "master" }, { label: "M3", id: "modulo" }, { label: "M3_T2" }],
+    modulo:     [{ label: "Inicio", id: "home" }, { label: "Master", id: "master" }, { label: sel.modulo || "módulo" }],
+    episodio:   [{ label: "Inicio", id: "home" }, { label: "Master", id: "master" }, { label: sel.modulo || "M3", id: "modulo" }, { label: sel.episodio || "episodio" }],
     pizarra:    [{ label: "Inicio", id: "home" }, { label: "Pizarra" }],
     mapa:       [{ label: "Inicio", id: "home" }, { label: "Mapa" }],
     conectores: [{ label: "Inicio", id: "home" }, { label: "Conectores" }],
@@ -5735,17 +4683,17 @@ function App() {
           onCrumb={nav}
           onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
           onOpenFix={page === "episodio" ? () => openFix({
-            target: "M3_T2",
+            target: sel.episodio || "M3_T2",
             error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-            id: "M3_T2",
+            id: sel.episodio || "M3_T2",
           }) : null}
         />
         {t.mode === "industrial" && <HazardTape/>}
 
         {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI}/>}
         {page === "master"     && <PageMaster     onNav={nav} onOpenAI={openAI} view={t.masterView} density={t.density}/>}
-        {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI}/>}
-        {page === "episodio"   && <PageEpisodio   onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
+        {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI} modId={sel.modulo}/>}
+        {page === "episodio"   && <PageEpisodio   onNav={nav} onOpenAI={openAI} onOpenFix={openFix} epId={sel.episodio}/>}
         {page === "pizarra"    && <PagePizarra    onNav={nav} onOpenAI={openAI}/>}
         {page === "mapa"       && <PageMapa       onNav={nav} onOpenAI={openAI}/>}
         {page === "conectores" && <PageConectores onNav={nav} onOpenAI={openAI}/>}

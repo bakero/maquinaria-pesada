@@ -1,10 +1,9 @@
-"""Tests E2E del bundle Vite + TS (web/dist/).
+"""Tests E2E del cockpit (Vite + TS) — única versión de la app visual.
 
-Paridad funcional completa con tests/test_e2e_cockpit.py pero corriendo
-contra el build de producción de Vite (`cd vite_app && npm run build`)
-en lugar del bundle babel-standalone heredado.
+Corre contra el build de producción de Vite
+(`cd vite_app && npm run build` → `vite_app/dist/`).
 
-Solo corren si `web/dist/index.html` existe.
+Solo corren si `vite_app/dist/index.html` existe.
 
 Cubre:
   • montaje de App + bootstrap real
@@ -36,11 +35,12 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-DIST_INDEX = ROOT / "web" / "dist" / "index.html"
+DIST_DIR = ROOT / "vite_app" / "dist"
+DIST_INDEX = DIST_DIR / "index.html"
 
 pytestmark = pytest.mark.skipif(
     not DIST_INDEX.exists(),
-    reason="web/dist/index.html no existe — corre 'cd vite_app && npm run build' primero",
+    reason="vite_app/dist/index.html no existe — corre 'cd vite_app && npm run build' primero",
 )
 
 
@@ -71,8 +71,8 @@ def fake_repo(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setenv("REPO_ROOT", str(tmp_path))
-    # Forzar el bundle Vite (dist/) — distingue este archivo del legacy
-    monkeypatch.setenv("COCKPIT_WEB_DIR", "dist")
+    # Servir el build real de Vite (vite_app/dist/)
+    monkeypatch.setenv("COCKPIT_WEB_DIR", str(DIST_DIR))
     monkeypatch.setenv("COCKPIT_NO_SHELL", "1")  # no abre Explorer en tests
     for mod in list(sys.modules):
         if mod.startswith("cockpit.core") or mod == "web_server":
@@ -200,8 +200,24 @@ def test_vite_modulo_action_navigates_to_lanzador(page, live_url):
     page.locator(".sb-item", has_text="Módulo").first.click()
     page.wait_for_url(lambda u: "modulo" in u, timeout=5_000)
     page.wait_for_timeout(400)
-    page.get_by_role("button", name="Regenerar guion (todos)").click()
+    page.get_by_role("button", name="Generar audio pendiente").click()
     page.wait_for_url(lambda u: "lanzador" in u, timeout=5_000)
+
+
+def test_vite_modulo_generate_guion_posts_to_episode_endpoint(page, live_url):
+    """El panel "Generar guion" del módulo dispara POST /api/episode/<id>/generate."""
+    _wait_for_app(page, live_url)
+    page.locator(".sb-item", has_text="Módulo").first.click()
+    page.wait_for_url(lambda u: "modulo" in u, timeout=5_000)
+    page.wait_for_timeout(400)
+
+    posted = []
+    page.on("request", lambda r: posted.append(r.url)
+            if r.method == "POST" and "/generate" in r.url else None)
+    page.get_by_role("button", name=re.compile("Generar este guion|Regenerar este guion")).click()
+    page.wait_for_timeout(1500)
+    assert any("/api/episode/" in u and u.endswith("/generate") for u in posted), \
+        f"no POST a /api/episode/<id>/generate: {posted}"
 
 
 def test_vite_topup_button_calls_economics(page, live_url):

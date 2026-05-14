@@ -1,22 +1,26 @@
-"""Servidor HTTP para el nuevo cockpit en React (web/Cockpit.html).
+"""Servidor HTTP para el cockpit en React (vite_app/).
 
-Sirve los archivos estáticos de `web/` y expone una API JSON en `/api/*`
+Sirve el build de Vite (`vite_app/dist/`) y expone una API JSON en `/api/*`
 que conecta con los módulos reales de `cockpit/core` (episodios,
 ai_usage, economics, runner, ai_client).
+
+Build del frontend:  cd vite_app && npm run build  → vite_app/dist/
 
 Uso:
     python web_server.py [--port 8765] [--host 127.0.0.1]
 
 Endpoints (todos JSON salvo donde se indique):
 
-    GET  /                       → web/Cockpit.html
-    GET  /<archivo estático>     → web/<archivo>
+    GET  /                       → vite_app/dist/index.html
+    GET  /<archivo estático>     → vite_app/dist/<archivo>
 
     GET  /api/health             → {"ok": true}
     GET  /api/bootstrap          → datos iniciales para data.jsx
                                    (MODULES, EPISODES, TOKEN_DATA, …)
     GET  /api/episodes           → lista de episodios escaneados del repo
     GET  /api/episode/<id>       → metadatos del episodio + paths reales
+    GET  /api/episode/<id>/gen-log → traza de generación/validación del guion
+                                   (intentos, issues hard/soft, veredicto)
     GET  /api/ai-usage           → eventos de logs/ai_usage.jsonl agregados
     GET  /api/economics          → estado de logs/economics.json
     GET  /api/live               → procesos en producción (psutil best-effort)
@@ -30,6 +34,9 @@ Endpoints (todos JSON salvo donde se indique):
     POST /api/run                → Body: {script, flags}
                                    Lanza un pipeline en background con runner
                                    y devuelve {pid, cmd}.
+    POST /api/episode/<id>/generate → Genera el guion de UN episodio concreto.
+                                   Resuelve PDF + script vía episode_sources y
+                                   redirige la traza a Guiones/logs/<id>_gen.log.
     POST /api/reveal             → Body: {path} (relativo a REPO_ROOT)
                                    Abre la carpeta/archivo en el explorador.
     POST /api/economics/topup    → Body: {provider, amount, note}
@@ -58,25 +65,18 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parent
-WEB_LEGACY = ROOT / "web"
-WEB_DIST = ROOT / "web" / "dist"
+WEB_DIST = ROOT / "vite_app" / "dist"
 
 
 def _resolve_web_dir() -> Path:
-    """Prefiere el build Vite (web/dist/) si existe; si no, el legacy babel.
+    """Devuelve el directorio del build Vite (`vite_app/dist/`).
 
-    Permite forzar uno u otro via env var COCKPIT_WEB_DIR ("dist" | "legacy" |
-    ruta absoluta), útil para tests."""
+    Permite forzar otra ruta via env var COCKPIT_WEB_DIR (ruta absoluta),
+    útil para tests."""
     override = os.environ.get("COCKPIT_WEB_DIR", "").strip()
-    if override == "legacy":
-        return WEB_LEGACY
-    if override == "dist":
-        return WEB_DIST
     if override:
         return Path(override)
-    if (WEB_DIST / "index.html").exists():
-        return WEB_DIST
-    return WEB_LEGACY
+    return WEB_DIST
 
 
 WEB_DIR = _resolve_web_dir()
@@ -86,28 +86,6 @@ sys.path.insert(0, str(ROOT))
 
 
 # ---- API helpers ------------------------------------------------------
-
-
-def _load_modules_meta() -> list[dict]:
-    """Metadatos estáticos por módulo (nombre, short). Los porcentajes y
-    estados se calculan a partir del escaneo de episodios."""
-    return [
-        {"id": "M0",  "name": "Cimientos",              "short": "Qué es la IA, historia, panorámica"},
-        {"id": "M1",  "name": "Datos & ML clásico",     "short": "Datasets, regresión, árboles, métricas"},
-        {"id": "M2",  "name": "Redes neuronales",       "short": "Perceptrón, backprop, optimización"},
-        {"id": "M3",  "name": "Transformers",           "short": "Atención, encoder/decoder, escalado"},
-        {"id": "M4",  "name": "LLMs y emergencia",      "short": "Pretraining, leyes de escala, capacidades"},
-        {"id": "M5",  "name": "Fine-tuning & RLHF",     "short": "SFT, DPO, RLHF, constitutional AI"},
-        {"id": "M6",  "name": "Prompting avanzado",     "short": "CoT, few-shot, role, system design"},
-        {"id": "M7",  "name": "RAG & memoria",          "short": "Embeddings, vector DBs, retrieval"},
-        {"id": "M8",  "name": "Agentes & herramientas", "short": "Tool use, ReAct, planning, loops"},
-        {"id": "M9",  "name": "Evaluación",             "short": "Benchmarks, evals, MMLU, humaneval"},
-        {"id": "M10", "name": "Alineamiento",           "short": "Safety, interpretabilidad, riesgos"},
-        {"id": "M11", "name": "Multimodalidad",         "short": "Vision, audio, video, generación"},
-        {"id": "M12", "name": "Inferencia y eficiencia","short": "Quantization, KV-cache, batching"},
-        {"id": "M13", "name": "Despliegue & MLOps",     "short": "Serving, monitoring, drift"},
-        {"id": "M14", "name": "Estado del arte",        "short": "Frontier models, AGI debate, futuro"},
-    ]
 
 
 def _state_for_episode(ep) -> dict:
@@ -141,7 +119,7 @@ def scan_modules_and_episodes() -> tuple[list[dict], list[dict]]:
     try:
         from cockpit.core import episodes
     except Exception:
-        return _load_modules_meta(), []
+        return [], []
 
     try:
         all_eps = episodes.scan_all()
@@ -153,7 +131,7 @@ def scan_modules_and_episodes() -> tuple[list[dict], list[dict]]:
         by_module.setdefault(ep.module, []).append(ep)
 
     modules_out: list[dict] = []
-    for m in _load_modules_meta():
+    for m in episodes.modules_meta():
         eps_m = by_module.get(m["id"], [])
         if eps_m:
             _, ratio = episodes.module_status(eps_m)
@@ -545,6 +523,66 @@ def launch_pipeline(script: str, flags: list) -> dict:
     return {"ok": True, "pid": proc.pid, "cmd": argv, "log": log_path.name}
 
 
+# ---- Generación de guion por episodio ---------------------------------
+# El parseo de la traza vive en cockpit.core.gen_log; aquí solo el glue HTTP
+# (resolver fuente + lanzar el proceso en background).
+
+
+def generate_episode_guion(ep_id: str) -> dict:
+    """Lanza la generación del guion de UN episodio concreto.
+
+    Resuelve el PDF + script vía cockpit.core.episode_sources y redirige la
+    salida (que incluye la traza de validación y regeneración) a la ruta
+    determinista Guiones/logs/{ep_id}_gen.log."""
+    try:
+        from cockpit.core import episode_sources, gen_log, paths, runner
+    except Exception as exc:
+        return {"ok": False, "error": f"módulos no disponibles: {exc}"}
+
+    src = episode_sources.source_for(ep_id)
+    if src is None:
+        return {"ok": False, "error": f"episodio sin fuente configurada: {ep_id}"}
+
+    script_path = paths.repo_root() / src.script
+    if not script_path.exists():
+        return {"ok": False, "error": f"script no existe: {src.script}"}
+
+    argv = runner.build_argv(str(script_path), list(src.flags))
+    log_path = gen_log.gen_log_path(src.ep_id)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    import subprocess
+    f = log_path.open("w", encoding="utf-8")
+    proc = subprocess.Popen(
+        argv,
+        cwd=str(paths.repo_root()),
+        stdout=f,
+        stderr=subprocess.STDOUT,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+    )
+    return {
+        "ok": True,
+        "ep_id": src.ep_id,
+        "kind": src.kind,
+        "pdf": src.pdf,
+        "pid": proc.pid,
+        "cmd": argv,
+        "log": log_path.name,
+    }
+
+
+def read_gen_log(ep_id: str) -> dict:
+    """Lee y parsea la traza de generación/validación de un episodio.
+
+    Adaptador fino sobre cockpit.core.gen_log.read para el endpoint HTTP."""
+    try:
+        from cockpit.core import gen_log
+    except Exception as exc:
+        return {"ok": False, "ep_id": ep_id, "exists": False,
+                "error": f"gen_log no disponible: {exc}"}
+    return gen_log.read(ep_id)
+
+
 # ---- HTTP handler -----------------------------------------------------
 
 
@@ -571,8 +609,7 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if rel.startswith("/"):
             rel = rel[1:]
         if rel == "":
-            # En modo dist (Vite) → index.html; en legacy → Cockpit.html
-            rel = "index.html" if (WEB_DIR / "index.html").exists() else "Cockpit.html"
+            rel = "index.html"
         candidate = (WEB_DIR / rel).resolve()
         try:
             candidate.relative_to(WEB_DIR.resolve())
@@ -614,6 +651,9 @@ class CockpitHandler(BaseHTTPRequestHandler):
         if path == "/api/episodes":
             _, eps = scan_modules_and_episodes()
             return self._send_json(200, eps)
+        if path.startswith("/api/episode/") and path.endswith("/gen-log"):
+            ep_id = path[len("/api/episode/"):-len("/gen-log")]
+            return self._send_json(200, read_gen_log(ep_id))
         if path.startswith("/api/episode/"):
             ep_id = path[len("/api/episode/"):]
             _, eps = scan_modules_and_episodes()
@@ -651,6 +691,10 @@ class CockpitHandler(BaseHTTPRequestHandler):
             script = body.get("script", "")
             flags = body.get("flags", [])
             return self._send_json(200, launch_pipeline(script, flags))
+
+        if path.startswith("/api/episode/") and path.endswith("/generate"):
+            ep_id = path[len("/api/episode/"):-len("/generate")]
+            return self._send_json(200, generate_episode_guion(ep_id))
 
         if path == "/api/reveal":
             return self._send_json(200, reveal_path(body.get("path", "")))
@@ -705,7 +749,10 @@ class CockpitHandler(BaseHTTPRequestHandler):
 
 def run(host: str = "127.0.0.1", port: int = 8765, verbose: bool = False) -> None:
     if not WEB_DIR.exists():
-        raise SystemExit(f"web/ no existe: {WEB_DIR}")
+        raise SystemExit(
+            f"build del frontend no existe: {WEB_DIR}\n"
+            "  Ejecuta:  cd vite_app && npm install && npm run build"
+        )
     server = ThreadingHTTPServer((host, port), CockpitHandler)
     server.verbose = verbose  # type: ignore[attr-defined]
     print(f"Cockpit web en http://{host}:{port}/")

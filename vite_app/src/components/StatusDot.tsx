@@ -1,24 +1,9 @@
-import type { Status } from "../types";
+// Punto de estado. Usa las clases CSS .dot.<status>[.sm] de styles.css.
+export interface StatusDotProps {
+  status: string;
+  sm?: boolean;
+}
 
-const COLORS: Record<Status, string> = {
-  ok:    "var(--ok)",
-  warn:  "var(--warn)",
-  alert: "var(--alert)",
-  empty: "var(--text-mute)",
-  run:   "var(--y)",
-};
-
-export function StatusDot({ status, size = 8 }: { status: Status; size?: number }) {
-  return (
-    <span
-      style={{
-        display: "inline-block",
-        width: size,
-        height: size,
-        borderRadius: "50%",
-        background: COLORS[status],
-      }}
-      aria-label={status}
-    />
-  );
+export function StatusDot({ status, sm }: StatusDotProps) {
+  return <span className={`dot ${status}${sm ? " sm" : ""}`} />;
 }

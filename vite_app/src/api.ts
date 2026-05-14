@@ -41,3 +41,46 @@ export async function runPipeline(
   });
   return res.json();
 }
+
+// ── Generación de guion por episodio concreto ──────────────────────────
+
+export interface GenLog {
+  ok: boolean;
+  ep_id: string;
+  exists: boolean;
+  verdict?: "ok" | "warn" | "running";
+  attempts?: number;
+  hard_issues?: string[];
+  soft_issues?: string[];
+  saved?: boolean;
+  mtime?: number;
+  text?: string;
+  error?: string;
+}
+
+/** Lanza la generación del guion de UN episodio (resuelve PDF + script en el server). */
+export async function generateGuion(
+  epId: string,
+): Promise<{ ok: boolean; pid?: number; log?: string; error?: string }> {
+  try {
+    const res = await fetch(`${BASE}/api/episode/${encodeURIComponent(epId)}/generate`, {
+      method: "POST",
+    });
+    return res.json();
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+}
+
+/** Lee la traza de generación/validación (intentos, issues hard/soft, veredicto). */
+export async function fetchGenLog(epId: string): Promise<GenLog> {
+  try {
+    const res = await fetch(
+      `${BASE}/api/episode/${encodeURIComponent(epId)}/gen-log`,
+      { cache: "no-store" },
+    );
+    return (await res.json()) as GenLog;
+  } catch (e) {
+    return { ok: false, ep_id: epId, exists: false, error: String(e) };
+  }
+}

@@ -37,6 +37,31 @@ _M_AUDIO = re.compile(r"^M(\d+)\.mp3$", re.IGNORECASE)
 CONTENT_TYPES = ("pdf", "guion", "escaleta", "audio")
 """Tipos de contenido que un episodio puede tener producidos."""
 
+# Metadatos estáticos por módulo (nombre + descripción corta). Los porcentajes
+# y estados NO van aquí: se calculan escaneando episodios reales del repo.
+MODULES_META: list[dict[str, str]] = [
+    {"id": "M0",  "name": "Cimientos",               "short": "Qué es la IA, historia, panorámica"},
+    {"id": "M1",  "name": "Datos & ML clásico",      "short": "Datasets, regresión, árboles, métricas"},
+    {"id": "M2",  "name": "Redes neuronales",        "short": "Perceptrón, backprop, optimización"},
+    {"id": "M3",  "name": "Transformers",            "short": "Atención, encoder/decoder, escalado"},
+    {"id": "M4",  "name": "LLMs y emergencia",       "short": "Pretraining, leyes de escala, capacidades"},
+    {"id": "M5",  "name": "Fine-tuning & RLHF",      "short": "SFT, DPO, RLHF, constitutional AI"},
+    {"id": "M6",  "name": "Prompting avanzado",      "short": "CoT, few-shot, role, system design"},
+    {"id": "M7",  "name": "RAG & memoria",           "short": "Embeddings, vector DBs, retrieval"},
+    {"id": "M8",  "name": "Agentes & herramientas",  "short": "Tool use, ReAct, planning, loops"},
+    {"id": "M9",  "name": "Evaluación",              "short": "Benchmarks, evals, MMLU, humaneval"},
+    {"id": "M10", "name": "Alineamiento",            "short": "Safety, interpretabilidad, riesgos"},
+    {"id": "M11", "name": "Multimodalidad",          "short": "Vision, audio, video, generación"},
+    {"id": "M12", "name": "Inferencia y eficiencia", "short": "Quantization, KV-cache, batching"},
+    {"id": "M13", "name": "Despliegue & MLOps",      "short": "Serving, monitoring, drift"},
+    {"id": "M14", "name": "Estado del arte",         "short": "Frontier models, AGI debate, futuro"},
+]
+
+
+def modules_meta() -> list[dict[str, str]]:
+    """Copia de los metadatos estáticos por módulo (id, name, short)."""
+    return [dict(m) for m in MODULES_META]
+
 
 @dataclass
 class Episode:

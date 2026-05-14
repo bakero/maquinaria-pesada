@@ -45,9 +45,16 @@ def fake_repo(tmp_path, monkeypatch):
         }) + "\n",
         encoding="utf-8",
     )
+    # build de Vite fake: el server sirve estáticos desde aquí
+    web_dist = tmp_path / "vite_app" / "dist"
+    web_dist.mkdir(parents=True)
+    (web_dist / "index.html").write_text(
+        "<!doctype html><html><head><title>Maquinaria Pesada · Cockpit</title>"
+        "</head><body><div id=\"root\"></div></body></html>",
+        encoding="utf-8",
+    )
     monkeypatch.setenv("REPO_ROOT", str(tmp_path))
-    # forzar el bundle legacy para tests (aunque exista web/dist/)
-    monkeypatch.setenv("COCKPIT_WEB_DIR", "legacy")
+    monkeypatch.setenv("COCKPIT_WEB_DIR", str(web_dist))
     # invalidar módulos cacheados que dependen de REPO_ROOT / WEB_DIR
     for mod in list(sys.modules):
         if mod.startswith("cockpit.core") or mod == "web_server":
@@ -105,6 +112,54 @@ def test_launch_pipeline_nonexistent_script(fake_repo):
     import web_server
     out = web_server.launch_pipeline("scripts/no_existe.py", [])
     assert out["ok"] is False
+
+
+def test_generate_episode_unknown(fake_repo):
+    import web_server
+    out = web_server.generate_episode_guion("M999")
+    assert out["ok"] is False
+    assert "fuente" in out["error"]
+
+
+def test_generate_episode_resolves_but_script_missing(fake_repo):
+    """El fake_repo no tiene generar_guion.py: resuelve la fuente pero no lanza."""
+    import web_server
+    out = web_server.generate_episode_guion("M3")
+    assert out["ok"] is False
+    assert "script no existe" in out["error"]
+
+
+def test_read_gen_log_missing(fake_repo):
+    import web_server
+    out = web_server.read_gen_log("M3")
+    assert out["ok"] is False
+    assert out["exists"] is False
+
+
+def test_read_gen_log_parses_trace(fake_repo):
+    import web_server
+    log_dir = fake_repo / "Guiones" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    (log_dir / "M3_gen.log").write_text(
+        "  [3/4] Generando guion (intento 1/3)...\n"
+        "         Issues hard: 1 | soft: 2\n"
+        "         [HARD] M3 tiene 900 palabras (minimo: 1200)\n"
+        "         [WARN] bloque 4 con solo 2 frases\n"
+        "         [WARN] CTA ausente\n"
+        "  [3/4] Generando guion (intento 2/3)...\n"
+        "         [PASS] Validacion OK\n"
+        "  [4/4] Guardando guion...\n"
+        "  GUION GENERADO : Guiones/M3_x.txt\n",
+        encoding="utf-8",
+    )
+    out = web_server.read_gen_log("M3")
+    assert out["ok"] is True
+    assert out["exists"] is True
+    assert out["attempts"] == 2
+    assert out["verdict"] == "ok"
+    assert out["saved"] is True
+    assert len(out["hard_issues"]) == 1
+    assert len(out["soft_issues"]) == 2
 
 
 def test_reveal_blocks_traversal(fake_repo, monkeypatch):

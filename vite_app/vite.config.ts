@@ -7,10 +7,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  // Build output: ../web/dist — el servidor (web_server.py) lo detecta y lo
-  // sirve preferentemente sobre el bundle babel-standalone heredado.
+  // Build output: vite_app/dist — el servidor (web_server.py) lo sirve como
+  // estático. Es la única versión de la app visual (ya no hay legacy babel).
   build: {
-    outDir: path.resolve(__dirname, "../web/dist"),
+    outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     sourcemap: true,
   },

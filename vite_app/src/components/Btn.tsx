@@ -1,39 +1,25 @@
-import type { ReactNode, MouseEventHandler } from "react";
+import type { CSSProperties, MouseEventHandler, ReactNode } from "react";
 
 export type BtnKind = "default" | "primary" | "ghost" | "danger";
 export type BtnSize = "sm" | "md";
 
 export interface BtnProps {
-  kind?: BtnKind;
+  kind?: BtnKind | string;
   sm?: boolean;
-  size?: BtnSize;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  children?: ReactNode;
   icon?: ReactNode;
+  title?: string;
+  style?: CSSProperties;
   disabled?: boolean;
-  children: ReactNode;
 }
 
-export function Btn({
-  kind = "default",
-  sm,
-  size,
-  onClick,
-  icon,
-  disabled,
-  children,
-}: BtnProps) {
-  const cls = ["btn"];
-  if (kind !== "default") cls.push(kind);
-  if (sm || size === "sm") cls.push("sm");
+export function Btn({ kind, sm, onClick, children, icon, title, style, disabled }: BtnProps) {
+  const cls = `btn ${kind || ""} ${sm ? "sm" : ""}`;
   return (
-    <button
-      className={cls.join(" ")}
-      onClick={onClick}
-      disabled={disabled}
-      type="button"
-    >
-      {icon}
-      {icon ? <span style={{ marginLeft: 6 }}>{children}</span> : children}
+    <button className={cls} onClick={onClick} title={title} style={style} disabled={disabled}>
+      {icon && <span style={{ fontSize: 11 }}>{icon}</span>}
+      {children}
     </button>
   );
 }
