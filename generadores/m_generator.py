@@ -117,6 +117,22 @@ Reglas duras de formato v6 — debes respetarlas todas:
     y "puede contener errores"; el aviso debe tener entre 45 y 75 palabras
     (18-25 segundos).
 
+24. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
+    Antes de devolver el guion, RECORRE mentalmente la siguiente checklist:
+    [ ] HOOK termina con "Esto es MaquinarIA Pesada. Arrancamos."
+    [ ] HOOK lo abre el speaker correcto por paridad (M par→Maria, M impar→Yago).
+    [ ] SALUDO tiene 3 intervenciones separadas; el aviso de IA lo da el opener.
+    [ ] BLOQUE_PANORAMA: Yago ≥65% (cuenta palabras de cada speaker).
+    [ ] BLOQUE_DESTACADO: ambos speakers entre 40% y 60%.
+    [ ] APLICACION_PRACTICA: Maria entre 30% y 40% (su turno de apertura
+        debe tener 130-160 palabras; su cierre 70-90 palabras).
+    [ ] BLOQUE_FUENTES: 3 o 4 fuentes con 3 o 4 años DISTINTOS (NUNCA 5+).
+    [ ] CIERRE_CONCEPTOS: 3-5 INTERVENCIONES totales. La 1ª combina la
+        apertura canónica con el primer concepto en UN SOLO bloque.
+    [ ] CIERRE_FINAL incluye literal la frase canónica.
+    [ ] Word count total del diálogo: 2900-3200 palabras (mínimo duro 2400).
+    Si alguna casilla falla, CORRIGE antes de devolver.
+
 Genera SOLO el guion en este formato, sin explicaciones ni preámbulos.
 """
 
@@ -266,5 +282,9 @@ def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResul
         model=MODEL, repo_root=repo_root,
         max_output_tokens=10000, temperature=0.7,
         validate_fn=_validate_factory(repo_root),
+        max_retries=3,
+        # M permite 3-4 fuentes con años distintos. Si el modelo se pasa,
+        # recortamos al máximo (4).
+        trim_fuentes_max_years=4,
     )
     return bg.run_pipeline(request)

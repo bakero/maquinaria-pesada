@@ -132,8 +132,19 @@ def check_aplicacion_not_in_hook(parts: ScriptParts) -> ValidationResult:
               "HOOK no contiene la aplicación práctica del sistema")
 
 
+# Año en dígitos (19xx/20xx) o en palabras:
+#  - "dos mil X" para 2000-2099 (X opcional: año puro o con compuesto)
+#  - "mil novecientos X" para 1900-1999
+# Excluimos compuestos numéricos no-año como ISO 42001 ("cuarenta y dos
+# mil uno"): el lookbehind ignora "dos mil" precedido por "y " (en
+# español "y" sólo aparece como conector en compuestos numéricos del
+# tipo "cuarenta y dos mil…").
 _YEAR_PATTERN = re.compile(
-    r"\b(?:19\d{2}|20\d{2}|dos\s+mil(?:\s+\w+){0,3})\b",
+    r"\b(?:"
+    r"19\d{2}|20\d{2}"
+    r"|(?<!y\s)dos\s+mil(?:\s+\w+){0,3}"
+    r"|mil\s+novecientos(?:\s+\w+){1,3}"
+    r")\b",
     re.IGNORECASE,
 )
 

@@ -111,6 +111,27 @@ Reglas duras de formato v6:
     de papers acompañados de autor.
 24. NO incluyas APLICACION_PRACTICA — eso es exclusivo del M.
 
+25. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
+    Antes de devolver el guion, RECORRE mentalmente esta checklist:
+    [ ] HOOK termina con "Esto es MaquinarIA Pesada. Arrancamos."
+    [ ] HOOK lo abre el speaker correcto por paridad del nº de TEMA
+        (T impar→Yago, T par→Maria).
+    [ ] SALUDO tiene 3 intervenciones separadas; el aviso de IA lo da el opener.
+    [ ] BLOQUE_PANORAMA: Yago ≥65% (cuenta palabras).
+    [ ] BLOQUE_COMO: ambos speakers entre 40% y 60%. Maria explica al menos
+        UN sub-mecanismo completo (4-6 frases, 70-120 palabras).
+    [ ] BLOQUE_CASOS: Maria ≥60%; menciona ≥2 EMPRESAS con nombre propio
+        reconocible (Harvey AI, Morgan Stanley, JPMorgan, IBM, Microsoft,
+        Google, OpenAI, Anthropic, Lemonade, Zara, Nordea, BBVA, McKinsey...).
+    [ ] BLOQUE_LIMITES: Yago ≥55%; usa "no es"/"no debe confundirse"/etc.
+    [ ] BLOQUE_FUENTES: EXACTAMENTE 3 fuentes con 3 AÑOS DISTINTOS (no 2,
+        no 4, no 5). CUENTA los años explícitos en el bloque.
+    [ ] CIERRE_CONCEPTOS: EXACTAMENTE 3 intervenciones; la 1ª combina la
+        apertura canónica con "Primero: [concepto]" en un solo bloque.
+    [ ] CIERRE_FINAL incluye literal la frase canónica.
+    [ ] Word count total del diálogo: 3800-4200 palabras (mínimo duro 2925).
+    Si alguna casilla falla, CORRIGE antes de devolver.
+
 Devuelve SOLO el guion.
 """
 
@@ -225,5 +246,10 @@ def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResul
         model=MODEL, repo_root=repo_root,
         max_output_tokens=12000, temperature=0.7,
         validate_fn=_validate_fn,
+        max_retries=3,
+        # T exige EXACTAMENTE 3 fuentes con años distintos. Si el modelo se
+        # pasa, recortamos a 3. El undershoot (<3) sigue dependiendo del
+        # retry con feedback.
+        trim_fuentes_max_years=3,
     )
     return bg.run_pipeline(request)
