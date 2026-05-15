@@ -19,72 +19,86 @@ Abreviatura canónica en el podcast: **I.A.** (con puntos).
 
 ## LLM (Large Language Model)
 **Fuentes:** M0_T1, M0_T2, M0_T3, M0_T4, M0_RESUMEN, M5_T2, M5_T3, M5_RESUMEN
+**S:** 23
 Modelo de lenguaje de gran escala entrenado sobre corpus masivos de texto.
 Genera texto prediciendo el siguiente token dado un contexto previo.
 
 ## Prompt
 **Fuentes:** M6_T1, M6_T2, M6_T3, M6_T4, M6_T5, M6_T6, M6_T7, M6_T8, M6_T9, M6_RESUMEN, M12_T2
+**S:** 12
 Instrucción o contexto de entrada que se proporciona a un LLM para guiar su respuesta.
 Puede incluir system prompt, contexto, ejemplos y la pregunta del usuario.
 
 ## Token
 **Fuentes:** M1_T10, M5_T2, M5_T3, M5_T5, M5_RESUMEN, M9_T7
+**S:** 19
 Unidad mínima de procesamiento de un LLM. Aproximadamente 0.75 palabras en inglés,
 0.6-0.7 palabras en español. Los LLMs tienen un límite de contexto medido en tokens.
 
 ## RAG (Retrieval-Augmented Generation)
 **Fuentes:** M0_T1, M0_T2, M0_T4, M0_T5, M1_T7, M1_T11, M1_RESUMEN, M3_RESUMEN, M5_T3, M5_T4, M5_T8, M5_RESUMEN, M7_T1, M7_T2, M7_T3, M7_T4, M7_T5, M7_T6, M7_T7, M7_T8, M7_RESUMEN, M8_T2, M9_T1, M9_T4, M9_T5, M9_T6, M9_T7, M9_RESUMEN, M12_T1, M12_T3, M12_T5, M14_T1, M14_T2, M14_T4, M14_T6
+**S:** 1
 Técnica que combina recuperación de documentos relevantes con generación de texto.
 El modelo accede a una base de conocimiento externa en el momento de la inferencia.
 
 ## Fine-tuning
 **Fuentes:** M0_T3, M0_RESUMEN, M1_T3, M2_T1, M2_T2, M2_T5, M3_T1, M4_T5, M4_T6, M4_RESUMEN, M5_T2, M5_T3, M5_T4, M5_RESUMEN, M8_T2, M8_T3, M9_T1, M9_T7, M9_T9, M12_T3, M12_T8
+**S:** 2
 Proceso de ajuste de los pesos de un modelo preentrenado sobre un conjunto de datos
 específico para mejorar su rendimiento en una tarea concreta.
 
 ## Embedding
 **Fuentes:** M0_T2, M1_T8, M1_T9, M2_T1, M2_T6, M2_T7, M2_RESUMEN, M5_T2, M5_T5, M5_RESUMEN, M7_T1, M7_T2, M7_T3, M7_T4, M7_T5, M7_RESUMEN
+**S:** 6
 Representación vectorial densa de texto (o cualquier dato) en un espacio de alta dimensión.
 Permite medir similitud semántica mediante distancia vectorial.
 
 ## Agentic AI / Agente IA
 **Fuentes:** M0_T1, M0_T2, M0_T6, M0_RESUMEN, M10_T1, M10_T2, M10_T3, M10_T4, M10_T5, M10_T6, M10_T7, M10_T8, M10_T9, M10_T10, M10_RESUMEN, M11_T5, M11_T6, M12_T1, M12_T5, M14_T4, M14_T6, M14_T7, M14_T8
+**S:** 5
 Sistema de IA capaz de planificar y ejecutar secuencias de acciones de manera autónoma
 para alcanzar un objetivo, usando herramientas y retroalimentación del entorno.
 
 ## Chain-of-Thought (CoT)
 **Fuentes:** M1_T4, M1_T12, M1_RESUMEN, M5_T8, M6_T1, M6_T2, M6_T3, M6_T4, M6_T5, M6_T6, M6_T9, M6_RESUMEN
+**S:** 9
 Técnica de prompting que instruye al modelo a razonar paso a paso antes de responder.
 Mejora la precisión en tareas de razonamiento complejo.
 
 ## Temperatura (en LLMs)
 **Fuentes:** M1_T6, M1_T8, M1_T11, M5_T6, M5_RESUMEN
+**S:** 40
 Hiperparámetro que controla la aleatoriedad en el muestreo de tokens.
 Valores bajos (0.0-0.3): respuestas más deterministas.
 Valores altos (0.7-1.0): más variedad y creatividad.
 
 ## Context window / Ventana de contexto
 **Fuentes:** M0_T4, M5_T5, M5_RESUMEN, M7_T3
+**S:** 24
 Límite máximo de tokens que un LLM puede procesar en una sola inferencia
 (entrada + salida combinadas).
 
 ## Hallucination / Alucinación
 **Fuentes:** M0_T1, M0_T2, M0_T4, M0_RESUMEN, M1_T11, M1_RESUMEN, M2_T8, M5_T7, M5_T8, M5_RESUMEN, M6_T9, M12_T1, M13_T3, M13_RESUMEN
+**S:** 3
 Generación de información factualmente incorrecta pero presentada con confianza
 por un LLM. Efecto emergente del entrenamiento por predicción de tokens.
 
 ## RLHF (Reinforcement Learning from Human Feedback)
 **Fuentes:** M2_T4, M2_T8, M3_T1, M3_RESUMEN, M4_T5, M4_RESUMEN, M5_T3, M5_T8
+**S:** 11
 Técnica de alineación que usa feedback humano para entrenar un modelo de recompensa
 y ajustar el LLM mediante aprendizaje por refuerzo.
 
 ## Vector database / Base de datos vectorial
 **Fuentes:** M2_T1, M2_T6, M7_T1, M7_T2, M7_T4, M7_T5, M7_T6, M8_T7
+**S:** 26
 Sistema de almacenamiento especializado en búsqueda por similaridad de embeddings.
 Fundamental para implementaciones RAG.
 
 ## Sistema automatico
 **Fuentes:** M1_T2, M1_T5, M11_T1, M11_T3
+**S:** 131
 Término canónico del podcast para referirse al sistema de producción de MaquinarIA Pesada.
 Siempre en minúsculas en el texto hablado.
 
@@ -98,22 +112,27 @@ Primera generación de IA empresarial (años 90–2010): dashboards, reporting y
 
 ## IA Predictiva
 **Fuentes:** M0_T1, M0_RESUMEN
+**S:** 173
 Segunda generación de IA empresarial (2010–2020): machine learning clásico aplicado a forecasting, scoring de riesgo y detección de anomalías; aprende patrones históricos para predecir comportamientos futuros.
 
 ## IA Generativa
 **Fuentes:** M0_T1, M0_T2, M0_RESUMEN
+**S:** 110
 Paradigma de IA (2020–presente) en el que los modelos aprenden la distribución estadística de los datos y generan nuevo contenido. Su limitación estructural es producir lo estadísticamente probable en lugar de lo verificablemente verdadero.
 
 ## IA Estrecha vs IA General (ANI / AGI)
 **Fuentes:** M0_RESUMEN
+**S:** 227
 Toda la IA existente en 2025 es IA Estrecha (ANI): optimizada para tareas específicas sin generalización fuera de su dominio. La IA General (AGI) razonaría sobre cualquier dominio con flexibilidad humana y sigue siendo objeto de debate.
 
 ## Modelos frontier
 **Fuentes:** M0_T3, M0_RESUMEN
+**S:** 192
 Modelos de IA con la mayor capacidad disponible en el mercado en cada momento (familias GPT, Claude, Gemini). Su uso implica dependencia del proveedor, precio por token y cesión de datos a su infraestructura.
 
 ## Modelos open weights (pesos abiertos)
 **Fuentes:** M0_T3, M0_RESUMEN
+**S:** 193
 Modelos que publican sus parámetros para uso libre y pueden desplegarse en infraestructura propia (Llama, Mistral/Mixtral, Qwen, Falcon). Ofrecen soberanía de datos y menor coste de inferencia a escala a cambio de mayor esfuerzo operativo.
 
 ## Self-hosting
@@ -134,34 +153,42 @@ Configuración enterprise por la que los datos procesados no se retienen para en
 
 ## Corte de conocimiento (knowledge cutoff)
 **Fuentes:** M0_T4, M1_T11
+**S:** 230
 Fecha límite de entrenamiento de un LLM más allá de la cual el modelo no tiene información. Hace inadecuados a los LLMs sin acceso a búsqueda para tareas que requieren datos actualizados.
 
 ## Fenómeno "lost in the middle"
 **Fuentes:** M0_T4, M1_T8, M1_T11
+**S:** 222
 Degradación de la atención en contextos largos: el modelo presta menos atención a la información ubicada en la parte central del contexto que a la del inicio y el final.
 
 ## Tool use (uso de herramientas)
 **Fuentes:** M0_T4, M9_T3
+**S:** 235
 Capacidad de un LLM para invocar herramientas externas (intérprete de código, calculadora, búsqueda web) durante la generación. Compensa las limitaciones aritméticas y de acceso a información actualizada.
 
 ## Golden dataset
 **Fuentes:** M0_T4, M6_T1, M6_T8, M6_RESUMEN, M7_T1, M7_T2, M7_T6, M7_T7, M8_T1, M8_T2, M8_T8, M8_T9, M8_RESUMEN, M10_T9, M10_T10, M10_RESUMEN, M14_T2
+**S:** 4
 Conjunto curado de 50–500 casos representativos con output de referencia verificado, usado como test suite para medir y comparar de forma objetiva el rendimiento de un sistema de IA antes de desplegarlo.
 
 ## Human-in-the-loop (HITL)
 **Fuentes:** M0_T1, M0_T4, M0_T5, M10_T2, M10_T5, M10_T10, M10_RESUMEN, M11_T3, M11_T4, M11_T5, M11_RESUMEN, M12_T2, M12_T5, M14_T2
+**S:** 8
 Patrón de diseño en el que una persona supervisa, valida o aprueba las salidas del modelo en casos de baja confianza o alto impacto, antes de continuar. Defensa robusta frente a alucinación y prompt injection.
 
 ## RPA (Robotic Process Automation)
 **Fuentes:** M0_T2, M11_T1, M11_T2, M11_T4, M11_RESUMEN
+**S:** 39
 Automatización robótica de procesos mediante bots que siguen flujos predefinidos a nivel de interfaz de usuario, sin capacidad de adaptación. A diferencia de la IA agéntica, ejecuta secuencias fijas.
 
 ## MLOps (Machine Learning Operations)
 **Fuentes:** M0_T6, M0_RESUMEN, M8_T1, M8_RESUMEN
+**S:** 50
 Conjunto de prácticas y herramientas (versionado de modelos, monitorización continua, CI/CD para IA) que permite mantener sistemas de IA en producción de forma sostenible y escalar de piloto a producción.
 
 ## AI Champions
 **Fuentes:** M0_T6, M14_T5, M14_T6, M14_RESUMEN
+**S:** 43
 Empleados de negocio con formación en IA que lideran su adopción en sus equipos y actúan como catalizadores bottom-up. Mecanismo de mayor impacto en la velocidad de adopción con bajo coste.
 
 ## Shadow AI
@@ -170,10 +197,12 @@ Uso de herramientas de IA personales por parte de empleados para trabajo corpora
 
 ## LangChain / LlamaIndex
 **Fuentes:** M0_RESUMEN
+**S:** 228
 Frameworks de desarrollo de aplicaciones de IA que simplifican la construcción de sistemas RAG y agénticos mediante abstracciones reutilizables. Estándares de facto del ecosistema en 2025.
 
 ## Modelos de difusión
 **Fuentes:** M0_T2, M0_RESUMEN, M4_T4
+**S:** 69
 Modelos generativos que aprenden la distribución de imágenes añadiendo y eliminando ruido de forma iterativa. Base de DALL-E, Midjourney, Stable Diffusion y Sora; superan a las GANs en calidad y estabilidad.
 
 ---
@@ -186,6 +215,7 @@ Criterio de inteligencia propuesto por Alan Turing (1950): una máquina lo super
 
 ## Inviernos de la IA
 **Fuentes:** M1_T1, M1_RESUMEN
+**S:** 176
 Períodos cíclicos de caída drástica en financiación e interés de la IA, desencadenados cuando las expectativas superaron las capacidades reales (años 70 y finales de los 80).
 
 ## Ciclo del hype de Gartner
@@ -206,6 +236,7 @@ Enfoque de IA que modela el conocimiento como distribuciones de probabilidad sob
 
 ## Backpropagation
 **Fuentes:** M1_T1, M1_T3, M2_T2, M2_RESUMEN, M4_RESUMEN
+**S:** 21
 Algoritmo que calcula el gradiente de la función de pérdida respecto a cada peso de una red neuronal aplicando la regla de la cadena hacia atrás en una sola pasada. Base de todo el deep learning moderno.
 
 ## Sistema experto
@@ -234,6 +265,7 @@ Lenguaje de consulta estándar W3C para grafos de conocimiento RDF, análogo a S
 
 ## GraphRAG
 **Fuentes:** M1_T7, M7_T5, M7_T8, M7_RESUMEN
+**S:** 49
 Variante de RAG (Microsoft, 2024) que usa un grafo de entidades y relaciones como base de recuperación estructurada en lugar de similitud vectorial. Supera al RAG estándar en preguntas sobre relaciones y síntesis global del corpus.
 
 ## Descenso de gradiente
@@ -242,14 +274,17 @@ Algoritmo de optimización que actualiza iterativamente los pesos de una red en 
 
 ## Función de activación (ReLU, GELU, sigmoid, tanh)
 **Fuentes:** M1_T3, M2_T2, M2_RESUMEN, M4_T1, M4_T2, M4_RESUMEN
+**S:** 17
 No-linealidad aplicada en cada neurona tras la suma ponderada de sus entradas. ReLU(x)=max(0,x) mitiga el vanishing gradient; GELU es la más usada en LLMs modernos; sigmoid y tanh saturan en redes profundas. Sin ellas, una red multicapa equivaldría a una capa lineal.
 
 ## Transfer learning
 **Fuentes:** M1_T3, M4_T5
+**S:** 236
 Técnica que reutiliza un modelo preentrenado en corpus genéricos y lo adapta a un caso de uso específico con datos reducidos. Permite aprovechar modelos como BERT o ResNet sin un preentrenamiento desde cero.
 
 ## Sistema 1 / Sistema 2 (dualidad en IA)
 **Fuentes:** M1_T4, M1_T12, M1_RESUMEN
+**S:** 123
 Marco de Daniel Kahneman aplicado a IA: Sistema 1 es el modo rápido y basado en patrones (LLMs estándar); Sistema 2 es el modo deliberativo y costoso (modelos de razonamiento extendido como o1/o3 o Claude con extended thinking).
 
 ## Reasoning tokens (tokens de razonamiento)
@@ -262,6 +297,7 @@ Parámetro configurable que establece cuántos tokens de razonamiento interno pu
 
 ## IA neuro-simbólica
 **Fuentes:** M1_T5, M0_T2
+**S:** 232
 Arquitectura híbrida que integra componentes neuronales (percepción y patrones en datos no estructurados) con componentes simbólicos (razonamiento lógico auditable). Patrón común: integración secuencial neural→simbólico.
 
 ## Lógica difusa (fuzzy logic)
@@ -278,10 +314,12 @@ Grafo dirigido acíclico donde los nodos son variables aleatorias y los arcos re
 
 ## Teorema de Bayes
 **Fuentes:** M1_T6, M2_T3, M2_RESUMEN
+**S:** 75
 Regla fundamental del razonamiento probabilístico: P(H|E) = P(E|H)·P(H)/P(E). Actualiza la creencia en una hipótesis dada la evidencia observada. Base de filtros de spam, detección de fraude y clasificadores de riesgo.
 
 ## Calibración probabilística
 **Fuentes:** M1_T6, M1_RESUMEN, M2_T3, M2_T8
+**S:** 44
 Propiedad de un modelo cuyas probabilidades predichas reflejan las frecuencias reales de los eventos. Los LLMs actuales están mal calibrados: afirman lo incorrecto con el mismo tono confiado que lo correcto. Se corrige con calibración isotónica o de Platt.
 
 ## Representación del conocimiento
@@ -290,6 +328,7 @@ Disciplina que estudia cómo codificar el conocimiento de un dominio de forma qu
 
 ## Arquitectura Transformer
 **Fuentes:** M0_T2, M0_RESUMEN, M1_T8, M5_T2, M5_T3, M5_RESUMEN
+**S:** 16
 Arquitectura de red neuronal (2017) basada en self-attention que procesa secuencias completas en paralelo. Base técnica de BERT, GPT y todos los LLMs modernos.
 
 ## Positional encoding
@@ -298,6 +337,7 @@ Señal añadida a los embeddings de tokens para indicar su posición en la secue
 
 ## Conexión residual (skip connection)
 **Fuentes:** M1_T8, M4_T1, M4_T2, M4_RESUMEN
+**S:** 45
 Suma directa de la entrada de un bloque a su salida. Permite que el gradiente fluya sin degradarse desde capas profundas a superficiales, haciendo entrenables redes de cientos de capas. Introducidas en ResNet (2016).
 
 ## Encoder / Decoder (variantes Transformer)
@@ -306,6 +346,7 @@ El encoder procesa la secuencia bidireccionalmente (BERT, útil para embeddings 
 
 ## Mecanismo de atención Query-Key-Value (QKV)
 **Fuentes:** M1_T9, M2_T1, M2_RESUMEN
+**S:** 68
 Operación central del Transformer: proyecta cada token en tres vectores (Q, K, V), calcula scores de relevancia como QKᵀ/√d_k, los normaliza con softmax y pondera los Values. Permite a cada token absorber información contextualizada del resto.
 
 ## Multi-head attention
@@ -314,14 +355,17 @@ Variante de la atención QKV que ejecuta varias instancias en paralelo con proye
 
 ## KV Cache (Key-Value cache)
 **Fuentes:** M1_T9, M9_T2, M9_T6
+**S:** 223
 Almacenamiento de los vectores K y V ya calculados para los tokens previos durante la generación autoregresiva, evitando recalcularlos. Crece linealmente con el contexto y es el principal cuello de botella de memoria en inferencia.
 
 ## Flash Attention
 **Fuentes:** M1_T9, M4_T4
+**S:** 231
 Reimplementación del mecanismo de atención que opera en SRAM (memoria rápida de GPU) en bloques, logrando aceleraciones de 2–8× y reduciendo el uso de memoria de O(n²) a O(n) sin cambiar el resultado matemático.
 
 ## Byte-Pair Encoding (BPE)
 **Fuentes:** M1_T10, M5_T5, M5_RESUMEN
+**S:** 60
 Algoritmo de tokenización dominante que construye el vocabulario fusionando iterativamente los pares de tokens adyacentes más frecuentes del corpus. Garantiza cobertura total sin tokens desconocidos; estándar en GPT.
 
 ## Sesgo de idioma en tokenización
@@ -334,22 +378,27 @@ Variabilidad en las respuestas de un LLM ante el mismo input, consecuencia del m
 
 ## Conocimiento paramétrico vs conocimiento en contexto
 **Fuentes:** M1_RESUMEN
+**S:** 226
 El conocimiento paramétrico está codificado en los pesos del modelo (estático, potencialmente desactualizado); el conocimiento en contexto está en el prompt actual (dinámico y verificable). El patrón RAG explota esta distinción.
 
 ## Tree of Thoughts (ToT)
 **Fuentes:** M1_RESUMEN, M6_T3, M6_RESUMEN
+**S:** 77
 Técnica de razonamiento (Yao et al., 2023) que extiende Chain-of-Thought generando múltiples cadenas en paralelo, evaluando su promesa y convergiendo en la solución más robusta. Efectivo en planificación y problemas con backtracking.
 
 ## ReAct (Reasoning + Acting)
 **Fuentes:** M1_RESUMEN, M6_T6, M6_RESUMEN, M10_T1, M10_T2, M10_RESUMEN
+**S:** 18
 Patrón que entrelaza pasos de razonamiento (Thought), invocación de herramientas externas (Action) y procesamiento de resultados (Observation). Base de la mayoría de sistemas agénticos en producción.
 
 ## Self-consistency
 **Fuentes:** M1_RESUMEN, M5_T8, M6_T4, M6_RESUMEN
+**S:** 25
 Técnica que genera N cadenas de razonamiento independientes con temperatura > 0 y selecciona por votación mayoritaria. Mejora la precisión en razonamiento 10–20 puntos sobre CoT estándar sin fine-tuning.
 
 ## LLM-as-judge
 **Fuentes:** M1_T11, M1_RESUMEN, M2_RESUMEN, M5_T7, M6_T8, M6_RESUMEN, M8_T1, M8_T7, M8_T9, M8_RESUMEN, M10_T9
+**S:** 7
 Patrón de evaluación automática en el que un LLM (a menudo más capaz o más económico) evalúa la calidad de las respuestas de otro sistema. Requiere calibración contra evaluación humana (correlación objetivo > 0.8).
 
 ---
@@ -358,10 +407,12 @@ Patrón de evaluación automática en el que un LLM (a menudo más capaz o más 
 
 ## Similitud coseno
 **Fuentes:** M2_T1, M2_T7, M2_RESUMEN, M7_T2, M7_T4, M7_RESUMEN
+**S:** 32
 Métrica que mide el ángulo entre dos vectores mediante cos(θ) = (a·b)/(‖a‖·‖b‖), entre -1 y 1. Operación estándar de búsqueda semántica: ignora la magnitud y captura solo la orientación relativa.
 
 ## SVD (Descomposición en Valores Singulares)
 **Fuentes:** M2_T1, M2_RESUMEN
+**S:** 209
 Factorización de cualquier matriz M como U·Σ·Vᵀ. Truncar a los k valores singulares mayores produce la mejor aproximación de rango k; base matemática de LoRA y de la reducción de dimensionalidad.
 
 ## PCA (Análisis de Componentes Principales)
@@ -370,14 +421,17 @@ Caso especial de SVD aplicado a la matriz de covarianza; proyecta los datos sobr
 
 ## LoRA (Low-Rank Adaptation)
 **Fuentes:** M2_T1, M2_RESUMEN, M4_T6, M4_RESUMEN, M5_T3, M8_T2, M8_T3, M8_RESUMEN
+**S:** 10
 Técnica de fine-tuning eficiente (Hu et al., 2021) que congela los pesos del modelo y aproxima la actualización como producto de dos matrices de bajo rango (ΔW ≈ A·B). Reduce los parámetros entrenables hasta 128× sin añadir latencia en inferencia.
 
 ## QLoRA (Quantized LoRA)
 **Fuentes:** M4_T6, M4_RESUMEN, M8_T3, M8_RESUMEN
+**S:** 53
 Combina LoRA con cuantización del modelo base a NF4 (4-bit), permitiendo fine-tuning de modelos de 70B parámetros en una sola GPU A100 de 80 GB.
 
 ## FAISS (Facebook AI Similarity Search)
 **Fuentes:** M2_T1, M2_T6, M7_T1, M7_T2
+**S:** 130
 Librería open source de búsqueda de vecinos aproximados (índices IVF y PQ) que reduce la complejidad de búsqueda con pérdida de recall controlada. Base de ChromaDB y otras herramientas de prototipado.
 
 ## HNSW (Hierarchical Navigable Small World Graphs)
@@ -386,26 +440,32 @@ Algoritmo de búsqueda aproximada de vecinos más cercanos basado en grafos jer�
 
 ## Adam / AdamW (Adaptive Moment Estimation)
 **Fuentes:** M2_T2, M2_T5, M2_RESUMEN, M4_RESUMEN
+**S:** 42
 Optimizador que mantiene estimaciones del primer y segundo momento de los gradientes para adaptar la tasa de aprendizaje por parámetro. AdamW añade weight decay desacoplado y es el estándar en fine-tuning de LLMs.
 
 ## Vanishing gradient (gradiente desvaneciente)
 **Fuentes:** M2_T2, M2_RESUMEN, M4_T1, M4_T3, M4_RESUMEN
+**S:** 41
 Fenómeno en redes profundas donde los gradientes se vuelven exponencialmente pequeños al propagarse hacia atrás a través de activaciones saturadas, impidiendo el aprendizaje en capas iniciales. Se mitiga con residual connections y ReLU/GELU.
 
 ## Gradient clipping
 **Fuentes:** M2_T2, M2_RESUMEN
+**S:** 168
 Técnica que limita la norma del vector de gradiente a un valor máximo antes de la actualización de pesos, evitando que spikes ocasionales desestabilicen el entrenamiento.
 
 ## Learning rate scheduler (warmup + cosine decay)
 **Fuentes:** M2_T2, M2_RESUMEN
+**S:** 180
 Estrategia que combina un warmup lineal inicial con un decaimiento coseno posterior de la tasa de aprendizaje. Esquema estándar en el entrenamiento y fine-tuning de LLMs.
 
 ## ROC-AUC / PR-AUC
 **Fuentes:** M2_T3, M2_RESUMEN, M3_T2, M3_T4, M3_RESUMEN
+**S:** 38
 Métricas que agregan el rendimiento de un clasificador a través de todos los umbrales. ROC-AUC mide la capacidad discriminativa general; PR-AUC (área bajo precision-recall) es preferida en problemas desbalanceados.
 
 ## A/B testing (Champion/Challenger)
 **Fuentes:** M2_T3, M6_T8, M6_RESUMEN
+**S:** 59
 Método experimental que divide el tráfico aleatoriamente entre el sistema actual (A) y el nuevo (B) para comparar métricas con significancia estadística. Estándar para demostrar mejora en producción.
 
 ## Distributional shift
@@ -414,38 +474,47 @@ Fenómeno en el que la distribución de los datos en producción difiere de la d
 
 ## MSE / MAE (Mean Squared Error / Mean Absolute Error)
 **Fuentes:** M2_T4, M2_RESUMEN, M3_T4
+**S:** 70
 Funciones de coste para regresión: MSE penaliza errores grandes cuadráticamente (sensible a outliers, produce la media condicional); MAE trata todos los errores proporcionalmente (más robusto, produce la mediana condicional).
 
 ## Cross-Entropy Loss
 **Fuentes:** M2_T4, M2_T8, M2_RESUMEN
+**S:** 103
 Función de coste estándar para clasificación y preentrenamiento de LLMs. Penaliza fuertemente las predicciones confiadas incorrectas; minimizarla sobre el siguiente token es el objetivo del preentrenamiento.
 
 ## Focal Loss
 **Fuentes:** M2_T4, M2_RESUMEN
+**S:** 165
 Modificación de la cross-entropy (Lin et al., 2017) que reduce el peso de los ejemplos fáciles mediante un factor (1−p)^γ, enfocando el aprendizaje en los casos difíciles. Útil con desbalance extremo de clases.
 
 ## KL Divergence (Divergencia de Kullback-Leibler)
 **Fuentes:** M2_T4, M2_T8, M2_RESUMEN
+**S:** 112
 Medida asimétrica de la diferencia entre dos distribuciones: D_KL(P‖Q) = Σ p_i·log(p_i/q_i) ≥ 0. Aparece en el entrenamiento de VAEs y en RLHF como regularización para que el modelo alineado no se desvíe del base.
 
 ## Dilema bias-varianza
 **Fuentes:** M2_T5, M2_RESUMEN, M3_T5, M3_RESUMEN
+**S:** 46
 Descomposición del error de generalización: Error = Bias² + Varianza + Ruido irreducible. El bias alto produce underfitting; la varianza alta, overfitting. Reducir uno tiende a aumentar el otro.
 
 ## Dropout
 **Fuentes:** M2_T5, M2_RESUMEN, M4_T1, M4_RESUMEN
+**S:** 47
 Técnica de regularización (Srivastava et al., 2014) que desactiva aleatoriamente una fracción p de neuronas en cada forward pass durante el entrenamiento, forzando representaciones redundantes y robustas.
 
 ## Early stopping
 **Fuentes:** M2_T5, M2_RESUMEN
+**S:** 155
 Técnica de regularización que detiene el entrenamiento cuando la pérdida de validación deja de mejorar durante un número predefinido de épocas (paciencia). Primera salvaguarda recomendada contra el overfitting.
 
 ## Regularización L1 / L2 (Lasso / Ridge / Weight Decay)
 **Fuentes:** M2_T5, M2_RESUMEN, M3_T5, M3_RESUMEN
+**S:** 55
 Técnicas que añaden un término de penalización sobre el tamaño de los pesos. L1 (Lasso) produce soluciones sparse con selección automática de features; L2 (Ridge) distribuye la penalización; L2 se denomina weight decay en LLMs.
 
 ## TF-IDF (Term Frequency-Inverse Document Frequency)
 **Fuentes:** M2_T6, M5_T1, M5_RESUMEN
+**S:** 76
 Representación clásica sparse de texto que pondera cada término por su frecuencia en el documento dividida por su frecuencia en el corpus. Estándar pre-Transformer para clasificación y recuperación; no capta sinónimos.
 
 ## Word2Vec / GloVe
@@ -454,10 +523,12 @@ Modelos que aprenden embeddings densos estáticos a partir de co-ocurrencia dist
 
 ## Embeddings contextuales
 **Fuentes:** M2_T6, M2_RESUMEN
+**S:** 157
 Representaciones en las que el vector de cada token depende de todo el contexto de la frase (vía atención), superando la limitación de los embeddings estáticos de Word2Vec. Base de los Sentence Transformers.
 
 ## MTEB (Massive Text Embedding Benchmark)
 **Fuentes:** M2_T6, M7_T2
+**S:** 233
 Benchmark estándar que evalúa modelos de embedding en tareas de recuperación, clasificación y similitud semántica en múltiples idiomas y dominios. Referencia para elegir el modelo de embedding adecuado.
 
 ## CLIP (Contrastive Language-Image Pre-Training)
@@ -470,10 +541,12 @@ Algoritmos de reducción de dimensionalidad no lineal que proyectan embeddings a
 
 ## Entropía de Shannon
 **Fuentes:** M2_T8, M2_RESUMEN
+**S:** 158
 Medida de incertidumbre de una distribución de probabilidad: H(P) = −Σ p_i·log₂(p_i) en bits. En LLMs mide cuántas opciones plausibles tiene el modelo en cada paso; la temperatura modifica directamente esta entropía.
 
 ## Perplejidad (Perplexity)
 **Fuentes:** M2_T8, M2_RESUMEN
+**S:** 200
 Métrica para evaluar modelos de lenguaje, la exponencial de la cross-entropy: PPL = e^H. Mide el número efectivo de opciones equivalentes en cada paso; los LLMs modernos en inglés alcanzan valores de 3–7.
 
 ## Información mutua
@@ -482,6 +555,7 @@ Medida de la dependencia entre dos variables aleatorias: I(X;Y) = H(X) + H(Y) �
 
 ## Scaling Laws (leyes de escalado)
 **Fuentes:** M2_RESUMEN
+**S:** 229
 Relaciones empíricas de ley de potencia (Kaplan et al., 2020) que describen cómo mejora el rendimiento de los LLMs al aumentar tamaño del modelo, datos y cómputo. Justificación teórica para invertir en modelos más grandes.
 
 ---
@@ -490,14 +564,17 @@ Relaciones empíricas de ley de potencia (Kaplan et al., 2020) que describen có
 
 ## Aprendizaje supervisado
 **Fuentes:** M3_T1, M3_RESUMEN
+**S:** 139
 Paradigma de ML en el que el modelo aprende de pares (input, etiqueta correcta) para predecir clasificaciones o valores de regresión. Cubre el 80% de los casos de uso empresarial: churn, fraude, scoring, forecasting.
 
 ## Aprendizaje no supervisado
 **Fuentes:** M3_T1, M3_RESUMEN
+**S:** 137
 Paradigma en el que el modelo recibe inputs sin etiquetas y descubre estructura intrínseca: clustering, reducción de dimensionalidad, detección de anomalías. La validez de los resultados requiere juicio de dominio.
 
 ## Aprendizaje por refuerzo (RL)
 **Fuentes:** M3_T1, M3_RESUMEN
+**S:** 138
 Paradigma en el que un agente aprende una política de decisión maximizando la recompensa acumulada tras interactuar con un entorno. Se formaliza como MDP; base técnica del RLHF.
 
 ## Aprendizaje semi-supervisado
@@ -518,34 +595,42 @@ Fenómeno en RL en el que el agente maximiza técnicamente la función de recomp
 
 ## Regresión logística
 **Fuentes:** M3_T2, M3_RESUMEN
+**S:** 204
 Modelo de clasificación binaria que aplica la función sigmoide sobre una combinación lineal de las variables de entrada. Sus coeficientes son auditables: estándar para sectores regulados bajo GDPR y AI Act.
 
 ## Random Forest
 **Fuentes:** M3_T2, M3_T5, M3_RESUMEN
+**S:** 119
 Método ensemble que entrena muchos árboles de decisión independientes sobre muestras aleatorias y combina sus predicciones por votación o promedio. Reduce la varianza sin aumentar el bias; robusto con pocos ajustes.
 
 ## Gradient Boosting / XGBoost / LightGBM
 **Fuentes:** M3_T2, M3_T5, M3_RESUMEN
+**S:** 108
 Familia de métodos ensemble que construye árboles secuencialmente, cada uno ajustado a los residuos del ensemble anterior. Estado del arte en ML tabular.
 
 ## SVM — Support Vector Machine
 **Fuentes:** M3_T2, M3_RESUMEN
+**S:** 210
 Algoritmo de clasificación que encuentra el hiperplano de máximo margen entre clases. Útil con datos de alta dimensionalidad y conjuntos de entrenamiento pequeños.
 
 ## Kernel trick
 **Fuentes:** M3_T2, M3_RESUMEN
+**S:** 178
 Técnica matemática que permite a las SVM separar clases no linealmente separables proyectándolas implícitamente a espacios de alta dimensión mediante funciones kernel (RBF, polinomial), sin calcular las coordenadas.
 
 ## SHAP (SHapley Additive exPlanations)
 **Fuentes:** M3_T2, M3_T3, M3_T7, M3_RESUMEN, M13_T8, M13_RESUMEN
+**S:** 31
 Método de interpretabilidad post-hoc basado en los Shapley values de la teoría de juegos. Calcula la contribución de cada variable a la predicción de forma matemáticamente consistente. Estándar de facto en producción.
 
 ## LIME (Local Interpretable Model-agnostic Explanations)
 **Fuentes:** M3_T7, M13_T8, M13_RESUMEN
+**S:** 66
 Método de interpretabilidad post-hoc que genera una explicación local perturbando el input y ajustando un modelo lineal simple sobre las predicciones. Más inestable que SHAP; aplicable a cualquier modelo de caja negra.
 
 ## Feature engineering
 **Fuentes:** M3_T3, M3_RESUMEN
+**S:** 163
 Proceso de transformar datos brutos en representaciones que los modelos aprenden mejor: normalización, encoding de categóricas, features temporales, ratios de dominio. Frecuentemente determina más el rendimiento que el algoritmo.
 
 ## Feature leakage (fuga de datos)
@@ -570,10 +655,12 @@ Tabla que organiza las predicciones de un clasificador binario en verdaderos/fal
 
 ## Underfitting
 **Fuentes:** M3_T5, M3_RESUMEN
+**S:** 217
 Situación de alto bias en la que el modelo es demasiado simple: métricas malas en entrenamiento y validación, con diferencia pequeña entre ambas. Solución: aumentar complejidad o reducir la regularización.
 
 ## Overfitting (sobreajuste)
 **Fuentes:** M3_T5, M3_RESUMEN
+**S:** 196
 Situación de alta varianza en la que el modelo memoriza el ruido del entrenamiento: métricas excelentes en entrenamiento y peores en validación. Solución: regularización, más datos, menos complejidad o ensembles.
 
 ## Curvas de aprendizaje
@@ -582,6 +669,7 @@ Representación gráfica del error de entrenamiento y validación en función de
 
 ## Validación cruzada k-fold
 **Fuentes:** M3_T6, M3_RESUMEN
+**S:** 218
 Técnica que divide los datos en K partes y entrena K modelos, usando cada fold como validación una vez. Produce estimaciones del rendimiento más robustas que un único split, con media y desviación explícitas.
 
 ## Time Series Cross-Validation (walk-forward)
@@ -594,6 +682,7 @@ Modelos intrínsecamente interpretables que modelan el efecto de cada variable c
 
 ## EDA (Exploratory Data Analysis)
 **Fuentes:** M3_T3, M3_RESUMEN
+**S:** 156
 Etapa inicial de un proyecto de ML: visualizar distribuciones, identificar nulos y outliers, calcular correlaciones con el target y analizar relaciones bivariadas. Guía el diseño de features y la detección de problemas.
 
 ---
@@ -602,6 +691,7 @@ Etapa inicial de un proyecto de ML: visualizar distribuciones, identificar nulos
 
 ## Capa densa (fully connected)
 **Fuentes:** M4_T1, M4_RESUMEN
+**S:** 145
 Unidad básica de una red neuronal profunda que conecta cada neurona de entrada con cada neurona de salida mediante pesos aprendibles: salida = activación(W·entrada + b).
 
 ## GELU / SiLU
@@ -610,10 +700,12 @@ Funciones de activación suaves (diferenciables en todo punto) usadas en arquite
 
 ## Batch Normalization
 **Fuentes:** M4_T1, M4_T2, M4_RESUMEN
+**S:** 96
 Técnica de normalización que fuerza las activaciones de cada capa a media 0 y varianza 1 sobre el batch actual; permite tasas de aprendizaje más altas y actúa como regularizador implícito.
 
 ## Layer Normalization
 **Fuentes:** M4_T1, M4_RESUMEN
+**S:** 179
 Variante de la normalización que opera sobre las características de cada ejemplo individual en lugar del batch. Estándar en Transformers por su mejor comportamiento con secuencias de longitud variable.
 
 ## RMSNorm
@@ -622,6 +714,7 @@ Variante eficiente de LayerNorm usada en Llama que normaliza solo por la raíz d
 
 ## CNN (Convolutional Neural Network)
 **Fuentes:** M1_T3, M4_T2, M4_RESUMEN
+**S:** 61
 Red neuronal especializada en datos con estructura espacial que aplica filtros convolucionales aprendidos detectando características jerárquicamente (bordes → formas → objetos), con compartición de pesos e invarianza a la traslación.
 
 ## Feature map
@@ -646,18 +739,22 @@ Arquitectura CNN de detección de objetos en tiempo real que detecta y clasifica
 
 ## Data augmentation
 **Fuentes:** M4_T2, M4_RESUMEN
+**S:** 150
 Técnica para reducir el sobreajuste en visión que genera variaciones aleatorias de las imágenes de entrenamiento (rotaciones, recortes, cambios de color), multiplicando el tamaño efectivo del dataset.
 
 ## RNN (Recurrent Neural Network)
 **Fuentes:** M1_T3, M4_T3, M4_RESUMEN
+**S:** 73
 Red neuronal que procesa secuencias un elemento a la vez manteniendo un estado oculto que actúa como memoria acumulada de los pasos anteriores.
 
 ## LSTM (Long Short-Term Memory)
 **Fuentes:** M1_T3, M4_T3, M4_RESUMEN
+**S:** 67
 Variante de RNN (Hochreiter y Schmidhuber, 1997) con tres compuertas y un estado de celda, que resuelve el gradiente desvaneciente y captura dependencias de cientos de pasos.
 
 ## GRU (Gated Recurrent Unit)
 **Fuentes:** M4_T3, M4_RESUMEN
+**S:** 169
 Versión simplificada de LSTM con dos compuertas y sin estado de celda separado; rendimiento similar con menor coste computacional.
 
 ## State Space Models / Mamba (SSM)
@@ -674,6 +771,7 @@ Arquitectura donde la capa feed-forward de cada bloque Transformer se reemplaza 
 
 ## Cuantización de modelos
 **Fuentes:** M4_T4, M4_T8, M9_T7, M9_T8, M9_RESUMEN
+**S:** 33
 Técnica que representa los pesos del modelo con menor precisión numérica (FP32→FP16→INT8→INT4/NF4), reduciendo la VRAM necesaria 2–8× con pérdida de calidad inferior al 5%. Formatos: GGUF, GPTQ. Base del Edge AI.
 
 ## Feature extraction (Transfer Learning)
@@ -686,18 +784,22 @@ Técnica de fine-tuning que asigna tasas de aprendizaje distintas por grupos de 
 
 ## Catastrophic forgetting
 **Fuentes:** M4_T5, M4_T6, M5_T3, M8_T2, M8_T3
+**S:** 58
 Fenómeno por el que el fine-tuning degrada capacidades del modelo en dominios no representados en los datos de adaptación. Se mitiga con tasas de aprendizaje bajas, LoRA, data mixing y pocas épocas.
 
 ## PEFT (Parameter-Efficient Fine-Tuning)
 **Fuentes:** M4_T6, M4_RESUMEN, M8_T3
+**S:** 72
 Familia de técnicas que adaptan un modelo preentrenado entrenando solo una pequeña fracción de sus parámetros (~0,1–1%), manteniendo los pesos originales congelados para reducir memoria, coste y riesgo de sobreajuste.
 
 ## Instruction tuning (SFT)
 **Fuentes:** M4_T6, M4_RESUMEN, M5_T3
+**S:** 65
 Fine-tuning supervisado sobre pares (instrucción, respuesta ideal) que convierte un modelo base en un asistente que sigue instrucciones. Suelen bastar 500–2.000 pares de alta calidad del dominio.
 
 ## DPO (Direct Preference Optimization)
 **Fuentes:** M4_RESUMEN, M5_T3
+**S:** 79
 Alternativa más simple al RLHF que logra alineamiento con preferencias humanas sin un modelo de recompensa separado ni el algoritmo PPO. Adoptada por modelos como Claude y Llama 3.
 
 ## Data parallelism / Model parallelism
@@ -738,14 +840,17 @@ Memoria de vídeo de la GPU, recurso limitante en deep learning. Un modelo de N 
 
 ## NER (Named Entity Recognition)
 **Fuentes:** M5_T1, M5_T2, M5_RESUMEN
+**S:** 116
 Tarea de extracción de información que identifica y clasifica entidades en texto (personas, organizaciones, fechas, importes). Base de los sistemas de procesamiento automático de contratos, facturas y expedientes.
 
 ## BERT (Bidirectional Encoder Representations from Transformers)
 **Fuentes:** M1_T8, M2_T6, M2_RESUMEN, M5_T1, M5_T2, M5_T3, M5_RESUMEN
+**S:** 13
 Modelo Transformer encoder bidireccional (Google, 2018) preentrenado con Masked Language Modeling. Cada token atiende a todos los demás; estándar para clasificación, NER y embeddings de alta calidad.
 
 ## GPT (Generative Pre-trained Transformer)
 **Fuentes:** M5_T2, M5_T3, M5_T4, M5_RESUMEN
+**S:** 84
 Modelo Transformer decoder autoregresivo (OpenAI, 2018) preentrenado con language modeling causal: predice el siguiente token dado el contexto anterior. Arquitectura dominante en generación de texto y razonamiento.
 
 ## MLM (Masked Language Modeling)
@@ -754,14 +859,17 @@ Objetivo de preentrenamiento de BERT: el 15% de los tokens se enmascaran aleator
 
 ## In-Context Learning (ICL)
 **Fuentes:** M5_T4, M5_RESUMEN
+**S:** 174
 Capacidad emergente de los LLMs para adaptarse a nuevas tareas a partir de ejemplos incluidos en el prompt, sin actualizar los parámetros. La calidad y diversidad de los ejemplos importa más que la cantidad.
 
 ## Zero-shot prompting
 **Fuentes:** M5_T4, M5_RESUMEN
+**S:** 221
 Modalidad de ICL en la que el modelo recibe solo la descripción de la tarea sin ejemplos. Funciona bien para conocimiento general; puede fallar en tareas de dominio específico o formatos inusuales.
 
 ## Few-shot prompting
 **Fuentes:** M5_T4, M5_RESUMEN, M6_T1, M6_RESUMEN
+**S:** 48
 Modalidad de ICL en la que se incluyen 3–10 pares (input, output correcto) antes del caso a resolver. Especialmente efectivo cuando el formato de output es inusual o las categorías son ambiguas.
 
 ## Varianza de orden (order sensitivity en ICL)
@@ -798,6 +906,7 @@ Algoritmo de decodificación que mantiene los k caminos más prometedores en cad
 
 ## MMLU (Massive Multitask Language Understanding)
 **Fuentes:** M5_T7, M5_RESUMEN
+**S:** 190
 Benchmark de conocimiento académico con 14.042 preguntas de múltiple opción en 57 materias. Estándar de referencia hasta saturarse en 2024, lo que motivó benchmarks más difíciles como MMLU-Pro y GPQA.
 
 ## BLEU / ROUGE
@@ -814,6 +923,7 @@ Tendencia de los LLMs a generar respuestas que se alinean con las expectativas i
 
 ## Faithfulness (fidelidad al contexto)
 **Fuentes:** M5_T8, M7_T7, M7_RESUMEN
+**S:** 64
 Métrica que evalúa qué fracción de las afirmaciones del output de un sistema RAG están respaldadas por los documentos recuperados. Métrica de alucinación específica para RAG, implementada en frameworks como RAGAS.
 
 ## Modelos multilingües (mBERT, XLM-R)
@@ -826,14 +936,17 @@ Modelos preentrenados sobre corpus en múltiples idiomas simultáneamente, que p
 
 ## System Prompt
 **Fuentes:** M6_T1, M6_RESUMEN
+**S:** 212
 Instrucción que se proporciona al modelo antes de cualquier interacción del usuario y que define rol, contexto, restricciones y formato de respuesta. Actúa como el "ADN" del sistema y produce comportamientos consistentes.
 
 ## Zero-shot CoT
 **Fuentes:** M6_T2, M6_RESUMEN
+**S:** 220
 Variante de Chain-of-Thought que induce el razonamiento paso a paso añadiendo solo una instrucción como "Vamos a razonar paso a paso", sin ejemplos. Primer paso recomendado antes de técnicas más complejas.
 
 ## Few-shot CoT
 **Fuentes:** M6_T2, M6_RESUMEN
+**S:** 164
 Variante de Chain-of-Thought en la que se proporcionan 3–8 ejemplos que incluyen la cadena de razonamiento intermedio completa. Mejor que zero-shot CoT en tareas con estructura de razonamiento muy específica.
 
 ## Beam Search (en ToT)
@@ -850,10 +963,12 @@ Extensión de self-consistency para tareas de generación libre sin conteo de ma
 
 ## Least-to-Most Prompting
 **Fuentes:** M6_T5, M6_RESUMEN
+**S:** 181
 Técnica (Zhou et al., 2022) que descompone un problema complejo en subproblemas ordenados de menor a mayor dificultad, resolviendo cada uno con los resultados anteriores como contexto acumulado.
 
 ## Prompt Chaining
 **Fuentes:** M6_T5, M6_RESUMEN
+**S:** 203
 Cadena de prompts especializados donde el output de cada uno es el input del siguiente, permitiendo auditar cada etapa, reintentar solo la fallida y usar modelos distintos en cada paso.
 
 ## MapReduce (patrón para LLMs)
@@ -862,38 +977,47 @@ Patrón de descomposición para procesar volúmenes que exceden la ventana de co
 
 ## Auto-refinamiento
 **Fuentes:** M6_T2, M6_T6, M6_RESUMEN
+**S:** 94
 Técnica (Madaan et al., 2023) en la que el modelo critica y mejora su propio output en un ciclo: generar borrador → generar retroalimentación estructurada → refinar. Se repite 1–3 veces.
 
 ## Reflexion
 **Fuentes:** M6_T6, M10_T2, M10_T3, M10_RESUMEN
+**S:** 54
 Extensión de ReAct (Shinn et al., 2023) que añade memoria episódica: el agente genera reflexiones verbales sobre lo aprendido en cada intento y las incluye en el contexto de los siguientes para evitar repetir errores.
 
 ## Function Calling / Tool calling
 **Fuentes:** M6_T6, M9_T3, M10_T1, M10_T5, M10_RESUMEN
+**S:** 22
 Mecanismo de las APIs de LLM por el que el modelo genera un bloque JSON estructurado con el nombre de una función externa y sus argumentos; el cliente la ejecuta y devuelve el resultado al modelo. Base de los sistemas agénticos.
 
 ## Prompt Injection
 **Fuentes:** M6_T7, M6_RESUMEN, M9_T4, M12_T1, M12_T2, M12_T4, M12_RESUMEN
+**S:** 15
 Ataque en el que texto malicioso en el input del usuario o en datos externos intenta hacer que el LLM ignore las instrucciones del system prompt y ejecute acciones no autorizadas. Vulnerabilidad #1 del OWASP LLM Top 10 (LLM01:2025).
 
 ## Inyección Indirecta
 **Fuentes:** M6_T7, M6_RESUMEN, M12_T2, M12_T5, M12_RESUMEN
+**S:** 34
 Variante de prompt injection en la que las instrucciones maliciosas provienen de datos externos procesados por el agente (documentos, páginas web, emails, resultados RAG). Especialmente peligrosa en sistemas agénticos.
 
 ## Prompt Leaking / System Prompt Leakage
 **Fuentes:** M6_T7, M6_RESUMEN, M12_T1, M12_T2
+**S:** 52
 Ataque que intenta hacer que el modelo revele el contenido confidencial del system prompt, directa o indirectamente. Vulnerabilidad LLM07; la defensa es no almacenar información sensible en el prompt.
 
 ## OWASP Top 10 para LLMs (2025)
 **Fuentes:** M6_T7, M6_RESUMEN, M12_T1, M12_RESUMEN
+**S:** 51
 Lista estándar de las diez vulnerabilidades críticas de aplicaciones LLM, publicada por OWASP en 2023 y revisada en 2025. Establece la defensa en capas como enfoque correcto.
 
 ## Defensa en capas (LLM)
 **Fuentes:** M6_T7, M6_RESUMEN
+**S:** 151
 Estrategia de seguridad que combina múltiples controles independientes: separación de roles API, etiquetado XML del contenido externo, filtrado de input, mínimo privilegio para herramientas y logging de acciones.
 
 ## DSPy
 **Fuentes:** M6_T8, M6_RESUMEN
+**S:** 154
 Framework de Stanford que automatiza la optimización de prompts: el desarrollador especifica el programa de prompts y DSPy optimiza iterativamente cada componente para maximizar una métrica de evaluación.
 
 ## TextGrad
@@ -902,6 +1026,7 @@ Herramienta de optimización de prompts que usa retroalimentación textual del L
 
 ## RAGAS
 **Fuentes:** M6_T9, M7_T1, M7_T6, M7_T7, M7_RESUMEN
+**S:** 36
 Framework estándar de evaluación automática de sistemas RAG (EACL 2024) que calcula con un LLM cuatro métricas — Faithfulness, Answer Relevancy, Context Recall y Context Precision — sin anotaciones humanas extensas.
 
 ## Grounding explícito
@@ -918,6 +1043,7 @@ Uso de etiquetas XML como delimitadores estructurales dentro del prompt para sep
 
 ## Red Team Dataset
 **Fuentes:** M6_T7, M8_T9, M12_T8, M12_T9
+**S:** 78
 Conjunto de 20–50 prompts de inyección representativos, incluyendo variantes conocidas de ataques, usado para evaluar la robustez de un sistema LLM. Se ejecuta en CI/CD y se amplía conforme se descubren nuevos ataques.
 
 ---
@@ -926,14 +1052,17 @@ Conjunto de 20–50 prompts de inyección representativos, incluyendo variantes 
 
 ## Chunking (fixed-size)
 **Fuentes:** M7_T1, M7_T3, M7_RESUMEN
+**S:** 99
 División de documentos en fragmentos de N tokens con un solapamiento de M tokens entre chunks consecutivos. La estrategia más simple, aunque los cortes arbitrarios pueden romper el significado.
 
 ## Semantic chunking
 **Fuentes:** M7_T2, M7_T3, M7_T4, M7_RESUMEN
+**S:** 90
 Estrategia de chunking que identifica fronteras naturales del texto (párrafos, headings, cambios de tema por similitud de embeddings) para dividir el documento en fragmentos semánticamente coherentes.
 
 ## Parent-child chunking
 **Fuentes:** M7_T3, M7_RESUMEN
+**S:** 197
 Estrategia que mantiene dos niveles de chunks: hijos pequeños (200–500 tokens) para búsqueda precisa y padres mayores (500–2000 tokens) que se insertan en el prompt como contexto completo cuando se recupera un hijo.
 
 ## Long RAG
@@ -942,6 +1071,7 @@ Variante de RAG que procesa chunks grandes (secciones o documentos enteros) apro
 
 ## Pipeline de ingesta
 **Fuentes:** M7_T1, M7_T5, M7_RESUMEN
+**S:** 117
 Proceso offline que toma documentos fuente y los prepara para indexación: extracción de texto, limpieza, chunking, enriquecimiento de metadatos, generación de embeddings e inserción en la base vectorial. Debe ser idempotente.
 
 ## Pipeline de consulta
@@ -950,10 +1080,12 @@ Proceso online en tiempo real que cubre, por cada consulta: autenticación, quer
 
 ## BM25 (Best Match 25)
 **Fuentes:** M7_T2, M7_T4, M7_RESUMEN
+**S:** 97
 Algoritmo clásico de recuperación de información que puntúa documentos por frecuencia de los términos de la consulta normalizada por longitud e inversa de frecuencia en el corpus. Búsqueda dispersa de referencia.
 
 ## Búsqueda híbrida
 **Fuentes:** M7_T2, M7_T4, M7_T5, M7_RESUMEN
+**S:** 83
 Combinación de búsqueda densa (vectorial) y dispersa (BM25) ejecutadas en paralelo y cuyos resultados se fusionan. Demostrada superior a cualquier método individual (estudio BlendedRAG de IBM, 2024).
 
 ## RRF (Reciprocal Rank Fusion)
@@ -962,10 +1094,12 @@ Algoritmo de fusión de rankings para búsqueda híbrida que asigna puntuaciones
 
 ## Reranking / Cross-encoder
 **Fuentes:** M7_T4, M7_T5, M7_T8, M7_RESUMEN
+**S:** 88
 Técnica que aplica un modelo cross-encoder (evalúa el par consulta+documento conjuntamente) sobre los top-K candidatos del retrieval inicial para reordenarlos. Añade 10–30% de precisión con 50–100 ms de latencia.
 
 ## HyDE (Hypothetical Document Embeddings)
 **Fuentes:** M7_T4, M7_RESUMEN
+**S:** 172
 Técnica de query transformation que genera un documento hipotético que respondería la consulta y usa su embedding para buscar. Mitiga el desajuste semántico entre la consulta corta del usuario y los fragmentos.
 
 ## Query transformation
@@ -974,18 +1108,22 @@ Familia de transformaciones aplicadas a la consulta antes del retrieval: query e
 
 ## Answer Relevancy
 **Fuentes:** M7_T7, M7_RESUMEN
+**S:** 135
 Métrica RAGAS que mide si la respuesta generada responde efectivamente la pregunta del usuario, calculada por similitud coseno entre la pregunta original y las que el LLM inferiría a partir de la respuesta.
 
 ## Context Recall
 **Fuentes:** M7_T4, M7_T7, M7_RESUMEN
+**S:** 102
 Métrica RAGAS que mide qué fracción de la respuesta de referencia puede atribuirse al contexto recuperado. Un score bajo indica que el retrieval no recupera toda la información necesaria.
 
 ## Context Precision
 **Fuentes:** M7_T4, M7_T7, M7_RESUMEN
+**S:** 101
 Métrica RAGAS que mide qué fracción de los documentos recuperados son realmente relevantes para la pregunta. Un score bajo indica que el retriever introduce ruido en el contexto.
 
 ## Adaptive RAG
 **Fuentes:** M7_T5, M7_RESUMEN
+**S:** 132
 Patrón (Jeong et al., 2024) que clasifica cada consulta por complejidad y decide la estrategia de recuperación óptima: sin recuperación, recuperación simple o recuperación multi-hop.
 
 ## CRAG (Corrective RAG)
@@ -1026,6 +1164,7 @@ Diferencia entre un RAG que funciona en un notebook y uno listo para producción
 
 ## LLMOps (Large Language Model Operations)
 **Fuentes:** M8_T1, M8_RESUMEN
+**S:** 183
 Conjunto de prácticas, herramientas y procesos que hacen que los sistemas LLM funcionen de forma fiable, escalable y mejorable en producción. Especialización de MLOps adaptada a los modelos de lenguaje.
 
 ## SLO (Service Level Objective)
@@ -1034,14 +1173,17 @@ Compromisos de calidad del sistema que definen qué es un servicio aceptable; pa
 
 ## Canary deployment
 **Fuentes:** M8_T1, M8_T9, M8_RESUMEN
+**S:** 98
 Estrategia de despliegue gradual en la que el nuevo sistema recibe inicialmente un 5–10% del tráfico real mientras se monitoriza su calidad frente al sistema actual, antes de escalar al 100%.
 
 ## Shadow mode
 **Fuentes:** M8_T1, M8_T9, M11_T5
+**S:** 224
 Modo de despliegue en el que el nuevo sistema procesa las mismas consultas que producción pero sin devolver respuestas al usuario, permitiendo medir calidad sin riesgo para el usuario final.
 
 ## Tracing distribuido
 **Fuentes:** M8_T1, M8_T7, M8_RESUMEN
+**S:** 127
 Técnica de observabilidad que captura cada paso del pipeline LLM (retrieval, prompt, llamada, post-procesamiento) como un "span" con tiempos y contenidos, permitiendo reproducir y diagnosticar cualquier interacción.
 
 ## Drift detection
@@ -1054,10 +1196,12 @@ Componente de la librería TRL de Hugging Face que gestiona el entrenamiento sup
 
 ## Test-Time Compute (TTC) / Inference-time scaling
 **Fuentes:** M8_T4, M8_RESUMEN
+**S:** 214
 Paradigma que invierte más cómputo en el tiempo de inferencia (en lugar de en el entrenamiento) para mejorar la calidad en tareas difíciles. Implementado nativamente en modelos como o1/o3 y Claude con extended thinking.
 
 ## Extended thinking
 **Fuentes:** M8_T4, M8_RESUMEN
+**S:** 162
 Capacidad de modelos de razonamiento para generar un proceso de pensamiento interno extenso antes de la respuesta final, explorando múltiples caminos y autocorrigiéndose. Controlado mediante un presupuesto de tokens de razonamiento.
 
 ## Best-of-N (BoN) sampling
@@ -1070,34 +1214,42 @@ Modelo entrenado para evaluar la calidad del razonamiento en cada paso intermedi
 
 ## Routing dinámico
 **Fuentes:** M8_T4, M8_T5, M8_RESUMEN, M9_T7
+**S:** 56
 Estrategia que clasifica automáticamente cada consulta según su dificultad y la envía al modelo más económico capaz de resolverla correctamente. Puede reducir el coste total un 40–60% manteniendo la calidad.
 
 ## Prefix caching
 **Fuentes:** M8_T5, M8_T6, M8_RESUMEN, M9_T6, M9_T7, M9_RESUMEN
+**S:** 30
 Mecanismo por el que el inicio del prompt (system prompt) se cachea entre consultas, reduciendo su coste al 50% o más y el TTFT un 50–90%. Ahorra el 30–40% del coste de tokens de entrada en sistemas con system prompts largos.
 
 ## Streaming / TTFT (Time To First Token)
 **Fuentes:** M8_T5, M9_T6, M9_RESUMEN
+**S:** 74
 TTFT mide el tiempo desde que el usuario envía la consulta hasta el primer token de la respuesta; indicador más crítico para la experiencia conversacional (objetivo P99 < 2s). El streaming devuelve tokens a medida que se generan.
 
 ## vLLM
 **Fuentes:** M8_T6, M8_RESUMEN, M9_T1, M9_T2, M9_T5, M9_T6, M9_T7, M9_T9, M9_RESUMEN
+**S:** 20
 Framework de inferencia LLM (UC Berkeley) que implementa PagedAttention y continuous batching, logrando hasta 24× mayor throughput que TGI bajo alta concurrencia. Estándar de facto en 2025, compatible con la API de OpenAI.
 
 ## PagedAttention
 **Fuentes:** M8_T6, M9_T6, M9_RESUMEN
+**S:** 71
 Implementación del mecanismo de atención de vLLM que gestiona el KV cache como memoria virtual paginada en lugar de un buffer contiguo, eliminando la fragmentación y permitiendo empaquetar más secuencias concurrentes.
 
 ## Continuous batching
 **Fuentes:** M8_T6, M9_T5, M9_RESUMEN
+**S:** 62
 Técnica que incorpora nuevas solicitudes al batch en curso tan pronto como hay capacidad, en lugar de esperar a que todas las secuencias terminen. Mantiene la GPU ocupada y mejora el throughput 2–5×.
 
 ## TGI (Text Generation Inference)
 **Fuentes:** M8_T6, M8_RESUMEN
+**S:** 215
 Framework de inferencia LLM de Hugging Face enfocado en producción empresarial, con telemetría OpenTelemetry y métricas Prometheus integradas, prefix caching optimizado para contextos muy largos y mayor estabilidad en concurrencia media.
 
 ## Speculative decoding
 **Fuentes:** M8_T6, M9_T6
+**S:** 234
 Técnica de aceleración que usa un modelo draft pequeño para generar un borrador de K tokens que el modelo principal verifica en paralelo. Puede reducir la latencia 2–3× en modelos grandes con bajo batch size.
 
 ## ADR (Architecture Decision Record)
@@ -1106,10 +1258,12 @@ Documento que registra una decisión de diseño con el problema que resuelve, la
 
 ## MLflow Model Registry
 **Fuentes:** M8_T8, M8_RESUMEN
+**S:** 189
 Componente de MLflow que almacena modelos entrenados y versiones de adaptadores LoRA con sus metadatos, y gestiona el ciclo de vida del modelo (staging, producción, archivado), integrándose con pipelines CI/CD.
 
 ## DVC (Data Version Control)
 **Fuentes:** M8_RESUMEN, M12_T3, M12_T8
+**S:** 63
 Estándar de versionado de datasets y modelos que hace commit de referencias a archivos grandes en Git mientras los almacena en S3/GCS. Permite detectar cuándo se introdujeron datos maliciosos en un pipeline de fine-tuning.
 
 ## Reproducibilidad hermética
@@ -1122,6 +1276,7 @@ Mecanismo que permite activar o desactivar funcionalidades (versión del modelo,
 
 ## Red Teaming de IA
 **Fuentes:** M8_T9, M8_RESUMEN, M12_T8, M12_T9, M12_RESUMEN
+**S:** 37
 Práctica de simular ataques adversariales sobre un sistema de IA para identificar vulnerabilidades antes de que atacantes reales las exploten. En IA cubre jailbreaks, prompt injection, data poisoning y sesgos.
 
 ---
@@ -1130,6 +1285,7 @@ Práctica de simular ataques adversariales sobre un sistema de IA para identific
 
 ## TCO (Total Cost of Ownership)
 **Fuentes:** M9_T1, M9_T7, M9_RESUMEN, M14_T3
+**S:** 57
 Métrica que cuantifica el coste real de poseer y operar un sistema de IA a lo largo de su ciclo de vida: hardware, personal, electricidad, cooling, licencias de API, mantenimiento y actualizaciones.
 
 ## CAPEX / OPEX
@@ -1138,6 +1294,7 @@ CAPEX es la inversión inicial en hardware propio (un servidor 8× H100 cuesta 2
 
 ## Estrategia híbrida (cloud + on-premise)
 **Fuentes:** M9_T1, M9_RESUMEN
+**S:** 160
 Modelo adoptado por el 68% de las empresas con IA en producción que combina carga base en infraestructura propia (workloads predecibles) con burst en cloud para picos de demanda y experimentación.
 
 ## Break-even cloud vs on-premise
@@ -1146,6 +1303,7 @@ Punto en que el TCO de on-premise iguala al del cloud; se alcanza con utilizaci�
 
 ## Prefill / Decode
 **Fuentes:** M9_T6, M9_RESUMEN
+**S:** 202
 Dos fases de la inferencia LLM: prefill procesa el prompt completo generando el KV cache (compute-bound); decode genera tokens uno a uno leyendo el KV cache (memory-bandwidth-bound).
 
 ## Semantic Caching
@@ -1154,10 +1312,12 @@ Técnica que almacena respuestas a consultas previas y las reutiliza cuando lleg
 
 ## KEDA (Kubernetes Event-Driven Autoscaler)
 **Fuentes:** M9_T2, M9_T5, M9_RESUMEN
+**S:** 111
 Componente de Kubernetes que escala pods de inferencia LLM según métricas personalizadas (longitud de cola, throughput de tokens, utilización de GPU). Soporta scale-to-zero y scale-up hasta N réplicas.
 
 ## Warm Pool
 **Fuentes:** M9_T2, M9_T5, M9_RESUMEN
+**S:** 129
 Conjunto de pods de inferencia pre-calentados (con el modelo ya cargado en VRAM) que se mantienen activos para eliminar los cold starts de 1–5 minutos. Garantiza disponibilidad inmediata ante picos de demanda.
 
 ## Arquitectura disaggregada (prefill-decode separation)
@@ -1166,22 +1326,27 @@ Patrón de despliegue que separa el procesamiento del prompt (prefill) y la gene
 
 ## API Gateway
 **Fuentes:** M9_T2, M9_T3, M9_T4, M9_RESUMEN
+**S:** 81
 Punto único de entrada al sistema LLM que centraliza autenticación, autorización, rate limiting, routing, logging y gestión de versiones. Herramientas: Kong, NGINX, AWS API Gateway.
 
 ## Estándar API OpenAI (chat completions)
 **Fuentes:** M9_T3, M9_RESUMEN
+**S:** 161
 Formato de facto para APIs de LLM en 2025: endpoint `/v1/chat/completions` con array de mensajes por roles. Implementado por vLLM, TGI y Ollama, permite intercambiar el backend cambiando solo la base URL.
 
 ## MCP (Model Context Protocol)
 **Fuentes:** M9_T3, M10_T5, M10_T7, M10_T8, M10_RESUMEN, M11_T2, M11_RESUMEN
+**S:** 14
 Protocolo estándar publicado por Anthropic en noviembre de 2024 para la comunicación entre agentes y herramientas/sistemas externos. Reduce el problema N×M de integraciones a N+M; adoptado por OpenAI, Google, Microsoft y AWS.
 
 ## Rate Limiting (RPM / TPM)
 **Fuentes:** M9_T3, M9_T4, M9_RESUMEN
+**S:** 120
 Control que limita el número de peticiones por minuto (RPM) y tokens por minuto (TPM) por cliente. Protege el sistema de abuso; devuelve HTTP 429 con Retry-After cuando se exceden los límites.
 
 ## Guardrails
 **Fuentes:** M9_T4, M9_RESUMEN
+**S:** 170
 Filtros de validación aplicados al input y al output para detectar prompt injection, contenido dañino, PII o respuestas fuera de formato. Herramientas: Guardrails AI, NeMo Guardrails, LlamaGuard.
 
 ## Enmascarado de PII
@@ -1226,10 +1391,12 @@ Runtime de inferencia de Microsoft que ejecuta modelos en formato ONNX en múlti
 
 ## Ciclo perceive-reason-act
 **Fuentes:** M10_T1, M10_RESUMEN
+**S:** 146
 Patrón fundamental de operación de un agente LLM: percibir el objetivo/estado del entorno, razonar sobre la acción adecuada, ejecutarla mediante una herramienta, observar el resultado y repetir hasta completar el objetivo.
 
 ## Plan-and-Execute
 **Fuentes:** M10_T2, M10_T3, M10_RESUMEN
+**S:** 118
 Patrón arquitectónico en el que el agente genera primero un plan completo de pasos antes de ejecutar ninguno, delegando la ejecución a un executor. Mayor coherencia global y auditabilidad, menos adaptable que ReAct.
 
 ## Estado del agente
@@ -1238,18 +1405,22 @@ Estructura de datos (TypedDict en LangGraph) que representa todo lo que el agent
 
 ## Memoria de trabajo (Working memory)
 **Fuentes:** M10_T1, M10_T4, M10_RESUMEN
+**S:** 114
 Tipo de memoria agéntica que corresponde a la ventana de contexto actual del LLM: objetivo, historial de la sesión activa y resultados de herramientas. La más rápida de acceder pero limitada en capacidad.
 
 ## Memoria episódica (Episodic memory)
 **Fuentes:** M10_T1, M10_T4, M10_RESUMEN
+**S:** 115
 Tipo de memoria agéntica que almacena el historial de interacciones de sesiones pasadas en una base con búsqueda semántica. Permite recuperar episodios relevantes sin que el usuario repita el contexto.
 
 ## Memoria semántica (Semantic memory)
 **Fuentes:** M10_T4, M10_RESUMEN
+**S:** 187
 Tipo de memoria agéntica que almacena conocimiento general del dominio: paramétrica (en los pesos vía fine-tuning) o no paramétrica (externa, recuperada con RAG). La no paramétrica es más fácil de actualizar y auditar.
 
 ## Memoria procedimental (Procedural memory)
 **Fuentes:** M10_T4, M10_RESUMEN
+**S:** 186
 Tipo de memoria agéntica que almacena procedimientos, estrategias y heurísticas aprendidas de la experiencia. Se implementa como prompts de sistema, ejemplos few-shot derivados de éxitos pasados o herramientas especializadas.
 
 ## mem0
@@ -1270,10 +1441,12 @@ Error agéntico en el que el modelo invoca una herramienta con argumentos incorr
 
 ## Sandbox de ejecución de código
 **Fuentes:** M10_T5, M10_RESUMEN
+**S:** 206
 Entorno aislado que contiene la ejecución de código generado por el LLM para evitar acceso a archivos, red no autorizada o consumo excesivo de recursos. Opciones: contenedores Docker efímeros, microVMs, E2B, Modal.
 
 ## Subagent decomposition
 **Fuentes:** M10_T3, M10_T6, M10_RESUMEN
+**S:** 124
 Técnica de planificación jerárquica en la que el agente orquestador descompone un objetivo complejo en subobjetivos independientes y los delega a sub-agentes especializados que trabajan en paralelo.
 
 ## Planificación adaptativa
@@ -1286,10 +1459,12 @@ Técnica de verificación periódica en la que el agente evalúa, tras cada acci
 
 ## Orquestador-Trabajador (patrón Supervisor)
 **Fuentes:** M10_T6, M10_RESUMEN
+**S:** 195
 Patrón de orquestación multi-agente en el que un orquestador descompone el objetivo complejo en subtareas y las delega a agentes trabajadores especializados; luego integra los resultados. El patrón más común en producción.
 
 ## Handoffs
 **Fuentes:** M10_T6, M10_RESUMEN
+**S:** 171
 Transferencias estructuradas de control de un agente a otro en sistemas multi-agente, incluyendo el estado relevante y el contexto del objetivo. Abstracción central del OpenAI Agents SDK.
 
 ## Cascade failure (fallo en cascada)
@@ -1298,6 +1473,7 @@ Patrón de fallo en pipelines multi-agente donde el error de un agente intermedi
 
 ## A2A (Agent-to-Agent)
 **Fuentes:** M10_T7, M10_T8, M10_RESUMEN
+**S:** 91
 Protocolo publicado por Google en abril de 2025 que estandariza la comunicación entre agentes de diferentes frameworks. Complementa a MCP permitiendo que un agente LangGraph delegue subtareas a uno de CrewAI.
 
 ## MCP Gateway
@@ -1306,14 +1482,17 @@ Componente de infraestructura que centraliza autenticación, rate limiting, logg
 
 ## LangGraph
 **Fuentes:** M10_T2, M10_T6, M10_T7, M10_RESUMEN, M11_T3
+**S:** 35
 Framework de agentes (equipo de LangChain) que implementa workflows agénticos como grafos dirigidos con aristas condicionales, checkpointing de estado persistente nativo, soporte de HITL y gestión de múltiples hilos.
 
 ## CrewAI
 **Fuentes:** M10_T7, M10_RESUMEN
+**S:** 148
 Framework de agentes que organiza los sistemas multi-agente mediante una metáfora de equipo (role, goal, backstory). El más fácil para prototipado rápido, con patrones de orquestación avanzada limitados.
 
 ## AutoGen (AG2)
 **Fuentes:** M10_T6, M10_T7, M10_RESUMEN
+**S:** 95
 Framework de Microsoft que modela la colaboración multi-agente como conversaciones en un GroupChat donde un selector determina qué agente habla. Adecuado para debate y refinamiento iterativo de alta calidad.
 
 ## Google ADK (Agent Development Kit)
@@ -1322,10 +1501,12 @@ Framework de agentes de Google (abril 2025) que organiza los agentes en un árbo
 
 ## GAIA (benchmark)
 **Fuentes:** M10_T9, M10_RESUMEN
+**S:** 167
 Benchmark de referencia para evaluar agentes en tareas del mundo real que requieren razonamiento, uso de herramientas y múltiples pasos. 466 preguntas a tres niveles de dificultad.
 
 ## SWE-bench
 **Fuentes:** M10_T9, M10_RESUMEN
+**S:** 211
 Benchmark de agentes de coding que mide la capacidad de resolver issues reales de repositorios Python en GitHub. Los mejores agentes resuelven el 38–50% de los issues en 2025.
 
 ## OSWorld (benchmark)
@@ -1334,6 +1515,7 @@ Benchmark de tareas en sistemas operativos reales donde los mejores modelos alca
 
 ## Trajectories-based evaluation
 **Fuentes:** M10_T9, M10_RESUMEN
+**S:** 216
 Método de evaluación de agentes que examina la secuencia completa de acciones (trayectoria) y no solo el output final: si cada acción fue apropiada, si las herramientas se usaron bien y si el agente recuperó de los errores.
 
 ## Regla 80/20 para agentes en producción
@@ -1342,6 +1524,7 @@ Principio operativo: el agente automatiza de forma autónoma el 80% de casos est
 
 ## Mínimo privilegio en herramientas
 **Fuentes:** M10_T1, M10_T5, M10_T8, M10_RESUMEN, M12_T1, M12_T5
+**S:** 28
 Principio de seguridad agéntica según el cual cada agente debe tener acceso exclusivamente a las herramientas y servidores MCP estrictamente necesarios para su función. Reduce el radio de impacto de fallos o ataques.
 
 ---
@@ -1350,10 +1533,12 @@ Principio de seguridad agéntica según el cual cada agente debe tener acceso ex
 
 ## Hiperautomatización
 **Fuentes:** M11_T1, M11_T4, M11_RESUMEN
+**S:** 109
 Convergencia de RPA, IA, ML y process mining para automatizar flujos de trabajo completos de extremo a extremo, incluyendo pasos que antes requerían juicio humano. La IA gestiona comprensión y decisión; el RPA ejecuta.
 
 ## Automatización inteligente
 **Fuentes:** M11_T1, M11_T4, M11_T6, M11_RESUMEN
+**S:** 82
 Paradigma que añade al RPA clásico tres capacidades: comprensión del lenguaje natural, toma de decisiones contextual ante ambigüedad y adaptación a nuevos patrones. Permite automatizar procesos variables y no estructurados.
 
 ## CoE de automatización (Center of Excellence)
@@ -1366,6 +1551,7 @@ Técnica analítica que extrae conocimiento sobre procesos reales a partir de lo
 
 ## iPaaS (Integration Platform as a Service)
 **Fuentes:** M11_T2, M11_RESUMEN
+**S:** 177
 Middleware cloud que conecta múltiples sistemas empresariales a través de una plataforma centralizada de integración; gestiona transformación de datos, logging, reintentos y resiliencia.
 
 ## Arquitectura event-driven
@@ -1374,6 +1560,7 @@ Patrón de integración que conecta sistemas de IA a eventos empresariales en ti
 
 ## MCP server (Model Context Protocol server)
 **Fuentes:** M11_T2, M11_RESUMEN
+**S:** 185
 Servidor que expone operaciones de un sistema empresarial (CRM, ERP, base de datos) como herramientas invocables por agentes de IA. Simplifica la integración reduciendo el tiempo de días a horas.
 
 ## OAuth 2.0 con mínimo privilegio
@@ -1386,18 +1573,22 @@ Patrón de resiliencia que detecta cuando una dependencia externa está caída y
 
 ## Workflow inteligente
 **Fuentes:** M11_T3, M11_RESUMEN
+**S:** 219
 Proceso de negocio que combina nodos de automatización determinista con nodos de IA (clasificación, extracción, generación) orquestados con lógica de bifurcación y puntos de supervisión humana.
 
 ## Patrón de clasificación y routing
 **Fuentes:** M11_T3, M11_RESUMEN
+**S:** 198
 Diseño de workflow en el que un LLM clasifica el input entrante (emails, tickets, formularios) según tipo, urgencia y departamento, y lo enruta al sub-workflow especializado. El patrón más común para automatizar el triage.
 
 ## Patrón de extracción y enriquecimiento
 **Fuentes:** M11_T3, M11_RESUMEN
+**S:** 199
 Diseño de workflow en el que un LLM extrae campos estructurados de inputs no estructurados (PDF, email, formulario) y los enriquece con sistemas externos antes de decidir. Núcleo de la automatización de documentos.
 
 ## Touchless processing rate
 **Fuentes:** M11_T4, M11_T7, M11_RESUMEN
+**S:** 126
 Métrica principal de los sistemas IA+RPA: porcentaje de casos procesados de principio a fin sin intervención humana. El objetivo para procesos maduros es 80–90%.
 
 ## Taxonomía de excepciones
@@ -1410,6 +1601,7 @@ Plataforma (UiPath Orchestrator, Automation Anywhere Control Room, Blue Prism Hu
 
 ## Autonomía graduada
 **Fuentes:** M11_T5, M11_RESUMEN
+**S:** 141
 Marco de cinco niveles (de asistencia a autonomía completa con gobernanza) que describe el espectro de control humano sobre un sistema de IA. La progresión entre niveles debe ser gradual y basada en evidencia de desempeño real.
 
 ## Umbral de confianza para escalada dinámica
@@ -1422,14 +1614,17 @@ Procesos regulatorios de verificación de identidad y prevención de blanqueo de
 
 ## COIN (Contract Intelligence) — JPMorgan
 **Fuentes:** M11_T6, M11_RESUMEN
+**S:** 147
 Sistema de IA de JPMorgan Chase que analiza automáticamente acuerdos comerciales mediante NLP; procesa 12.000 contratos en segundos, sustituyendo 360.000 horas de trabajo de abogados al año.
 
 ## Baseline de medición
 **Fuentes:** M11_T7, M11_RESUMEN
+**S:** 143
 Estado documentado del proceso antes de implementar la automatización: número de FTEs, tiempo de ciclo, tasa de error, volumen y coste. Requisito previo para calcular el impacto real de la automatización.
 
 ## ROI compuesto de automatización
 **Fuentes:** M11_T1, M11_T4, M11_T7, M11_RESUMEN
+**S:** 89
 Fórmula ROI = (Beneficios Netos Anuales / Inversión Total) × 100 que integra el valor financiero directo, operativo y estratégico. El ROI típico es 150–250% en el primer año con payback de 6–18 meses.
 
 ## Exception rate
@@ -1442,14 +1637,17 @@ Porcentaje de casos de un proceso automatizado que no pueden procesarse automát
 
 ## ASR (Attack Success Rate)
 **Fuentes:** M12_T1, M12_T2, M12_T4, M12_T9
+**S:** 237
 Métrica que expresa el porcentaje de ataques adversariales que logran eludir las defensas del sistema. Valores documentados: roleplay injection 89,6%, logic traps 81,4%, encoding tricks 76,2%.
 
 ## Jailbreak
 **Fuentes:** M12_T1, M12_T4, M12_T9, M12_RESUMEN
+**S:** 86
 Subconjunto de prompt injection orientado a eludir los guardrails de seguridad y alineación del modelo para obtener outputs que está entrenado para rechazar (contenido dañino, información restringida).
 
 ## Roleplay Injection
 **Fuentes:** M12_T2, M12_T4, M12_RESUMEN
+**S:** 122
 Técnica de jailbreak que instruye al modelo a actuar como un personaje ficticio sin restricciones, desplazando sus políticas de seguridad al contexto del personaje. La técnica con mayor ASR documentado (89,6%).
 
 ## Multi-turn Jailbreaking
@@ -1462,18 +1660,22 @@ Técnica que usa transformaciones de texto (Base64, ROT13, homoglifos, caractere
 
 ## Data Poisoning
 **Fuentes:** M12_T1, M12_T3, M12_RESUMEN
+**S:** 105
 Ataque que introduce datos maliciosos en el conjunto de entrenamiento o fine-tuning para contaminar el modelo de forma permanente. El fine-tuning es especialmente vulnerable: el 1% de los datos puede bastar.
 
 ## Backdoor Attack (trigger oculto)
 **Fuentes:** M12_T3, M12_RESUMEN
+**S:** 142
 Variante de data poisoning que introduce un patrón de activación específico en los pesos; el modelo se comporta con normalidad ante inputs estándar pero cambia su comportamiento al recibir el trigger.
 
 ## Supply Chain de modelos (LLM03)
 **Fuentes:** M12_T1, M12_T3, M12_RESUMEN
+**S:** 125
 Vulnerabilidad derivada de depender de modelos base, datasets o librerías de terceros comprometidos. Repositorios públicos como Hugging Face son un vector de ataque (malware en formato pickle, typosquatting).
 
 ## Formato Safetensors
 **Fuentes:** M12_T3, M12_RESUMEN
+**S:** 166
 Formato de serialización de modelos que no permite la ejecución de código arbitrario durante la carga, a diferencia del formato pickle. Mitigación recomendada frente al riesgo de supply chain.
 
 ## ModelScan (ProtectAI)
@@ -1482,26 +1684,32 @@ Herramienta open source que escanea archivos de modelos (pickle, H5, safetensors
 
 ## Excessive Agency (LLM06)
 **Fuentes:** M12_T1, M12_T5, M12_RESUMEN
+**S:** 106
 Vulnerabilidad en la que un agente LLM dispone de más permisos o herramientas de los necesarios, de modo que una prompt injection exitosa puede desencadenar acciones irreversibles de alto impacto.
 
 ## Memory Poisoning
 **Fuentes:** M12_T5, M12_RESUMEN
+**S:** 188
 Ataque específico de sistemas agénticos con memoria persistente que introduce información falsa en la memoria del agente (incluidas bases vectoriales) para influir en sus decisiones futuras o escalar privilegios.
 
 ## SSRF via agente (Server-Side Request Forgery)
 **Fuentes:** M12_T5, M12_RESUMEN
+**S:** 208
 Ataque que explota la herramienta de fetch de URL de un agente, instruyéndola vía prompt injection para acceder a servicios internos protegidos usando el agente como proxy involuntario.
 
 ## Regla Meta / "Agents Rule of Two"
 **Fuentes:** M12_T2, M12_T5, M12_RESUMEN
+**S:** 121
 Principio de Meta (octubre 2025): los controles de seguridad deben implementarse en la capa de ejecución fuera del LLM, ya que cualquier seguridad implementada solo en el prompt puede eludirse con prompt injection.
 
 ## LlamaGuard (Meta)
 **Fuentes:** M12_T4, M12_T6, M12_RESUMEN
+**S:** 113
 Modelo de lenguaje fine-tuneado por Meta para clasificar si el input del usuario o el output del modelo viola políticas de uso seguro. Opera localmente y devuelve una clasificación con la categoría de violación.
 
 ## Arquitectura Sandwich de validación
 **Fuentes:** M12_T6, M12_RESUMEN
+**S:** 140
 Patrón de despliegue que sitúa un clasificador de seguridad (típicamente LlamaGuard) tanto antes del LLM (filtrado de input) como después (filtrado de output), dando cobertura bidireccional.
 
 ## Guardrails AI
@@ -1518,10 +1726,12 @@ Conjunto de prompts adversariales que el sistema debe rechazar definitivamente, 
 
 ## Garak (NVIDIA)
 **Fuentes:** M12_T1, M12_T4, M12_T8, M12_T9, M12_RESUMEN
+**S:** 80
 Escáner de vulnerabilidades LLM open source con plugins para docenas de categorías de ataques (jailbreaks, prompt injection, PII leakage) y cobertura del OWASP Top 10. Integrable en pipelines CI/CD.
 
 ## Secure AI DLC (Secure AI Development Lifecycle)
 **Fuentes:** M12_T8, M12_RESUMEN
+**S:** 207
 Marco que integra la seguridad en cada fase del ciclo de desarrollo de sistemas de IA: diseño (threat modeling con STRIDE), desarrollo (prompts como código, DVC, ModelScan) y testing (SAST, red teaming, golden dataset en CI/CD).
 
 ## STRIDE aplicado a IA
@@ -1538,6 +1748,7 @@ Marco de conocimiento sobre tácticas y técnicas de adversarios que atacan sist
 
 ## EU AI Act (Reglamento de Inteligencia Artificial de la UE)
 **Fuentes:** M0_T1, M0_RESUMEN, M13_T1, M13_T2, M13_T9, M13_RESUMEN
+**S:** 27
 Primera regulación integral de IA del mundo, en vigor desde agosto 2024. Adopta un enfoque basado en riesgo con cuatro categorías (inaceptable, alto, limitado, mínimo) y sanciones de hasta 35 M€ o el 7% de la facturación global.
 
 ## GPAI — General Purpose AI (IA de Propósito General)
@@ -1546,6 +1757,7 @@ Modelos de IA de propósito general (GPT-4o, Claude) con obligaciones específic
 
 ## Conformity Assessment (Evaluación de Conformidad)
 **Fuentes:** M13_T1, M13_T2, M13_RESUMEN
+**S:** 100
 Proceso que certifica que un sistema de alto riesgo cumple los requisitos del Capítulo III del AI Act. Puede ser auto-evaluada o realizada por un Notified Body, y culmina en el marcado CE.
 
 ## Notified Body (Organismo Notificado)
@@ -1558,14 +1770,17 @@ Marca que certifica que un sistema de IA de alto riesgo ha superado la conformit
 
 ## NIST AI RMF (AI Risk Management Framework)
 **Fuentes:** M12_T7, M12_T8, M12_T9, M13_T3, M13_T9, M13_RESUMEN
+**S:** 29
 Framework voluntario del NIST (enero 2023) para gestionar riesgos de sistemas de IA a lo largo de su ciclo de vida, estructurado en cuatro funciones: Govern, Map, Measure y Manage. Estándar de facto más influyente a nivel mundial.
 
 ## NIST-AI-600-1 (Perfil GenAI del AI RMF)
 **Fuentes:** M13_T3, M13_RESUMEN
+**S:** 194
 Perfil del AI RMF (julio 2024) específico para IA generativa; identifica 12 riesgos particulares de los LLMs, incluyendo alucinaciones, privacidad de datos, sesgo sistémico y derechos de autor.
 
 ## ISO/IEC 42001 — AIMS (Artificial Intelligence Management System)
 **Fuentes:** M13_T3, M13_T4, M13_T9, M13_RESUMEN
+**S:** 85
 Primer estándar internacional certificable para sistemas de gestión de IA (diciembre 2023). Sigue la estructura de alto nivel de ISO con 10 cláusulas y un Anexo A de controles; certificable cada 3 años.
 
 ## Anexo III (AI Act) — Sistemas de Alto Riesgo
@@ -1582,10 +1797,12 @@ Evaluación de impacto sobre la privacidad obligatoria para sistemas de IA que p
 
 ## Linaje de datos
 **Fuentes:** M13_T5, M13_RESUMEN
+**S:** 182
 Documentación completa del ciclo de vida de los datos de un sistema de IA: origen, transformaciones, versión del dataset y responsable de validación. Imprescindible para cumplir el Art. 10 del AI Act.
 
 ## Data Card / Model Card
 **Fuentes:** M13_T5, M13_T7, M13_RESUMEN
+**S:** 104
 Formatos estándar de documentación de datasets (Data Cards) y modelos (Model Cards) que recogen composición, proceso de recolección, limitaciones, usos recomendados y consideraciones éticas. Formato de referencia en auditorías.
 
 ## Privacy by Design
@@ -1594,22 +1811,27 @@ Principio que exige integrar la protección de la privacidad en el diseño del s
 
 ## Fairness / Equidad algorítmica
 **Fuentes:** M13_T6, M13_T7, M13_RESUMEN
+**S:** 107
 Propiedad de un sistema de IA que garantiza que sus decisiones no discriminan sistemáticamente a grupos por características protegidas. Se operacionaliza con métricas cuantitativas; su elección es una decisión ética.
 
 ## Demographic Parity (Paridad Demográfica)
 **Fuentes:** M13_T7, M13_RESUMEN
+**S:** 152
 Métrica de fairness que exige que la tasa de resultados positivos del modelo sea igual para todos los grupos demográficos. Matemáticamente incompatible con Predictive Parity cuando las tasas de base difieren.
 
 ## Equalized Odds (Igualdad de Probabilidades)
 **Fuentes:** M13_T7, M13_RESUMEN
+**S:** 159
 Métrica de fairness que exige que las tasas de verdaderos positivos y falsos positivos sean iguales para todos los grupos demográficos. Especialmente relevante en crédito, justicia y empleo.
 
 ## Disparate Impact
 **Fuentes:** M13_T7, M13_RESUMEN
+**S:** 153
 Métrica de fairness que mide el ratio de tasas de resultados positivos entre el grupo desfavorecido y el favorecido. En la jurisprudencia laboral de EE.UU., el umbral de 0,8 (regla de los 4/5) indica discriminación.
 
 ## Teorema de imposibilidad de fairness (Kleinberg et al.)
 **Fuentes:** M13_T7, M13_RESUMEN
+**S:** 213
 Resultado matemático que demuestra que Demographic Parity, Predictive Parity y Equalized Odds son mutuamente incompatibles cuando los grupos tienen tasas de base distintas. La elección de la métrica es una decisión de valores.
 
 ## Mechanistic Interpretability (Interpretabilidad mecanicista)
@@ -1642,6 +1864,7 @@ Plataformas integradas de gestión de gobernanza, riesgo y cumplimiento que en 2
 
 ## Brussels Effect
 **Fuentes:** M13_RESUMEN
+**S:** 225
 Fenómeno por el que la regulación europea de IA se convierte en estándar global de facto, ya que empresas de EE.UU. y Asia adoptan el estándar europeo para sus operaciones globales, como ocurrió con el GDPR.
 
 ---
@@ -1650,14 +1873,17 @@ Fenómeno por el que la regulación europea de IA se convierte en estándar glob
 
 ## Matriz de oportunidades de IA
 **Fuentes:** M14_T1, M14_RESUMEN
+**S:** 184
 Herramienta de priorización que evalúa cada caso de uso en dos dimensiones — impacto de negocio y viabilidad técnica/organizativa — clasificando los candidatos en Quick Wins, Strategic Bets, iniciativas incrementales y descartables.
 
 ## Quick Wins
 **Fuentes:** M14_T1, M14_T4, M14_T8, M14_RESUMEN
+**S:** 87
 Casos de uso de alto impacto y alta viabilidad que se priorizan en el Horizonte 1 del roadmap para demostrar valor rápido, generar momentum organizativo y financiar las iniciativas siguientes.
 
 ## AI Opportunity Workshop
 **Fuentes:** M14_T1, M14_RESUMEN
+**S:** 134
 Taller estructurado de 1–2 días con líderes funcionales que mapea los 20–30 procesos de mayor coste, tiempo de ciclo o tasa de error y evalúa cuáles son candidatos a IA. El método más efectivo de identificación de oportunidades.
 
 ## Pilot purgatory
@@ -1666,6 +1892,7 @@ Situación en la que una organización acumula pilotos y experimentos de IA sin 
 
 ## Cuatro fuentes de valor de la IA
 **Fuentes:** M14_T1, M14_RESUMEN
+**S:** 149
 Marco que clasifica el valor generado por iniciativas de IA en cuatro dimensiones: reducción de costes operativos, aumento de ingresos, mejora de la experiencia y gestión del riesgo. Los casos multidimensionales son los más estratégicos.
 
 ## Flujo to-be
@@ -1678,6 +1905,7 @@ Metodología de 5 días adaptada a proyectos de IA (Entender, Divergir, Decidir,
 
 ## Business case de IA
 **Fuentes:** M14_T3, M14_RESUMEN
+**S:** 144
 Documento de cinco secciones (contexto/problema, solución propuesta, análisis financiero, plan de implementación y riesgos) que justifica la inversión en IA ante la dirección. Incluye obligatoriamente el análisis de sensibilidad.
 
 ## Payback period
@@ -1686,10 +1914,12 @@ Tiempo necesario para que los beneficios acumulados de una iniciativa de IA igua
 
 ## Análisis de sensibilidad
 **Fuentes:** M14_T3, M14_RESUMEN
+**S:** 136
 Componente del business case que evalúa el ROI bajo tres escenarios (optimista, base, pesimista) para demostrar que la iniciativa es rentable incluso si los beneficios son un 20–40% menores de lo proyectado.
 
 ## Roadmap de IA (tres horizontes)
 **Fuentes:** M14_T4, M14_RESUMEN
+**S:** 205
 Plan estratégico a 12–36 meses que organiza las iniciativas de IA en tres horizontes: H1 Quick Wins (0–12 meses), H2 transformación de procesos core (12–24 meses) y H3 iniciativas estratégicas transformacionales (24–36 meses).
 
 ## AI Maturity Assessment
@@ -1698,6 +1928,7 @@ Evaluación de la madurez de la organización en cinco dimensiones (alineación 
 
 ## Iniciativas de habilitación
 **Fuentes:** M14_T4, M14_RESUMEN
+**S:** 175
 Proyectos del roadmap que no generan ROI directo pero son prerrequisito para las iniciativas de negocio: modernización de la arquitectura de datos, plataforma ML/LLM, equipo de IA, framework de gobernanza y AI literacy.
 
 ## AI Steering Committee
@@ -1706,18 +1937,22 @@ Proyectos del roadmap que no generan ROI directo pero son prerrequisito para las
 
 ## AI literacy
 **Fuentes:** M14_T5, M14_T6, M14_RESUMEN
+**S:** 92
 Conocimiento básico que toda la organización necesita para operar en un entorno con IA: qué puede y qué no puede hacer la IA, cómo funciona y qué riesgos presenta. El AI Act (artículo 4) lo exige como obligación legal.
 
 ## Upskilling / Reskilling de IA
 **Fuentes:** M14_T5, M14_T6, M14_RESUMEN
+**S:** 128
 Proceso continuo de desarrollo de capacidades en IA que opera en tres niveles progresivos (AI literacy, AI adoption, AI domain transformation). El reskilling del personal existente es la palanca más económica y sostenible.
 
 ## AI Governance Committee (AGC)
 **Fuentes:** M14_T7, M14_RESUMEN
+**S:** 133
 Órgano cross-funcional (tecnología, legal, compliance, negocio, riesgo, RRHH) responsable de aprobar la política de IA, revisar sistemas de alto riesgo antes del despliegue y supervisar el cumplimiento del AI Act.
 
 ## AI Registry
 **Fuentes:** M14_T7, M14_T8, M14_RESUMEN
+**S:** 93
 Inventario centralizado de todos los sistemas de IA de la organización con su estado de gobernanza, propietarios y clasificación de riesgo. Componente mínimo obligatorio de cualquier framework de gobernanza en 2025.
 
 ## AI incident management
@@ -1726,10 +1961,12 @@ Proceso estructurado para detectar, clasificar por severidad, escalar, investiga
 
 ## Modelo de madurez de IA empresarial (cinco niveles)
 **Fuentes:** M14_T8, M14_RESUMEN
+**S:** 191
 Escala que describe la evolución de la adopción de IA: Exploración, Adopción inicial, Escalado, Transformación y Reinvención (nuevos modelos de negocio habilitados por IA).
 
 ## Portfolio de IA 70-20-10
 **Fuentes:** M14_T8, M14_RESUMEN
+**S:** 201
 Marco de asignación de recursos: 70% en explotación (Quick Wins, retorno predecible), 20% en transformación (rediseño de procesos core) y 10% en exploración (IA agéntica, modelos emergentes).
 
 ## Internet de los agentes
