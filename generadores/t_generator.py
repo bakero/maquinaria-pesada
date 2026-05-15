@@ -130,6 +130,16 @@ Reglas duras de formato v6:
         apertura canónica con "Primero: [concepto]" en un solo bloque.
     [ ] CIERRE_FINAL incluye literal la frase canónica.
     [ ] Word count total del diálogo: 3800-4200 palabras (mínimo duro 2925).
+    [ ] PINGPONG: en cada bloque, el speaker de APOYO debe tener ratio
+        palabras / palabras-líder ≤ 0.33. En PANORAMA y LIMITES Maria
+        sólo hace preguntas/reacciones breves de 5-12 palabras; en
+        CASOS, Yago igual.
+    [ ] FRASES LARGAS: ninguna frase debe superar 32 palabras. Pártelas
+        en 2 más cortas usando puntos.
+    [ ] FRASES CORTAS SEGUIDAS: no más de 3 frases ≤8 palabras seguidas
+        en una misma intervención. Fusiona con conectores.
+    [ ] TAGS TTS: usa SOLO [didactico], [analitico], [reflexivo], [claro],
+        [explicativo], [curioso], [escéptico], [enfático].
     Si alguna casilla falla, CORRIGE antes de devolver.
 
 Devuelve SOLO el guion.
@@ -246,7 +256,7 @@ def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResul
         model=MODEL, repo_root=repo_root,
         max_output_tokens=12000, temperature=0.7,
         validate_fn=_validate_fn,
-        max_retries=3,
+        max_retries=5,
         # T exige EXACTAMENTE 3 fuentes con años distintos. Si el modelo se
         # pasa, recortamos a 3. El undershoot (<3) sigue dependiendo del
         # retry con feedback.

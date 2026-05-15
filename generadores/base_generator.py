@@ -187,7 +187,68 @@ _RULE_ACTION_HINTS: dict[str, str] = {
         "ACCIÓN: el HOOK del Short debe encajar en una plantilla H1 "
         "(contradicción: 'no es / no son / aunque...'), H2 (número en "
         "palabras impactante), o H3 (pregunta '¿...?').",
+    # ---- Soft (pulido fino) ----
+    "pingpong":
+        "ACCIÓN (anti-pingpong): en el bloque señalado, el speaker de APOYO "
+        "tiene demasiada presencia. Su ratio palabras-apoyo / palabras-líder "
+        "debe quedar ≤ 0.33. Convierte sus turnos de desarrollo en "
+        "reacciones BREVES de 5-12 palabras (una pregunta corta o una "
+        "confirmación específica al tema, NO 'exactamente'/'claro'). "
+        "Mantén el liderazgo del speaker que toca por bloque (PANORAMA→Yago, "
+        "CASOS→Maria, LIMITES→Yago). Reduce las palabras del apoyo "
+        "fusionando dos turnos suyos en uno corto o eliminando uno.",
+    "tts_invariant_long_sentences":
+        "ACCIÓN: hay frases de >32 palabras. Localízalas y PÁRTELAS en 2 "
+        "o 3 frases cortas (cada una ≤30 palabras). Usa puntos en lugar "
+        "de comas largas, conjunciones 'y'/'porque' o pronombres demos"
+        "trativos para encadenar. Nunca dejes una frase >32 palabras.",
+    "tts_invariant_consecutive_short_sentences":
+        "ACCIÓN: hay intervenciones con >3 frases cortas (≤8 palabras) "
+        "seguidas. Fusiona pares de frases cortas en una mediana (15-25 "
+        "palabras) con conector 'y'/'porque'/'que' o coma + relativo, "
+        "para alternar ritmo. Apunta a no más de 2 frases cortas "
+        "consecutivas por intervención.",
+    "tts_tags_allowed":
+        "ACCIÓN: sólo se permiten las etiquetas TTS canónicas "
+        "([didactico], [analitico], [reflexivo], [claro], [explicativo], "
+        "[curioso], [escéptico], [enfático]). Elimina cualquier tag "
+        "fuera de esa lista.",
+    "audio_rule_intervention_over_max":
+        "ACCIÓN: hay alguna intervención que supera el máximo permitido. "
+        "Pártela en dos turnos del mismo speaker o redistribuye con un "
+        "turno corto del otro en medio.",
 }
+
+
+def _format_soft_failures_feedback(results: list[ValidationResult]) -> str:
+    """Feedback para la fase de pulido fino: 0 hard, quedan soft.
+
+    Se llama sólo cuando todos los hard ya están a 0 — el guion está
+    aceptado funcionalmente, pero queremos quitar los avisos de calidad
+    (pingpong, frases largas, rachas cortas, tags, etc.).
+    """
+    soft = [r for r in results if r.severity == "SOFT" and not r.passed]
+    if not soft:
+        return ""
+    lines = [
+        "El guion ya pasa todas las reglas HARD. Quedan estos avisos SOFT "
+        "(calidad/pulido fino). Mantén EXACTAMENTE las decisiones HARD "
+        "que ya están bien (estructura, líderes por bloque, fuentes, "
+        "word counts, cierres canónicos) y SOLO ajusta lo necesario para "
+        "limpiar estos avisos:"
+    ]
+    for r in soft:
+        lines.append(f"\n- {r.rule_name}: {r.message}")
+        hint = _RULE_ACTION_HINTS.get(r.rule_name)
+        if hint:
+            lines.append(f"  {hint}")
+    lines.append(
+        "\nIMPORTANTE: no rehagas el guion entero. Reescribe SOLO las "
+        "frases / turnos afectados. No toques HOOK, SALUDO, CIERRE_CONCEPTOS, "
+        "CIERRE_FINAL ni BLOQUE_FUENTES — esos ya están validados. "
+        "Entrega el guion completo, pero con cambios mínimos quirúrgicos."
+    )
+    return "\n".join(lines)
 
 
 def _format_hard_failures_feedback(results: list[ValidationResult]) -> str:
@@ -299,19 +360,28 @@ def run_pipeline(request: PipelineRequest) -> PipelineResult:
     # resultado anterior para construir el feedback (incluso si el último
     # intento fue peor). Si la 1ª llamada vino sin texto (error de red /
     # rate-limit), no entramos al bucle: no hay nada que validar.
+    # CONDICIÓN: seguimos mientras quede CUALQUIER fallo (hard o soft),
+    # hasta agotar `max_retries`. Los hard tienen prioridad: cuando todavía
+    # hay hard, sólo se inyecta su feedback; cuando ya hay 0 hard y queda
+    # soft, se inyecta feedback de los soft restantes.
     attempt = 0
     while (
         request.validate_fn
         and best_final                # 1ª generación produjo texto
-        and best_score[0] > 0          # quedan hard
+        and best_score != (0, 0)       # quedan hard o soft
         and attempt < request.max_retries
     ):
         attempt += 1
-        feedback = _format_hard_failures_feedback(best_results)
+        if best_score[0] > 0:
+            feedback = _format_hard_failures_feedback(best_results)
+            severity_label = "HARD"
+        else:
+            feedback = _format_soft_failures_feedback(best_results)
+            severity_label = "SOFT (pulido fino — los hard ya están)"
         retry_user = (
             f"{request.user_prompt}\n\n---\n"
             f"FEEDBACK DE LA GENERACIÓN ANTERIOR (intento {attempt} de "
-            f"{request.max_retries}, no se aceptó):\n"
+            f"{request.max_retries}, {severity_label}):\n"
             f"{feedback}\n\n"
             "Genera de nuevo respetando exactamente las reglas del system "
             "prompt. Esta vez NO repitas los fallos listados."
@@ -345,6 +415,7 @@ def run_pipeline(request: PipelineRequest) -> PipelineResult:
             apply_pronunciation_overrides=request.apply_pronunciation_overrides,
             apply_ssml_pauses=request.apply_ssml_pauses,
             pauses_config=request.ssml_pauses_config,
+            trim_fuentes_max_years=request.trim_fuentes_max_years,
         )
         candidate_results = request.validate_fn(candidate_final, request.episode_id)
         candidate_score = _score(candidate_results)
@@ -355,8 +426,8 @@ def run_pipeline(request: PipelineRequest) -> PipelineResult:
             best_raw = candidate_raw
             best_final = candidate_final
             best_results = candidate_results
-        if best_score[0] == 0:
-            break  # ya no hay hard, no merece la pena más retries.
+        if best_score == (0, 0):
+            break  # perfección alcanzada.
 
     return PipelineResult(
         request=request, raw_text=best_raw, final_text=best_final,

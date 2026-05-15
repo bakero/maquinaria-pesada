@@ -131,6 +131,18 @@ Reglas duras de formato v6 — debes respetarlas todas:
         apertura canónica con el primer concepto en UN SOLO bloque.
     [ ] CIERRE_FINAL incluye literal la frase canónica.
     [ ] Word count total del diálogo: 2900-3200 palabras (mínimo duro 2400).
+    [ ] PINGPONG: en bloques con líder fuerte (PANORAMA con Yago ≥65%),
+        el otro speaker debe estar SOLO con preguntas/reacciones breves
+        de 5-12 palabras. Su ratio palabras / palabras-líder ≤ 0.33 en
+        PANORAMA, BLOQUE_DESTACADO secundario, APLICACION_PRACTICA cuando
+        el otro lidera. Cuenta antes de cerrar.
+    [ ] FRASES LARGAS: ninguna frase debe superar 32 palabras. Cualquier
+        frase larga, pártela en 2 más cortas (puntos en lugar de comas).
+    [ ] FRASES CORTAS SEGUIDAS: no más de 3 frases ≤8 palabras seguidas
+        en una misma intervención. Fusiona pares de cortas con 'y'/'porque'
+        o usa frases medianas (15-25 palabras).
+    [ ] TAGS TTS: usa SOLO [didactico], [analitico], [reflexivo], [claro],
+        [explicativo], [curioso], [escéptico], [enfático]. Nada más.
     Si alguna casilla falla, CORRIGE antes de devolver.
 
 Genera SOLO el guion en este formato, sin explicaciones ni preámbulos.
@@ -282,7 +294,7 @@ def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResul
         model=MODEL, repo_root=repo_root,
         max_output_tokens=10000, temperature=0.7,
         validate_fn=_validate_factory(repo_root),
-        max_retries=3,
+        max_retries=5,
         # M permite 3-4 fuentes con años distintos. Si el modelo se pasa,
         # recortamos al máximo (4).
         trim_fuentes_max_years=4,
