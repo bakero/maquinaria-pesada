@@ -33,6 +33,8 @@ import {
   PageLanzador, PageFuentes, PagePlayer, PageLogs, PageOptimizar, PageConsumo,
   PageAjustes, PageMetricas, PageEpisodio,
   PageDatos, PagePipeline, PageRecursos,
+  // v3
+  PageProduccion, PageModuloTema, PageSistema,
 } from "./pages";
 
 
@@ -130,15 +132,14 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [page, setPage] = React.useState(() => {
     const { base } = parseHash();
-    return WIRED.has(base) ? base : "home";
+    return WIRED.has(base) ? base : "produccion";
   });
-  // Selección activa: qué módulo / episodio se está viendo. Inicializada
-  // desde el hash para sobrevivir a un reload.
+  // Selección activa: qué módulo / tema/episodio se está viendo.
   const [sel, setSel] = React.useState(() => {
     const { base, payload } = parseHash();
     return {
       modulo:   base === "modulo"   ? payload : null,
-      episodio: base === "episodio" ? payload : null,
+      episodio: (base === "tema" || base === "episodio") ? payload : null,
     };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
@@ -183,14 +184,14 @@ function App() {
     setPage(id);
     if (id === "modulo") {
       setSel((s) => ({ ...s, modulo: payload || s.modulo }));
-    } else if (id === "episodio") {
+    } else if (id === "tema" || id === "episodio") {
       setSel((s) => ({
         ...s,
         episodio: payload || s.episodio,
         modulo: payload ? payload.split("_")[0] : s.modulo,
       }));
     }
-    const hasSel = payload && (id === "modulo" || id === "episodio");
+    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio");
     window.location.hash = hasSel ? `${id}/${encodeURIComponent(payload)}` : id;
     window.scrollTo(0, 0);
   };
@@ -204,49 +205,32 @@ function App() {
   const paletteActions = React.useMemo(() => {
     const acts = [];
 
-    // Navegación · top-level (5 secciones)
+    // Navegación · top-level (3 secciones v3)
     [
-      { id: "home",     label: "Inicio",       icon: "home" },
-      { id: "master",   label: "Producción",   icon: "grid" },
-      { id: "pipeline", label: "Pipeline",     icon: "play" },
-      { id: "datos",    label: "Datos",        icon: "coin" },
-      { id: "recursos", label: "Recursos",     icon: "folder" },
+      { id: "produccion", label: "Producción", icon: "grid", short: "g p" },
+      { id: "datos",      label: "Datos",      icon: "coin", short: "g d" },
+      { id: "sistema",    label: "Sistema",    icon: "settings", short: "g s" },
     ].forEach((it) => {
       acts.push({
         id: `nav-${it.id}`,
         label: `Ir a ${it.label}`,
         section: "Navegar",
         icon: it.icon,
+        shortcut: it.short,
         keywords: [it.label, it.id],
         perform: () => nav(it.id),
       });
     });
-    // Navegación · páginas legacy individuales (mantenidas para deep links)
-    NAV_GROUPS.forEach((g) => {
-      g.items.forEach((it) => {
-        if (!WIRED.has(it.id)) return;
-        if (["home", "master"].includes(it.id)) return; // already added above
-        acts.push({
-          id: `nav-${it.id}`,
-          label: `Abrir ${it.label}`,
-          section: `Páginas · ${g.label}`,
-          icon: it.icon,
-          keywords: [it.label, it.id],
-          perform: () => nav(it.id),
-        });
-      });
-    });
-
-    // Episodios
-    EPISODES.slice(0, 30).forEach((e) => {
+    // Episodios (temas)
+    EPISODES.filter((e) => e.kind === "T").slice(0, 30).forEach((e) => {
       acts.push({
         id: `ep-${e.id}`,
-        label: `Episodio ${e.id} — ${e.title}`,
-        section: "Episodios",
+        label: `Tema ${e.id} — ${e.title.replace(/^T\d+ — /, "")}`,
+        section: "Temas",
         icon: "episode",
-        hint: `${e.kind === "T" ? "tema" : "módulo"} · ${e.dur}`,
+        hint: `${e.mod} · ${e.dur}`,
         keywords: [e.id, e.mod, e.title, e.kind],
-        perform: () => nav("episodio", e.id),
+        perform: () => nav("tema", e.id),
       });
     });
 
@@ -257,7 +241,7 @@ function App() {
         label: `Módulo ${m.id} — ${m.name}`,
         section: "Módulos",
         icon: "module",
-        hint: `${m.pct}% · ${m.status}`,
+        hint: `${m.pct}% · ${m.short}`,
         keywords: [m.id, m.name, m.short],
         perform: () => nav("modulo", m.id),
       });
@@ -327,12 +311,10 @@ function App() {
         else if (tourOpen) setTourOpen(false);
         else if (aiDrawer.open) closeAI();
     }},
-    { combo: "g m", description: "Ir al Master",   handler: () => nav("master") },
-    { combo: "g e", description: "Ir al Episodio", handler: () => nav("episodio") },
-    { combo: "g i", description: "Ir al Inicio",   handler: () => nav("home") },
-    { combo: "g l", description: "Ir a Logs",      handler: () => nav("logs") },
-    { combo: "g p", description: "Ir al Lanzador", handler: () => nav("lanzador") },
-    { combo: "mod+i", description: "Mejorar con IA",
+    { combo: "g p", description: "Ir a Producción", handler: () => nav("produccion") },
+    { combo: "g d", description: "Ir a Datos",      handler: () => nav("datos") },
+    { combo: "g s", description: "Ir a Sistema",    handler: () => nav("sistema") },
+    { combo: "mod+i", description: "Asistente IA",
       handler: () => openAI({ target: `Página · ${page}`, purpose: "improve" }) },
   ]);
 
@@ -355,36 +337,32 @@ function App() {
     ajustes:    [{ label: "Inicio", id: "home" }, { label: "Sistema" }, { label: "Ajustes" }],
   };
 
+  // Total active processes mock (replace with real /api/live count)
+  const liveCount = 1;
+  const liveLabel = "M5 audio";
+
   return (
-    <div className="app v2-shell" data-density={t.density}>
+    <div className="app v3-shell" data-density={t.density}>
       <TopNav
         page={page}
         onNav={nav}
         onOpenPalette={openPalette}
         onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
-        onOpenTour={() => setTourOpen(true)}
-        liveLabel="M3 · audio"
+        liveCount={liveCount}
+        liveLabel={liveLabel}
       />
       <main className="main">
-        {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI} onOpenPalette={openPalette}/>}
-        {page === "master"     && <PageMaster     onNav={nav} onOpenAI={openAI} view={t.masterView} density={t.density}/>}
-        {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI} modId={sel.modulo}/>}
-        {page === "episodio"   && <PageEpisodio   onNav={nav} onOpenAI={openAI} onOpenFix={openFix} epId={sel.episodio}/>}
-        {page === "pizarra"    && <PagePizarra    onNav={nav} onOpenAI={openAI}/>}
-        {page === "mapa"       && <PageMapa       onNav={nav} onOpenAI={openAI}/>}
-        {page === "conectores" && <PageConectores onNav={nav} onOpenAI={openAI}/>}
-        {page === "lanzador"   && <PageLanzador   onNav={nav} onOpenAI={openAI}/>}
-        {page === "fuentes"    && <PageFuentes    onNav={nav} onOpenAI={openAI}/>}
-        {page === "player"     && <PagePlayer     onNav={nav} onOpenAI={openAI}/>}
-        {page === "logs"       && <PageLogs       onNav={nav} onOpenAI={openAI}/>}
-        {page === "optimizar"  && <PageOptimizar  onNav={nav} onOpenAI={openAI}/>}
-        {page === "metricas"   && <PageMetricas   onNav={nav} onOpenAI={openAI}/>}
-        {page === "consumo"    && <PageConsumo    onNav={nav} onOpenAI={openAI}/>}
-        {page === "ajustes"    && <PageAjustes    onNav={nav} onOpenAI={openAI}/>}
-        {/* v2 combined pages */}
-        {page === "pipeline"   && <PagePipeline   onNav={nav} onOpenAI={openAI}/>}
+        {/* v3 · 3 destinos visibles desde el top-nav + drill-downs internos */}
+        {page === "produccion" && <PageProduccion onNav={nav} onOpenPalette={openPalette}/>}
+        {page === "modulo"     && <PageModuloTema entityId={sel.modulo || "M3"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
+        {page === "tema"       && <PageModuloTema entityId={sel.episodio || "M3_T1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
         {page === "datos"      && <PageDatos      onNav={nav} onOpenAI={openAI}/>}
-        {page === "recursos"   && <PageRecursos   onNav={nav} onOpenAI={openAI}/>}
+        {page === "sistema"    && <PageSistema    onNav={nav} onOpenAI={openAI}/>}
+
+        {/* v3 fallback · si alguien llega a una página legacy, mostramos Producción */}
+        {!["produccion","modulo","tema","datos","sistema"].includes(page) && (
+          <PageProduccion onNav={nav} onOpenPalette={openPalette}/>
+        )}
       </main>
 
       <AIDrawer

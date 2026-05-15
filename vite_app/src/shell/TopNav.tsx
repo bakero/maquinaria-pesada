@@ -1,63 +1,58 @@
-// TopNav — barra superior única, sin sidebar.
+// TopNav — barra superior única. Industrial sobrio. Sin emojis.
 //
-// Cinco secciones consolidadas:
-//   - Inicio       → home (dashboard + factory + IA orquestadora)
-//   - Producción   → master (drill-down master → módulo → episodio)
-//   - Pipeline     → lanzador + conectores (combinado)
-//   - Datos        → logs + tokens + consumo + optimizar + métricas (sub-tabs)
-//   - Recursos     → fuentes + previsualizar + pizarra + mapa
+// Tres secciones:
+//   Producción  ← master + módulos + temas (el operativo)
+//   Datos       ← coste IA + métricas difusión + optimización + logs
+//   Sistema     ← conectores + ajustes + mapa
 //
 // La sección activa se infiere de la página actual via mapSectionFor().
 
 import * as React from "react";
 import { Icon } from "../components";
-import { Brand } from "./Brand";
 import { formatCombo } from "../lib/useHotkeys";
 
 export interface TopNavItem {
   id: string;            // section id, used by mapSectionFor
-  page: string;          // which legacy page to navigate to
+  page: string;          // which page to navigate to
   label: string;
-  hint?: string;
-  badge?: string;
 }
 
 export const NAV: TopNavItem[] = [
-  { id: "inicio",     page: "home",     label: "Inicio" },
-  { id: "produccion", page: "master",   label: "Producción", badge: "22 ep." },
-  { id: "pipeline",   page: "pipeline", label: "Pipeline" },
-  { id: "datos",      page: "datos",    label: "Datos" },
-  { id: "recursos",   page: "recursos", label: "Recursos" },
+  { id: "produccion", page: "produccion", label: "Producción" },
+  { id: "datos",      page: "datos",      label: "Datos" },
+  { id: "sistema",    page: "sistema",    label: "Sistema" },
 ];
 
-// Mapea una página (de las 15 legacy) a la sección de top-nav.
+// Mapea una página a su sección de top-nav.
 export function mapSectionFor(page: string): string {
   switch (page) {
     case "home":
-      return "inicio";
+    case "produccion":
     case "master":
     case "modulo":
+    case "tema":
     case "episodio":
       return "produccion";
-    case "lanzador":
-    case "conectores":
-    case "pipeline":
-      return "pipeline";
+    case "datos":
     case "logs":
     case "tokens":
     case "consumo":
     case "optimizar":
     case "metricas":
-    case "datos":
       return "datos";
+    case "sistema":
+    case "conectores":
+    case "lanzador":
+    case "pipeline":
+    case "mapa":
+    case "pizarra":
+    case "ajustes":
+    case "recursos":
     case "fuentes":
     case "player":
-    case "pizarra":
-    case "mapa":
-    case "recursos":
-      return "recursos";
+      return "sistema";
     default:
-      return "inicio";
+      return "produccion";
   }
 }
 
@@ -66,59 +61,67 @@ export interface TopNavProps {
   onNav: (page: string) => void;
   onOpenPalette: () => void;
   onOpenAI: () => void;
-  onOpenTour: () => void;
-  liveLabel?: string;
+  liveCount?: number;       // procesos en producción
+  liveLabel?: string;       // texto del proceso activo si lo hay
 }
 
 export function TopNav({
-  page, onNav, onOpenPalette, onOpenAI, onOpenTour, liveLabel,
+  page, onNav, onOpenPalette, onOpenAI, liveCount = 0, liveLabel,
 }: TopNavProps) {
   const section = mapSectionFor(page);
 
   return (
-    <nav className="topnav">
-      <div className="topnav-left">
-        <Brand onClick={() => onNav("home")} />
-        <div className="topnav-nav">
-          {NAV.map((it) => (
-            <button
-              key={it.id}
-              className={`topnav-item${section === it.id ? " active" : ""}`}
-              onClick={() => onNav(it.page)}
-            >
-              {it.label}
-              {it.badge && <span className="topnav-item-badge">{it.badge}</span>}
-            </button>
-          ))}
-        </div>
+    <nav className="topnav3">
+      {/* Brand: mark + wordmark mono */}
+      <div className="topnav3-brand" onClick={() => onNav("produccion")}
+           role="button" tabIndex={0}
+           onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onNav("produccion")}>
+        <span className="topnav3-mark" aria-hidden>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="0"  y="0"  width="2" height="14" fill="currentColor"/>
+            <rect x="4"  y="0"  width="2" height="14" fill="currentColor"/>
+            <rect x="8"  y="0"  width="2" height="14" fill="currentColor" opacity="0.55"/>
+            <rect x="12" y="0"  width="2" height="14" fill="currentColor" opacity="0.25"/>
+          </svg>
+        </span>
+        <span className="topnav3-wordmark">MAQUINARIA·PESADA</span>
+        <span className="topnav3-build">v0.9 — master</span>
       </div>
 
-      <div></div>
+      {/* Sections */}
+      <div className="topnav3-nav">
+        {NAV.map((it) => (
+          <button
+            key={it.id}
+            className={`topnav3-item${section === it.id ? " active" : ""}`}
+            onClick={() => onNav(it.page)}
+          >
+            {it.label}
+          </button>
+        ))}
+      </div>
 
-      <div className="topnav-right">
-        {liveLabel && (
-          <span className="topnav-live" title="Producción en vivo">
-            <span className="topnav-live-dot" />
-            {liveLabel}
+      {/* Right cluster */}
+      <div className="topnav3-right">
+        {liveCount > 0 && (
+          <span className="topnav3-live" title="Procesos en producción ahora">
+            <span className="topnav3-live-dot" />
+            <span className="topnav3-live-label">
+              {liveCount} en proceso{liveLabel ? ` — ${liveLabel}` : ""}
+            </span>
           </span>
         )}
 
-        <button className="topnav-search" onClick={onOpenPalette}
+        <button className="topnav3-search" onClick={onOpenPalette}
                 title="Buscar y ejecutar">
-          <Icon name="search" size={12}/>
-          <span className="topnav-search-label">Buscar o ejecutar…</span>
-          <span className="topnav-search-kbd">{formatCombo("mod+k")}</span>
+          <Icon name="search" size={11}/>
+          <span className="topnav3-search-label">Buscar o ejecutar</span>
+          <span className="topnav3-search-kbd">{formatCombo("mod+k")}</span>
         </button>
 
-        <button className="topnav-icon-btn" onClick={onOpenTour}
-                title="Tour de bienvenida (?)" aria-label="Ayuda">
-          <span style={{ fontFamily: "var(--f-display)", fontWeight: 600, fontSize: 14 }}>?</span>
-        </button>
-
-        <button className="topnav-cta" onClick={onOpenAI}
-                title="Mejorar con IA (⌘I)">
-          <Icon name="spark" size={11}/>
-          Mejorar con IA
+        <button className="topnav3-ai" onClick={onOpenAI}
+                title="Asistente IA">
+          IA
         </button>
       </div>
     </nav>

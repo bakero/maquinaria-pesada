@@ -15,7 +15,16 @@ export { PageAjustes } from "./PageAjustes";
 export { PageMetricas } from "./PageMetricas";
 export { PageEpisodio } from "./episode/PageEpisodio";
 
-// v2 — pages combinadas (Datos · Pipeline · Recursos).
+// v2 — wrappers anteriores
 export { PageDatos }    from "./PageDatos";
 export { PagePipeline } from "./PagePipeline";
 export { PageRecursos } from "./PageRecursos";
+
+// v3 — industrial · sólo estas tres páginas son las visibles desde el top-nav.
+//  Producción  → PageProduccion (master + alertas + KPIs)
+//                PageModuloTema (drill-down a Mn y Mn_Tk)
+//  Datos       → PageDatos (subnav: consumo · métricas · optimización · logs)
+//  Sistema     → PageSistema (subnav: conectores · lanzador · fuentes · mapa · ajustes)
+export { PageProduccion } from "./PageProduccion";
+export { PageModuloTema } from "./PageModuloTema";
+export { PageSistema }    from "./PageSistema";

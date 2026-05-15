@@ -45,7 +45,7 @@ function PageAjustes({ onNav, onOpenAI }) {
           const expected = k.expected || [];
           const found = k.found || [];
           const status = k.ok ? "ok" : "warn";
-          const badge = k.ok ? "🟢 OK" : "🟡 FALTAN KEYS";
+          const badge = k.ok ? "OK" : "FALTAN KEYS";
           const missing = expected.filter((n) => !found.some((f) => f.name === n));
           const detail = k.ok
             ? `${found.length}/${expected.length} keys presentes`

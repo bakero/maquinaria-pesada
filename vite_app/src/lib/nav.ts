@@ -90,6 +90,8 @@ export const WIRED = new Set<string>([
   "metricas", "consumo", "ajustes",
   // v2 — pages combinadas para top-nav
   "pipeline", "datos", "recursos",
+  // v3 — 3 destinos del top-nav industrial + drill-downs
+  "produccion", "tema", "sistema",
 ]);
 
 /** Archivos del repo que implementan una página de nav. */
