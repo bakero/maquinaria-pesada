@@ -29,12 +29,11 @@ export function Sidebar({ current, onNav }: SidebarProps) {
               return (
                 <div
                   key={it.id}
-                  className={`sb-item ${active ? "active" : ""}`}
+                  className={`sb-item sb-item-compact ${active ? "active" : ""}`}
                   onClick={() => wired && onNav(it.id)}
                   style={{ opacity: wired ? 1 : 0.42, cursor: wired ? "pointer" : "not-allowed" }}
                   title={wired ? "" : "Página no incluida en este prototipo"}
                 >
-                  <span className="sb-item-num">{it.num}</span>
                   <span className="sb-item-icon"><Icon name={it.icon} size={13} /></span>
                   <span style={{ flex: 1 }}>{it.label}</span>
                   {it.emph && <span style={{ fontSize: 9, fontFamily: "var(--f-mono)", color: "var(--y)" }}>●</span>}

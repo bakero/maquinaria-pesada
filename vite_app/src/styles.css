@@ -139,7 +139,7 @@ button { font-family: inherit; }
 
 .sb-nav { padding: 8px 0; flex: 1; overflow-y: auto; }
 .sb-group {
-  padding: 14px 16px 6px;
+  padding: 10px 14px 4px;
   font-family: var(--f-display);
   font-size: 10px;
   font-weight: 500;
@@ -187,6 +187,9 @@ button { font-family: inherit; }
   text-align: right;
 }
 .sb-item.active .sb-item-num { color: var(--y-dk); }
+
+/* Variante compacta — sin numeración decorativa, fila más estrecha */
+.sb-item-compact { padding: 5px 14px 5px 12px; gap: 9px; }
 
 .sb-item-icon {
   width: 14px; height: 14px;
