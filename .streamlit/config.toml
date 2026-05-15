@@ -1,32 +1,28 @@
-## MaquinarIA Pesada — tema base (industrial CAT dark)
-## Sobre este tema base, cockpit/theme.py inyecta CSS extra (fonts Google,
-## bordes, transformaciones de texto, etc.). Si solo quieres ajustar colores
-## rápidamente, hazlo aquí.
+## MaquinarIA Pesada — tema base.
+## El CSS principal lo inyecta cockpit/theme.py (Inter + JetBrains Mono,
+## paleta refinada, componentes pulidos). Esto solo define los colores base
+## que Streamlit aplica antes de cargar el CSS.
 
 [theme]
 base = "dark"
 
-# CAT Yellow (consistente con BIBLIA.md spec)
-primaryColor = "#F5C400"
+# CAT yellow — accent
+primaryColor = "#F2C53D"
 
-# Carbón profundo
-backgroundColor = "#0D0D0D"
+# Canvas — negro cálido (no puro)
+backgroundColor = "#0B0D10"
 
-# Acero oscuro (cards, sidebar)
-secondaryBackgroundColor = "#1A1A1A"
+# Surface — paneles, sidebar, cards
+secondaryBackgroundColor = "#13171D"
 
-# Off-white antiglare
-textColor = "#F2F2F2"
+# Texto principal
+textColor = "#E8EAED"
 
-# Tipografía base — el theme.py override con Barlow Condensed + Oswald + JetBrains Mono.
-# 'sans serif' aquí solo es fallback si el CSS injection falla.
+# Fallback si la carga de Google Fonts falla. cockpit/theme.py inyecta Inter.
 font = "sans serif"
 
 [server]
-# Sin auto-abrir el navegador (lo deja a tu discreción)
 headless = false
-
-# Recarga inmediata al guardar archivos del cockpit
 runOnSave = true
 
 [browser]

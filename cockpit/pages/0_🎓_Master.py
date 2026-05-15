@@ -17,28 +17,37 @@ import streamlit as st  # noqa: E402
 from cockpit.core import episodes, paths  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import (  # noqa: E402
+    Stat,
+    page_header,
+    section,
+    stat_grid,
+    status_pill,
+)
 
 st.set_page_config(page_title="Master", page_icon="🎓", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("MASTER · ESTADO POR MÓDULO")
-st.caption("Vista global del curso. Listo cuando todos los episodios del módulo "
-           "tienen guion + PDF + escaleta + audio.")
+page_header(
+    "Estado por módulo",
+    eyebrow="Master",
+    subtitle=(
+        "Vista global del curso. Un módulo está listo cuando todos sus "
+        "episodios — M principal + temas Tₙ — tienen guion, PDF, escaleta y audio."
+    ),
+)
 
 all_eps = episodes.scan_all()
+modules_meta = {m["id"]: m for m in episodes.modules_meta()}
 
-# Agrupa por módulo en el orden M0..M14
 by_mod: dict[str, list[episodes.Episode]] = {m: [] for m in paths.MODULES}
 for e in all_eps:
     by_mod.setdefault(e.module, []).append(e)
 
-# Métricas agregadas
 n_total = len(by_mod)
-n_listo = 0
-n_curso = 0
-n_vacio = 0
+n_listo = n_curso = n_vacio = 0
 for eps in by_mod.values():
     status, _ = episodes.module_status(eps)
     if status == "listo":
@@ -48,43 +57,65 @@ for eps in by_mod.values():
     else:
         n_vacio += 1
 
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Módulos", n_total)
-c2.metric("🟢 Listos", n_listo)
-c3.metric("🟡 En curso", n_curso)
-c4.metric("⚪ Sin empezar", n_vacio)
+stat_grid([
+    Stat("Módulos", str(n_total)),
+    Stat("Listos", str(n_listo), color="ok"),
+    Stat("En curso", str(n_curso), color="warn"),
+    Stat("Sin empezar", str(n_vacio), color="default"),
+])
 
-st.divider()
+section("Módulos", subtitle="Pulsa cualquier módulo para abrir su detalle.")
 
-# Cabecera
-hdr = st.columns([1, 4, 2, 2, 2])
-hdr[0].markdown("**Módulo**")
-hdr[1].markdown("**Episodios**")
-hdr[2].markdown("**Estado**")
-hdr[3].markdown("**Progreso**")
-hdr[4].markdown("**Acción**")
-st.divider()
+
+_STATUS_KIND = {"listo": "ok", "en_curso": "warn", "sin_empezar": "neutral"}
+_STATUS_LABEL = {"listo": "Listo", "en_curso": "En curso", "sin_empezar": "Sin empezar"}
+
 
 for mod in paths.MODULES:
     eps = by_mod.get(mod, [])
     status, ratio = episodes.module_status(eps)
-    badge = episodes.STATUS_BADGE[status]
-
+    meta = modules_meta.get(mod, {})
+    name = meta.get("name", mod)
+    short = meta.get("short", "")
     n_eps = len(eps)
     n_complete = sum(1 for e in eps if e.complete)
-    label = f"{n_complete}/{n_eps} ep. completos · {sum(1 for e in eps if e.kind == 'T')} temas + {sum(1 for e in eps if e.kind == 'M')} M"
+    n_m = sum(1 for e in eps if e.kind == "M")
+    n_t = sum(1 for e in eps if e.kind == "T")
 
-    row = st.columns([1, 4, 2, 2, 2])
-    row[0].markdown(f"### {mod}")
-    row[1].markdown(label)
-    row[2].markdown(badge)
-    row[3].progress(ratio, text=f"{ratio*100:.0f}%")
-    if row[4].button("Abrir →", key=f"open_{mod}", use_container_width=True):
-        st.query_params["m"] = mod
-        st.switch_page("pages/13_🎬_Modulo.py")
+    pill = status_pill(_STATUS_LABEL[status], kind=_STATUS_KIND[status])  # type: ignore[arg-type]
+    progress_pct = f"{ratio * 100:.0f}%"
 
-st.divider()
+    with st.container(border=True):
+        head = st.columns([0.7, 4, 1.6, 1.4])
+        head[0].markdown(
+            f"<div style='font-family: \"JetBrains Mono\", monospace;"
+            f"font-size:1.1rem; color: var(--mp-primary); font-weight:600;'>"
+            f"{mod}</div>",
+            unsafe_allow_html=True,
+        )
+        head[1].markdown(
+            f"<div style='font-weight:600; font-size:1.02rem;'>{name}</div>"
+            f"<div style='color: var(--mp-text-mute); font-size: 0.85rem;'>{short}</div>",
+            unsafe_allow_html=True,
+        )
+        head[2].markdown(pill, unsafe_allow_html=True)
+        if head[3].button("Abrir →", key=f"open_{mod}", use_container_width=True):
+            st.query_params["m"] = mod
+            st.switch_page("pages/13_🎬_Modulo.py")
+
+        meta_row = st.columns([4, 1.4])
+        with meta_row[0]:
+            st.progress(ratio, text=f"{n_complete}/{n_eps} episodios completos · {progress_pct}")
+        with meta_row[1]:
+            st.markdown(
+                f"<div style='text-align:right; color:var(--mp-text-mute); "
+                f"font-size:0.82rem; padding-top:6px;'>"
+                f"{n_m} M · {n_t} temas</div>",
+                unsafe_allow_html=True,
+            )
+
 st.caption(
-    "🟢 Listo · 🟡 En curso · ⚪ Sin empezar. "
-    "Pulsa **Abrir** para entrar al detalle del módulo."
+    "🟢 Listo · todos los contenidos producidos · "
+    "🟡 En curso · algún contenido producido · "
+    "⚪ Sin empezar · ningún contenido aún."
 )

@@ -19,6 +19,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import episodes, verifications  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import Stat, page_header, stat_grid  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Episodio", page_icon="📼", layout="wide")
@@ -34,15 +35,21 @@ default_idx = ids.index(qp_ep) if qp_ep in ids else 0
 
 top = st.columns([5, 2, 2])
 with top[0]:
-    st.title("EPISODIO · CONTROL")
+    page_header(
+        "Control de episodio",
+        eyebrow="Episodio",
+        subtitle="Guion, PDF, escaleta, audio, logs y verificaciones — todo en una vista.",
+    )
 
 with top[1]:
+    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     selected = st.selectbox(
         "Episodio",
         ids,
         index=default_idx if ids else 0,
         format_func=lambda eid: next((e.label for e in all_eps if e.id == eid), eid),
         key="ep_select",
+        label_visibility="collapsed",
     )
     if selected != qp_ep:
         st.query_params["ep"] = selected
@@ -58,21 +65,21 @@ has_errors = any(c.status == "fail" for grp in checks.values() for c in grp)
 
 # Botón superior derecho: arreglar con Claude (solo visible si hay errores)
 with top[2]:
-    st.write("")  # padding
+    st.markdown("<div style='height:30px'></div>", unsafe_allow_html=True)
     if has_errors:
         if st.button("🛠️ Arreglar con Claude", type="primary", use_container_width=True):
             st.session_state["_open_fix_modal"] = True
     else:
         st.success("Sin errores")
 
-# Cabecera con metadatos
-st.markdown(f"### {ep.label}")
-m1, m2, m3, m4, m5 = st.columns(5)
-m1.metric("Tipo", "Módulo (M)" if ep.kind == "M" else f"Tema T{ep.number}")
-m2.metric("Producidos", f"{len(ep.produced)}/{len(episodes.CONTENT_TYPES)}")
-m3.metric("Progreso", f"{ep.progress*100:.0f}%")
-m4.metric("Logs", len(ep.logs))
-m5.metric("Errores", "🔴 Sí" if has_errors else "🟢 No")
+# Métricas
+stat_grid([
+    Stat("Episodio", ep.id, hint=ep.label),
+    Stat("Tipo", "Módulo" if ep.kind == "M" else f"Tema T{ep.number}"),
+    Stat("Producidos", f"{len(ep.produced)}/{len(episodes.CONTENT_TYPES)}", color="primary"),
+    Stat("Progreso", f"{ep.progress*100:.0f}%"),
+    Stat("Errores", "Sí" if has_errors else "No", color="alert" if has_errors else "ok"),
+])
 
 st.divider()
 
