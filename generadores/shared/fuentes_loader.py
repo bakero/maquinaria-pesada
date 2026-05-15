@@ -116,12 +116,20 @@ def load_glosario(path: Path | None = None) -> list[GlosarioEntry]:
 
 
 def find_entry(entries: list[GlosarioEntry], term: str) -> GlosarioEntry | None:
-    """Busca una entrada por nombre canónico (case-insensitive)."""
+    """Busca una entrada por nombre canónico (case-insensitive).
+
+    Acepta también coincidencia con el primer segmento separado por " / "
+    (p. ej. "Hallucination" matchea "Hallucination / Alucinación").
+    """
     needle = term.strip().lower()
     for e in entries:
         if e.name.lower() == needle:
             return e
         if e.sigla and e.sigla.lower() == needle:
+            return e
+        # Match con primer segmento separado por "/" (alias bilingüe canónico).
+        first_part = e.name.split("/")[0].strip().lower()
+        if first_part == needle:
             return e
     return None
 

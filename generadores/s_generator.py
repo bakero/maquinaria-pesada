@@ -20,9 +20,13 @@ Reglas duras de formato v6:
 
 1. UNA SOLA VOZ NARRADORA. Sin diálogo. NUNCA escribas "IAGO:" o "MARIA:".
 2. Word count OBLIGATORIO entre 157 y 198 palabras (~75s a 1.10× TTS).
-   Cuenta las palabras antes de entregar. Por debajo de 157 NO sirve:
-   amplía con un ejemplo extra o desarrolla la aplicación. Por encima
-   de 198 tampoco: recorta. Apunta a 175-185 para tener margen.
+   Cuenta las palabras DOS VECES antes de entregar. Por debajo de 157 NO sirve:
+   amplía con un ejemplo extra de 25-35 palabras o un caso concreto de empresa
+   adicional. APUNTA SIEMPRE A 180 PALABRAS — la zona segura es 175-190.
+   El error más común es quedarse en 130-155: si tu primera versión está ahí,
+   AÑADE un ejemplo más (cliente, sector, caso específico) antes del cierre
+   canónico. Por encima de 198 también es fail: recorta. NO ENTREGUES si
+   tu recuento no está en [157, 198].
 3. Estructura interna (no obligatoria como cabeceras): HOOK 5-7s,
    DEFINICIÓN 18-22s, EJEMPLO 28-35s, APLICACIÓN/GANCHO 12-18s.
 4. La PRIMERA frase del Short es el HOOK y debe encajar en UNA de estas

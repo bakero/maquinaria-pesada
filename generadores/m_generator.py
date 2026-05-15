@@ -62,8 +62,12 @@ Reglas duras de formato v6 — debes respetarlas todas:
    high-level 2-2.5 min; cierre conjunto 30-45s). Maria 30-40 %, Yago 60-70 %.
 9. BLOQUE_FUENTES: 3-4 fuentes-marco del módulo entero, cada una con
    autor/año/título y por qué importa. NO leer URLs en audio.
-10. CIERRE_CONCEPTOS: 3-5 conceptos canónicos, abre con
-    "No te puedes ir de este capitulo sin haber entendido estos conceptos".
+10. CIERRE_CONCEPTOS: 3-5 INTERVENCIONES TOTALES (cada intervención = 1 concepto).
+    La PRIMERA intervención incluye TANTO la apertura literal
+    "No te puedes ir de este capitulo sin haber entendido estos conceptos"
+    COMO el primer concepto, dichos por el opener — EN UN ÚNICO BLOQUE.
+    NUNCA pongas la apertura sola en un bloque: si lo haces, el recuento se
+    irá a 6 y será HARD-FAIL. Total bloques = nº conceptos (3-5).
 11. CIERRE_FINAL: debe contener EXACTAMENTE esta frase literal al cierre
     (palabra por palabra, ortografía y puntuación incluida; puedes añadir
     una intervención previa con el resumen + CTA al primer T del módulo,
@@ -128,7 +132,18 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
     """Construye el prompt user inyectando PDF + pre-escritura + ficha
     aplicación + fuentes-marco."""
     n = _module_n(episode_id)
-    parts: list[str] = [f"Genera el episodio M{n} sobre el módulo {n} del máster."]
+    # Paridad del módulo: par → Maria abre, impar → Yago.
+    opener = "MARIA" if n % 2 == 0 else "IAGO"
+    opener_spoken = "Maria" if opener == "MARIA" else "Yago"
+    other = "IAGO" if opener == "MARIA" else "MARIA"
+    parts: list[str] = [
+        f"Genera el episodio M{n} sobre el módulo {n} del máster.",
+        "",
+        f"## ⚠️ OPENER OBLIGATORIO (paridad M{n}): {opener} (nombre hablado: '{opener_spoken}')",
+        f"El HOOK lo abre {opener}. El aviso de IA en SALUDO_Y_PRESENTACION "
+        f"lo pronuncia {opener} (NO {other}). HARD-FAIL si abre el speaker contrario "
+        f"o si {other} pronuncia el aviso de IA.",
+    ]
 
     # PDF RESUMEN del módulo.
     resumen_path = pdf_reader.find_resumen(repo_root, n)
@@ -188,6 +203,49 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
             )
             for tp in temas_paths:
                 parts.append(f"- {tp.relative_to(repo_root).as_posix()}")
+
+    # ⚠️ Checklist final — recuerda al modelo las reglas más fallidas en
+    # iteraciones previas (paridad, recuentos exactos, balance de palabras).
+    parts.append(
+        "\n## ⚠️ CHECKLIST OBLIGATORIO ANTES DE DEVOLVER EL GUION\n"
+        f"1. HOOK abierto por {opener}; aviso de IA pronunciado por {opener} (NO {other}).\n"
+        "2. Palabras totales del diálogo entre 2900 y 3200 (rango duro 2400-3680).\n"
+        "   Si te falta volumen, AÑADE bloques de desarrollo en APLICACION_PRACTICA;\n"
+        "   NO recortes nada.\n"
+        "3. CIERRE_CONCEPTOS: ENTRE 3 Y 5 INTERVENCIONES TOTALES (una por concepto).\n"
+        "   La PRIMERA intervención incluye TANTO la apertura literal\n"
+        "   \"No te puedes ir de este capitulo sin haber entendido estos conceptos\"\n"
+        "   COMO el primer concepto, dichos por el opener — EN UN ÚNICO BLOQUE.\n"
+        "   NUNCA dejes la apertura sola en un bloque (sería una intervención extra\n"
+        "   y harías que el recuento se vaya a 6 = HARD-FAIL).\n"
+        "4. CIERRE_FINAL: incluye palabra-por-palabra la frase canónica:\n"
+        "   \"Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
+        "   \"Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.\"\n"
+        "5. APLICACION_PRACTICA: Maria DEBE quedar entre 30% y 40% del total de palabras.\n"
+        "   Para lograrlo: Maria abre el caso con UN turno LARGO de 120-150 palabras\n"
+        "   (no menos), Yago detalla en 2-3 turnos de 140-200 palabras, y el cierre\n"
+        "   conjunto da a Maria 60-80 palabras y a Yago 80-100.\n"
+        "6. BLOQUE_DESTACADO: balance COMPARTIDO. Yago entre 40% y 60%. NO permitas\n"
+        "   que Yago monopolice. Maria debe explicar al menos UN concepto completo\n"
+        "   en 4-6 frases (70-120 palabras).\n"
+        "7. BLOQUE_PANORAMA: Yago lidera con ≥65% de palabras. Maria solo 1 pregunta\n"
+        "   por cada 3 turnos de Yago (≤15 palabras cada una).\n"
+        "8. BLOQUE_FUENTES: EXACTAMENTE 3 o 4 fuentes con AÑOS DISTINTOS ENTRE SÍ.\n"
+        "   ⚠️ 2 o 5+ fuentes/años → HARD-FAIL. 3 o 4 es OBLIGATORIO.\n"
+        "   Después de escribir el bloque, CUENTA los años distintos\n"
+        "   mencionados y CONFIRMA que son 3 o 4. Si hay 5+ años en el bloque\n"
+        "   (aunque sea en aclaraciones), elimínalos o reescríbelos como\n"
+        "   expresiones sin año (\"hoy\", \"actualmente\").\n"
+        "   Cada fuente: autor o institución + año en palabras\n"
+        "   (ej.: \"Vaswani y otros, dos mil diecisiete\").\n"
+        "9. APLICACION_PRACTICA word counts EXACTOS para llegar a Maria 30-40%:\n"
+        "   - Maria turno 1 (apertura caso): 130-160 palabras (mínimo 130).\n"
+        "   - Yago detalla high-level: 2-3 turnos de 140-200 palabras cada uno.\n"
+        "   - Cierre conjunto: Maria 70-90 palabras + Yago 80-100 palabras.\n"
+        "   Total bloque ~600-800 palabras. Maria queda en 35% ± 5%.\n"
+        "10. Word count final del guion: si <2900, AÑADE bloque hasta llegar\n"
+        "    a 3000 mínimo. NO ENTREGUES <2900."
+    )
 
     return "\n".join(parts)
 

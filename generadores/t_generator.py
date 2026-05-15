@@ -59,11 +59,18 @@ Reglas duras de formato v6:
 9. BLOQUE_LIMITES (3-4 min): qué NO es / cuándo no usarlo. Yago lidera ≥55 %.
    Incluye patrones explícitos tipo "no es", "no debe confundirse con",
    "el error común es", "cuando no".
-10. BLOQUE_FUENTES (2-3 min): EXACTAMENTE 3 fuentes del tema — ni 2 ni 4.
+10. BLOQUE_FUENTES (2-3 min): EXACTAMENTE 3 FUENTES — ni 2, ni 4, ni 5.
     Cada fuente lleva su año en palabras (ej.: "Vaswani y otros, dos mil
-    diecisiete..."). EXACTAMENTE 3 AÑOS DISTINTOS aparecen en el bloque,
-    ligados a sus fuentes. No repitas años entre fuentes. No menciones un
-    4º año (ni en aclaraciones). NO leas URLs en audio.
+    diecisiete..."). EN TOTAL EXACTAMENTE 3 AÑOS DISTINTOS aparecen en el
+    bloque, ligados a sus fuentes. **NO repitas años entre fuentes** (si
+    dos fuentes son del mismo año el validador solo cuenta una y será
+    HARD-FAIL). **NO menciones un 4º o 5º año en ninguna parte del bloque**
+    (ni en aclaraciones, ni en datos de adopción dentro del bloque, ni en
+    referencias laterales). Si quieres dar contexto temporal usa "hoy",
+    "actualmente", "en los últimos años" — sin cifrar año. NO leas URLs.
+    ANTES de cerrar el bloque: cuenta los años distintos. Si son 2 → AÑADE
+    una tercera fuente. Si son 4+ → ELIMINA fuentes o convierte años
+    laterales a expresiones temporales.
 11. BLOQUE_CASOS: menciona LITERALMENTE al menos 2 empresas con su
     nombre propio reconocible (OpenAI, Anthropic, Google, Meta, Microsoft,
     IBM, Amazon, BBVA, Santander, Telefonica, Spotify, Netflix, etc.).
@@ -117,8 +124,18 @@ def _tema_numbers(episode_id: str) -> tuple[int, int]:
 
 def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
     modulo_n, tema_n = _tema_numbers(episode_id)
+    # Paridad del nº de TEMA: impar → Yago, par → Maria.
+    opener = "IAGO" if tema_n % 2 == 1 else "MARIA"
+    opener_spoken = "Yago" if opener == "IAGO" else "Maria"
+    other = "MARIA" if opener == "IAGO" else "IAGO"
     parts: list[str] = [
-        f"Genera el episodio T del tema {tema_n} del módulo {modulo_n}."
+        f"Genera el episodio T del tema {tema_n} del módulo {modulo_n}.",
+        "",
+        f"## ⚠️ OPENER OBLIGATORIO (paridad T{tema_n}): {opener} "
+        f"(nombre hablado: '{opener_spoken}')",
+        f"El HOOK lo abre {opener}. El aviso de IA en SALUDO_Y_PRESENTACION "
+        f"lo pronuncia {opener} (NO {other}). HARD-FAIL si abre el speaker contrario "
+        f"o si {other} pronuncia el aviso de IA.",
     ]
 
     tema_path = pdf_reader.find_tema(repo_root, modulo_n, tema_n)
@@ -148,6 +165,49 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
     if fuentes_path.exists():
         parts.append("\n## Fuentes directas (alimentan BLOQUE_FUENTES)")
         parts.append(fuentes_path.read_text(encoding="utf-8")[:4000])
+
+    # ⚠️ Checklist final — patrón de fallos sistemáticos: opener equivocado,
+    # word_count corto, BLOQUE_COMO desbalanceado, fuentes con años repetidos,
+    # CASOS sin nombres reconocibles.
+    parts.append(
+        "\n## ⚠️ CHECKLIST OBLIGATORIO ANTES DE DEVOLVER EL GUION\n"
+        f"1. HOOK abierto por {opener} ('{opener_spoken}'); aviso de IA pronunciado "
+        f"por {opener} (NO {other}).\n"
+        "2. Palabras totales del diálogo entre 3700 y 4200 (rango duro 2925-4485).\n"
+        "   Si te quedas corto, AÑADE: un sub-mecanismo más en BLOQUE_COMO, o un\n"
+        "   caso más en BLOQUE_CASOS, o ampliar BLOQUE_LIMITES con un anti-patrón.\n"
+        "   NO recortes nada.\n"
+        "3. CIERRE_CONCEPTOS: EXACTAMENTE 3 INTERVENCIONES. La PRIMERA contiene\n"
+        "   la apertura literal \"No te puedes ir de este capitulo sin haber\n"
+        "   entendido estos conceptos\" + \"Primero: [concepto 1]\" — EN UN ÚNICO\n"
+        "   BLOQUE del opener. Bloque 2: \"Segundo: [concepto 2]\" (otro speaker).\n"
+        "   Bloque 3: \"Tercero: [concepto 3]\" (opener).\n"
+        "4. CIERRE_FINAL: incluye palabra-por-palabra la frase canónica:\n"
+        "   \"Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
+        "   \"Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.\"\n"
+        "5. BLOQUE_PANORAMA: Yago lidera con ≥65% de palabras. Maria solo\n"
+        "   1 pregunta por cada 3 turnos de Yago (≤15 palabras cada pregunta).\n"
+        "6. BLOQUE_COMO: COMPARTIDO. Yago entre 40% y 60%. Si Maria queda <40%,\n"
+        "   AÑÁDELE otro sub-mecanismo completo de 4-6 frases (70-120 palabras)\n"
+        "   antes de cerrar el bloque. Maria DEBE explicar al menos 2 sub-mecanismos.\n"
+        "7. BLOQUE_CASOS: Maria lidera con ≥60% de palabras. Menciona EXPLÍCITAMENTE\n"
+        "   al menos 2 empresas con nombre propio reconocible. Lista canónica:\n"
+        "   Harvey AI, Morgan Stanley, JPMorgan, IBM, Microsoft, Google, OpenAI,\n"
+        "   Anthropic, Meta, Lemonade, Zara, Nordea, BBVA, Santander, Telefonica,\n"
+        "   Netflix, Spotify, Salesforce, McKinsey, Gartner.\n"
+        "8. BLOQUE_LIMITES: Yago lidera ≥55%. Incluye textualmente uno o más de:\n"
+        "   \"no es\", \"no debe confundirse con\", \"el error común es\", \"cuando no\".\n"
+        "9. BLOQUE_FUENTES: EXACTAMENTE 3 FUENTES con 3 AÑOS DISTINTOS ENTRE SÍ.\n"
+        "   ⚠️ 2, 4 o 5 fuentes/años → HARD-FAIL. 3 es OBLIGATORIO. No repitas\n"
+        "   años. Después de escribir el bloque, CUENTA los años distintos\n"
+        "   mencionados y CONFIRMA que son exactamente 3. Si hay 4 o más años\n"
+        "   en el bloque (aunque sea en aclaraciones laterales), elimínalos o\n"
+        "   reescríbelos como expresiones sin año (\"hoy\", \"actualmente\").\n"
+        "   Cada fuente: autor o institución + año en palabras\n"
+        "   (ej.: \"Vaswani y otros, dos mil diecisiete\").\n"
+        "10. Word count final: vuelve a contar. Si <3700, AÑADE bloque hasta\n"
+        "    llegar a 3800 mínimo. Mejor 3900-4200. No entregues guion <3700."
+    )
 
     return "\n".join(parts)
 
