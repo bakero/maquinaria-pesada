@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Btn, Icon } from "../components";
+import { formatCombo } from "../lib/useHotkeys";
 
 export interface Crumb {
   label: string;
@@ -11,9 +12,13 @@ export interface TopbarProps {
   onCrumb: (id: string) => void;
   onOpenAI: () => void;
   onOpenFix: (() => void) | null;
+  onOpenPalette: () => void;
+  onOpenTour: () => void;
 }
 
-export function Topbar({ crumbs, onCrumb, onOpenAI, onOpenFix }: TopbarProps) {
+export function Topbar({
+  crumbs, onCrumb, onOpenAI, onOpenFix, onOpenPalette, onOpenTour,
+}: TopbarProps) {
   return (
     <div className="topbar">
       <div className="crumbs">
@@ -26,12 +31,32 @@ export function Topbar({ crumbs, onCrumb, onOpenAI, onOpenFix }: TopbarProps) {
           </React.Fragment>
         ))}
       </div>
+
       <div className="topbar-actions">
+        <button
+          className="topbar-search"
+          onClick={onOpenPalette}
+          title="Buscar y ejecutar (⌘K)"
+        >
+          <Icon name="search" size={12} />
+          <span>Buscar o ejecutar…</span>
+          <span className="topbar-search-kbd">{formatCombo("mod+k")}</span>
+        </button>
+
+        <button
+          className="topbar-icon-btn"
+          onClick={onOpenTour}
+          title="Tour de bienvenida (?)"
+        >
+          <span className="topbar-icon-btn-q">?</span>
+        </button>
+
         <div className="row gap-4 dim mono" style={{ fontSize: 11, letterSpacing: "0.08em", marginRight: 8 }}>
           <span>163 <span className="muted">tests</span> <span style={{ color: "var(--ok)" }}>●</span></span>
           <span className="muted">·</span>
           <span>30bfb39</span>
         </div>
+
         {onOpenFix && (
           <Btn kind="danger" sm onClick={onOpenFix} icon={<Icon name="wrench" size={11} />}>
             Arreglar con Claude

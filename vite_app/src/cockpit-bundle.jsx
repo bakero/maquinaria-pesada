@@ -21,6 +21,9 @@ import {
   FIXTURE_AI_LOG as AI_LOG, GUION_PREVIEW, CHECKS_M3, applyBootstrap,
 } from "./data";
 import { Sidebar, Topbar, AIDrawer } from "./shell";
+import { CommandPalette } from "./shell/CommandPalette";
+import { OnboardingTour, hasSeenOnboarding } from "./shell/OnboardingTour";
+import { useHotkeys, formatCombo } from "./lib/useHotkeys";
 import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
 } from "./components/tweaks/TweaksPanel";
@@ -137,6 +140,8 @@ function App() {
     };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [tourOpen, setTourOpen] = React.useState(() => !hasSeenOnboarding());
 
   // expose master view setter so the segmented control can update tweak
   React.useEffect(() => {
@@ -191,6 +196,125 @@ function App() {
   const openAI  = (ctx) => setAIDrawer({ open: true, mode: "improve", context: ctx });
   const openFix = (ctx) => setAIDrawer({ open: true, mode: "fix",     context: ctx });
   const closeAI = ()    => setAIDrawer((s) => ({ ...s, open: false }));
+  const openPalette = () => setPaletteOpen(true);
+
+  // ─────────────────── Command palette · acciones ───────────────────
+  const paletteActions = React.useMemo(() => {
+    const acts = [];
+
+    // Navegación a páginas
+    NAV_GROUPS.forEach((g) => {
+      g.items.forEach((it) => {
+        if (!WIRED.has(it.id)) return;
+        acts.push({
+          id: `nav-${it.id}`,
+          label: `Ir a ${it.label}`,
+          section: `Navegar · ${g.label}`,
+          icon: it.icon,
+          keywords: [it.label, it.id],
+          perform: () => nav(it.id),
+        });
+      });
+    });
+
+    // Episodios
+    EPISODES.slice(0, 30).forEach((e) => {
+      acts.push({
+        id: `ep-${e.id}`,
+        label: `Episodio ${e.id} — ${e.title}`,
+        section: "Episodios",
+        icon: "episode",
+        hint: `${e.kind === "T" ? "tema" : "módulo"} · ${e.dur}`,
+        keywords: [e.id, e.mod, e.title, e.kind],
+        perform: () => nav("episodio", e.id),
+      });
+    });
+
+    // Módulos
+    MODULES.forEach((m) => {
+      acts.push({
+        id: `mod-${m.id}`,
+        label: `Módulo ${m.id} — ${m.name}`,
+        section: "Módulos",
+        icon: "module",
+        hint: `${m.pct}% · ${m.status}`,
+        keywords: [m.id, m.name, m.short],
+        perform: () => nav("modulo", m.id),
+      });
+    });
+
+    // Acciones globales
+    acts.push(
+      {
+        id: "act-tour",
+        label: "Ver tour de bienvenida",
+        section: "Acciones",
+        icon: "spark",
+        hint: "Recorre las 5 piezas clave de la cabina",
+        perform: () => setTourOpen(true),
+      },
+      {
+        id: "act-improve",
+        label: "Mejorar con IA",
+        section: "Acciones",
+        icon: "spark",
+        hint: "Abre el panel de Claude para mejorar lo que estés viendo",
+        shortcut: "mod+i",
+        perform: () => openAI({ target: `Página · ${page}`, purpose: "improve" }),
+      },
+      {
+        id: "act-launch",
+        label: "Lanzar un pipeline",
+        section: "Acciones",
+        icon: "play",
+        hint: "Generar guion, audio, validar, producir lote",
+        perform: () => nav("lanzador"),
+      },
+      {
+        id: "act-logs",
+        label: "Ver logs de hoy",
+        section: "Acciones",
+        icon: "log",
+        perform: () => nav("logs"),
+      },
+      {
+        id: "act-master",
+        label: "Ir al Master",
+        section: "Acciones",
+        icon: "grid",
+        shortcut: "g m",
+        perform: () => nav("master"),
+      },
+      {
+        id: "act-home",
+        label: "Volver al Inicio",
+        section: "Acciones",
+        icon: "home",
+        shortcut: "g i",
+        perform: () => nav("home"),
+      },
+    );
+
+    return acts;
+  }, [page]); // recompute when nav changes context
+
+  // ─────────────────── Hotkeys globales ───────────────────
+  useHotkeys([
+    { combo: "mod+k", description: "Command palette", handler: () => setPaletteOpen((o) => !o) },
+    { combo: "?", description: "Tour de bienvenida", handler: () => setTourOpen(true) },
+    { combo: "Escape", description: "Cerrar modales", handler: () => {
+        if (paletteOpen) setPaletteOpen(false);
+        else if (tourOpen) setTourOpen(false);
+        else if (aiDrawer.open) closeAI();
+    }},
+    { combo: "g m", description: "Ir al Master",   handler: () => nav("master") },
+    { combo: "g e", description: "Ir al Episodio", handler: () => nav("episodio") },
+    { combo: "g i", description: "Ir al Inicio",   handler: () => nav("home") },
+    { combo: "g l", description: "Ir a Logs",      handler: () => nav("logs") },
+    { combo: "g p", description: "Ir al Lanzador", handler: () => nav("lanzador") },
+    { combo: "mod+i", description: "Mejorar con IA",
+      handler: () => openAI({ target: `Página · ${page}`, purpose: "improve" }) },
+  ]);
 
   // Crumbs by page — modulo/episodio reflejan la selección activa
   const CRUMBS = {
@@ -224,10 +348,12 @@ function App() {
             error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
             id: sel.episodio || "M3_T2",
           }) : null}
+          onOpenPalette={openPalette}
+          onOpenTour={() => setTourOpen(true)}
         />
         {t.mode === "industrial" && <HazardTape/>}
 
-        {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI}/>}
+        {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI} onOpenPalette={openPalette}/>}
         {page === "master"     && <PageMaster     onNav={nav} onOpenAI={openAI} view={t.masterView} density={t.density}/>}
         {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI} modId={sel.modulo}/>}
         {page === "episodio"   && <PageEpisodio   onNav={nav} onOpenAI={openAI} onOpenFix={openFix} epId={sel.episodio}/>}
@@ -249,6 +375,17 @@ function App() {
         onClose={closeAI}
         mode={aiDrawer.mode}
         context={aiDrawer.context}
+      />
+
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        actions={paletteActions}
+      />
+
+      <OnboardingTour
+        open={tourOpen}
+        onClose={() => setTourOpen(false)}
       />
 
       <TweaksPanel title="Tweaks · Maquinaria Pesada">
