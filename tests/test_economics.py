@@ -153,63 +153,6 @@ def test_subscription_inactive_no_cuenta(tmp_path, monkeypatch):
     assert economics.total_subscription_monthly() == 0.0
 
 
-def test_seed_snapshot_real(tmp_path, monkeypatch):
-    eco_log = tmp_path / "economics.json"
-    usage_log = tmp_path / "ai_usage.jsonl"
-    monkeypatch.setattr(economics, "economics_path", lambda: eco_log)
-    monkeypatch.setattr(usage_tracker.paths, "ai_usage_log", lambda: usage_log)
-
-    state = economics.seed_snapshot(replace=True)
-    # 2 anthropic + 2 elevenlabs + 4 kling = 8 topups
-    assert len(state.topups) == 8
-    # 3 gastos manuales
-    assert len(state.spends) == 3
-    # 2 suscripciones
-    assert len(state.subscriptions) == 2
-
-    summary = economics.summary()
-    # Anthropic: 24.20 + 30.25 = 54.45 topups
-    assert round(summary["anthropic"]["topped_up"], 2) == 54.45
-    # Anthropic: 29.62 consumido manual → saldo 24.83
-    assert round(summary["anthropic"]["balance"], 2) == 24.83
-    # Kling: 11.86 + 16.94*3 = 62.68 topups y 62.68 gasto → saldo 0
-    assert round(summary["kling"]["topped_up"], 2) == 62.68
-    assert round(summary["kling"]["balance"], 2) == 0.0
-    # ElevenLabs: 48.40 topups y 48.40 gasto → saldo 0
-    assert round(summary["elevenlabs"]["topped_up"], 2) == 48.40
-    assert round(summary["elevenlabs"]["balance"], 2) == 0.0
-    # Suscripciones mensuales: Claude Max 100 + Starter 5 = 105
-    assert economics.total_subscription_monthly() == 105.0
-
-
-def test_seed_snapshot_acumula_por_defecto(tmp_path, monkeypatch):
-    log = tmp_path / "economics.json"
-    monkeypatch.setattr(economics, "economics_path", lambda: log)
-    monkeypatch.setattr(
-        usage_tracker.paths, "ai_usage_log", lambda: tmp_path / "usage.jsonl"
-    )
-
-    economics.add_topup("anthropic", 100.0, "preexistente")
-    economics.seed_snapshot(replace=False)
-    state = economics.load()
-    # 1 preexistente + 8 del snapshot
-    assert len(state.topups) == 9
-
-
-def test_seed_snapshot_replace_borra_estado(tmp_path, monkeypatch):
-    log = tmp_path / "economics.json"
-    monkeypatch.setattr(economics, "economics_path", lambda: log)
-    monkeypatch.setattr(
-        usage_tracker.paths, "ai_usage_log", lambda: tmp_path / "usage.jsonl"
-    )
-
-    economics.add_topup("anthropic", 100.0, "preexistente")
-    economics.seed_snapshot(replace=True)
-    state = economics.load()
-    # Solo los 8 del snapshot, el preexistente fue reemplazado
-    assert len(state.topups) == 8
-
-
 def test_state_retrocompat_solo_topups(tmp_path, monkeypatch):
     """Un economics.json antiguo solo con topups debe cargarse sin errores."""
     log = tmp_path / "economics.json"

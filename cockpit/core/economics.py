@@ -10,7 +10,7 @@ Tres tipos de movimientos:
 Saldo por proveedor:
     balance = sum(topups) − sum(spends) − sum(eventos ai_usage.jsonl)
 
-Persistencia: `logs/economics.json`. Edición desde la UI o seed manual.
+Persistencia: `logs/economics.json`. Edición desde la UI.
 """
 from __future__ import annotations
 
@@ -226,73 +226,3 @@ def total_subscription_monthly() -> float:
     return round(sum(v["subscription_monthly"] for v in s.values()), 4)
 
 
-# ---- Snapshot real recogido el 2026-05-12 -----------------------------
-
-
-SNAPSHOT_2026_05_12 = {
-    "topups": [
-        # Anthropic — panel billing
-        ("anthropic", 24.20, "Concesión de crédito (panel Anthropic)", "2026-05-07"),
-        ("anthropic", 30.25, "Concesión de crédito (panel Anthropic)", "2026-05-11"),
-        # ElevenLabs — panel billing (top-ups pay-as-you-go)
-        ("elevenlabs", 24.20, "Pay-as-you-go Credits Top-Up (manual)", "2026-05-06"),
-        ("elevenlabs", 24.20, "Pay-as-you-go Credits Top-Up (manual)", "2026-05-12"),
-        # Kling — 4 Trial Packages
-        ("kling", 11.86, "Trial Package (order 881669745903280136)", "2026-05-08"),
-        ("kling", 16.94, "Trial Package (order 881840112127705097)", "2026-05-08"),
-        ("kling", 16.94, "Trial Package (order 881990502534086750)", "2026-05-09"),
-        ("kling", 16.94, "Trial Package (order 881990681731538970)", "2026-05-09"),
-    ],
-    "spends": [
-        # Saldo restante en Anthropic = 24.83 USD → consumido = 54.45 - 24.83 = 29.62
-        ("anthropic", 29.62, "Consumo API + Claude Code + Workbench hasta 2026-05-12"),
-        # ElevenLabs: 196 305 chars en producción + iteraciones → top-ups agotados aprox
-        ("elevenlabs", 48.40, "Generación de 12 episodios (eleven_v3, 196k chars + iteraciones)"),
-        # Kling: 14 vídeos finales descargados; gasto efectivo = total top-ups
-        ("kling", 62.68, "14 vídeos generados + iteraciones (4 Trial Packages consumidos)"),
-    ],
-    "subscriptions": [
-        ("Claude Max", "anthropic", 100.0, "2026-04", "Tarifa plana — confirmar plan exacto (100/200 USD)"),
-        ("ElevenLabs Starter", "elevenlabs", 5.0, "2026-05-01", "30k créditos/mes incluidos"),
-    ],
-}
-
-
-def seed_snapshot(snapshot: dict | None = None, replace: bool = False) -> EconomicsState:
-    """Carga un snapshot de movimientos en `logs/economics.json`.
-
-    Por defecto carga el snapshot real recogido el 2026-05-12 (Anthropic +
-    ElevenLabs + Kling, datos verificados contra los paneles de cada
-    proveedor).
-
-    Args:
-        snapshot: dict con claves `topups`, `spends`, `subscriptions` cada
-                  una con tuplas. Si None, usa `SNAPSHOT_2026_05_12`.
-        replace: si True, **reemplaza** el estado actual; si False (default),
-                 se acumula encima.
-    """
-    snap = snapshot if snapshot is not None else SNAPSHOT_2026_05_12
-    state = EconomicsState() if replace else load()
-
-    for entry in snap.get("topups", []):
-        provider, amount, note, ts = entry
-        state.topups.append(
-            Topup(timestamp=ts, provider=provider.lower(),
-                  amount_usd=round(float(amount), 4), note=note)
-        )
-    for entry in snap.get("spends", []):
-        provider, amount, note = entry[:3]
-        ts = entry[3] if len(entry) > 3 else "2026-05-12"
-        state.spends.append(
-            Spend(timestamp=ts, provider=provider.lower(),
-                  amount_usd=round(float(amount), 4), note=note)
-        )
-    for entry in snap.get("subscriptions", []):
-        name, provider, monthly, started, note = entry
-        state.subscriptions.append(
-            Subscription(name=name, provider=provider.lower(),
-                         monthly_usd=round(float(monthly), 4),
-                         started_on=started, active=True, note=note)
-        )
-    save(state)
-    return state

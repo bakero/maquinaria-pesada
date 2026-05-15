@@ -35,34 +35,12 @@ c4.metric("Suscripciones / mes", f"${economics.total_subscription_monthly():.2f}
 
 st.divider()
 
-# ----- Snapshot real -----
 state = economics.load()
 if not state.topups and not state.spends and not state.subscriptions:
     st.info(
-        "📥 No hay datos. Puedes cargar el **snapshot real 2026-05-12** "
-        "(Anthropic + ElevenLabs + Kling) verificado contra los paneles "
-        "de cada proveedor."
+        "Sin movimientos registrados. Usa las pestañas de abajo para añadir "
+        "recargas, gastos manuales o suscripciones."
     )
-    if st.button("📥 Cargar snapshot 2026-05-12", type="primary"):
-        economics.seed_snapshot()
-        st.rerun()
-else:
-    with st.expander("📥 Cargar snapshot real (datos verificados)", expanded=False):
-        st.caption(
-            "Carga los datos reales de billing recogidos el 2026-05-12: "
-            "Anthropic ($54.45 topups, $29.62 consumidos), ElevenLabs "
-            "($48.40 topups + Starter, $48.40 gastados), Kling ($62.68 en 4 "
-            "Trial Packages, todos consumidos), Claude Max + ElevenLabs Starter."
-        )
-        col_a, col_b = st.columns(2)
-        if col_a.button("➕ Añadir snapshot al estado actual"):
-            economics.seed_snapshot(replace=False)
-            st.rerun()
-        if col_b.button("♻️ Reemplazar con snapshot (borra lo anterior)"):
-            economics.seed_snapshot(replace=True)
-            st.rerun()
-
-st.divider()
 
 # ----- Saldo por proveedor -----
 summary = economics.summary()
