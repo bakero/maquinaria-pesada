@@ -88,6 +88,8 @@ export const WIRED = new Set<string>([
   "pizarra", "mapa", "conectores", "lanzador",
   "fuentes", "player", "logs", "optimizar",
   "metricas", "consumo", "ajustes",
+  // v2 — pages combinadas para top-nav
+  "pipeline", "datos", "recursos",
 ]);
 
 /** Archivos del repo que implementan una página de nav. */

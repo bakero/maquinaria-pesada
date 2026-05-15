@@ -23,6 +23,7 @@ import {
 import { Sidebar, Topbar, AIDrawer } from "./shell";
 import { CommandPalette } from "./shell/CommandPalette";
 import { OnboardingTour, hasSeenOnboarding } from "./shell/OnboardingTour";
+import { TopNav, mapSectionFor } from "./shell/TopNav";
 import { useHotkeys, formatCombo } from "./lib/useHotkeys";
 import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
@@ -31,6 +32,7 @@ import {
   PageInicio, PageMaster, PageModulo, PagePizarra, PageMapa, PageConectores,
   PageLanzador, PageFuentes, PagePlayer, PageLogs, PageOptimizar, PageConsumo,
   PageAjustes, PageMetricas, PageEpisodio,
+  PageDatos, PagePipeline, PageRecursos,
 } from "./pages";
 
 
@@ -202,14 +204,32 @@ function App() {
   const paletteActions = React.useMemo(() => {
     const acts = [];
 
-    // Navegación a páginas
+    // Navegación · top-level (5 secciones)
+    [
+      { id: "home",     label: "Inicio",       icon: "home" },
+      { id: "master",   label: "Producción",   icon: "grid" },
+      { id: "pipeline", label: "Pipeline",     icon: "play" },
+      { id: "datos",    label: "Datos",        icon: "coin" },
+      { id: "recursos", label: "Recursos",     icon: "folder" },
+    ].forEach((it) => {
+      acts.push({
+        id: `nav-${it.id}`,
+        label: `Ir a ${it.label}`,
+        section: "Navegar",
+        icon: it.icon,
+        keywords: [it.label, it.id],
+        perform: () => nav(it.id),
+      });
+    });
+    // Navegación · páginas legacy individuales (mantenidas para deep links)
     NAV_GROUPS.forEach((g) => {
       g.items.forEach((it) => {
         if (!WIRED.has(it.id)) return;
+        if (["home", "master"].includes(it.id)) return; // already added above
         acts.push({
           id: `nav-${it.id}`,
-          label: `Ir a ${it.label}`,
-          section: `Navegar · ${g.label}`,
+          label: `Abrir ${it.label}`,
+          section: `Páginas · ${g.label}`,
           icon: it.icon,
           keywords: [it.label, it.id],
           perform: () => nav(it.id),
@@ -336,23 +356,16 @@ function App() {
   };
 
   return (
-    <div className="app" data-density={t.density}>
-      <Sidebar current={page} onNav={nav}/>
+    <div className="app v2-shell" data-density={t.density}>
+      <TopNav
+        page={page}
+        onNav={nav}
+        onOpenPalette={openPalette}
+        onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
+        onOpenTour={() => setTourOpen(true)}
+        liveLabel="M3 · audio"
+      />
       <main className="main">
-        <Topbar
-          crumbs={CRUMBS[page] || CRUMBS.home}
-          onCrumb={nav}
-          onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
-          onOpenFix={page === "episodio" ? () => openFix({
-            target: sel.episodio || "M3_T2",
-            error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-            id: sel.episodio || "M3_T2",
-          }) : null}
-          onOpenPalette={openPalette}
-          onOpenTour={() => setTourOpen(true)}
-        />
-        {t.mode === "industrial" && <HazardTape/>}
-
         {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI} onOpenPalette={openPalette}/>}
         {page === "master"     && <PageMaster     onNav={nav} onOpenAI={openAI} view={t.masterView} density={t.density}/>}
         {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI} modId={sel.modulo}/>}
@@ -368,6 +381,10 @@ function App() {
         {page === "metricas"   && <PageMetricas   onNav={nav} onOpenAI={openAI}/>}
         {page === "consumo"    && <PageConsumo    onNav={nav} onOpenAI={openAI}/>}
         {page === "ajustes"    && <PageAjustes    onNav={nav} onOpenAI={openAI}/>}
+        {/* v2 combined pages */}
+        {page === "pipeline"   && <PagePipeline   onNav={nav} onOpenAI={openAI}/>}
+        {page === "datos"      && <PageDatos      onNav={nav} onOpenAI={openAI}/>}
+        {page === "recursos"   && <PageRecursos   onNav={nav} onOpenAI={openAI}/>}
       </main>
 
       <AIDrawer

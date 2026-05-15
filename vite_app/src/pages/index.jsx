@@ -14,3 +14,8 @@ export { PageConsumo } from "./PageConsumo";
 export { PageAjustes } from "./PageAjustes";
 export { PageMetricas } from "./PageMetricas";
 export { PageEpisodio } from "./episode/PageEpisodio";
+
+// v2 — pages combinadas (Datos · Pipeline · Recursos).
+export { PageDatos }    from "./PageDatos";
+export { PagePipeline } from "./PagePipeline";
+export { PageRecursos } from "./PageRecursos";
