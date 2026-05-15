@@ -37,6 +37,7 @@ page_header(
         "Vista global del curso. Un módulo está listo cuando todos sus "
         "episodios — M principal + temas Tₙ — tienen guion, PDF, escaleta y audio."
     ),
+    help_page_id="master",
 )
 
 all_eps = episodes.scan_all()

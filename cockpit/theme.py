@@ -553,6 +553,115 @@ a:hover { border-bottom-color: var(--mp-primary); }
 .mp-empty .mp-empty-title { font-weight: 600; color: var(--mp-text); margin-bottom: 4px; }
 .mp-empty .mp-empty-hint { color: var(--mp-text-mute); font-size: 0.88rem; }
 
+/* ============================ BREADCRUMBS ============================ */
+.mp-crumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--mp-text-mute);
+    margin: 0 0 12px 0;
+    flex-wrap: wrap;
+}
+.mp-crumbs-sep { color: var(--mp-border-str); }
+.mp-crumbs-link {
+    color: var(--mp-text-dim);
+}
+.mp-crumbs-current {
+    color: var(--mp-text);
+    font-weight: 500;
+}
+
+/* ============================ CALLOUTS ============================ */
+.mp-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--mp-radius);
+    border: 1px solid var(--mp-border);
+    background: var(--mp-panel);
+    color: var(--mp-text-dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 8px 0;
+}
+.mp-callout .mp-callout-icon {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: var(--mp-text-mute);
+}
+.mp-callout-info    { border-left: 3px solid var(--mp-info);  }
+.mp-callout-info    .mp-callout-icon { color: var(--mp-info); }
+.mp-callout-tip     { border-left: 3px solid var(--mp-primary); }
+.mp-callout-tip     .mp-callout-icon { color: var(--mp-primary); }
+.mp-callout-warn    { border-left: 3px solid var(--mp-warn); }
+.mp-callout-warn    .mp-callout-icon { color: var(--mp-warn); }
+.mp-callout-success { border-left: 3px solid var(--mp-ok);   }
+.mp-callout-success .mp-callout-icon { color: var(--mp-ok); }
+
+/* ============================ ACTION BAR ============================ */
+.mp-actionbar-title {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.74rem;
+    color: var(--mp-text-mute);
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+/* ============================ KEYBOARD HINT ============================ */
+.mp-kbd-group { display: inline-flex; gap: 3px; align-items: center; }
+.mp-kbd {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 1px 6px;
+    border: 1px solid var(--mp-border);
+    border-bottom-width: 2px;
+    border-radius: var(--mp-radius-sm);
+    background: var(--mp-panel-2);
+    color: var(--mp-text-dim);
+}
+
+/* ============================ HELP DIALOG ============================ */
+.mp-help-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    color: var(--mp-primary);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.mp-help-title {
+    color: var(--mp-text);
+    font-size: 1.45rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    margin: 0 0 12px 0 !important;
+}
+.mp-help-summary {
+    color: var(--mp-text-dim);
+    line-height: 1.6;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+    padding: 12px 14px;
+    background: var(--mp-panel-2);
+    border-left: 3px solid var(--mp-primary);
+    border-radius: var(--mp-radius-sm);
+}
+.mp-help-section-title {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.72rem;
+    color: var(--mp-text-mute);
+    font-weight: 600;
+    margin: 18px 0 6px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--mp-border);
+}
+
 /* ============================ TOAST / TOOLTIP / MISC ============================ */
 [data-testid="stToast"] {
     background: var(--mp-panel-2) !important;

@@ -20,16 +20,21 @@ import streamlit as st  # noqa: E402
 from cockpit.core import pizarra  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 
 st.set_page_config(page_title="Pizarra", page_icon="🎨", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("PIZARRA · GENERADOR VISUAL")
-st.caption(
-    "Esferas = componentes (Claude + scripts). "
-    "Cuadrados = contenidos. Selecciona un componente para revisar su código."
+page_header(
+    "Pizarra · generador visual",
+    eyebrow="Sistema",
+    subtitle=(
+        "Esferas = componentes (Claude + scripts). "
+        "Cuadrados = contenidos. Selecciona un componente para revisar su código."
+    ),
+    help_page_id="pizarra",
 )
 
 piezas, flechas = pizarra.pipeline_default()

@@ -13,6 +13,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import economics  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Economics", page_icon="💳", layout="wide")
@@ -20,10 +21,14 @@ inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("ECONOMICS · RECARGAS, GASTOS Y SUSCRIPCIONES")
-st.caption(
-    "Saldo = topups − (gastos manuales + ai_usage.jsonl). Las suscripciones "
-    "(Claude Max, ElevenLabs Starter…) se contabilizan aparte como tarifa plana."
+page_header(
+    "Economics · recargas, gastos y suscripciones",
+    eyebrow="Coste IA",
+    subtitle=(
+        "Saldo = topups − (gastos manuales + ai_usage.jsonl). Las suscripciones "
+        "(Claude Max, ElevenLabs Starter…) se contabilizan aparte como tarifa plana."
+    ),
+    help_page_id="economics",
 )
 
 # ----- Métricas globales -----

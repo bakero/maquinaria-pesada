@@ -13,6 +13,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import optimization_advisor, paths, usage_tracker  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Optimizar", page_icon="🧠", layout="wide")
@@ -20,10 +21,14 @@ inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("OPTIMIZAR CONSUMO DE TOKENS")
-st.caption(
-    "Analiza el histórico de `ai_usage.jsonl` y propone reducciones de gasto "
-    "basadas en heurísticas (sin IA)."
+page_header(
+    "Optimizar consumo de tokens",
+    eyebrow="Coste IA",
+    subtitle=(
+        "Analiza el histórico de `ai_usage.jsonl` y propone reducciones de gasto "
+        "basadas en heurísticas (sin IA)."
+    ),
+    help_page_id="optimizar",
 )
 
 events = list(usage_tracker.iter_events())

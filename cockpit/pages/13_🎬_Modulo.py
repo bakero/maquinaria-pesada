@@ -13,12 +13,19 @@ if str(_ROOT) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
+from cockpit import connectors  # noqa: E402
+from cockpit.connectors.base import PipelineConnector  # noqa: E402
 from cockpit.core import episodes, paths  # noqa: E402
 from cockpit.core.verifications import episode_has_errors  # noqa: E402
+from cockpit.pipeline_runner import render_pipeline  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
 from cockpit.ui_components import (  # noqa: E402
+    Action,
+    ActionGroup,
     Stat,
+    action_bar,
+    info_callout,
     page_header,
     section,
     stat_grid,
@@ -41,6 +48,8 @@ with head[0]:
         "Detalle del módulo",
         eyebrow="Módulo",
         subtitle="Inspecciona qué episodios están listos, qué falta y dónde hay errores.",
+        help_page_id="modulo",
+        breadcrumb=[("Master", "pages/0_🎓_Master.py"), ("Módulo", None)],
     )
 with head[1]:
     st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
@@ -63,10 +72,65 @@ _STATUS_LABEL = {"listo": "Listo", "en_curso": "En curso", "sin_empezar": "Sin e
 
 stat_grid([
     Stat("Módulo", mod),
-    Stat("Estado", _STATUS_LABEL[status], color="ok" if status == "listo" else "warn" if status == "en_curso" else "default"),
+    Stat(
+        "Estado",
+        _STATUS_LABEL[status],
+        color="ok" if status == "listo" else "warn" if status == "en_curso" else "default",
+    ),
     Stat("Progreso", f"{ratio*100:.0f}%"),
     Stat("Episodios", str(len(eps))),
 ])
+
+
+# --- Acciones a nivel de módulo ---
+
+
+def _open_batch() -> None:
+    st.session_state["_open_batch_modal"] = True
+
+
+module_actions: list[Action] = []
+n_audio_missing = sum(1 for e in eps if not e.has("audio") and e.has("guion"))
+if n_audio_missing > 0:
+    module_actions.append(Action(
+        key=f"act_batch_{mod}",
+        label=f"Producir {n_audio_missing} audio(s) pendientes",
+        icon="⚙️",
+        primary=True,
+        help="Lanza produce_pending.py: produce todos los episodios con guion pero sin audio.",
+        callback=_open_batch,
+    ))
+
+if module_actions:
+    action_bar(ActionGroup(
+        title="Acciones del módulo",
+        hint="Operaciones que afectan a varios episodios a la vez.",
+        actions=module_actions,
+    ))
+
+
+@st.dialog("⚙️ Producir pendientes", width="large")
+def _batch_modal() -> None:
+    st.markdown(f"**Módulo:** `{mod}`")
+    info_callout(
+        "Este pipeline escanea TODOS los guiones del repo sin audio (no solo los "
+        "del módulo seleccionado) y los produce uno a uno. Útil para arrancar "
+        "lote o recuperar tras fallo masivo.",
+        kind="warn",
+    )
+    try:
+        pipe = connectors.get("produce_pending")
+    except KeyError:
+        st.error("Connector produce_pending no registrado.")
+        return
+    if not isinstance(pipe, PipelineConnector):
+        return
+    render_pipeline(pipe, key=f"batchdlg_{mod}", show_codex=True)
+
+
+if st.session_state.pop("_open_batch_modal", False):
+    _batch_modal()
+
 
 section("Episodios", subtitle="Cada fila muestra qué contenidos están producidos.")
 
@@ -91,10 +155,8 @@ else:
 
             content_pills = []
             for kind, icon in (("pdf","📕"),("guion","📝"),("escaleta","🗂️"),("audio","🎧")):
-                if e.has(kind):
-                    content_pills.append(status_pill(f"{icon} {kind}", kind="ok"))
-                else:
-                    content_pills.append(status_pill(f"{icon} {kind}", kind="neutral"))
+                pill_kind = "ok" if e.has(kind) else "neutral"
+                content_pills.append(status_pill(f"{icon} {kind}", kind=pill_kind))
             row[2].markdown(
                 "<div style='display:flex; flex-wrap:wrap; gap:4px;'>"
                 + "".join(content_pills)
@@ -104,7 +166,10 @@ else:
 
             has_errs = episode_has_errors(e)
             row[3].markdown(
-                status_pill("Errores" if has_errs else "OK", kind="fail" if has_errs else "ok"),
+                status_pill(
+                    "Errores" if has_errs else "OK",
+                    kind="fail" if has_errs else "ok",
+                ),
                 unsafe_allow_html=True,
             )
 

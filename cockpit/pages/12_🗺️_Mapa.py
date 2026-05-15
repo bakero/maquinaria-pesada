@@ -24,6 +24,7 @@ from cockpit import ui_map  # noqa: E402
 from cockpit.core import ai_client, components_map, sandbox  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 
 SLOW_WARNING_S = 120  # 2 minutos
 
@@ -49,14 +50,18 @@ def _extract_json_map(text: str) -> dict | None:
     return data
 
 
-st.title("MAPA DE COMPONENTES")
 flow_active = ui_map.has_flow_lib()
-st.caption(
-    f"Persistido en `{components_map.map_path()}`. Tipos de nodo: "
-    "🟦 generator (motor IA) · ⬛ system (pipeline/módulo) · 🟨 generated (output). "
-    + ("🎨 Modo **drag&drop** activo (streamlit-flow)."
-       if flow_active else
-       "📐 Render: graphviz (solo lectura). `pip install streamlit-flow-component` activa drag&drop.")
+page_header(
+    "Mapa de componentes",
+    eyebrow="Sistema",
+    subtitle=(
+        f"Persistido en `{components_map.map_path()}`. Tipos de nodo: "
+        "🟦 generator · ⬛ system · 🟨 generated. "
+        + ("🎨 Modo drag&drop activo (streamlit-flow)."
+           if flow_active else
+           "📐 Render: graphviz (solo lectura). `pip install streamlit-flow-component` activa drag&drop.")
+    ),
+    help_page_id="mapa",
 )
 
 if "_map" not in st.session_state:

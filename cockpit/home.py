@@ -4,10 +4,16 @@ from __future__ import annotations
 import streamlit as st
 
 from cockpit import connectors
-from cockpit.core import paths
+from cockpit.core import episodes, paths
 from cockpit.theme import inject_theme, render_logo
 from cockpit.ui import render_status_sidebar
-from cockpit.ui_components import Stat, page_header, section, stat_grid
+from cockpit.ui_components import (
+    Stat,
+    info_callout,
+    page_header,
+    section,
+    stat_grid,
+)
 
 inject_theme()
 render_logo()
@@ -21,22 +27,54 @@ page_header(
         "Lanza pipelines, audita contenido, controla gasto y conversa "
         "con Claude para mejorar cada episodio."
     ),
+    help_page_id="home",
 )
 
+# ---- Métricas globales ----
+all_eps = episodes.scan_all()
+n_complete = sum(1 for e in all_eps if e.complete)
+n_total_eps = len(all_eps)
 n_pdfs = len(list(paths.pdfs_dir().glob("*.pdf"))) if paths.pdfs_dir().exists() else 0
 
-stat_grid(
-    [
-        Stat("Conectores", str(len(connectors.REGISTRY)), hint="Pipelines + servicios"),
-        Stat("PDFs detectados", str(n_pdfs), hint=str(paths.pdfs_dir())),
-        Stat("Repo raíz", paths.repo_root().name, hint=str(paths.repo_root())),
-    ]
-)
+# Conteo por estado de módulo
+n_mod_listo = n_mod_curso = n_mod_vacio = 0
+for m in paths.MODULES:
+    eps_m = [e for e in all_eps if e.module == m]
+    s, _ = episodes.module_status(eps_m)
+    if s == "listo":
+        n_mod_listo += 1
+    elif s == "en_curso":
+        n_mod_curso += 1
+    else:
+        n_mod_vacio += 1
 
-section(
-    "Por dónde empezar",
-    subtitle="Cada sección de la barra lateral agrupa páginas relacionadas.",
-)
+stat_grid([
+    Stat("Módulos listos", f"{n_mod_listo}/{len(paths.MODULES)}", color="ok"),
+    Stat("En curso", str(n_mod_curso), color="warn"),
+    Stat("Episodios completos", f"{n_complete}/{n_total_eps}"),
+    Stat("PDFs fuente", str(n_pdfs), hint=str(paths.pdfs_dir())),
+    Stat("Conectores", str(len(connectors.REGISTRY)), hint="Pipelines + servicios"),
+])
+
+# ---- Quick actions ----
+section("Acciones rápidas", subtitle="Atajos a los flujos más comunes.")
+
+qa = st.columns(4)
+with qa[0]:
+    if st.button("📊  Ver Master", use_container_width=True):
+        st.switch_page("pages/0_🎓_Master.py")
+with qa[1]:
+    if st.button("📝  Lanzar pipeline", use_container_width=True):
+        st.switch_page("pages/3_📝_Generar_Prompt.py")
+with qa[2]:
+    if st.button("📜  Ver logs", use_container_width=True):
+        st.switch_page("pages/5_📜_Logs.py")
+with qa[3]:
+    if st.button("💸  Ver coste IA", use_container_width=True):
+        st.switch_page("pages/11_💳_Economics.py")
+
+# ---- Map de secciones ----
+section("Por dónde empezar", subtitle="La barra lateral agrupa las páginas en seis bloques.")
 
 cols = st.columns(3)
 
@@ -58,11 +96,10 @@ with cols[1]:
     with st.container(border=True):
         st.markdown("#### 🏭 Producción")
         st.caption(
-            "Operación día a día: lanzar pipelines, "
-            "consultar fuentes PDF y revisar logs."
+            "Operación día a día: lanzar pipelines, consultar fuentes y revisar logs."
         )
         st.markdown(
-            "- **Generar prompt** · plantillas por pipeline  \n"
+            "- **Lanzar pipeline** · 9 pipelines registrados  \n"
             "- **Fuentes** · auxiliares, resúmenes, temas  \n"
             "- **Logs** · trazas de generación"
         )
@@ -70,10 +107,7 @@ with cols[1]:
 with cols[2]:
     with st.container(border=True):
         st.markdown("#### 💸 Coste IA")
-        st.caption(
-            "Token tracking, gasto histórico y consejos "
-            "para reducir factura sin sacrificar calidad."
-        )
+        st.caption("Token tracking, gasto histórico y optimización.")
         st.markdown(
             "- **Tokens** · uso por modelo  \n"
             "- **Economics** · gasto por episodio  \n"
@@ -110,13 +144,12 @@ with cols2[2]:
 
 st.divider()
 
-st.markdown(
-    """
-**🔒 Sandbox IA** — las sesiones de Claude lanzadas desde la app solo pueden
-escribir en contenido generado y mapa de componentes. Nunca tocan el código
-del cockpit ni los pipelines top-level. Cambia el repo objetivo con la
-variable de entorno `REPO_ROOT`.
-"""
+info_callout(
+    "**Sandbox IA** — las sesiones de Claude lanzadas desde la app solo pueden "
+    "escribir en contenido generado y mapa de componentes. Nunca tocan el código "
+    "del cockpit ni los pipelines top-level. Cambia el repo objetivo con la "
+    "variable de entorno `REPO_ROOT`.",
+    kind="info",
 )
 
 if not paths.repo_root().exists():

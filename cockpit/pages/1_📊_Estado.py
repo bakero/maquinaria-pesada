@@ -9,17 +9,35 @@ if str(_ROOT) not in sys.path:
 
 import streamlit as st  # noqa: E402
 
+from cockpit import connectors  # noqa: E402
+from cockpit.connectors.base import PipelineConnector  # noqa: E402
 from cockpit.core import log_parser, state  # noqa: E402
+from cockpit.pipeline_runner import render_pipeline  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import (  # noqa: E402
+    Action,
+    ActionGroup,
+    Stat,
+    action_bar,
+    page_header,
+    stat_grid,
+)
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Estado", page_icon="📊", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
-st.title("ESTADO DE PRODUCCIÓN")
-st.caption("Pulsa cualquier ✅/❌ para ver el resumen de validaciones de la última ejecución.")
+page_header(
+    "Estado de producción",
+    eyebrow="Producción",
+    subtitle=(
+        "Tabla cruzada módulo × tipo-de-contenido. Pulsa cualquier ✅/❌ "
+        "para ver el resumen de validaciones de la última ejecución."
+    ),
+    help_page_id="estado",
+)
 
 states = state.scan()
 
@@ -27,10 +45,49 @@ states = state.scan()
 total = len(states)
 completos = sum(1 for s in states if s.complete)
 con_audio = sum(1 for s in states if s.audio_ok)
-c1, c2, c3 = st.columns(3)
-c1.metric("Módulos totales", total)
-c2.metric("Con audio", con_audio)
-c3.metric("Completos", completos)
+stat_grid([
+    Stat("Módulos totales", str(total)),
+    Stat("Con audio", str(con_audio), color="ok" if con_audio == total else "default"),
+    Stat("Completos", str(completos), color="ok" if completos == total else "default"),
+])
+
+
+# ----- Acciones de página -----
+
+
+def _open_estado() -> None:
+    st.session_state["_estado_open_pipe"] = True
+
+
+action_bar(ActionGroup(
+    title="Acciones rápidas",
+    actions=[
+        Action(
+            key="estado_run_pipe",
+            label="Ejecutar estado_proyecto.py",
+            icon="▶",
+            primary=True,
+            help="Lanza el reporte CLI completo (PDFs → Guiones → Audio → Video).",
+            callback=_open_estado,
+        ),
+    ],
+))
+
+
+@st.dialog("Ejecutar estado_proyecto.py", width="large")
+def _estado_dialog() -> None:
+    try:
+        pipe = connectors.get("estado_proyecto")
+    except KeyError:
+        st.error("Connector estado_proyecto no registrado.")
+        return
+    if not isinstance(pipe, PipelineConnector):
+        return
+    render_pipeline(pipe, key="estado_dialog", show_codex=True)
+
+
+if st.session_state.pop("_estado_open_pipe", False):
+    _estado_dialog()
 
 st.divider()
 
