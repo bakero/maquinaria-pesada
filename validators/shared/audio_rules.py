@@ -70,30 +70,49 @@ def check_digits_in_speech(interventions: list[str]) -> ValidationResult:
               "Sin dígitos sueltos en el diálogo")
 
 
+def _looks_like_reaction(body: str) -> bool:
+    """Heurística: la intervención parece una reacción-pregunta.
+
+    Solo se consideran reacciones las intervenciones de ≤2 frases que son
+    preguntas (empiezan con `¿` o terminan en `?`) o son una interjección
+    explícita (empiezan con muletilla típica). Una afirmación normal de una
+    sola frase larga es un statement, no una reacción.
+    """
+    stripped = body.strip()
+    if not stripped:
+        return False
+    sentences = _split_sentences(stripped)
+    if len(sentences) > 2:
+        return False
+    if stripped.startswith("¿") or "?" in stripped:
+        return True
+    interjection_starts = (
+        "pues ", "pero ", "vale", "vaya", "uf", "ah,", "oh,", "eh,",
+    )
+    return stripped.lower().startswith(interjection_starts)
+
+
 def check_reaction_length(interventions: list[str],
                           reaction_word_limit: int = 15) -> ValidationResult:
-    """Hard-fail si una intervención de reacción supera el límite de palabras.
+    """Hard-fail si una intervención que parece reacción/pregunta supera el
+    límite de palabras.
 
-    Una reacción es una intervención de ≤2 frases. El límite duro evita
-    'reacciones' que en realidad son intervenciones de desarrollo mal marcadas.
+    "Parece reacción" implica: ≤2 frases Y (es pregunta O empieza con
+    muletilla típica). Una afirmación normal de 1 frase larga no se cuenta
+    como reacción.
     """
     offenders: list[dict] = []
     for idx, raw in enumerate(interventions):
         body = _strip_tag(raw)
-        sentences = _split_sentences(body)
-        if len(sentences) <= 2:
-            wc = _word_count(body)
-            if wc > reaction_word_limit:
-                # ≤2 frases pero > límite: o es desarrollo (≥4 frases esperadas)
-                # o es una reacción demasiado larga. Solo marcamos las muy
-                # cortas en nº de frases pero largas en palabras.
-                if wc <= 40:
-                    offenders.append({"index": idx, "words": wc,
-                                      "text": body[:80]})
+        if not _looks_like_reaction(body):
+            continue
+        wc = _word_count(body)
+        if wc > reaction_word_limit:
+            offenders.append({"index": idx, "words": wc, "text": body[:80]})
     if offenders:
         return fail(
             "audio_rule_reaction_length", "HARD",
-            f"{len(offenders)} reacción(es) de ≤2 frases superan "
+            f"{len(offenders)} reacción/pregunta superan "
             f"{reaction_word_limit} palabras",
             offenders=offenders,
         )
