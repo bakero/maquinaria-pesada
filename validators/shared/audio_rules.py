@@ -26,9 +26,19 @@ _PUBLICATION_MARKERS = (
 )
 
 
+_SSML_BREAK_RE = re.compile(r"<break\s+time=\"[^\"]*\"\s*/?>", re.IGNORECASE)
+
+
 def _strip_tag(text: str) -> str:
-    """Quita la etiqueta [tag] inicial de una intervención."""
-    return re.sub(r"^\s*\[[^\]]+\]\s*", "", text).strip()
+    """Quita la etiqueta [tag] inicial y elimina pausas SSML <break/>.
+
+    Las pausas SSML llevan dígitos en su atributo `time` (e.g. `<break
+    time="500ms"/>`) y no son habla: hay que limpiarlas antes de aplicar las
+    reglas que cuentan números o palabras del diálogo.
+    """
+    body = re.sub(r"^\s*\[[^\]]+\]\s*", "", text).strip()
+    body = _SSML_BREAK_RE.sub(" ", body)
+    return body.strip()
 
 
 def _split_sentences(text: str) -> list[str]:

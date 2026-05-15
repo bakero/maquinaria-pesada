@@ -42,7 +42,11 @@ Reglas duras de formato v6:
    HOOK, INTRO_SONIDO, SALUDO_Y_PRESENTACION, BLOQUE_PANORAMA, BLOQUE_COMO,
    BLOQUE_CASOS, BLOQUE_LIMITES, BLOQUE_FUENTES, CIERRE_CONCEPTOS,
    CIERRE_FINAL, VERIFICACIONES.
-2. Duración 25-28 min — word count entre 3700 y 4500 (NUNCA fuera de 2925-4485).
+2. Duración 25-28 min — word count OBLIGATORIO entre 3700 y 4500. La validación
+   rechaza CUALQUIER guion fuera de [2925, 4485]. Cuenta antes de entregar.
+   Apunta a 3800-4200 para tener margen. Si te quedas corto, AÑADE un caso
+   más en BLOQUE_CASOS o un sub-mecanismo en BLOQUE_COMO; NO recortes los
+   bloques ya escritos.
 3. HOOK 30-60 s, cierra con "Esto es MaquinarIA Pesada. Arrancamos.".
 4. SALUDO_Y_PRESENTACION con 3 intervenciones SEPARADAS + aviso de IA
    advertencia (12-18s, contiene "sistema automatico" y "puede contener errores").
@@ -55,16 +59,50 @@ Reglas duras de formato v6:
 9. BLOQUE_LIMITES (3-4 min): qué NO es / cuándo no usarlo. Yago lidera ≥55 %.
    Incluye patrones explícitos tipo "no es", "no debe confundirse con",
    "el error común es", "cuando no".
-10. BLOQUE_FUENTES (2-3 min): EXACTAMENTE 3 fuentes del tema con autor/año/
-    título y por qué importan. NO URLs en audio.
-11. CIERRE_CONCEPTOS: EXACTAMENTE 3 conceptos, abre con
-    "No te puedes ir de este capitulo sin haber entendido estos conceptos".
-12. CIERRE_FINAL: frase canónica + puente al siguiente T del módulo.
-13. Cero interjecciones de coro. Sin apellidos para Maria/Yago.
-14. Etiquetas TTS de la lista cerrada. Intervenciones de desarrollo
-    60-200 palabras, frases ≤32 palabras.
-15. Números en palabras (excepto años de papers con autor).
-16. NO incluyas APLICACION_PRACTICA — eso es exclusivo del M.
+10. BLOQUE_FUENTES (2-3 min): EXACTAMENTE 3 fuentes del tema — ni 2 ni 4.
+    Cada fuente lleva su año en palabras (ej.: "Vaswani y otros, dos mil
+    diecisiete..."). EXACTAMENTE 3 AÑOS DISTINTOS aparecen en el bloque,
+    ligados a sus fuentes. No repitas años entre fuentes. No menciones un
+    4º año (ni en aclaraciones). NO leas URLs en audio.
+11. BLOQUE_CASOS: menciona LITERALMENTE al menos 2 empresas con su
+    nombre propio reconocible (OpenAI, Anthropic, Google, Meta, Microsoft,
+    IBM, Amazon, BBVA, Santander, Telefonica, Spotify, Netflix, etc.).
+    Maria lidera ≥60 % palabras en este bloque.
+12. BLOQUE_PANORAMA: Yago lidera con ≥65 % palabras del bloque (turnos
+    suyos más largos y frecuentes; Maria solo entra 1 turno por cada 3 de Yago).
+13. BLOQUE_COMO: reparto compartido — Yago debe quedar entre 40 % y 60 %
+    de las palabras del bloque. Maria interviene SUSTANCIALMENTE: 4-6
+    turnos largos (60-120 palabras cada uno) aportando ejemplos, matices,
+    o detalles complementarios. NO uses a Maria solo para preguntas
+    cortas — debe explicar pasos del mecanismo con el mismo nivel técnico
+    que Yago.
+14. BLOQUE_LIMITES: Yago lidera ≥55 %. Debe contener al menos uno de
+    estos patrones explícitos: "no es", "no debe confundirse con",
+    "el error común es", "cuando no".
+15. CIERRE_CONCEPTOS: EXACTAMENTE 3 intervenciones (una por concepto).
+    Abre con esta frase literal palabra por palabra:
+    "No te puedes ir de este capitulo sin haber entendido estos conceptos"
+16. CIERRE_FINAL: debe contener EXACTAMENTE esta frase literal al final
+    (palabra por palabra). Antes puedes añadir 1-2 intervenciones de
+    puente al siguiente T del módulo, pero la frase canónica final es:
+    "Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A."
+17. HOOK cierra LITERALMENTE con: "Esto es MaquinarIA Pesada. Arrancamos."
+18. Apertura por paridad del nº de TEMA: T impar → Yago opener, T par →
+    Maria opener. El opener dice HOOK + el aviso de IA.
+19. Aviso de IA advertencia: contiene LITERALMENTE "sistema automatico"
+    y "puede contener errores", entre 30 y 50 palabras (12-18s).
+20. Cero interjecciones de coro ("exacto", "exactamente"). Sin apellidos
+    para Maria/Yago.
+21. Etiquetas TTS de la lista cerrada. Intervenciones de desarrollo
+    60-200 palabras.
+22. Reglas TTS críticas (no negociable):
+    - NINGUNA frase >32 palabras. Si la idea es larga, pártela en dos.
+    - No encadenes más de 3 frases cortas (<12 palabras) seguidas.
+    - Reacciones/preguntas de la voz de apoyo ≤15 palabras.
+23. NUNCA escribas cifras en dígitos en el habla. Números en palabras
+    ("ochenta y ocho por ciento", "dos mil veintitres"). Excepción: años
+    de papers acompañados de autor.
+24. NO incluyas APLICACION_PRACTICA — eso es exclusivo del M.
 
 Devuelve SOLO el guion.
 """

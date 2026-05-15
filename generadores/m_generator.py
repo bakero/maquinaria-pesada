@@ -45,7 +45,11 @@ Reglas duras de formato v6 — debes respetarlas todas:
    HOOK, INTRO_SONIDO, SALUDO_Y_PRESENTACION, BLOQUE_PANORAMA,
    BLOQUE_DESTACADO, APLICACION_PRACTICA, BLOQUE_FUENTES,
    CIERRE_CONCEPTOS, CIERRE_FINAL, VERIFICACIONES.
-2. Duración 18-22 min — word count entre 2700 y 3300 (NUNCA fuera de 2400-3680).
+2. Duración 18-22 min — word count OBLIGATORIO entre 2700 y 3300. La
+   validación rechaza CUALQUIER guion fuera de [2400, 3680]. Cuenta antes
+   de entregar. Apunta a 2900-3200 para tener margen. Si te quedas corto,
+   AÑADE una sub-idea más en BLOQUE_DESTACADO o un caso adicional en
+   APLICACION_PRACTICA; NO recortes los bloques ya escritos.
 3. HOOK 30-60 s. Cierra exactamente con: "Esto es MaquinarIA Pesada. Arrancamos."
 4. SALUDO_Y_PRESENTACION con 3 intervenciones SEPARADAS: opener saluda,
    otro saluda, opener da el aviso de IA enganche (18-25s, contiene
@@ -60,14 +64,54 @@ Reglas duras de formato v6 — debes respetarlas todas:
    autor/año/título y por qué importa. NO leer URLs en audio.
 10. CIERRE_CONCEPTOS: 3-5 conceptos canónicos, abre con
     "No te puedes ir de este capitulo sin haber entendido estos conceptos".
-11. CIERRE_FINAL incluye literalmente la frase canónica de cierre + CTA a T.
-12. Cero interjecciones de validación-coro ("exactamente", "claro que sí",
+11. CIERRE_FINAL: debe contener EXACTAMENTE esta frase literal al cierre
+    (palabra por palabra, ortografía y puntuación incluida; puedes añadir
+    una intervención previa con el resumen + CTA al primer T del módulo,
+    pero la frase canónica final es literal):
+    "Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A."
+12. CIERRE_CONCEPTOS abre con esta frase literal exacta:
+    "No te puedes ir de este capitulo sin haber entendido estos conceptos"
+    (sin tildes en "capitulo", sin signos de exclamación añadidos).
+13. BLOQUE_FUENTES debe nombrar EXACTAMENTE 3 o 4 fuentes-marco, cada una
+    con su año (ej.: "el paper de Vaswani de dos mil diecisiete...",
+    "McKinsey publicó en dos mil veintitres..."). Cada fuente con un año
+    DISTINTO y reconocible. Suficiente: que tres o cuatro años distintos
+    aparezcan en el bloque, claramente asociados a sus fuentes. NO más
+    de cuatro años distintos — si tienes 5 candidatas, deja fuera una.
+14. APLICACION_PRACTICA reparto obligatorio: Maria 30-40 % de palabras /
+    Yago 60-70 %. Estructura concreta:
+    - 1 turno de Maria (45-60s, ~120-150 palabras) abriendo el caso.
+    - 2-3 turnos de Yago (cada uno ~140-200 palabras) detallando el
+      sistema high-level.
+    - 1 turno final compartido: Maria 60-80 palabras + Yago 80-100 palabras.
+    El total del bloque debe rondar las 600-800 palabras.
+15. BLOQUE_DESTACADO: reparto compartido (Yago 40-60% palabras).
+16. CIERRE_CONCEPTOS debe tener entre 3 y 5 intervenciones (3-5 conceptos,
+    una intervención por concepto).
+17. Cero interjecciones de validación-coro ("exactamente", "claro que sí",
     "exacto", etc.). Apellidos prohibidos para Maria/Yago.
-13. Etiquetas TTS: una por intervención, lista cerrada. Una sola voz por
+18. Etiquetas TTS: una por intervención, lista cerrada. Una sola voz por
     turno con cuerpo de desarrollo de 4-10 frases (60-200 palabras).
-14. Frases ≤32 palabras. No abusar de frases cortas seguidas.
-15. Números en palabras (excepto años de papers acompañados de autor).
-16. La aplicación práctica NO aparece en el HOOK.
+19. Reglas TTS críticas (no negociable):
+    - NINGUNA frase puede tener más de 32 palabras. Cuenta antes de cerrar
+      cada frase. Si una idea es larga, pártela en dos frases coordinadas.
+    - No encadenes más de 3 frases cortas (<12 palabras) seguidas en una
+      misma intervención.
+    - El líder del bloque (Yago en PANORAMA, Yago en APLICACION) debe
+      tener turnos largos y solo recibir 1 turno de apoyo por cada 3 turnos
+      suyos (sin ping-pong mecánico).
+    - Las reacciones/preguntas de la voz de apoyo ≤15 palabras.
+20. NUNCA escribas cifras en dígitos en el habla. Todos los números van en
+    palabras: "ochenta y ocho por ciento", "dos mil veintitres",
+    "tres punto siete". Excepción: años de papers/informes acompañados
+    de autor o institución (puedes escribir el año en cifras solo si el
+    autor o el editor van pegados a él).
+21. La aplicación práctica del sistema NO se menciona en el HOOK.
+22. HOOK cierra LITERALMENTE con: "Esto es MaquinarIA Pesada. Arrancamos."
+23. SALUDO_Y_PRESENTACION: el opener (por paridad: M par→Maria, M impar→Yago)
+    pronuncia el aviso de IA con LITERALMENTE las palabras "sistema automatico"
+    y "puede contener errores"; el aviso debe tener entre 45 y 75 palabras
+    (18-25 segundos).
 
 Genera SOLO el guion en este formato, sin explicaciones ni preámbulos.
 """

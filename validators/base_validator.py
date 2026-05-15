@@ -14,10 +14,14 @@ from validators.shared import audio_rules, blacklist, canonical_phrases, parity
 
 # Etiquetas TTS permitidas (lista cerrada — regla A.8).
 ALLOWED_TTS_TAGS: frozenset[str] = frozenset({
-    "didactico", "explicativo", "directo", "serio", "firme",
-    "contundente", "grave", "tenso", "conversacional", "reflexivo",
-    "curioso", "ironico", "esceptico", "natural", "pausado", "calido",
-    "claro", "analitica",
+    "didactico", "didactica", "explicativo", "explicativa",
+    "directo", "directa", "serio", "seria", "firme",
+    "contundente", "grave", "tenso", "tensa",
+    "conversacional", "reflexivo", "reflexiva",
+    "curioso", "curiosa", "ironico", "ironica",
+    "esceptico", "esceptica", "natural", "pausado", "pausada",
+    "calido", "calida", "claro", "clara",
+    "analitico", "analitica",
 })
 
 

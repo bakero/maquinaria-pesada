@@ -67,6 +67,12 @@ def _classify_hook(hook_text: str) -> str | None:
     low = t.lower()
     if any(a in low for a in h1_markers):
         return "H1_contradiccion"
+    # H1 generalizado: arranque con "<sujeto> no <verbo>" o "no <verbo>".
+    # Cubre "no inventan", "no aprenden", "no tienen", "no funcionan",
+    # "no saben", "no recuerdan", etc., manteniendo la espontaneidad de
+    # la afirmación contraintuitiva sin obligar a una lista cerrada.
+    if re.match(r"^\s*(¡|¿)?[\wáéíóúñÁÉÍÓÚÑ\s,]{0,80}\bno\s+[a-záéíóúñ]+", low):
+        return "H1_contradiccion"
     return None
 
 
