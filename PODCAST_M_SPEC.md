@@ -56,7 +56,7 @@ están disponibles en plataformas. Integrar de forma natural, no como anuncio.
   APLICACION_PRACTICA, FUENTES (§3).
 - `APLICACION_PRACTICA` se construye consultando los 4 documentos vivos del
   proyecto (BIBLIA_SISTEMA, PRIMERPODCAST, VIDEOPODCAST, PODCAST) — ver §8.
-- `BLOQUE_FUENTES` se construye desde `PDFs/auxiliares/fuentes_marco_modulo_M{n}.md`
+- `BLOQUE_FUENTES` se construye desde `PDFs/auxiliares/master IA.pdf`
   (fichero por módulo, obligatorio) — ver §9.
 - **3 a 5 conceptos** en CIERRE_CONCEPTOS según riqueza del módulo (rango fijo).
 - **El guion debe respetar el invariante de calidad TTS sintética** (§2B).
@@ -257,7 +257,7 @@ De los 4 documentos vivos del proyecto (extraídos para el módulo M{n}):
 - 1 decisión técnica tomada con justificación
 - 1 cifra/dato verificable del sistema (logs, costes, métricas)
 
-De PDFs/auxiliares/fuentes_marco_modulo_M{n}.md:
+De PDFs/auxiliares/master IA.pdf:
 - 3-4 fuentes-marco del módulo entero
 ```
 
@@ -287,7 +287,7 @@ El generador construye la "ficha de aplicación" y la guarda en
 override en `PDFs/aplicacion_practica/M{n}.md`.
 
 **Fuente primaria para BLOQUE_FUENTES (obligatoria, hard-fail si no existe):**
-- `PDFs/auxiliares/fuentes_marco_modulo_M{n}.md` — fichero por módulo con las
+- `PDFs/auxiliares/master IA.pdf` — fichero por módulo con las
   fuentes-marco del módulo entero. Ver §9.
 
 **Fuentes secundarias:**
@@ -378,13 +378,18 @@ Cerrar el M entregando una bibliografía del **módulo entero**, citable y
 verificable. Refuerza el posicionamiento "el máster destilado" y diferencia
 frente a podcasts sintéticos que no citan fuentes con rigor.
 
-### 9.2 Fuente: fichero por módulo (Variante A)
+### 9.2 Fuente: PDF maestro único (Variante A ajustada al repo real)
 
-`PDFs/auxiliares/fuentes_marco_modulo_M{n}.md` — **obligatorio, hard-fail si no
-existe**. Contiene las 3-4 fuentes-marco del módulo entero (el libro/curso de
-referencia, el paper que define el campo, la encuesta de adopción más citada,
-la fuente oficial). Son **distintas** de las fuentes específicas de los T del
-módulo: complementan, no duplican.
+`PDFs/auxiliares/master IA.pdf` — **obligatorio, hard-fail si no existe**.
+Contiene la **bibliografía completa del corpus del máster**: papers, libros,
+informes oficiales y encuestas de adopción. Es la **fuente única** para todos
+los M; el generador selecciona las 3-4 fuentes-marco más relevantes al módulo
+en cuestión. Son **distintas** de las fuentes específicas de los T del módulo:
+complementan, no duplican.
+
+Como apoyo adicional, el generador también lista los `PDFs/temas/M{n}_T*.pdf`
+del módulo para que el LLM pueda enriquecer el bloque cuando alguna fuente
+clave esté en un tema concreto.
 
 ### 9.3 Reglas del bloque
 
@@ -623,7 +628,7 @@ El guion debe cumplirlas antes de enviarse a síntesis (ElevenLabs eleven_v3 a
       "duration_seconds_max": 180,
       "sources_count_min": 3,
       "sources_count_max": 4,
-      "source_file_pattern": "PDFs/auxiliares/fuentes_marco_modulo_M{n}.md",
+      "source_file_pattern": "PDFs/auxiliares/master IA.pdf",
       "source_file_required": true,
       "no_invented_sources": true,
       "no_urls_in_speech": true,
@@ -681,9 +686,11 @@ El guion debe cumplirlas antes de enviarse a síntesis (ElevenLabs eleven_v3 a
         "manual_override": {"path_pattern": "PDFs/aplicacion_practica/M{n}.md", "priority": "overrides_automatic_extraction"}
       },
       "primary_for_fuentes": {
-        "path_pattern": "PDFs/auxiliares/fuentes_marco_modulo_M{n}.md",
+        "path": "PDFs/auxiliares/master IA.pdf",
+        "accepted_names": ["master IA.pdf", "master_IA.pdf", "MasterIA.pdf"],
         "required": true,
-        "variant": "A_fuentes_marco_modulo_entero"
+        "variant": "A_fuentes_marco_pdf_maestro_unico",
+        "temas_dir_for_enrichment": "PDFs/temas"
       },
       "secondary": {
         "glossary": {"path": "PDFs/auxiliares/glosario_unificado.md", "required": true},
@@ -739,7 +746,7 @@ El guion debe cumplirlas antes de enviarse a síntesis (ElevenLabs eleven_v3 a
     "hard_fail_on_missing_glossary": true,
     "hard_fail_on_aplicacion_in_hook": true,
     "hard_fail_on_insufficient_aplicacion_material": true,
-    "hard_fail_on_missing_fuentes_marco_file": true,
+    "hard_fail_on_missing_master_fuentes_pdf": true,
     "hard_fail_on_fuentes_count_out_of_range": true,
     "hard_fail_on_invented_source": true,
     "hard_fail_on_word_count_out_of_hard_range": true,

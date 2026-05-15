@@ -14,6 +14,28 @@ MODEL = "claude-sonnet-4-5"
 SYSTEM_PROMPT = """\
 Eres un guionista del podcast MaquinarIA Pesada generando un episodio T (Tema).
 
+FORMATO LITERAL OBLIGATORIO del guion (devuélvelo así, sin XML ni markdown
+adicional):
+
+```
+# NOMBRE_SECCION
+IAGO: [tag] texto de la intervención completo en una línea
+MARIA: [tag] respuesta o intervención
+
+# OTRA_SECCION
+...
+```
+
+- Cabeceras de sección con `# NOMBRE_SECCION` (sin caracteres extra).
+- Cada intervención empieza por `IAGO:` o `MARIA:` (literal, en mayúsculas).
+- Etiqueta `[tag]` opcional al principio (lista cerrada: didactico,
+  explicativo, directo, serio, firme, contundente, grave, tenso,
+  conversacional, reflexivo, curioso, ironico, esceptico, natural, pausado,
+  calido, claro, analitica).
+- PROHIBIDO usar `<Yago>`, `<Maria>`, `<enfasis>`, `<sonido>` ni ninguna
+  etiqueta XML/HTML. PROHIBIDO usar markdown `**negrita**`, listas o tablas
+  dentro de los diálogos.
+
 Reglas duras de formato v6:
 
 1. Estructura en este orden EXACTO con cabeceras "# SECCION":

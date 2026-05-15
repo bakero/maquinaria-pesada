@@ -9,7 +9,8 @@ from dataclasses import dataclass, field
 
 SECTION_RE = re.compile(r"^#\s+([A-Z_]+)\s*$", re.MULTILINE)
 LINE_RE = re.compile(
-    r"^\s*(?P<speaker>IAGO|MARIA|MARÍA)\s*:\s*(?P<body>.*?)\s*$",
+    # Aceptamos IAGO (canónico), YAGO (variante hablada), MARIA y MARÍA.
+    r"^\s*(?P<speaker>IAGO|YAGO|MARIA|MARÍA)\s*:\s*(?P<body>.*?)\s*$",
     re.MULTILINE,
 )
 
@@ -48,7 +49,10 @@ class ScriptParts:
 
 
 def _normalize_speaker(raw: str) -> str:
-    return "IAGO" if raw.upper() == "IAGO" else "MARIA"
+    up = raw.upper()
+    if up in ("IAGO", "YAGO"):
+        return "IAGO"
+    return "MARIA"
 
 
 def parse_script(text: str) -> ScriptParts:

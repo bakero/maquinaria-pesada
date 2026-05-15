@@ -35,12 +35,26 @@ def test_m_build_user_prompt_includes_module_n(tmp_path):
     assert "M3" in prompt or "módulo 3" in prompt
 
 
-def test_m_build_user_prompt_warns_missing_fuentes_marco(tmp_path):
+def test_m_build_user_prompt_warns_missing_master_pdf(tmp_path):
+    """Si falta master IA.pdf, el prompt emite un AVISO explícito."""
     for n in ("BIBLIA_SISTEMA", "PRIMERPODCAST", "VIDEOPODCAST", "PODCAST"):
         (tmp_path / f"{n}.md").write_text("contenido", encoding="utf-8")
     prompt = m_generator.build_user_prompt(episode_id="M3", repo_root=tmp_path)
     assert "AVISO" in prompt
-    assert "fuentes_marco_modulo_M3.md" in prompt
+    assert "master IA.pdf" in prompt
+
+
+def test_m_build_user_prompt_lists_temas_pdfs(tmp_path):
+    """Si hay PDFs de temas del módulo, los enumera en el prompt."""
+    for n in ("BIBLIA_SISTEMA", "PRIMERPODCAST", "VIDEOPODCAST", "PODCAST"):
+        (tmp_path / f"{n}.md").write_text("contenido", encoding="utf-8")
+    temas = tmp_path / "PDFs" / "temas"
+    temas.mkdir(parents=True)
+    (temas / "M3_T1_uno.pdf").write_bytes(b"%PDF-1.4")
+    (temas / "M3_T2_dos.pdf").write_bytes(b"%PDF-1.4")
+    prompt = m_generator.build_user_prompt(episode_id="M3", repo_root=tmp_path)
+    assert "M3_T1_uno.pdf" in prompt
+    assert "M3_T2_dos.pdf" in prompt
 
 
 def test_m_build_user_prompt_invalid_id_raises(tmp_path):

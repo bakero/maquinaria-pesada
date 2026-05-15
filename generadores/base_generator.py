@@ -76,12 +76,28 @@ def _format_hard_failures_feedback(results: list[ValidationResult]) -> str:
     return "\n".join(lines)
 
 
+def _strip_code_fence(text: str) -> str:
+    """Quita ``` y ```lenguaje envolventes que algunos modelos añaden alrededor
+    del guion. Conserva la indentación interior del guion."""
+    stripped = text.strip()
+    if not stripped.startswith("```"):
+        return text
+    # Quita la primera línea (```lang opcional) y el cierre final (```).
+    first_nl = stripped.find("\n")
+    if first_nl == -1:
+        return text
+    inner = stripped[first_nl + 1:]
+    if inner.rstrip().endswith("```"):
+        inner = inner.rstrip()[:-3]
+    return inner.strip("\n")
+
+
 def post_process_text(text: str, *, apply_num2words: bool = True,
                      apply_pronunciation_overrides: bool = True,
                      apply_ssml_pauses: bool = True,
                      pauses_config: dict | None = None) -> str:
     """Aplica los tres pases post-LLM en orden: números → overrides → SSML."""
-    out = text
+    out = _strip_code_fence(text)
     if apply_num2words:
         out = num2words_es.replace_numbers_in_text(out)
     if apply_pronunciation_overrides:

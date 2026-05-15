@@ -167,23 +167,36 @@ def check_fuentes_count(parts: ScriptParts) -> ValidationResult:
                 count=n)
 
 
-def check_fuentes_marco_file(episode_id: str,
-                              repo_root: Path | None = None) -> ValidationResult:
-    """Hard-fail si no existe `PDFs/auxiliares/fuentes_marco_modulo_M{n}.md`."""
-    m = re.match(r"^M(\d+)$", episode_id)
-    if not m:
-        return fail("m_fuentes_marco_file", "HARD",
-                    f"No se pudo extraer número de módulo de '{episode_id}'")
-    n = int(m.group(1))
+_MASTER_FUENTES_PDF_NAMES = ("master IA.pdf", "master_IA.pdf", "MasterIA.pdf")
+
+
+def check_master_fuentes_pdf(repo_root: Path | None = None) -> ValidationResult:
+    """Hard-fail si no existe el PDF maestro de fuentes en `PDFs/auxiliares/`.
+
+    Variante A v6 ajustada al repo real: las fuentes-marco del módulo se
+    construyen desde un único PDF maestro que contiene la bibliografía completa
+    del máster, en vez de un fichero markdown por módulo.
+    """
     if repo_root is None:
         repo_root = Path(__file__).resolve().parents[1]
-    path = repo_root / "PDFs" / "auxiliares" / f"fuentes_marco_modulo_M{n}.md"
-    if path.exists():
-        return ok("m_fuentes_marco_file", "HARD",
-                  f"Existe {path.relative_to(repo_root).as_posix()}")
-    return fail("m_fuentes_marco_file", "HARD",
-                f"Falta el fichero obligatorio {path.relative_to(repo_root).as_posix()}",
-                path=str(path))
+    aux = repo_root / "PDFs" / "auxiliares"
+    for name in _MASTER_FUENTES_PDF_NAMES:
+        path = aux / name
+        if path.exists():
+            return ok("m_master_fuentes_pdf", "HARD",
+                      f"Existe {path.relative_to(repo_root).as_posix()}")
+    return fail("m_master_fuentes_pdf", "HARD",
+                "Falta el PDF maestro de fuentes en PDFs/auxiliares/ "
+                f"(nombres aceptados: {', '.join(_MASTER_FUENTES_PDF_NAMES)})")
+
+
+# Alias retro-compatible para el método anterior. Algunos tests legacy lo usan.
+def check_fuentes_marco_file(episode_id: str,
+                              repo_root: Path | None = None) -> ValidationResult:
+    """Compatibilidad: en v6 sin ajuste, se exigía un fichero por módulo. El
+    repo real tiene un único PDF maestro — esta función delega en
+    `check_master_fuentes_pdf`."""
+    return check_master_fuentes_pdf(repo_root)
 
 
 def check_no_urls_in_fuentes(parts: ScriptParts) -> ValidationResult:
@@ -237,7 +250,7 @@ def validate(script_text: str, episode_id: str,
     results.extend(check_leader_shares(parts))
     results.append(check_aplicacion_not_in_hook(parts))
     results.append(check_fuentes_count(parts))
-    results.append(check_fuentes_marco_file(episode_id, repo_root))
+    results.append(check_master_fuentes_pdf(repo_root))
     results.append(check_no_urls_in_fuentes(parts))
     results.append(check_aviso_duration(parts))
     # Anti-pingpong en bloques liderados

@@ -14,6 +14,13 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+try:  # carga .env de la raíz del repo si está disponible (override=True para
+    # asegurar que las claves del fichero ganan a las del shell)
+    from dotenv import load_dotenv
+    load_dotenv(override=True)
+except ImportError:  # pragma: no cover
+    pass
+
 # Precios por millón de tokens (orientativos a 2026-05).
 _PRICES_USD_PER_MTOK: dict[str, tuple[float, float]] = {
     "claude-sonnet-4-5": (3.0, 15.0),

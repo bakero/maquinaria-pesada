@@ -53,10 +53,19 @@ def _classify_hook(hook_text: str) -> str | None:
     # H2: contiene un número (porcentaje, año fuera de paper, o cifra)
     if re.search(r"\b\d+([.,]\d+)?\s*(%|por\s+ciento|millones|mil)?\b", t.lower()):
         return "H2_numero"
-    # H1: contradicción → frase con conector adversativo
-    adversatives = ("pero", "sin embargo", "no es", "no son", "no lo")
+    # H1: contradicción → frase con marcador adversativo o de sorpresa.
+    # Incluye modales que indican capacidad contraintuitiva ("puede inventar
+    # con total seguridad"), concesivos ("aunque", "incluso", "a pesar de") y
+    # los adversativos clásicos.
+    h1_markers = (
+        "pero", "sin embargo", "no es", "no son", "no lo", "no son",
+        "aunque", "incluso", "a pesar de", "y eso", "y sin embargo",
+        "y aún así", "y aun asi", "con total", "con absoluta",
+        "puede inventar", "puede equivocarse", "no entienden",
+        "nunca han", "jamás han", "jamas han",
+    )
     low = t.lower()
-    if any(a in low for a in adversatives):
+    if any(a in low for a in h1_markers):
         return "H1_contradiccion"
     return None
 

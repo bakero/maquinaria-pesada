@@ -134,18 +134,31 @@ def test_m_fuentes_count_zero_fails():
     assert r.passed is False
 
 
-def test_m_fuentes_marco_file_missing(tmp_path):
-    r = mv.check_fuentes_marco_file("M3", repo_root=tmp_path)
+def test_m_master_fuentes_pdf_missing(tmp_path):
+    r = mv.check_master_fuentes_pdf(repo_root=tmp_path)
     assert r.passed is False
     assert r.severity == "HARD"
 
 
-def test_m_fuentes_marco_file_exists(tmp_path):
+def test_m_master_fuentes_pdf_exists(tmp_path):
     (tmp_path / "PDFs" / "auxiliares").mkdir(parents=True)
-    (tmp_path / "PDFs" / "auxiliares" / "fuentes_marco_modulo_M3.md").write_text(
-        "# Fuentes M3\n", encoding="utf-8")
-    r = mv.check_fuentes_marco_file("M3", repo_root=tmp_path)
+    (tmp_path / "PDFs" / "auxiliares" / "master IA.pdf").write_bytes(b"%PDF-1.4")
+    r = mv.check_master_fuentes_pdf(repo_root=tmp_path)
     assert r.passed is True
+
+
+def test_m_master_fuentes_pdf_alt_names(tmp_path):
+    """Acepta master_IA.pdf y MasterIA.pdf como nombres equivalentes."""
+    (tmp_path / "PDFs" / "auxiliares").mkdir(parents=True)
+    (tmp_path / "PDFs" / "auxiliares" / "master_IA.pdf").write_bytes(b"%PDF-1.4")
+    assert mv.check_master_fuentes_pdf(repo_root=tmp_path).passed is True
+
+
+def test_m_fuentes_marco_file_legacy_alias_still_works(tmp_path):
+    """El alias retro-compatible delega en check_master_fuentes_pdf."""
+    (tmp_path / "PDFs" / "auxiliares").mkdir(parents=True)
+    (tmp_path / "PDFs" / "auxiliares" / "master IA.pdf").write_bytes(b"%PDF-1.4")
+    assert mv.check_fuentes_marco_file("M3", repo_root=tmp_path).passed is True
 
 
 def test_m_no_urls_in_fuentes_clean_passes():

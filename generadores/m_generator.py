@@ -17,6 +17,28 @@ MODEL = "claude-sonnet-4-5"
 SYSTEM_PROMPT = """\
 Eres un guionista del podcast MaquinarIA Pesada generando un episodio M (Módulo).
 
+FORMATO LITERAL OBLIGATORIO del guion (devuélvelo así, sin XML ni markdown
+adicional):
+
+```
+# NOMBRE_SECCION
+IAGO: [tag] texto de la intervención completo en una línea
+MARIA: [tag] respuesta o intervención
+
+# OTRA_SECCION
+...
+```
+
+- Cabeceras de sección con `# NOMBRE_SECCION` (sin caracteres extra).
+- Cada intervención empieza por `IAGO:` o `MARIA:` (literal, en mayúsculas).
+- Etiqueta `[tag]` opcional al principio (lista cerrada: didactico,
+  explicativo, directo, serio, firme, contundente, grave, tenso,
+  conversacional, reflexivo, curioso, ironico, esceptico, natural, pausado,
+  calido, claro, analitica).
+- PROHIBIDO usar `<Yago>`, `<Maria>`, `<enfasis>`, `<sonido>` ni ninguna
+  etiqueta XML/HTML. PROHIBIDO usar markdown `**negrita**`, listas o tablas
+  dentro de los diálogos.
+
 Reglas duras de formato v6 — debes respetarlas todas:
 
 1. Estructura del guion en este orden EXACTO con cabeceras "# SECCION":
@@ -89,16 +111,39 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
     parts.append("\n## Ficha de aplicación práctica (del sistema generador)")
     parts.append(ficha.to_markdown())
 
-    # Fuentes-marco del módulo.
-    fuentes_marco = repo_root / "PDFs" / "auxiliares" / f"fuentes_marco_modulo_M{n}.md"
-    if fuentes_marco.exists():
-        parts.append("\n## Fuentes-marco del módulo (úsalas en BLOQUE_FUENTES)")
-        parts.append(fuentes_marco.read_text(encoding="utf-8"))
+    # Fuentes-marco: PDF maestro del corpus + PDFs de los temas del módulo.
+    master_pdf = None
+    for name in ("master IA.pdf", "master_IA.pdf", "MasterIA.pdf"):
+        cand = repo_root / "PDFs" / "auxiliares" / name
+        if cand.exists():
+            master_pdf = cand
+            break
+    if master_pdf is not None:
+        master_result = pdf_reader.read_pdf(master_pdf)
+        if master_result.text:
+            parts.append(
+                "\n## Bibliografía maestra del corpus (úsala como fuente "
+                "principal para BLOQUE_FUENTES)"
+            )
+            # Truncamos para no inflar el prompt; el LLM elige las 3-4 más
+            # relevantes al módulo.
+            parts.append(master_result.text[:10000])
     else:
         parts.append(
-            f"\n## AVISO: falta {fuentes_marco.relative_to(repo_root).as_posix()}; "
-            "el episodio no podrá generar BLOQUE_FUENTES sin él."
+            "\n## AVISO: falta PDFs/auxiliares/master IA.pdf; "
+            "BLOQUE_FUENTES quedará incompleto sin esta bibliografía."
         )
+
+    # Temas del módulo (contexto adicional para enriquecer BLOQUE_FUENTES).
+    temas_dir = repo_root / "PDFs" / "temas"
+    if temas_dir.exists():
+        temas_paths = sorted(temas_dir.glob(f"M{n}_T*.pdf"))
+        if temas_paths:
+            parts.append(
+                f"\n## Temas del módulo (PDFs disponibles, {len(temas_paths)})"
+            )
+            for tp in temas_paths:
+                parts.append(f"- {tp.relative_to(repo_root).as_posix()}")
 
     return "\n".join(parts)
 
