@@ -1,0 +1,57 @@
+name: CI v6 (validators + generadores)
+
+on:
+  push:
+    branches: [master, "feature/**"]
+  pull_request:
+
+jobs:
+  v6-lint-tests-coverage:
+    name: Lint + Tests + Cobertura ≥85%
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Dependencias mínimas para correr validators + generadores + suite
+          pip install ruff pytest pytest-cov python-dotenv
+          pip install anthropic httpx pdfplumber pydub
+          pip install num2words
+          # FastAPI + uvicorn (web_server)
+          pip install fastapi uvicorn
+          # Opcionales: pyloudnorm y pillow para tests post-TTS / overlay
+          pip install pyloudnorm Pillow || true
+
+      - name: Verify migration artifacts present
+        run: |
+          test -f MIGRACION_V6_PLAN.md
+          test -f PODCAST_M_SPEC.md
+          test -f PODCAST_T_SPEC.md
+          test -f PODCAST_S_SPEC.md
+
+      - name: Ruff lint (validators + generadores + scripts + tests)
+        run: |
+          ruff check validators/ generadores/ scripts/ \
+                     tests/validators/ tests/generadores/ tests/scripts/
+
+      - name: Tests + cobertura ≥85 % (validators + generadores + scripts)
+        run: |
+          pytest \
+            tests/validators/ tests/generadores/ tests/scripts/ \
+            --cov=validators --cov=generadores --cov=scripts \
+            --cov-report=term-missing \
+            --cov-fail-under=85 \
+            -q
+
+      - name: Suite completa sin e2e (smoke check del repo entero)
+        run: pytest tests/ -q --ignore=tests/test_e2e_vite.py
