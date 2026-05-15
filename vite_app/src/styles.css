@@ -3092,3 +3092,395 @@ h1.editorial,
   .kpi2-row { grid-template-columns: 1fr; }
   .mods2 { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* =============================================================================
+   ════════════════════════════════════════════════════════════════════════════
+   v2 LEGACY OVERRIDES  ·  upgrade global de las clases viejas al lenguaje v2
+   ════════════════════════════════════════════════════════════════════════════
+   Este bloque reescribe la APARIENCIA (no la estructura) de las clases que
+   las páginas legacy ya usan: .content, .panel, .btn, .kpi, .page-hd, .h1,
+   .badge, .dot, .bar, .tab, .tabs, etc. Así, las 13 páginas que aún no se
+   han migrado a v2 se ven con el sistema editorial sin tocarlas.
+   ============================================================================= */
+
+/* ───────── Page container · da margen y respiración a las páginas legacy ───────── */
+.content {
+  max-width: 1480px !important;
+  margin: 0 auto !important;
+  padding: 40px 32px 80px !important;
+}
+.main {
+  padding: 0 !important;
+}
+
+/* ───────── Page header · editorial (eyebrow + Fraunces serif gigante) ───────── */
+.page-hd {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  margin-bottom: 32px !important;
+  padding-bottom: 24px !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.page-hd-l {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  align-items: flex-start !important;
+}
+/* Hide the old "flag-bar" decoration */
+.page-hd .flag-bar { display: none !important; }
+.h1 {
+  font-family: var(--f-display) !important;
+  font-weight: 600 !important;
+  font-size: clamp(36px, 4vw, 56px) !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.05 !important;
+  color: var(--text) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  font-variation-settings: "opsz" 96, "SOFT" 40 !important;
+  text-transform: none !important;
+}
+.h1-sub {
+  font-family: var(--f-body) !important;
+  font-size: 14px !important;
+  color: var(--text-dim) !important;
+  letter-spacing: -0.005em !important;
+  margin-top: 6px !important;
+  text-transform: none !important;
+  line-height: 1.5 !important;
+  max-width: 78ch !important;
+}
+.h2 {
+  font-family: var(--f-display) !important;
+  font-weight: 600 !important;
+  font-size: 24px !important;
+  letter-spacing: -0.018em !important;
+  color: var(--text) !important;
+  margin: 28px 0 14px !important;
+  text-transform: none !important;
+}
+.h3 {
+  font-family: var(--f-mono) !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: var(--text-mute) !important;
+  margin: 18px 0 8px !important;
+}
+
+/* ───────── Panel · cards editoriales con radius humano y hover lift ───────── */
+.panel {
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease) !important;
+}
+.panel:hover {
+  border-color: var(--border-2) !important;
+}
+.panel-hd {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 18px 22px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: transparent !important;
+  gap: 12px !important;
+}
+.panel-hd-title {
+  font-family: var(--f-display) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  letter-spacing: -0.012em !important;
+  color: var(--text) !important;
+  text-transform: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.panel-hd-meta {
+  font-family: var(--f-mono) !important;
+  font-size: 10px !important;
+  color: var(--text-mute) !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+}
+.panel > div:last-child {
+  padding: 18px 22px !important;
+}
+
+/* ───────── Buttons · pill premium con hover lift ───────── */
+.btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 18px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 99px !important;
+  color: var(--text) !important;
+  font-family: var(--f-body) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  cursor: pointer !important;
+  transition: all var(--dur-fast) var(--ease) !important;
+  line-height: 1 !important;
+}
+.btn:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  transform: translateY(-1px) !important;
+}
+.btn.sm {
+  padding: 7px 14px !important;
+  font-size: 11.5px !important;
+}
+.btn.primary {
+  background: linear-gradient(180deg, var(--y) 0%, var(--y-dk) 100%) !important;
+  color: #0E0D0B !important;
+  border-color: var(--y-dk) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset !important;
+}
+.btn.primary:hover {
+  box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 12px 28px rgba(232,197,71,0.22) !important;
+}
+.btn.ghost {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: var(--text-dim) !important;
+}
+.btn.ghost:hover {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+.btn.danger {
+  background: rgba(210, 100, 100, 0.10) !important;
+  border-color: rgba(210, 100, 100, 0.32) !important;
+  color: var(--alert) !important;
+}
+.btn.danger:hover {
+  background: rgba(210, 100, 100, 0.18) !important;
+  border-color: rgba(210, 100, 100, 0.5) !important;
+}
+
+/* ───────── KPI · número serif gigante en cuadrícula limpia ───────── */
+.kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 1px !important;
+  background: var(--border) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-md) !important;
+  overflow: hidden !important;
+  margin-bottom: 32px !important;
+}
+.kpi {
+  background: var(--panel) !important;
+  padding: 22px 24px 20px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  position: static !important;
+}
+.kpi::before, .kpi::after { display: none !important; }
+.kpi-lbl {
+  font-family: var(--f-mono) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: var(--text-mute) !important;
+  margin-bottom: 10px !important;
+  font-weight: 500 !important;
+}
+.kpi-val {
+  font-family: var(--f-display) !important;
+  font-weight: 600 !important;
+  font-size: 36px !important;
+  letter-spacing: -0.028em !important;
+  color: var(--text) !important;
+  line-height: 1.05 !important;
+  font-variation-settings: "opsz" 96, "SOFT" 30 !important;
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+}
+.kpi-unit {
+  font-family: var(--f-body) !important;
+  font-size: 13px !important;
+  color: var(--text-mute) !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+}
+.kpi-delta {
+  font-family: var(--f-mono) !important;
+  font-size: 10.5px !important;
+  color: var(--text-mute) !important;
+  margin-top: 8px !important;
+  letter-spacing: -0.005em !important;
+}
+
+/* ───────── Badges · refinados como pills ───────── */
+.badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 3px 10px !important;
+  font-family: var(--f-mono) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  background: var(--panel-2) !important;
+  color: var(--text-dim) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 99px !important;
+}
+.badge.y, .badge.yellow {
+  background: var(--y-soft) !important;
+  color: var(--y) !important;
+  border-color: rgba(232, 197, 71, 0.28) !important;
+}
+.badge.ok {
+  background: rgba(110, 182, 138, 0.10) !important;
+  color: var(--ok) !important;
+  border-color: rgba(110, 182, 138, 0.28) !important;
+}
+.badge.warn {
+  background: rgba(232, 158, 92, 0.10) !important;
+  color: var(--warn) !important;
+  border-color: rgba(232, 158, 92, 0.28) !important;
+}
+.badge.alert, .badge.danger {
+  background: rgba(210, 100, 100, 0.10) !important;
+  color: var(--alert) !important;
+  border-color: rgba(210, 100, 100, 0.28) !important;
+}
+
+/* ───────── Bars · sutiles y suaves ───────── */
+.bar {
+  height: 4px !important;
+  background: var(--border) !important;
+  border-radius: 99px !important;
+  overflow: hidden !important;
+}
+.bar-fill {
+  height: 100% !important;
+  border-radius: 99px !important;
+  transition: width var(--dur-slow) var(--ease-out) !important;
+}
+
+/* ───────── Status dots · adaptados a la paleta cálida ───────── */
+.dot {
+  display: inline-block !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 99px !important;
+  flex-shrink: 0 !important;
+}
+.dot.sm { width: 6px !important; height: 6px !important; }
+.dot.ok    { background: var(--ok) !important; box-shadow: 0 0 8px rgba(110,182,138,0.35) !important; }
+.dot.warn  { background: var(--warn) !important; box-shadow: 0 0 8px rgba(232,158,92,0.35) !important; }
+.dot.alert { background: var(--alert) !important; box-shadow: 0 0 8px rgba(210,100,100,0.35) !important; }
+.dot.empty { background: var(--text-faint) !important; }
+.dot.run   { background: var(--y) !important; box-shadow: 0 0 12px rgba(232,197,71,0.5) !important; animation: pulse-y 1.6s infinite; }
+@keyframes pulse-y {
+  0%   { box-shadow: 0 0 0 0 rgba(232,197,71,0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(232,197,71,0); }
+  100% { box-shadow: 0 0 0 0 rgba(232,197,71,0); }
+}
+
+/* ───────── Tabs · underline suave ───────── */
+.tabs {
+  display: flex !important;
+  gap: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  margin-bottom: 24px !important;
+  padding: 0 !important;
+}
+.tab {
+  padding: 10px 18px 14px !important;
+  font-family: var(--f-body) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  color: var(--text-dim) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: color var(--dur-fast) var(--ease) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.tab:hover { color: var(--text) !important; }
+.tab.active {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+.tab.active::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: -1px !important;
+  left: 18px !important;
+  right: 18px !important;
+  height: 2px !important;
+  background: var(--y) !important;
+  border-radius: 2px 2px 0 0 !important;
+}
+
+/* ───────── Source pills · refined ───────── */
+.source-pills {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin: -8px 0 24px !important;
+}
+.source-pill {
+  font-family: var(--f-mono) !important;
+  font-size: 10.5px !important;
+  padding: 4px 10px !important;
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 99px !important;
+  color: var(--text-mute) !important;
+  letter-spacing: -0.005em !important;
+}
+.source-pill:hover {
+  border-color: var(--y) !important;
+  color: var(--y) !important;
+}
+
+/* ───────── Hazard tape · oculto en v2 (no encaja con el lenguaje editorial) ───────── */
+.hazard-stripes,
+.flag-bar,
+.stencil { display: none !important; }
+
+/* ───────── Speakers · usar nuevos colores cálidos ───────── */
+.spk-iago .spk-name  { color: var(--iago) !important; }
+.spk-maria .spk-name { color: var(--maria) !important; }
+
+/* ───────── Misc legacy fixes ───────── */
+.muted, .dim { color: var(--text-mute) !important; }
+.fill { flex: 1 !important; }
+.row { display: flex !important; align-items: center !important; }
+.col { display: flex !important; flex-direction: column !important; }
+.gap-3 { gap: 6px !important; }
+.gap-4 { gap: 8px !important; }
+.gap-8 { gap: 16px !important; }
+.gap-12 { gap: 22px !important; }
+.mb-12 { margin-bottom: 22px !important; }
+.mt-12 { margin-top: 22px !important; }
