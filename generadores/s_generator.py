@@ -19,10 +19,12 @@ Eres un guionista del podcast MaquinarIA Pesada generando un episodio S
 Reglas duras de formato v6:
 
 1. UNA SOLA VOZ NARRADORA. Sin diálogo. NUNCA escribas "IAGO:" o "MARIA:".
-2. Word count OBLIGATORIO entre 157 y 198 palabras (~75s a 1.10× TTS).
-   Cuenta las palabras antes de entregar. Por debajo de 157 NO sirve:
-   amplía con un ejemplo extra o desarrolla la aplicación. Por encima
-   de 198 tampoco: recorta. Apunta a 175-185 para tener margen.
+2. ⚠️ WORD COUNT OBLIGATORIO: entre 157 y 198 palabras (~75s a 1.10× TTS).
+   APUNTA A 180 PALABRAS. NUNCA por debajo de 157, NUNCA por encima de 198.
+   Cuenta mentalmente las palabras DE TU RESPUESTA final antes de entregarla.
+   Si necesitas más palabras, añade un caso o métrica concreta antes del
+   cierre. Si tienes demasiadas, recorta el ejemplo. El rango operativo
+   es 170-190 — apunta ahí. PROHIBIDO entregar 130-155 o 200+.
 3. Estructura interna (no obligatoria como cabeceras): HOOK 5-7s,
    DEFINICIÓN 18-22s, EJEMPLO 28-35s, APLICACIÓN/GANCHO 12-18s.
 4. La PRIMERA frase del Short es el HOOK y debe encajar en UNA de estas
@@ -56,9 +58,16 @@ Reglas duras de formato v6:
 11. CUENTA las palabras antes de entregar — debe estar entre 157 y 198.
     Si te quedas corto, AÑADE un ejemplo concreto antes del cierre.
 
-Devuelve SOLO el texto narrado del Short, sin cabeceras de sección ni tags
-ni meta-texto. Empieza directamente con la primera frase (que es el HOOK)
-y termina con la frase canónica de cierre.
+Devuelve SOLO el texto narrado del Short. PROHIBIDO devolver:
+- Cabeceras tipo "# BORRADOR", "## PLAN", "# TEXTO NARRADO", "# HOOK", "# CIERRE".
+- Cualquier listado de pasos, planning, target o checklist en el output.
+- Frases como "Hook template:", "Target total:", "Estructura palabra a palabra:".
+- Comentarios meta tipo "Aquí va el guion:" o "Esta es mi respuesta:".
+
+Tu output empieza DIRECTAMENTE con la primera palabra del HOOK del Short y
+termina LITERALMENTE con la frase canónica de cierre. Nada antes, nada
+después, sin saltos de sección. El validador rechaza meta-texto como
+HARD-FAIL (cuenta como palabras del Short).
 """
 
 
@@ -127,5 +136,7 @@ def generate(episode_id: str, term: str,
         max_output_tokens=1000, temperature=0.7,
         apply_ssml_pauses=False,  # S es texto narrativo, sin secciones
         validate_fn=_validate_factory(n, voice, filename),
+        # S es barato (Haiku, ~7s) y suele patinar en word_count. Más retries.
+        max_retries=8,
     )
     return bg.run_pipeline(request)

@@ -1,0 +1,359 @@
+{
+  "iter": 1,
+  "started_at": "2026-05-15T14:05:35",
+  "jobs": [
+    {
+      "kind": "M",
+      "ep": "M0",
+      "term": null,
+      "started_at": "2026-05-15T14:05:35",
+      "elapsed_s": 231.2,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7768,
+      "output_tokens": 5386,
+      "cost_usd": 0.1041,
+      "validation": {
+        "total": 29,
+        "passed": 23,
+        "hard_failed": 3,
+        "soft_failed": 3,
+        "blocking": true,
+        "hard_failures": [
+          "m_concepts_count",
+          "m_leader_aplicacion",
+          "m_fuentes_count"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.0952,
+      "script_path": "Guiones/iter_1/M0_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M0_T1",
+      "term": null,
+      "started_at": "2026-05-15T14:09:27",
+      "elapsed_s": 225.3,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7122,
+      "output_tokens": 5956,
+      "cost_usd": 0.1107,
+      "validation": {
+        "total": 32,
+        "passed": 24,
+        "hard_failed": 4,
+        "soft_failed": 4,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "parity_opener",
+          "t_casos_company_count",
+          "t_fuentes_count_exact_3"
+        ],
+        "soft_warnings": [
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1024,
+      "script_path": "Guiones/iter_1/M0_T1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M0_T2",
+      "term": null,
+      "started_at": "2026-05-15T14:13:12",
+      "elapsed_s": 299.1,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 6914,
+      "output_tokens": 8964,
+      "cost_usd": 0.1552,
+      "validation": {
+        "total": 32,
+        "passed": 24,
+        "hard_failed": 3,
+        "soft_failed": 5,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "t_leader_como",
+          "t_leader_casos"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1047,
+      "script_path": "Guiones/iter_1/M0_T2_v6.md"
+    },
+    {
+      "kind": "M",
+      "ep": "M1",
+      "term": null,
+      "started_at": "2026-05-15T14:18:11",
+      "elapsed_s": 192.9,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7846,
+      "output_tokens": 4413,
+      "cost_usd": 0.0897,
+      "validation": {
+        "total": 29,
+        "passed": 22,
+        "hard_failed": 4,
+        "soft_failed": 3,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "ia_warning",
+          "m_leader_destacado",
+          "m_leader_aplicacion"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.0916,
+      "script_path": "Guiones/iter_1/M1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M1_T1",
+      "term": null,
+      "started_at": "2026-05-15T14:21:24",
+      "elapsed_s": 221.3,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7062,
+      "output_tokens": 5156,
+      "cost_usd": 0.0985,
+      "validation": {
+        "total": 32,
+        "passed": 23,
+        "hard_failed": 4,
+        "soft_failed": 5,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "parity_opener",
+          "t_leader_como",
+          "t_fuentes_count_exact_3"
+        ],
+        "soft_warnings": [
+          "audio_rule_digits_in_speech",
+          "tts_invariant_long_sentences",
+          "pingpong",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1029,
+      "script_path": "Guiones/iter_1/M1_T1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M1_T2",
+      "term": null,
+      "started_at": "2026-05-15T14:25:05",
+      "elapsed_s": 272.9,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 6482,
+      "output_tokens": 6359,
+      "cost_usd": 0.1148,
+      "validation": {
+        "total": 32,
+        "passed": 26,
+        "hard_failed": 3,
+        "soft_failed": 3,
+        "blocking": true,
+        "hard_failures": [
+          "audio_rule_reaction_length",
+          "ia_warning",
+          "t_leader_como"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1149,
+      "script_path": "Guiones/iter_1/M1_T2_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S1",
+      "term": "RAG",
+      "started_at": "2026-05-15T14:29:38",
+      "elapsed_s": 6.6,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1051,
+      "output_tokens": 238,
+      "cost_usd": 0.0018,
+      "validation": {
+        "total": 15,
+        "passed": 14,
+        "hard_failed": 1,
+        "soft_failed": 0,
+        "blocking": true,
+        "hard_failures": [
+          "s_word_count"
+        ],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0019,
+      "script_path": "Guiones/iter_1/S1_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S2",
+      "term": "Fine-tuning",
+      "started_at": "2026-05-15T14:29:45",
+      "elapsed_s": 6.9,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1054,
+      "output_tokens": 256,
+      "cost_usd": 0.0019,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.002,
+      "script_path": "Guiones/iter_1/S2_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S3",
+      "term": "Hallucination",
+      "started_at": "2026-05-15T14:29:52",
+      "elapsed_s": 3.9,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": false,
+      "input_tokens": 1059,
+      "output_tokens": 286,
+      "cost_usd": 0.002,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "script_path": "Guiones/iter_1/S3_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S4",
+      "term": "Embedding",
+      "started_at": "2026-05-15T14:29:56",
+      "elapsed_s": 6.5,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1051,
+      "output_tokens": 266,
+      "cost_usd": 0.0019,
+      "validation": {
+        "total": 15,
+        "passed": 14,
+        "hard_failed": 1,
+        "soft_failed": 0,
+        "blocking": true,
+        "hard_failures": [
+          "s_word_count"
+        ],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.002,
+      "script_path": "Guiones/iter_1/S4_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S5",
+      "term": "Prompt",
+      "started_at": "2026-05-15T14:30:02",
+      "elapsed_s": 6.7,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1057,
+      "output_tokens": 248,
+      "cost_usd": 0.0018,
+      "validation": {
+        "total": 15,
+        "passed": 14,
+        "hard_failed": 1,
+        "soft_failed": 0,
+        "blocking": true,
+        "hard_failures": [
+          "s_word_count"
+        ],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0019,
+      "script_path": "Guiones/iter_1/S5_v6.md"
+    }
+  ],
+  "totals": {
+    "n_jobs": 11,
+    "n_errors": 0,
+    "n_blocked": 9,
+    "n_with_soft": 6,
+    "hard_rule_counts": {
+      "word_count": 4,
+      "t_leader_como": 3,
+      "s_word_count": 3,
+      "m_leader_aplicacion": 2,
+      "parity_opener": 2,
+      "t_fuentes_count_exact_3": 2,
+      "ia_warning": 2,
+      "m_concepts_count": 1,
+      "m_fuentes_count": 1,
+      "t_casos_company_count": 1,
+      "t_leader_casos": 1,
+      "m_leader_destacado": 1,
+      "audio_rule_reaction_length": 1
+    },
+    "soft_rule_counts": {
+      "pingpong": 12,
+      "tts_invariant_long_sentences": 5,
+      "tts_invariant_consecutive_short_sentences": 5,
+      "audio_rule_digits_in_speech": 1
+    }
+  },
+  "finished_at": "2026-05-15T14:30:09"
+}

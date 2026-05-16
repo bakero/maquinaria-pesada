@@ -1,0 +1,339 @@
+{
+  "iter": 2,
+  "started_at": "2026-05-15T14:32:05",
+  "jobs": [
+    {
+      "kind": "M",
+      "ep": "M0",
+      "term": null,
+      "started_at": "2026-05-15T14:32:05",
+      "elapsed_s": 226.1,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 8617,
+      "output_tokens": 5448,
+      "cost_usd": 0.1076,
+      "validation": {
+        "total": 29,
+        "passed": 26,
+        "hard_failed": 1,
+        "soft_failed": 2,
+        "blocking": true,
+        "hard_failures": [
+          "m_fuentes_count"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.0987,
+      "script_path": "Guiones/iter_2/M0_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M0_T1",
+      "term": null,
+      "started_at": "2026-05-15T14:35:51",
+      "elapsed_s": 250.3,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 8015,
+      "output_tokens": 6359,
+      "cost_usd": 0.1194,
+      "validation": {
+        "total": 32,
+        "passed": 25,
+        "hard_failed": 2,
+        "soft_failed": 5,
+        "blocking": true,
+        "hard_failures": [
+          "t_casos_company_count",
+          "t_fuentes_count_exact_3"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1083,
+      "script_path": "Guiones/iter_2/M0_T1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M0_T2",
+      "term": null,
+      "started_at": "2026-05-15T14:40:01",
+      "elapsed_s": 259.9,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7801,
+      "output_tokens": 6311,
+      "cost_usd": 0.1181,
+      "validation": {
+        "total": 32,
+        "passed": 27,
+        "hard_failed": 3,
+        "soft_failed": 2,
+        "blocking": true,
+        "hard_failures": [
+          "t_leader_como",
+          "t_casos_company_count",
+          "t_fuentes_count_exact_3"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1168,
+      "script_path": "Guiones/iter_2/M0_T2_v6.md"
+    },
+    {
+      "kind": "M",
+      "ep": "M1",
+      "term": null,
+      "started_at": "2026-05-15T14:44:21",
+      "elapsed_s": 215.2,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 8699,
+      "output_tokens": 4531,
+      "cost_usd": 0.0941,
+      "validation": {
+        "total": 29,
+        "passed": 26,
+        "hard_failed": 1,
+        "soft_failed": 2,
+        "blocking": true,
+        "hard_failures": [
+          "m_leader_aplicacion"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.1003,
+      "script_path": "Guiones/iter_2/M1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M1_T1",
+      "term": null,
+      "started_at": "2026-05-15T14:47:57",
+      "elapsed_s": 237.4,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7955,
+      "output_tokens": 5452,
+      "cost_usd": 0.1056,
+      "validation": {
+        "total": 32,
+        "passed": 23,
+        "hard_failed": 3,
+        "soft_failed": 6,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "t_casos_company_count",
+          "t_fuentes_count_exact_3"
+        ],
+        "soft_warnings": [
+          "tts_tags_allowed",
+          "tts_invariant_long_sentences",
+          "tts_invariant_consecutive_short_sentences",
+          "pingpong",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.105,
+      "script_path": "Guiones/iter_2/M1_T1_v6.md"
+    },
+    {
+      "kind": "T",
+      "ep": "M1_T2",
+      "term": null,
+      "started_at": "2026-05-15T14:51:54",
+      "elapsed_s": 215.0,
+      "model": "claude-sonnet-4-5",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 7369,
+      "output_tokens": 4819,
+      "cost_usd": 0.0944,
+      "validation": {
+        "total": 32,
+        "passed": 26,
+        "hard_failed": 3,
+        "soft_failed": 3,
+        "blocking": true,
+        "hard_failures": [
+          "word_count",
+          "t_leader_casos",
+          "t_casos_company_count"
+        ],
+        "soft_warnings": [
+          "tts_invariant_long_sentences",
+          "pingpong",
+          "pingpong"
+        ]
+      },
+      "retry_cost_usd": 0.0956,
+      "script_path": "Guiones/iter_2/M1_T2_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S1",
+      "term": "RAG",
+      "started_at": "2026-05-15T14:55:29",
+      "elapsed_s": 7.1,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1150,
+      "output_tokens": 251,
+      "cost_usd": 0.0019,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0022,
+      "script_path": "Guiones/iter_2/S1_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S2",
+      "term": "Fine-tuning",
+      "started_at": "2026-05-15T14:55:36",
+      "elapsed_s": 10.0,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1153,
+      "output_tokens": 266,
+      "cost_usd": 0.002,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0022,
+      "script_path": "Guiones/iter_2/S2_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S3",
+      "term": "Hallucination",
+      "started_at": "2026-05-15T14:55:46",
+      "elapsed_s": 4.4,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": false,
+      "input_tokens": 1158,
+      "output_tokens": 339,
+      "cost_usd": 0.0023,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "script_path": "Guiones/iter_2/S3_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S4",
+      "term": "Embedding",
+      "started_at": "2026-05-15T14:55:50",
+      "elapsed_s": 7.2,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1150,
+      "output_tokens": 232,
+      "cost_usd": 0.0018,
+      "validation": {
+        "total": 15,
+        "passed": 14,
+        "hard_failed": 1,
+        "soft_failed": 0,
+        "blocking": true,
+        "hard_failures": [
+          "s_word_count"
+        ],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0021,
+      "script_path": "Guiones/iter_2/S4_v6.md"
+    },
+    {
+      "kind": "S",
+      "ep": "S5",
+      "term": "Prompt",
+      "started_at": "2026-05-15T14:55:58",
+      "elapsed_s": 7.5,
+      "model": "claude-haiku-4-5-20251001",
+      "ok_gen": true,
+      "used_retry": true,
+      "input_tokens": 1156,
+      "output_tokens": 245,
+      "cost_usd": 0.0019,
+      "validation": {
+        "total": 15,
+        "passed": 15,
+        "hard_failed": 0,
+        "soft_failed": 0,
+        "blocking": false,
+        "hard_failures": [],
+        "soft_warnings": []
+      },
+      "retry_cost_usd": 0.0022,
+      "script_path": "Guiones/iter_2/S5_v6.md"
+    }
+  ],
+  "totals": {
+    "n_jobs": 11,
+    "n_errors": 0,
+    "n_blocked": 7,
+    "n_with_soft": 6,
+    "hard_rule_counts": {
+      "t_casos_company_count": 4,
+      "t_fuentes_count_exact_3": 3,
+      "word_count": 2,
+      "m_fuentes_count": 1,
+      "t_leader_como": 1,
+      "m_leader_aplicacion": 1,
+      "t_leader_casos": 1,
+      "s_word_count": 1
+    },
+    "soft_rule_counts": {
+      "pingpong": 11,
+      "tts_invariant_long_sentences": 6,
+      "tts_invariant_consecutive_short_sentences": 2,
+      "tts_tags_allowed": 1
+    }
+  },
+  "finished_at": "2026-05-15T14:56:05"
+}

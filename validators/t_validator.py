@@ -123,7 +123,9 @@ def _count_company_names(text: str) -> int:
     Heurística: tokens capitalizados frecuentes en el corpus tech (OpenAI,
     Anthropic, Google, etc.) o nombres en CamelCase que no sean inicio de frase.
     """
-    # Lista de empresas habituales para detección directa.
+    # Lista de empresas habituales para detección directa. Sincronizada con
+    # PDFs/auxiliares/casos_empresariales_ia.md para que los casos canónicos
+    # del corpus puntúen.
     known = (
         "OpenAI", "Anthropic", "Google", "Meta", "Microsoft", "IBM", "Amazon",
         "Apple", "DeepMind", "Hugging Face", "Stability AI", "Cohere", "Mistral",
@@ -131,6 +133,13 @@ def _count_company_names(text: str) -> int:
         "Spotify", "Netflix", "Airbnb", "Uber", "Tesla", "Salesforce",
         "Oracle", "SAP", "Adobe", "BBVA", "Santander", "Telefonica",
         "Telefónica", "Banco", "Repsol", "Iberdrola",
+        # Casos canónicos del fichero auxiliar.
+        "Harvey AI", "Harvey", "Morgan Stanley", "JPMorgan", "Lemonade",
+        "Nordea", "Zara", "Inditex", "Walmart", "Carrefour", "Bayer",
+        "Pfizer", "Roche", "MD Anderson", "Memorial Sloan Kettering",
+        "Allianz", "AXA", "Bloomberg", "Reuters", "Boston Consulting",
+        "BCG", "Deloitte", "PwC", "KPMG", "EY", "Accenture",
+        "Westlaw", "LexisNexis", "Lufthansa", "Ryanair",
     )
     found = set()
     for company in known:
