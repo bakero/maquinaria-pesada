@@ -94,4 +94,11 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        from daylog import RunLog as _RunLog
+        _run_ctx = _RunLog(script="scripts/validate_iter.py", params=sys.argv[1:])
+    except Exception:  # noqa: BLE001
+        from contextlib import nullcontext as _nullcontext
+        _run_ctx = _nullcontext()
+    with _run_ctx:
+        sys.exit(main())
