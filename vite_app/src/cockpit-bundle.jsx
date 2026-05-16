@@ -25,6 +25,7 @@ import { CommandPalette } from "./shell/CommandPalette";
 import { OnboardingTour, hasSeenOnboarding } from "./shell/OnboardingTour";
 import { TopNav, mapSectionFor } from "./shell/TopNav";
 import { useHotkeys, formatCombo } from "./lib/useHotkeys";
+import { useLiveStream } from "./lib/useEntity";
 import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
 } from "./components/tweaks/TweaksPanel";
@@ -337,9 +338,10 @@ function App() {
     ajustes:    [{ label: "Inicio", id: "home" }, { label: "Sistema" }, { label: "Ajustes" }],
   };
 
-  // Total active processes mock (replace with real /api/live count)
-  const liveCount = 1;
-  const liveLabel = "M5 audio";
+  // Procesos en producción · stream SSE en tiempo real.
+  const { snapshot: liveSnap } = useLiveStream();
+  const liveCount = liveSnap.live.length;
+  const liveLabel = liveSnap.live[0]?.cmd?.slice(0, 40) || "";
 
   return (
     <div className="app v3-shell" data-density={t.density}>
