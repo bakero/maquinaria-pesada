@@ -302,4 +302,41 @@ Output: `episodios/{episode}_events.jsonl`. Campos automáticos (`ts`, `episode`
 
 ---
 
-*Diario activo desde 2026-05-10. Última entrada: #16.*
+## #17 — Retirada de Streamlit (2026-05-16)
+
+**Decisión**: la cabina Streamlit se elimina del repositorio. La única UI
+soportada del cockpit pasa a ser la app React (`vite_app/`) servida por
+`web_server.py` (FastAPI). Las menciones de Streamlit en entradas
+anteriores describen el estado histórico y ya no aplican.
+
+**Borrado**:
+- `cockpit/app.py`, `cockpit/home.py`, `cockpit/help.py`, `cockpit/theme.py`
+- `cockpit/ui.py`, `cockpit/ui_components.py`, `cockpit/ui_improve.py`,
+  `cockpit/ui_map.py`, `cockpit/pipeline_runner.py`
+- `cockpit/pages/` entero
+- `.streamlit/` (config legacy)
+- `tests/test_ui_improve_internals.py`, `tests/test_ui_map.py`
+- `cockpit/PLAN.md`, `cockpit/SESSION_CONTEXT.md` (describían la
+  arquitectura Streamlit antigua)
+- Métodos `render_*` e `import streamlit as st` en los connectors
+
+**Modificado**:
+- `pyproject.toml`: fuera `streamlit` y `streamlit-autorefresh`
+- `requirements-cockpit.txt`: reescrito como deps del cockpit web
+- `cockpit/connectors/base.py`: `render_card/render_config/render_viewer`
+  sustituidos por un único `describe() -> dict` que la API JSON consume
+- `cockpit/core/api_keys.py`: cache pasa de `.streamlit/api_status.json`
+  a `logs/api_status.json`
+- `.github/dependabot.yml`: grupo `streamlit` → `web-stack`
+- `CLAUDE.md`: arquitectura actualizada (React+Vite+FastAPI)
+- Connectors: emojis decorativos en `icon` retirados
+
+**Mantenido**: `cockpit/core/` y `cockpit/connectors/` siguen igual de
+útiles porque `web_server.py` los importa para producir la API JSON.
+
+**Verificación**: ruff limpio · 615 tests pasan · build Vite OK
+(82 KB CSS, 267 KB JS gz 80 KB).
+
+---
+
+*Diario activo desde 2026-05-10. Última entrada: #17.*

@@ -16,13 +16,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Cockpit web (web_server.py + Streamlit). Instalar con: pip install -e ".[cockpit]"
+# Cockpit web (web_server.py). Instalar con: pip install -e ".[cockpit]"
 # o, con versiones reproducibles, pip install -r requirements-cockpit.txt
 cockpit = [
     "fastapi>=0.110",
     "uvicorn>=0.27",
-    "streamlit>=1.32",
-    "streamlit-autorefresh>=1.0",
     "psutil>=5.9",
     "pdfplumber>=0.11",
     "openai>=1.40",
@@ -46,7 +44,7 @@ extend-exclude = [
 select = ["E", "F", "W", "I", "UP", "B"]
 ignore = [
     "E501",  # line-too-long: scripts antiguos con strings largos
-    "E402",  # module-level-import-not-at-top: sys.path hacks en Streamlit
+    "E402",  # module-level-import-not-at-top: sys.path hacks en pipelines
     "B008",  # function call in argument defaults: argparse / typer
 ]
 

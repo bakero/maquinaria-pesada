@@ -35,23 +35,22 @@ class Connector:
     id: str = ""
     category: Category = "service"
     label: str = ""
-    icon: str = "🔌"
+    icon: str = ""
     description: str = ""
 
     def status(self) -> Status:
         return Status(ok=True)
 
-    # Streamlit renderers — implementations in subclasses
-    def render_card(self) -> None:
-        import streamlit as st
+    def describe(self) -> dict[str, Any]:
+        """Serialización para la API JSON del cockpit web."""
         s = self.status()
-        st.markdown(f"### {self.icon} {self.label}")
-        st.caption(self.description)
-        st.write("✅ OK" if s.ok else f"❌ {s.detail or 'no disponible'}")
-
-    def render_config(self) -> None:
-        import streamlit as st
-        st.info("Sin configuración adicional.")
+        return {
+            "id":          self.id,
+            "category":    self.category,
+            "label":       self.label,
+            "description": self.description,
+            "status":      {"ok": s.ok, "detail": s.detail},
+        }
 
 
 class ServiceConnector(Connector):
@@ -76,26 +75,10 @@ class ServiceConnector(Connector):
             return Status(ok=False, detail=f"faltan en .env: {', '.join(missing)}")
         return Status(ok=True, detail="credenciales presentes" if self.env_keys else "OK")
 
-    def render_config(self) -> None:
-        import streamlit as st
-
-        from cockpit.core import paths
-
-        env: dict = {}
-        if paths.env_file().exists():
-            try:
-                from dotenv import dotenv_values
-                env = dotenv_values(paths.env_file()) or {}
-            except ImportError:
-                env = {}
-
-        if not self.env_keys:
-            st.info("Sin variables de entorno asociadas.")
-            return
-        st.write(f"Archivo `.env`: `{paths.env_file()}`")
-        for k in self.env_keys:
-            present = bool(env.get(k))
-            st.write(f"- `{k}`: {'✅ presente' if present else '❌ ausente'}")
+    def describe(self) -> dict[str, Any]:
+        d = super().describe()
+        d["env_keys"] = list(self.env_keys)
+        return d
 
 
 class PipelineConnector(Connector):
@@ -130,12 +113,16 @@ class PipelineConnector(Connector):
         from cockpit.core import runner
         return runner.preview_command(self.script, self._flag_pairs(values))
 
-    def render_config(self) -> None:
-        import streamlit as st
-        st.write(f"Script: `{self.script}`")
-        st.write(f"Flags ({len(self.fields)}):")
-        for f in self.fields:
-            st.write(f"- `{f.flag}` ({f.kind}){' *' if f.required else ''} — {f.help or f.label}")
+    def describe(self) -> dict[str, Any]:
+        d = super().describe()
+        d["script"] = self.script
+        d["fields"] = [
+            {"flag": f.flag, "label": f.label, "kind": f.kind,
+             "required": f.required, "default": f.default,
+             "help": f.help, "options": f.options, "placeholder": f.placeholder}
+            for f in self.fields
+        ]
+        return d
 
 
 class SourceConnector(Connector):
@@ -145,16 +132,13 @@ class SourceConnector(Connector):
     def list_items(self) -> list[Path]:
         return []
 
-    def render_viewer(self, path: Path) -> None:
-        import streamlit as st
-        st.code(path.read_text(encoding="utf-8", errors="replace")[:5000])
-
-    def render_config(self) -> None:
-        import streamlit as st
+    def describe(self) -> dict[str, Any]:
+        d = super().describe()
         items = self.list_items()
-        st.write(f"Items detectados: **{len(items)}**")
-        if items:
-            st.caption(f"Ejemplo: `{items[0].name}`")
+        d["count"] = len(items)
+        d["sample"] = items[0].name if items else None
+        d["suffixes"] = list(self.suffixes)
+        return d
 
 
 # ---- Registry ----------------------------------------------------------

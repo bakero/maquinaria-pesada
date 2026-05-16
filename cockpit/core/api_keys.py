@@ -1,7 +1,7 @@
 """Verificación de API keys de los proveedores usados por el sistema.
 
 Hace una llamada barata (list models / cuenta) a cada proveedor y devuelve
-estado + latencia. Cachea resultado en `.streamlit/api_status.json` para no
+estado + latencia. Cachea resultado en `logs/api_status.json` para no
 pegar a los proveedores en cada refresh.
 
 No persiste las keys. Las lee de `.env` + entorno.
@@ -17,7 +17,7 @@ from pathlib import Path
 
 from . import paths, usage_tracker
 
-CACHE_FILE = Path(".streamlit") / "api_status.json"
+CACHE_FILE = Path("logs") / "api_status.json"
 CACHE_TTL_SECONDS = 300  # 5 min
 
 

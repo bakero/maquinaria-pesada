@@ -10,7 +10,6 @@ from cockpit.core import paths
 class LogSource(SourceConnector):
     id = "log"
     label = "Logs de producción"
-    icon = "📜"
     description = "episodios/*.log generados por las ejecuciones."
     suffixes = (".log",)
 
@@ -26,15 +25,3 @@ class LogSource(SourceConnector):
                     seen.add(p)
                     items.append(p)
         return sorted(items)
-
-    def render_viewer(self, path: Path) -> None:
-        import streamlit as st
-        n_lines = st.slider("Últimas N líneas", 50, 5000, 500, step=50)
-        try:
-            content = path.read_text(encoding="utf-8", errors="replace")
-        except Exception as exc:
-            st.error(f"No se pudo leer: {exc}")
-            return
-        lines = content.splitlines()
-        st.caption(f"{len(lines)} líneas · {path.stat().st_size / 1024:.1f} KB")
-        st.code("\n".join(lines[-n_lines:]) or "(vacío)", language="log")

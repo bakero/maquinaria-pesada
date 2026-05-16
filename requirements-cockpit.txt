@@ -1,26 +1,21 @@
-streamlit>=1.32
+# Cockpit web (web_server.py): app FastAPI servida con uvicorn que sirve
+# el build de vite_app/dist y expone /api/* sobre cockpit.core y
+# cockpit.connectors. Sin Streamlit (eliminado en favor de la app React).
+fastapi>=0.110
+uvicorn>=0.27
+httpx>=0.27               # cliente HTTP (TTS ElevenLabs + TestClient de FastAPI)
 python-dotenv>=1.0
 pdfplumber>=0.11
 pydub>=0.25
-streamlit-autorefresh>=1.0
 psutil>=5.9
 anthropic>=0.40
 openai>=1.40
 
-# Cockpit web (web_server.py): app FastAPI servida con uvicorn
-fastapi>=0.110
-uvicorn>=0.27
-httpx>=0.27               # cliente HTTP (TTS ElevenLabs + TestClient de FastAPI)
-
-# Analytics: Spotify / iVoox / LinkedIn (página Rendimiento)
+# Analytics: Spotify / iVoox / LinkedIn (página Datos · Difusión)
 spotifyconnector>=0.8.2     # cliente no oficial podcasters (analytics privadas)
 spotipy>=2.26.0             # Web API oficial Spotify (metadatos públicos)
 feedparser>=6.0.11          # parseo RSS de iVoox
 podcastparser>=0.6.10       # parseo podcast 2.0 (alternativa rápida)
 requests>=2.32.3            # HTTP para LinkedIn REST + iVoox
 requests-oauthlib>=2.0.0    # OAuth2 3-legged LinkedIn
-pandas>=2.2                 # CSV iVoox + DataFrames en página Rendimiento
-
-# Opcional: drag&drop visual del mapa de componentes (cockpit/pages/12_🗺️_Mapa.py).
-# Sin esta dep, el mapa se renderiza con graphviz (solo lectura).
-# streamlit-flow-component>=1.5
+pandas>=2.2                 # CSV iVoox + DataFrames analytics

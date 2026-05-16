@@ -35,10 +35,22 @@ sys.path.insert(0, str(ROOT))
 DIST_DIR = ROOT / "vite_app" / "dist"
 DIST_INDEX = DIST_DIR / "index.html"
 
-pytestmark = pytest.mark.skipif(
-    not DIST_INDEX.exists(),
-    reason="vite_app/dist/index.html no existe — corre 'cd vite_app && npm run build' primero",
-)
+try:
+    import pytest_playwright  # noqa: F401
+    _PLAYWRIGHT_OK = True
+except ImportError:
+    _PLAYWRIGHT_OK = False
+
+pytestmark = [
+    pytest.mark.skipif(
+        not DIST_INDEX.exists(),
+        reason="vite_app/dist/index.html no existe — corre 'cd vite_app && npm run build' primero",
+    ),
+    pytest.mark.skipif(
+        not _PLAYWRIGHT_OK,
+        reason="pytest-playwright no instalado · skip E2E (instalable con: pip install pytest-playwright && playwright install chromium)",
+    ),
+]
 
 
 @pytest.fixture

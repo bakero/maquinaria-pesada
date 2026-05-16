@@ -1,5 +1,9 @@
 // Navegación del cockpit + enlaces al repositorio.
-// Cada item de nav lleva `src`: los archivos del repo que lo implementan.
+//
+// El cockpit v3 tiene 3 secciones en el top-nav (Producción · Datos ·
+// Sistema). Los items con sub-tabs viven dentro de cada sección. Cada
+// item lleva `src`: los archivos del repo que lo implementan, usados
+// por el panel de "ver código en GitHub" desde el mapa de componentes.
 
 export const REPO = "https://github.com/bakero/maquinaria-pesada";
 export const REPO_REF = "master";
@@ -19,79 +23,73 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-// 5 grupos compactos. La numeración decorativa (`num`) se conserva en el
-// modelo por compatibilidad pero el sidebar ya no la pinta.
 export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Producción",
     items: [
-      { id: "home",     label: "Inicio",   icon: "home",    num: "01",
-        src: ["cockpit/app.py", "cockpit/theme.py"] },
-      { id: "master",   label: "Master",   icon: "grid",    num: "02", emph: true,
-        src: ["cockpit/pages/0_🎓_Master.py", "cockpit/core/state.py", "cockpit/core/episodes.py"] },
-      { id: "modulo",   label: "Módulo",   icon: "module",  num: "03",
-        src: ["cockpit/pages/13_🎬_Modulo.py", "cockpit/core/episodes.py", "cockpit/core/paths.py"] },
-      { id: "episodio", label: "Episodio", icon: "episode", num: "04",
-        src: ["cockpit/pages/14_📼_Episodio.py", "cockpit/core/verifications.py", "cockpit/core/log_parser.py"] },
+      { id: "produccion", label: "Producción", icon: "grid",   num: "01", emph: true,
+        src: ["vite_app/src/pages/PageProduccion.tsx",
+              "cockpit/core/episodes.py", "cockpit/core/state.py",
+              "web_server.py"] },
+      { id: "modulo",     label: "Módulo",     icon: "module", num: "02",
+        src: ["vite_app/src/pages/PageModuloTema.tsx",
+              "cockpit/core/episodes.py", "cockpit/core/paths.py",
+              "web_server.py"] },
+      { id: "tema",       label: "Tema",       icon: "episode", num: "03",
+        src: ["vite_app/src/pages/PageModuloTema.tsx",
+              "cockpit/core/verifications.py", "cockpit/core/log_parser.py",
+              "web_server.py"] },
     ],
   },
   {
-    label: "Diseño",
+    label: "Datos",
     items: [
-      { id: "pizarra", label: "Pizarra", icon: "pipe", num: "05",
-        src: ["cockpit/pages/15_🎨_Pizarra.py", "cockpit/core/pizarra.py", "cockpit/core/components_map.py"] },
-      { id: "mapa",    label: "Mapa",    icon: "map",  num: "06",
-        src: ["cockpit/pages/12_🗺️_Mapa.py", "cockpit/core/components_map.py", "cockpit/ui_map.py"] },
-    ],
-  },
-  {
-    label: "Pipeline",
-    items: [
-      { id: "conectores", label: "Conectores", icon: "plug",   num: "07",
-        src: ["cockpit/pages/2_🔌_Conectores.py", "cockpit/connectors/"] },
-      { id: "lanzador",   label: "Lanzador",   icon: "prompt", num: "08",
-        src: ["cockpit/pages/3_📝_Generar_Prompt.py", "cockpit/core/prompt_builder.py", "cockpit/core/runner.py"] },
-    ],
-  },
-  {
-    label: "Recursos",
-    items: [
-      { id: "fuentes",  label: "Fuentes",       icon: "folder", num: "09",
-        src: ["cockpit/pages/4_📚_Fuentes.py", "PDFs/", "Guiones/", "escaletas/", "episodios/", "videopodcast/"] },
-      { id: "player",   label: "Previsualizar", icon: "play",   num: "10",
-        src: ["cockpit/pages/8_🎧_Previsualizar.py"] },
-      { id: "metricas", label: "Métricas",      icon: "map",    num: "11", emph: true,
-        src: ["cockpit/pages/16_📡_Metricas.py", "cockpit/connectors/services/spotify.py",
-              "cockpit/connectors/services/ivoox.py", "cockpit/connectors/services/linkedin.py",
-              "cockpit/core/metrics_aggregator.py"] },
+      { id: "consumo",   label: "Coste IA",     icon: "coin",  num: "04",
+        src: ["vite_app/src/pages/PageConsumo.jsx",
+              "cockpit/core/usage_tracker.py", "cockpit/core/economics.py"] },
+      { id: "metricas",  label: "Difusión",     icon: "map",   num: "05",
+        src: ["vite_app/src/pages/PageMetricas.jsx",
+              "cockpit/connectors/analytics/spotify.py",
+              "cockpit/connectors/analytics/ivoox.py",
+              "cockpit/connectors/analytics/linkedin.py"] },
+      { id: "optimizar", label: "Optimización", icon: "brain", num: "06",
+        src: ["vite_app/src/pages/PageOptimizar.jsx",
+              "cockpit/core/optimization_advisor.py"] },
+      { id: "logs",      label: "Logs",         icon: "log",   num: "07",
+        src: ["vite_app/src/pages/PageLogs.jsx",
+              "cockpit/core/log_parser.py", "cockpit/core/monitor.py"] },
     ],
   },
   {
     label: "Sistema",
     items: [
-      { id: "logs",      label: "Logs",      icon: "log",      num: "12",
-        src: ["cockpit/pages/5_📜_Logs.py", "cockpit/core/log_parser.py", "cockpit/core/logger.py", "cockpit/core/monitor.py"] },
-      { id: "optimizar", label: "Optimizar", icon: "brain",    num: "13",
-        src: ["cockpit/pages/10_🧠_Optimizar.py", "cockpit/core/optimization_advisor.py"] },
-      { id: "consumo",   label: "Consumo",   icon: "coin",     num: "14",
-        src: ["cockpit/pages/7_💰_Tokens.py", "cockpit/pages/11_💳_Economics.py",
-              "cockpit/core/usage_tracker.py", "cockpit/core/economics.py"] },
-      { id: "ajustes",   label: "Ajustes",   icon: "settings", num: "15",
-        src: ["cockpit/pages/6_🔑_API_Keys.py", "cockpit/core/api_keys.py", "cockpit/core/sandbox.py"] },
+      { id: "conectores", label: "Conectores",       icon: "plug",     num: "08",
+        src: ["vite_app/src/pages/PageConectores.jsx",
+              "cockpit/connectors/"] },
+      { id: "lanzador",   label: "Lanzar pipeline",  icon: "prompt",   num: "09",
+        src: ["vite_app/src/pages/PageLanzador.jsx",
+              "cockpit/core/prompt_builder.py", "cockpit/core/runner.py"] },
+      { id: "fuentes",    label: "Fuentes",          icon: "folder",   num: "10",
+        src: ["vite_app/src/pages/PageFuentes.jsx",
+              "PDFs/", "Guiones/", "escaletas/", "episodios/", "videopodcast/"] },
+      { id: "mapa",       label: "Mapa",             icon: "map",      num: "11",
+        src: ["vite_app/src/pages/PageMapa.jsx",
+              "cockpit/core/components_map.py"] },
+      { id: "ajustes",    label: "Ajustes",          icon: "settings", num: "12",
+        src: ["vite_app/src/pages/PageAjustes.jsx",
+              "cockpit/core/api_keys.py", "cockpit/core/sandbox.py"] },
     ],
   },
 ];
 
-// Todas las páginas están cableadas en este prototipo.
+// Páginas válidas que el router del shell sabe renderizar.
 export const WIRED = new Set<string>([
-  "home", "master", "modulo", "episodio",
-  "pizarra", "mapa", "conectores", "lanzador",
-  "fuentes", "player", "logs", "optimizar",
-  "metricas", "consumo", "ajustes",
-  // v2 — pages combinadas para top-nav
-  "pipeline", "datos", "recursos",
   // v3 — 3 destinos del top-nav industrial + drill-downs
-  "produccion", "tema", "sistema",
+  "produccion", "modulo", "tema", "datos", "sistema",
+  // sub-pages alcanzables vía palette / deep-link (renderizadas dentro de
+  // los wrappers Datos / Sistema)
+  "consumo", "metricas", "optimizar", "logs",
+  "conectores", "lanzador", "fuentes", "mapa", "ajustes",
 ]);
 
 /** Archivos del repo que implementan una página de nav. */

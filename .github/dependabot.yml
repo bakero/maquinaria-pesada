@@ -17,9 +17,11 @@ updates:
           - "anthropic"
           - "openai"
           - "openai-whisper"
-      streamlit:
+      web-stack:
         patterns:
-          - "streamlit*"
+          - "fastapi"
+          - "uvicorn"
+          - "httpx"
       dev-tooling:
         patterns:
           - "ruff"
