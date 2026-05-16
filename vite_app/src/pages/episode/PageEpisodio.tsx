@@ -14,6 +14,7 @@ import { TabEscaleta } from "./tabs/TabEscaleta";
 import { TabGuion } from "./tabs/TabGuion";
 import { TabLogs } from "./tabs/TabLogs";
 import { TabPdf } from "./tabs/TabPdf";
+import { TabTimeline } from "./tabs/TabTimeline";
 import { TabVideo } from "./tabs/TabVideo";
 
 export interface PageEpisodioProps {
@@ -27,7 +28,7 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
   // Fallback a fixtures para id/título mientras carga el detalle real.
   const ep = getEpisode(epId) || getEpisode("M3_T2") || getEpisodes()[0];
   const modName = getModule(ep.mod)?.name || ep.mod;
-  const [tab, setTab] = React.useState("guion");
+  const [tab, setTab] = React.useState("timeline");
   const [detail, setDetail] = React.useState<EpisodeDetail | null>(null);
 
   React.useEffect(() => {
@@ -43,6 +44,7 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
   const paths = detail?.paths;
   const state = detail?.state || ep.state;
   const tabs = [
+    { id: "timeline", label: "Timeline",       icon: "play",  status: state.audio,    src: "audio" },
     { id: "guion",    label: "Guion",          icon: "doc",   status: state.guion,    src: "guion" },
     { id: "pdf",      label: "PDF fuente",     icon: "doc",   status: state.pdf,      src: "pdf" },
     { id: "escaleta", label: "Escaleta",       icon: "doc",   status: state.escaleta, src: "escaleta" },
@@ -96,7 +98,7 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
             {detail ? "rutas reales del repo" : "cargando…"}
           </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 6 }}>
           {tabs.map((t) => {
             const src = SOURCES[t.src];
             const has = t.status !== "empty";
@@ -145,6 +147,7 @@ export function PageEpisodio({ onNav, onOpenAI, onOpenFix, epId }: PageEpisodioP
         ))}
       </div>
 
+      {tab === "timeline" && <TabTimeline epId={ep.id} audioPath={paths?.audio ?? null} onOpenFix={onOpenFix} />}
       {tab === "guion"    && <TabGuion epId={ep.id} path={paths?.guion ?? null} onOpenAI={onOpenAI} />}
       {tab === "pdf"      && <TabPdf path={paths?.pdf ?? null} />}
       {tab === "escaleta" && <TabEscaleta path={paths?.escaleta ?? null} />}

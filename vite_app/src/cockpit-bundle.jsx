@@ -21,6 +21,11 @@ import {
   FIXTURE_AI_LOG as AI_LOG, GUION_PREVIEW, CHECKS_M3, applyBootstrap,
 } from "./data";
 import { Sidebar, Topbar, AIDrawer } from "./shell";
+import { CommandPalette } from "./shell/CommandPalette";
+import { OnboardingTour, hasSeenOnboarding } from "./shell/OnboardingTour";
+import { TopNav, mapSectionFor } from "./shell/TopNav";
+import { useHotkeys, formatCombo } from "./lib/useHotkeys";
+import { useLiveStream } from "./lib/useEntity";
 import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
 } from "./components/tweaks/TweaksPanel";
@@ -28,6 +33,9 @@ import {
   PageInicio, PageMaster, PageModulo, PagePizarra, PageMapa, PageConectores,
   PageLanzador, PageFuentes, PagePlayer, PageLogs, PageOptimizar, PageConsumo,
   PageAjustes, PageMetricas, PageEpisodio,
+  PageDatos, PagePipeline, PageRecursos,
+  // v3
+  PageProduccion, PageModuloTema, PageSistema,
 } from "./pages";
 
 
@@ -125,18 +133,19 @@ function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [page, setPage] = React.useState(() => {
     const { base } = parseHash();
-    return WIRED.has(base) ? base : "home";
+    return WIRED.has(base) ? base : "produccion";
   });
-  // Selección activa: qué módulo / episodio se está viendo. Inicializada
-  // desde el hash para sobrevivir a un reload.
+  // Selección activa: qué módulo / tema/episodio se está viendo.
   const [sel, setSel] = React.useState(() => {
     const { base, payload } = parseHash();
     return {
       modulo:   base === "modulo"   ? payload : null,
-      episodio: base === "episodio" ? payload : null,
+      episodio: (base === "tema" || base === "episodio") ? payload : null,
     };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [tourOpen, setTourOpen] = React.useState(() => !hasSeenOnboarding());
 
   // expose master view setter so the segmented control can update tweak
   React.useEffect(() => {
@@ -176,14 +185,14 @@ function App() {
     setPage(id);
     if (id === "modulo") {
       setSel((s) => ({ ...s, modulo: payload || s.modulo }));
-    } else if (id === "episodio") {
+    } else if (id === "tema" || id === "episodio") {
       setSel((s) => ({
         ...s,
         episodio: payload || s.episodio,
         modulo: payload ? payload.split("_")[0] : s.modulo,
       }));
     }
-    const hasSel = payload && (id === "modulo" || id === "episodio");
+    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio");
     window.location.hash = hasSel ? `${id}/${encodeURIComponent(payload)}` : id;
     window.scrollTo(0, 0);
   };
@@ -191,6 +200,124 @@ function App() {
   const openAI  = (ctx) => setAIDrawer({ open: true, mode: "improve", context: ctx });
   const openFix = (ctx) => setAIDrawer({ open: true, mode: "fix",     context: ctx });
   const closeAI = ()    => setAIDrawer((s) => ({ ...s, open: false }));
+  const openPalette = () => setPaletteOpen(true);
+
+  // ─────────────────── Command palette · acciones ───────────────────
+  const paletteActions = React.useMemo(() => {
+    const acts = [];
+
+    // Navegación · top-level (3 secciones v3)
+    [
+      { id: "produccion", label: "Producción", icon: "grid", short: "g p" },
+      { id: "datos",      label: "Datos",      icon: "coin", short: "g d" },
+      { id: "sistema",    label: "Sistema",    icon: "settings", short: "g s" },
+    ].forEach((it) => {
+      acts.push({
+        id: `nav-${it.id}`,
+        label: `Ir a ${it.label}`,
+        section: "Navegar",
+        icon: it.icon,
+        shortcut: it.short,
+        keywords: [it.label, it.id],
+        perform: () => nav(it.id),
+      });
+    });
+    // Episodios (temas)
+    EPISODES.filter((e) => e.kind === "T").slice(0, 30).forEach((e) => {
+      acts.push({
+        id: `ep-${e.id}`,
+        label: `Tema ${e.id} — ${e.title.replace(/^T\d+ — /, "")}`,
+        section: "Temas",
+        icon: "episode",
+        hint: `${e.mod} · ${e.dur}`,
+        keywords: [e.id, e.mod, e.title, e.kind],
+        perform: () => nav("tema", e.id),
+      });
+    });
+
+    // Módulos
+    MODULES.forEach((m) => {
+      acts.push({
+        id: `mod-${m.id}`,
+        label: `Módulo ${m.id} — ${m.name}`,
+        section: "Módulos",
+        icon: "module",
+        hint: `${m.pct}% · ${m.short}`,
+        keywords: [m.id, m.name, m.short],
+        perform: () => nav("modulo", m.id),
+      });
+    });
+
+    // Acciones globales
+    acts.push(
+      {
+        id: "act-tour",
+        label: "Ver tour de bienvenida",
+        section: "Acciones",
+        icon: "spark",
+        hint: "Recorre las 5 piezas clave de la cabina",
+        perform: () => setTourOpen(true),
+      },
+      {
+        id: "act-improve",
+        label: "Mejorar con IA",
+        section: "Acciones",
+        icon: "spark",
+        hint: "Abre el panel de Claude para mejorar lo que estés viendo",
+        shortcut: "mod+i",
+        perform: () => openAI({ target: `Página · ${page}`, purpose: "improve" }),
+      },
+      {
+        id: "act-launch",
+        label: "Lanzar un pipeline",
+        section: "Acciones",
+        icon: "play",
+        hint: "Generar guion, audio, validar, producir lote",
+        perform: () => nav("lanzador"),
+      },
+      {
+        id: "act-logs",
+        label: "Ver logs de hoy",
+        section: "Acciones",
+        icon: "log",
+        perform: () => nav("logs"),
+      },
+      {
+        id: "act-master",
+        label: "Ir al Master",
+        section: "Acciones",
+        icon: "grid",
+        shortcut: "g m",
+        perform: () => nav("master"),
+      },
+      {
+        id: "act-home",
+        label: "Volver al Inicio",
+        section: "Acciones",
+        icon: "home",
+        shortcut: "g i",
+        perform: () => nav("home"),
+      },
+    );
+
+    return acts;
+  }, [page]); // recompute when nav changes context
+
+  // ─────────────────── Hotkeys globales ───────────────────
+  useHotkeys([
+    { combo: "mod+k", description: "Command palette", handler: () => setPaletteOpen((o) => !o) },
+    { combo: "?", description: "Tour de bienvenida", handler: () => setTourOpen(true) },
+    { combo: "Escape", description: "Cerrar modales", handler: () => {
+        if (paletteOpen) setPaletteOpen(false);
+        else if (tourOpen) setTourOpen(false);
+        else if (aiDrawer.open) closeAI();
+    }},
+    { combo: "g p", description: "Ir a Producción", handler: () => nav("produccion") },
+    { combo: "g d", description: "Ir a Datos",      handler: () => nav("datos") },
+    { combo: "g s", description: "Ir a Sistema",    handler: () => nav("sistema") },
+    { combo: "mod+i", description: "Asistente IA",
+      handler: () => openAI({ target: `Página · ${page}`, purpose: "improve" }) },
+  ]);
 
   // Crumbs by page — modulo/episodio reflejan la selección activa
   const CRUMBS = {
@@ -211,37 +338,33 @@ function App() {
     ajustes:    [{ label: "Inicio", id: "home" }, { label: "Sistema" }, { label: "Ajustes" }],
   };
 
-  return (
-    <div className="app" data-density={t.density}>
-      <Sidebar current={page} onNav={nav}/>
-      <main className="main">
-        <Topbar
-          crumbs={CRUMBS[page] || CRUMBS.home}
-          onCrumb={nav}
-          onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
-          onOpenFix={page === "episodio" ? () => openFix({
-            target: sel.episodio || "M3_T2",
-            error: "ElevenLabs 502 en bloque 4 · audio truncado en 03:14",
-            id: sel.episodio || "M3_T2",
-          }) : null}
-        />
-        {t.mode === "industrial" && <HazardTape/>}
+  // Procesos en producción · stream SSE en tiempo real.
+  const { snapshot: liveSnap } = useLiveStream();
+  const liveCount = liveSnap.live.length;
+  const liveLabel = liveSnap.live[0]?.cmd?.slice(0, 40) || "";
 
-        {page === "home"       && <PageInicio     onNav={nav} onOpenAI={openAI}/>}
-        {page === "master"     && <PageMaster     onNav={nav} onOpenAI={openAI} view={t.masterView} density={t.density}/>}
-        {page === "modulo"     && <PageModulo     onNav={nav} onOpenAI={openAI} modId={sel.modulo}/>}
-        {page === "episodio"   && <PageEpisodio   onNav={nav} onOpenAI={openAI} onOpenFix={openFix} epId={sel.episodio}/>}
-        {page === "pizarra"    && <PagePizarra    onNav={nav} onOpenAI={openAI}/>}
-        {page === "mapa"       && <PageMapa       onNav={nav} onOpenAI={openAI}/>}
-        {page === "conectores" && <PageConectores onNav={nav} onOpenAI={openAI}/>}
-        {page === "lanzador"   && <PageLanzador   onNav={nav} onOpenAI={openAI}/>}
-        {page === "fuentes"    && <PageFuentes    onNav={nav} onOpenAI={openAI}/>}
-        {page === "player"     && <PagePlayer     onNav={nav} onOpenAI={openAI}/>}
-        {page === "logs"       && <PageLogs       onNav={nav} onOpenAI={openAI}/>}
-        {page === "optimizar"  && <PageOptimizar  onNav={nav} onOpenAI={openAI}/>}
-        {page === "metricas"   && <PageMetricas   onNav={nav} onOpenAI={openAI}/>}
-        {page === "consumo"    && <PageConsumo    onNav={nav} onOpenAI={openAI}/>}
-        {page === "ajustes"    && <PageAjustes    onNav={nav} onOpenAI={openAI}/>}
+  return (
+    <div className="app v3-shell" data-density={t.density}>
+      <TopNav
+        page={page}
+        onNav={nav}
+        onOpenPalette={openPalette}
+        onOpenAI={() => openAI({ target: `Página · ${page}`, purpose: "improve" })}
+        liveCount={liveCount}
+        liveLabel={liveLabel}
+      />
+      <main className="main">
+        {/* v3 · 3 destinos visibles desde el top-nav + drill-downs internos */}
+        {page === "produccion" && <PageProduccion onNav={nav} onOpenPalette={openPalette}/>}
+        {page === "modulo"     && <PageModuloTema entityId={sel.modulo || "M3"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
+        {page === "tema"       && <PageModuloTema entityId={sel.episodio || "M3_T1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
+        {page === "datos"      && <PageDatos      onNav={nav} onOpenAI={openAI}/>}
+        {page === "sistema"    && <PageSistema    onNav={nav} onOpenAI={openAI}/>}
+
+        {/* v3 fallback · si alguien llega a una página legacy, mostramos Producción */}
+        {!["produccion","modulo","tema","datos","sistema"].includes(page) && (
+          <PageProduccion onNav={nav} onOpenPalette={openPalette}/>
+        )}
       </main>
 
       <AIDrawer
@@ -249,6 +372,17 @@ function App() {
         onClose={closeAI}
         mode={aiDrawer.mode}
         context={aiDrawer.context}
+      />
+
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        actions={paletteActions}
+      />
+
+      <OnboardingTour
+        open={tourOpen}
+        onClose={() => setTourOpen(false)}
       />
 
       <TweaksPanel title="Tweaks · Maquinaria Pesada">

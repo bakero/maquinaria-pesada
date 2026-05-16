@@ -13,6 +13,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import paths  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Previsualizar", page_icon="🎧", layout="wide")
@@ -20,7 +21,12 @@ inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("PREVISUALIZAR AUDIO / VÍDEO")
+page_header(
+    "Previsualizar audio y vídeo",
+    eyebrow="Contenido",
+    subtitle="Player inline para audios y vídeos producidos. Útil para revisar antes de publicar.",
+    help_page_id="previsualizar",
+)
 
 AUDIO_SUFFIXES = (".mp3", ".wav", ".m4a", ".ogg")
 VIDEO_SUFFIXES = (".mp4", ".mov", ".mkv", ".webm")

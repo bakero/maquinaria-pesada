@@ -13,6 +13,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import api_keys, paths  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="API Keys", page_icon="🔑", layout="wide")
@@ -20,10 +21,14 @@ inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("API KEYS")
-st.caption(
-    f"Estado de las credenciales de los proveedores. Se leen de `{paths.env_file()}` "
-    "+ entorno. Las claves no se muestran ni se persisten."
+page_header(
+    "API Keys",
+    eyebrow="Sistema",
+    subtitle=(
+        f"Estado de credenciales de los proveedores. Se leen de `{paths.env_file()}` "
+        "+ entorno. Las claves no se muestran ni se persisten."
+    ),
+    help_page_id="api_keys",
 )
 
 force = st.button("🔄 Re-verificar ahora (ignora caché 5 min)")

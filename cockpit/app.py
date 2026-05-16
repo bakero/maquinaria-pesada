@@ -1,6 +1,9 @@
 """Cockpit MaquinarIA Pesada — entry point.
 
 Run: ``streamlit run cockpit/app.py``
+
+La sidebar se construye con `st.navigation()` agrupando las páginas en seis
+secciones lógicas para no saturar al usuario con 17 entradas planas.
 """
 from __future__ import annotations
 
@@ -15,66 +18,58 @@ if str(_HERE.parent) not in sys.path:
 import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402,F401  (auto-registers all)
-from cockpit.core import paths  # noqa: E402
-from cockpit.theme import inject_theme, render_logo  # noqa: E402
-from cockpit.ui import render_status_sidebar  # noqa: E402
 
 st.set_page_config(
     page_title="MaquinarIA Pesada — Cockpit",
     page_icon="🎙️",
     layout="wide",
 )
-inject_theme()
-render_logo()
-render_status_sidebar()
 
-st.title("MAQUINARIA PESADA · COCKPIT")
-st.caption("Centraliza estado, fuentes, conectores y prompts para Codex.")
 
-st.divider()
+def _page(path: str, title: str, icon: str, **kwargs: object) -> st.Page:
+    return st.Page(str(_HERE / path), title=title, icon=icon, **kwargs)
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Repo root", str(paths.repo_root()))
-with col2:
-    st.metric("Conectores registrados", len(connectors.REGISTRY))
-with col3:
-    n_pdfs = len(list(paths.pdfs_dir().glob("*.pdf"))) if paths.pdfs_dir().exists() else 0
-    st.metric("PDFs detectados", n_pdfs)
 
-st.markdown(
-    """
-    ### Páginas
-    - **🎓 Master** — estado por módulo (Listo / En curso % / Sin empezar).
-    - **🎬 Módulo** — detalle de un módulo: episodios M + Tn con su estado.
-    - **📼 Episodio** — vista única por episodio: guion, PDF, escaleta, audio,
-      logs, verificaciones y botón **🛠️ Arreglar con Claude** si hay errores.
-    - **🎨 Pizarra** — generador visual: esferas = componentes, cuadrados =
-      contenidos, flechas entre ellos. Click en componente → ver código.
-    - **📊 Estado** — inventario por módulo (M0–M14). *Mejorar-con-IA.*
-    - **🔌 Conectores** — servicios, pipelines, fuentes. *Mejorar por conector.*
-    - **📝 Generar Prompt** — formularios + **ejecutor en vivo**.
-    - **📚 Fuentes** — explorador de PDFs, guiones, audio, vídeo, logs.
-    - **📜 Logs** — visor con auto-refresh **+ diagnóstico IA**.
-    - **🔑 API Keys** — verifica Anthropic / OpenAI / ElevenLabs.
-    - **💰 Tokens** — consumo agregado por modelo / kind / origen.
-    - **🎧 Previsualizar** — audio y vídeo desde la UI.
-    - **💬 Asistente** — conversación libre con Claude.
-    - **🧠 Optimizar** — recomendaciones automáticas de ahorro de tokens.
-    - **💳 Economics** — recargas y saldos por proveedor IA.
-    - **🗺️ Mapa** — grafo de componentes editable + chat IA del mapa.
+home = _page("home.py", "Inicio", "🎙️", default=True)
 
-    Cambia el repo objetivo con la variable de entorno `REPO_ROOT`.
-    Las llamadas a IA se registran en `logs/ai_usage.jsonl`. Las recargas en
-    `logs/economics.json`. El mapa en `cockpit/components_map.json`.
+# Contenido — drill-down sobre lo generado.
+master = _page("pages/0_🎓_Master.py", "Master", "🎓")
+modulo = _page("pages/13_🎬_Modulo.py", "Módulo", "🎬")
+episodio = _page("pages/14_📼_Episodio.py", "Episodio", "📼")
+estado = _page("pages/1_📊_Estado.py", "Estado", "📊")
+previsualizar = _page("pages/8_🎧_Previsualizar.py", "Previsualizar", "🎧")
 
-    🔒 **Sandbox IA**: las sesiones de Claude en la app solo pueden modificar
-    contenido generado y el mapa de componentes. Nunca el código de la app.
-    """
+# Producción — operación: lanzar pipelines y consultar logs.
+generar_prompt = _page("pages/3_📝_Generar_Prompt.py", "Generar prompt", "📝")
+fuentes = _page("pages/4_📚_Fuentes.py", "Fuentes", "📚")
+logs = _page("pages/5_📜_Logs.py", "Logs", "📜")
+
+# Coste IA — tracking económico.
+tokens = _page("pages/7_💰_Tokens.py", "Tokens", "💰")
+economics = _page("pages/11_💳_Economics.py", "Economics", "💳")
+optimizar = _page("pages/10_🧠_Optimizar.py", "Optimizar", "🧠")
+
+# Difusión — métricas post-publicación.
+rendimiento = _page("pages/16_📊_Rendimiento.py", "Rendimiento", "📡")
+
+# Sistema — arquitectura y configuración.
+conectores = _page("pages/2_🔌_Conectores.py", "Conectores", "🔌")
+api_keys = _page("pages/6_🔑_API_Keys.py", "API Keys", "🔑")
+mapa = _page("pages/12_🗺️_Mapa.py", "Mapa", "🗺️")
+pizarra = _page("pages/15_🎨_Pizarra.py", "Pizarra", "🎨")
+
+# Asistente.
+asistente = _page("pages/9_💬_Asistente.py", "Asistente", "💬")
+
+nav = st.navigation(
+    {
+        "Inicio": [home],
+        "🎓 Contenido": [master, modulo, episodio, estado, previsualizar],
+        "🏭 Producción": [generar_prompt, fuentes, logs],
+        "💸 Coste IA": [tokens, economics, optimizar],
+        "📡 Difusión": [rendimiento],
+        "⚙️ Sistema": [conectores, api_keys, mapa, pizarra],
+        "🤖 Asistente": [asistente],
+    }
 )
-
-if not paths.repo_root().exists():
-    st.error(
-        f"REPO_ROOT no existe: `{paths.repo_root()}`. "
-        "Ajusta la variable de entorno antes de continuar."
-    )
+nav.run()

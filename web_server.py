@@ -85,7 +85,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 ROOT = Path(__file__).resolve().parent
@@ -142,6 +142,132 @@ _frontend_log = get_logger("web_frontend")
 
 
 # ---- API helpers ------------------------------------------------------
+
+
+def _human_size(n: int | None) -> str:
+    """Tamaño humano-legible (B/KB/MB)."""
+    if n is None or n < 0:
+        return "—"
+    if n < 1024:
+        return f"{n} B"
+    if n < 1024 * 1024:
+        return f"{n / 1024:.1f} kB"
+    return f"{n / (1024 * 1024):.1f} MB"
+
+
+def _human_ago_short(mtime: float | None) -> str:
+    """Formato corto de tiempo transcurrido: 12 may 14:08 / ahora / —."""
+    if not mtime:
+        return "—"
+    try:
+        import datetime as _dt
+        t = _dt.datetime.fromtimestamp(mtime)
+        return t.strftime("%d %b %H:%M").lower()
+    except Exception:  # noqa: BLE001
+        return "—"
+
+
+# Pipeline que produce cada slot (para localizar logs por nombre).
+_SLOT_PIPELINE_HINTS = {
+    "pdf":      [],
+    "guion":    ["guion", "generar_guion"],
+    "escaleta": ["escaleta"],
+    "audio":    ["episodio", "audio", "tts", "elevenlabs", "produccion"],
+    "video":    ["video", "videopodcast", "kling"],
+}
+
+
+def _tail_text(path: Path, lines: int = 2, max_bytes: int = 4096) -> str:
+    """Lee las últimas `lines` líneas (no vacías) de un fichero de texto."""
+    try:
+        if not path.exists() or not path.is_file():
+            return ""
+        size = path.stat().st_size
+        with path.open("rb") as f:
+            if size > max_bytes:
+                f.seek(-max_bytes, 2)
+                _ = f.readline()  # descartar línea parcial
+            blob = f.read().decode("utf-8", errors="replace")
+        non_empty = [ln.rstrip() for ln in blob.splitlines() if ln.strip()]
+        return "\n".join(non_empty[-lines:])
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _find_slot_log(ep, kind: str) -> Path | None:
+    """Encuentra el log más reciente que matchee con el pipeline de `kind`."""
+    if not getattr(ep, "logs", None):
+        return None
+    hints = _SLOT_PIPELINE_HINTS.get(kind, [])
+    if not hints:
+        return None
+    candidates: list[Path] = []
+    for log_path in ep.logs:
+        try:
+            name = Path(log_path).name.lower()
+        except Exception:  # noqa: BLE001
+            continue
+        if any(h in name for h in hints):
+            candidates.append(Path(log_path))
+    if not candidates:
+        return None
+    try:
+        return max(candidates, key=lambda p: p.stat().st_mtime)
+    except Exception:  # noqa: BLE001
+        return candidates[0]
+
+
+def load_slot_meta(ep, kind: str) -> dict:
+    """Meta enriquecida por slot: path real, tamaño, mtime, tail del log."""
+    from cockpit.core import paths
+    root = paths.repo_root().resolve()
+
+    raw = getattr(ep, kind, None)
+    rel_path = None
+    size = None
+    mtime = None
+    exists = False
+    if raw:
+        try:
+            p = Path(raw)
+            if p.exists() and p.is_file():
+                exists = True
+                st = p.stat()
+                size = st.st_size
+                mtime = st.st_mtime
+            try:
+                rel_path = p.resolve().relative_to(root).as_posix()
+            except (ValueError, OSError):
+                rel_path = p.as_posix()
+        except Exception:  # noqa: BLE001
+            pass
+
+    # Tail del log del pipeline asociado (si lo hay).
+    log_path = _find_slot_log(ep, kind)
+    tail = ""
+    log_mtime = None
+    log_rel = None
+    if log_path is not None:
+        tail = _tail_text(log_path, lines=2)
+        try:
+            log_mtime = log_path.stat().st_mtime
+            log_rel = log_path.resolve().relative_to(root).as_posix()
+        except Exception:  # noqa: BLE001
+            log_rel = log_path.as_posix() if log_path else None
+
+    return {
+        "kind":      kind,
+        "exists":    exists,
+        "path":      rel_path,
+        "size":      size,
+        "size_human": _human_size(size),
+        "mtime":     mtime,
+        "mtime_human": _human_ago_short(mtime),
+        "log_path":  log_rel,
+        "log_mtime": log_mtime,
+        "log_mtime_human": _human_ago_short(log_mtime),
+        "tail":      tail,
+    }
 
 
 def _state_for_episode(ep) -> dict:
@@ -405,6 +531,8 @@ def load_episode_detail(ep_id: str) -> dict | None:
     except Exception:  # noqa: BLE001
         progress = None
 
+    slots = {k: load_slot_meta(ep, k) for k in ("pdf", "guion", "escaleta", "audio", "video")}
+
     return {
         "id": ep.id,
         "mod": ep.module,
@@ -415,6 +543,7 @@ def load_episode_detail(ep_id: str) -> dict | None:
         "dur": "—",
         "state": _state_for_episode(ep),
         "progress": progress,
+        "slots": slots,
         "paths": {
             "pdf": rel(ep.pdf),
             "guion": rel(ep.guion),
@@ -423,6 +552,70 @@ def load_episode_detail(ep_id: str) -> dict | None:
             "video": rel(ep.video),
             "logs": [r for r in (rel(p) for p in ep.logs) if r],
         },
+    }
+
+
+def load_module_detail(mod_id: str) -> dict | None:
+    """Detalle del módulo: M episodio + temas T + progreso agregado."""
+    try:
+        from cockpit.core import episodes
+    except Exception:
+        return None
+    try:
+        all_eps = episodes.scan_all()
+    except Exception:
+        all_eps = []
+    eps_mod = [e for e in all_eps if e.module == mod_id]
+    if not eps_mod:
+        return None
+
+    # Metadata del módulo desde modules_meta()
+    meta = None
+    try:
+        for m in episodes.modules_meta():
+            if m["id"] == mod_id:
+                meta = m
+                break
+    except Exception:
+        pass
+
+    # Progreso agregado (M + temas).
+    total = 0
+    done = 0
+    warn = 0
+    alert = 0
+    slot_kinds = ("pdf", "guion", "escaleta", "audio", "video")
+    children = []
+    for ep in eps_mod:
+        state = _state_for_episode(ep)
+        for k in slot_kinds:
+            total += 1
+            v = state[k]
+            if v == "ok":
+                done += 1
+            elif v == "warn":
+                warn += 1
+            elif v == "alert":
+                alert += 1
+        children.append({
+            "id":    ep.id,
+            "kind":  ep.kind,
+            "title": ep.label or f"Episodio {ep.id}",
+            "dur":   "—",
+            "state": state,
+            "done":  sum(1 for k in slot_kinds if state[k] == "ok"),
+            "total": len(slot_kinds),
+        })
+
+    pct = int(round((done / total) * 100)) if total else 0
+    return {
+        "id":       mod_id,
+        "name":     (meta or {}).get("name") or mod_id,
+        "short":    (meta or {}).get("short") or "",
+        "status":   _modulo_status_from_eps(eps_mod, done / total if total else 0.0),
+        "pct":      pct,
+        "totals":   {"total": total, "done": done, "warn": warn, "alert": alert},
+        "children": children,
     }
 
 
@@ -1172,6 +1365,85 @@ def create_app() -> FastAPI:
         if detail is None:
             return _api_json({"error": "not found"}, status=404)
         return _api_json(detail)
+
+    @app.get("/api/module/{mod_id}")
+    def module_detail(mod_id: str) -> Response:
+        detail = load_module_detail(mod_id)
+        if detail is None:
+            return _api_json({"error": "not found"}, status=404)
+        return _api_json(detail)
+
+    @app.get("/api/tema/{tema_id}")
+    def tema_detail(tema_id: str) -> Response:
+        # Un tema es un Episode con kind == "T". Reusa load_episode_detail.
+        detail = load_episode_detail(tema_id)
+        if detail is None or detail.get("kind") != "T":
+            return _api_json({"error": "not found"}, status=404)
+        return _api_json(detail)
+
+    @app.get("/api/stream")
+    def stream(request: Request) -> StreamingResponse:
+        """Server-Sent Events para el panel Live.
+
+        Emite cada ~2s un evento JSON con `live` (procesos vivos) y
+        `recent` (últimos N archivos modificados). El cliente puede
+        consumirlo con `new EventSource('/api/stream')`.
+        """
+        async def gen():
+            import asyncio
+            seen_recent_key = ""
+            seen_live_key = ""
+            last_full = 0.0
+            # Primer evento inmediato (full snapshot).
+            try:
+                live = load_live_procs()
+            except Exception:  # noqa: BLE001
+                live = []
+            try:
+                recent = load_recent_files()[:10]
+            except Exception:  # noqa: BLE001
+                recent = []
+            seen_live_key = "|".join(f"{p.get('pid')}:{p.get('t')}" for p in live)
+            seen_recent_key = "|".join(f"{r.get('path')}:{r.get('mtime')}" for r in recent)
+            last_full = time.time()
+            yield f"data: {json.dumps({'ts': last_full, 'live': live, 'recent': recent}, default=str)}\n\n"
+
+            try:
+                while True:
+                    await asyncio.sleep(2.0)
+                    if await request.is_disconnected():
+                        return
+                    now = time.time()
+                    try:
+                        live = load_live_procs()
+                    except Exception:  # noqa: BLE001
+                        live = []
+                    live_key = "|".join(f"{p.get('pid')}:{p.get('t')}" for p in live)
+                    payload: dict = {"ts": now}
+
+                    if live_key != seen_live_key or now - last_full > 10:
+                        payload["live"] = live
+                        seen_live_key = live_key
+                    try:
+                        recent = load_recent_files()[:10]
+                    except Exception:  # noqa: BLE001
+                        recent = []
+                    recent_key = "|".join(f"{r.get('path')}:{r.get('mtime')}" for r in recent)
+                    if recent_key != seen_recent_key or now - last_full > 10:
+                        payload["recent"] = recent
+                        seen_recent_key = recent_key
+
+                    if len(payload) > 1 or now - last_full > 10:
+                        last_full = now
+                        yield f"data: {json.dumps(payload, default=str)}\n\n"
+                    else:
+                        yield ": heartbeat\n\n"  # keep connection alive
+            except asyncio.CancelledError:
+                return
+
+        return StreamingResponse(gen(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache",
+                                          "X-Accel-Buffering": "no"})
 
     @app.get("/api/ai-usage")
     def ai_usage() -> Response:

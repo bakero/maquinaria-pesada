@@ -13,6 +13,7 @@ import streamlit as st  # noqa: E402
 from cockpit.core import paths, usage_tracker  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
 st.set_page_config(page_title="Tokens", page_icon="💰", layout="wide")
@@ -35,9 +36,13 @@ def _to_rows(bucket: dict) -> list[dict]:
         )
     return rows
 
-st.title("CONSUMO DE TOKENS Y COSTE")
 log_path = paths.ai_usage_log()
-st.caption(f"Fuente: `{log_path}`")
+page_header(
+    "Consumo de tokens y coste",
+    eyebrow="Coste IA",
+    subtitle=f"Fuente: `{log_path}`. Cada llamada IA via ai_client se registra aquí.",
+    help_page_id="tokens",
+)
 
 if not log_path.exists():
     st.info(

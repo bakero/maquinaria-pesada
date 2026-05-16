@@ -17,16 +17,21 @@ import streamlit as st  # noqa: E402
 from cockpit.core import ai_client, usage_tracker  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 
 st.set_page_config(page_title="Asistente", page_icon="💬", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("ASISTENTE — CONVERSACIÓN CON CLAUDE")
-st.caption(
-    "Pide cambios al sistema, debate diseño, pregunta sobre prompts. Cada turno "
-    "registra tokens y coste en la página *Tokens*."
+page_header(
+    "Asistente · conversación con Claude",
+    eyebrow="Asistente",
+    subtitle=(
+        "Pide cambios al sistema, debate diseño, pregunta sobre prompts. Cada turno "
+        "registra tokens y coste en la página *Tokens*."
+    ),
+    help_page_id="asistente",
 )
 
 SYSTEM_PROMPT = (

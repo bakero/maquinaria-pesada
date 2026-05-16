@@ -1,3 +1,4 @@
+"""Lanzador de pipelines — formulario + ejecución para cualquier pipeline registrado."""
 from __future__ import annotations
 
 import sys
@@ -11,111 +12,134 @@ import streamlit as st  # noqa: E402
 
 from cockpit import connectors  # noqa: E402
 from cockpit.connectors.base import PipelineConnector  # noqa: E402
+from cockpit.pipeline_runner import render_pipeline  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import (  # noqa: E402
+    info_callout,
+    page_header,
+    section,
+    status_pill,
+)
 from cockpit.ui_improve import render_improve_block  # noqa: E402
 
-st.set_page_config(page_title="Generar prompt", page_icon="📝", layout="wide")
+st.set_page_config(page_title="Lanzar pipeline", page_icon="📝", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
-st.title("GENERAR PROMPT PARA CODEX")
-st.caption("Rellena el formulario y copia el comando resultante a Codex. La cockpit no ejecuta nada.")
 
-pipelines = [c for c in connectors.by_category("pipeline") if isinstance(c, PipelineConnector)]
+page_header(
+    "Lanzar pipeline",
+    eyebrow="Producción",
+    subtitle=(
+        "Selecciona un pipeline, rellena el formulario y ejecútalo "
+        "desde el cockpit con streaming de logs. También puedes "
+        "generar el comando equivalente para pegarlo en Codex."
+    ),
+    help_page_id="lanzador",
+)
+
+pipelines = [
+    c for c in connectors.by_category("pipeline") if isinstance(c, PipelineConnector)
+]
 if not pipelines:
     st.warning("No hay pipelines registrados.")
     st.stop()
 
-labels = {p.id: f"{p.icon} {p.label}" for p in pipelines}
-sel_id = st.selectbox(
-    "Pipeline",
-    options=[p.id for p in pipelines],
-    format_func=lambda i: labels[i],
+# Agrupación temática para reducir carga cognitiva.
+GROUPS: dict[str, list[str]] = {
+    "🎙️ Generación de contenido": [
+        "generar_guion", "generar_guion_t", "generar_episodio",
+    ],
+    "✅ Validación": [
+        "validar_episodio", "validar_episodio_v6",
+    ],
+    "⚙️ Operación masiva": [
+        "produce_pending", "estado_proyecto",
+    ],
+    "🧰 Utilidades": [
+        "normalizar_guiones", "dual_debate",
+    ],
+}
+
+
+def _pipe_label(p: PipelineConnector) -> str:
+    return f"{p.icon} {p.label}"
+
+
+# Mapa id → connector para acceso rápido
+by_id: dict[str, PipelineConnector] = {p.id: p for p in pipelines}
+
+info_callout(
+    "Los pipelines marcados como ⚠️ legacy se conservan por compatibilidad "
+    "pero **no** se usan para generación nueva. Para guiones nuevos usa "
+    "**Generar guion M** o **Generar guion T**.",
+    kind="tip",
 )
-pipe: PipelineConnector = connectors.get(sel_id)  # type: ignore[assignment]
 
-st.markdown(f"**Script:** `{pipe.script}`")
-st.caption(pipe.description)
+# Restablecer selección si venimos de otro flujo
+default_id = st.session_state.get("_lanzador_preselect")
 
-values: dict[str, object] = {}
-with st.form(key=f"form_{pipe.id}"):
-    for f in pipe.fields:
-        key = f"{pipe.id}_{f.flag}"
-        label = f"{f.label} ({f.flag})" + (" *" if f.required else "")
-        if f.kind == "bool":
-            values[f.flag] = st.checkbox(label, value=bool(f.default), help=f.help)
-        elif f.kind == "int":
-            default = int(f.default) if f.default not in (None, "") else 0
-            values[f.flag] = st.number_input(label, value=default, step=1, help=f.help)
-        elif f.kind == "select":
-            opts = f.options or [""]
-            default_idx = opts.index(f.default) if f.default in opts else 0
-            values[f.flag] = st.selectbox(label, opts, index=default_idx, help=f.help)
-        else:  # str / path
-            values[f.flag] = st.text_input(
-                label,
-                value=str(f.default) if f.default is not None else "",
-                placeholder=f.placeholder,
-                help=f.help,
-            )
-    submitted = st.form_submit_button("Generar comando")
+tabs = st.tabs(list(GROUPS.keys()))
+for tab, (group_name, ids) in zip(tabs, GROUPS.items(), strict=True):
+    with tab:
+        in_group = [by_id[i] for i in ids if i in by_id]
+        if not in_group:
+            st.caption("Sin pipelines en este grupo.")
+            continue
 
-if submitted:
-    missing = [f.flag for f in pipe.fields if f.required and not values.get(f.flag)]
-    if missing:
-        st.error(f"Faltan campos obligatorios: {', '.join(missing)}")
-    else:
-        st.session_state[f"_values_{pipe.id}"] = values
-        cmd = pipe.build_command(values)
-        st.success("Comando listo. Copia y pega en Codex:")
-        st.code(cmd, language="bash")
+        # Selector dentro de la pestaña
+        idx = 0
+        if default_id and default_id in [p.id for p in in_group]:
+            idx = [p.id for p in in_group].index(default_id)
+            st.session_state["_lanzador_preselect"] = None
 
-values_ready = st.session_state.get(f"_values_{pipe.id}")
-if values_ready:
-    st.divider()
-    st.subheader("Ejecutar localmente")
-    st.caption("Lanza el pipeline desde la cockpit. Los logs aparecen en vivo.")
-    st.code(pipe.preview(values_ready), language="bash")
+        sel_id = st.selectbox(
+            "Pipeline",
+            options=[p.id for p in in_group],
+            format_func=lambda i: _pipe_label(by_id[i]),
+            index=idx,
+            key=f"_lanzador_select_{group_name}",
+            label_visibility="collapsed",
+        )
+        pipe = by_id[sel_id]
 
-    confirm = st.checkbox(
-        "Sí, ejecutar este comando ahora",
-        key=f"_confirm_{pipe.id}",
-        help="Marca esta casilla para habilitar el botón. Evita ejecuciones accidentales.",
-    )
-    if st.button("▶ Ejecutar", type="primary", disabled=not confirm, key=f"_run_{pipe.id}"):
-        from cockpit.core.runner import RunResult
+        # Metadatos del pipeline
+        meta = st.columns([3, 2])
+        with meta[0]:
+            st.markdown(f"**Script** · `{pipe.script}`")
+            st.caption(pipe.description)
+        with meta[1]:
+            status = pipe.status()
+            kind = "ok" if status.ok else "fail"
+            label = "Script presente" if status.ok else status.detail or "no disponible"
+            st.markdown(status_pill(label, kind=kind), unsafe_allow_html=True)
+            if pipe.fields:
+                st.caption(f"{len(pipe.fields)} flag{'s' if len(pipe.fields) != 1 else ''} configurables")
+            else:
+                st.caption("Sin flags configurables")
 
-        output_area = st.empty()
-        log_lines: list[str] = []
-        with st.status("Ejecutando…", expanded=True) as status:
-            for item in pipe.stream(values_ready):
-                if isinstance(item, RunResult):
-                    if item.returncode == 0:
-                        status.update(
-                            label=f"✅ Completado en {item.duration_s}s",
-                            state="complete",
-                        )
-                    else:
-                        status.update(
-                            label=f"❌ Falló (exit {item.returncode}) en {item.duration_s}s",
-                            state="error",
-                        )
-                else:
-                    log_lines.append(item)
-                    output_area.code("\n".join(log_lines[-200:]), language="text")
+        section("Configuración", subtitle="Rellena los campos y pulsa Preparar comando.")
 
-render_improve_block(
-    source=f"pipeline:{pipe.id}",
-    context=(
-        f"Pipeline «{pipe.label}» (script={pipe.script}, id={pipe.id}). "
-        f"Descripción: {pipe.description}. Campos del formulario: "
-        + ", ".join(f"{f.flag}({f.kind})" for f in pipe.fields)
-    ),
-    title="✨ Mejorar este pipeline",
-    default_prompt=(
-        "Sugiere mejoras al pipeline: validaciones que faltan, flags útiles, "
-        "manejo de errores, retry, tests mínimos."
-    ),
-    kind="update",
-)
+        render_pipeline(
+            pipe,
+            key=f"lanzador_{pipe.id}",
+            show_codex=True,
+        )
+
+        # Bloque de mejora con Claude (contextual al pipeline)
+        st.divider()
+        render_improve_block(
+            source=f"pipeline:{pipe.id}",
+            context=(
+                f"Pipeline «{pipe.label}» (script={pipe.script}, id={pipe.id}). "
+                f"Descripción: {pipe.description}. Campos del formulario: "
+                + ", ".join(f"{f.flag}({f.kind})" for f in pipe.fields)
+            ),
+            title="✨ Mejorar este pipeline",
+            default_prompt=(
+                "Sugiere mejoras al pipeline: validaciones que faltan, flags "
+                "útiles, manejo de errores, retry, tests mínimos."
+            ),
+            kind="update",
+        )

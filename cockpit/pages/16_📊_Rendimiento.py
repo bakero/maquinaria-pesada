@@ -16,16 +16,21 @@ from cockpit.connectors.analytics.linkedin import LinkedInAnalytics  # noqa: E40
 from cockpit.connectors.analytics.spotify import SpotifyAnalytics  # noqa: E402
 from cockpit.theme import inject_theme, render_logo  # noqa: E402
 from cockpit.ui import render_status_sidebar  # noqa: E402
+from cockpit.ui_components import page_header  # noqa: E402
 
 st.set_page_config(page_title="Rendimiento", page_icon="📊", layout="wide")
 inject_theme()
 render_logo()
 render_status_sidebar()
 
-st.title("RENDIMIENTO — MÉTRICAS DE PUBLICACIONES")
-st.caption(
-    "Conectores a Spotify, iVoox y LinkedIn. Las credenciales viven en `.env`. "
-    "Datos cacheados en `logs/analytics/<source>.json`."
+page_header(
+    "Rendimiento · métricas de publicaciones",
+    eyebrow="Difusión",
+    subtitle=(
+        "Conectores a Spotify, iVoox y LinkedIn. Las credenciales viven en `.env`. "
+        "Datos cacheados en `logs/analytics/<source>.json`."
+    ),
+    help_page_id="rendimiento",
 )
 
 sp = SpotifyAnalytics()
