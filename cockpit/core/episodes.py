@@ -209,13 +209,16 @@ def _find_pdf(module: str, kind: str, number: int | None) -> Path | None:
             if re.match(rf"^M0*{digits}_T_.+\.pdf$", p.name, re.IGNORECASE):
                 return p
         return None
-    # T: busca en PDFs/temas/ algo que contenga Mn_TX_T{number} o Tk
+    # T: busca en PDFs/temas/ algo como M{n}_T{k}_<slug>.pdf (o legacy
+    # M{n}_TX_T{k}_…). Usamos (?<![A-Za-z0-9]) en vez de \b porque '_'
+    # es word-char en regex y rompe la transición.
     sub = pdir / "temas"
     if sub.exists():
         for p in sub.glob("*.pdf"):
             if re.search(
-                rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE
-            ) or re.search(rf"\bT0*{number}_", p.name, re.IGNORECASE):
+                rf"(?<![A-Za-z0-9])M0*{digits}_(?:TX_)?T0*{number}(?![A-Za-z0-9])",
+                p.name, re.IGNORECASE,
+            ):
                 return p
     return None
 
@@ -232,11 +235,17 @@ def _find_escaleta(module: str, kind: str, number: int | None) -> Path | None:
                 return p
         # fallback: cualquier escaleta MODxxx con el dígito
         for p in edir.glob("*.md"):
-            if re.search(rf"\bMOD0*{digits}\b", p.name, re.IGNORECASE):
+            if re.search(
+                rf"(?<![A-Za-z0-9])MOD0*{digits}(?![A-Za-z0-9])",
+                p.name, re.IGNORECASE,
+            ):
                 return p
         return None
     for p in edir.glob("*.md"):
-        if re.search(rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE):
+        if re.search(
+            rf"(?<![A-Za-z0-9])M0*{digits}_(?:TX_)?T0*{number}(?![A-Za-z0-9])",
+            p.name, re.IGNORECASE,
+        ):
             return p
     return None
 

@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { Icon } from "../components";
-import { FIXTURE_EPISODES, FIXTURE_MODULES } from "../data";
+import { getEpisodes, getModules } from "../data";
 
 const SLOT_KINDS = ["pdf", "guion", "escaleta", "audio", "video"] as const;
 
@@ -14,8 +14,11 @@ export interface PageProduccionProps {
 }
 
 export function PageProduccion({ onNav, onOpenPalette }: PageProduccionProps) {
-  const modules = FIXTURE_MODULES;
-  const allEps = FIXTURE_EPISODES;
+  // getModules/getEpisodes leen el estado mutable de data.ts que
+  // applyBootstrap() rellena con la respuesta real de /api/bootstrap.
+  // Sin servidor, devuelven los fixtures como fallback.
+  const modules = getModules();
+  const allEps = getEpisodes();
 
   // KPIs reales: progreso global, módulos terminados, episodios completos,
   // contenidos producidos, en alerta, sin empezar.

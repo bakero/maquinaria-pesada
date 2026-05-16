@@ -144,40 +144,61 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
         </div>
       </header>
 
-      {/* Sibling rail */}
-      {(isModule || temas.length > 0) && (
-        <div className="v3-mt-rail">
-          {moduleEpisode && (
-            <div
-              className={`v3-mt-rail-cell${isModule ? " active" : " parent"}`}
-              onClick={() => onNav("modulo", modId)}
-              title={moduleEpisode.title}
-            >
-              <span>{modId}</span>
-              <span className="v3-mt-rail-cell-dot ok"/>
+      {/* Sibling rail · sticky con contador "X / N generados" */}
+      {(isModule || temas.length > 0) && (() => {
+        const temasCompletos = temas.filter(
+          (t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok"),
+        ).length;
+        const temasConAlgo = temas.filter(
+          (t) => SLOT_KINDS.some((k) => slotState(t, k) === "ok"),
+        ).length;
+        return (
+          <div className="v3-mt-rail-wrap">
+            <div className="v3-mt-rail-meta">
+              <span className="v3-mt-rail-meta-label">Temas del módulo</span>
+              <span className="v3-mt-rail-meta-count">
+                <strong>{temasCompletos}</strong>
+                <span style={{ color: "var(--text-mute)" }}> completos · </span>
+                <strong>{temasConAlgo}</strong>
+                <span style={{ color: "var(--text-mute)" }}> con algo · </span>
+                <strong>{temas.length}</strong>
+                <span style={{ color: "var(--text-mute)" }}> total</span>
+              </span>
             </div>
-          )}
-          {temas.map((t) => {
-            const tnum = t.id.split("_").slice(1).join("_");
-            const active = !isModule && t.id === ent.id;
-            const slotDone = SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length;
-            const dot = slotDone === 5 ? "ok"
-                      : slotDone >= 1 ? "warn"
-                      : "alert";
-            return (
-              <div
-                key={t.id}
-                className={`v3-mt-rail-cell${active ? " active" : ""}`}
-                onClick={() => onNav("tema", t.id)}
-                title={t.title}
-              >
-                <span>{tnum}</span>
-                <span className={`v3-mt-rail-cell-dot ${dot}`}/>
-              </div>
-            );
-          })}
-        </div>
-      )}
+            <div className="v3-mt-rail">
+              {moduleEpisode && (
+                <div
+                  className={`v3-mt-rail-cell${isModule ? " active" : " parent"}`}
+                  onClick={() => onNav("modulo", modId)}
+                  title={moduleEpisode.title}
+                >
+                  <span>{modId}</span>
+                  <span className="v3-mt-rail-cell-dot ok"/>
+                </div>
+              )}
+              {temas.map((t) => {
+                const tnum = t.id.split("_").slice(1).join("_");
+                const active = !isModule && t.id === ent.id;
+                const slotDone = SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length;
+                const dot = slotDone === 5 ? "ok"
+                          : slotDone >= 1 ? "warn"
+                          : "alert";
+                return (
+                  <div
+                    key={t.id}
+                    className={`v3-mt-rail-cell${active ? " active" : ""}`}
+                    onClick={() => onNav("tema", t.id)}
+                    title={t.title}
+                  >
+                    <span>{tnum}</span>
+                    <span className={`v3-mt-rail-cell-dot ${dot}`}/>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Toast */}
       {toast && (
@@ -294,8 +315,12 @@ function Slot({ kind, entity, detail, expanded, busy, onToggle, onGenerate, onGe
             </>
           ) : has ? (
             <>
-              <button className="v3-btn xs" onClick={onGenerate} disabled={busy}
-                      title={`Regenerar ${SLOT_LABEL[kind].toLowerCase()}`}>
+              <button
+                className={`v3-btn xs${kind === "guion" ? " primary" : ""}`}
+                onClick={onGenerate}
+                disabled={busy}
+                title={`Regenerar ${SLOT_LABEL[kind].toLowerCase()}`}
+              >
                 {busy ? "lanzando…" : "Regenerar"}
               </button>
               <button className="v3-btn xs ghost" onClick={onGenerateAdvanced} title="Formulario avanzado">
@@ -404,8 +429,12 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
   onOpenAI: (c?: unknown) => void;
 }) {
   if (kind === "pdf") return null;
+  // Si no hay log asociado al pipeline, no renderizamos nada: evita el
+  // bloque "(sin log de X para Y)" que ensucia el visor en slots vacíos.
+  if (!slotMeta?.log_path) return null;
+
   const pipe = SLOT_PIPELINE[kind];
-  const logUrl = slotMeta?.log_path ? `/files/${slotMeta.log_path}` : null;
+  const logUrl = `/files/${slotMeta.log_path}`;
   return (
     <div style={{ marginTop: 12 }}>
       <div style={{
@@ -415,7 +444,7 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
         <span style={{ fontFamily: "var(--f-mono)", fontSize: 10.5, letterSpacing: "0.14em",
                        textTransform: "uppercase", color: "var(--text-mute)" }}>
           Log de generación · {pipe}
-          {slotMeta?.log_mtime_human && slotMeta.log_mtime_human !== "—"
+          {slotMeta.log_mtime_human && slotMeta.log_mtime_human !== "—"
             ? <span style={{ marginLeft: 8, letterSpacing: 0, textTransform: "none" }}>· {slotMeta.log_mtime_human}</span>
             : null}
         </span>

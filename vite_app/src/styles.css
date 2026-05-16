@@ -3992,13 +3992,47 @@ h1, h2, h3, h4, h5, h6,
   background: var(--y);
 }
 
-/* ── Sibling rail (en el header lateral) ──────────────────────────── */
+/* ── Sibling rail (sticky con contador) ───────────────────────────── */
+.v3-mt-rail-wrap {
+  position: sticky;
+  top: 48px;                      /* debajo del top-nav */
+  z-index: 60;
+  background: var(--bg);
+  margin: 16px 0 24px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-2);
+}
+.v3-mt-rail-meta {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 4px 2px 8px;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.v3-mt-rail-meta-label { color: var(--y); }
+.v3-mt-rail-meta-count {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.v3-mt-rail-meta-count strong {
+  color: var(--text);
+  font-weight: 600;
+}
 .v3-mt-rail {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   gap: 0;
-  margin: 16px 0 24px;
   border: 1px solid var(--border-2);
+  background: var(--bg);
+  max-height: 132px;
+  overflow-y: auto;
 }
 .v3-mt-rail-cell {
   padding: 10px 8px;

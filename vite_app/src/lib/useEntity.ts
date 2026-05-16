@@ -218,15 +218,21 @@ export async function generateSlot(entityId: string, kind: SlotMeta["kind"]) {
       return { error: String(e) };
     }
   }
-  const scriptMap: Record<SlotMeta["kind"], string> = {
-    pdf:      "",
-    guion:    "generar_guion.py",
-    escaleta: "generar_escaleta.py",
-    audio:    "generar_episodio_v2.py",
-    video:    "generar_video.py",
+  // Solo permitimos slots cuyo pipeline existe realmente en el repo y está
+  // en la whitelist ALLOWED_SCRIPTS de web_server.py. PDF no se genera
+  // (es source); escaleta y vídeo no tienen pipeline propio aún —
+  // devolvemos un error explícito que el UI mostrará como toast.
+  const scriptMap: Partial<Record<SlotMeta["kind"], string>> = {
+    audio: "generar_episodio_v2.py",
   };
   const script = scriptMap[kind];
-  if (!script) return { error: "no script" };
+  if (!script) {
+    return {
+      error: kind === "pdf"
+        ? "El PDF es la fuente; no se genera desde la app"
+        : `Pipeline para ${kind} no disponible aún en el repo`,
+    };
+  }
   return runPipeline(script, ["--ep", entityId]);
 }
 
