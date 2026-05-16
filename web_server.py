@@ -1318,6 +1318,86 @@ async def _json_body(request: Request) -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> dict:
+    """Lee los últimos `days` ficheros del daylog y devuelve las líneas que
+    mencionan a `entity_id` (M3, M3_T1, etc.).
+
+    Daylog: logs/run/maquinaria_AAAA-MM-DD.log (texto plano · una línea por
+    evento · formato:  AAAA-MM-DDTHH:MM:SS [LEVEL] run=… script=… | mensaje).
+
+    Coincide cuando la línea contiene el id exacto como token (M3 no matchea
+    M30) o cuando contiene un nombre de fichero asociado al episodio (p. ej.
+    "M3_Machine_Learning_Clasico.txt").
+    """
+    import datetime as _dt
+    from pathlib import Path as _P
+
+    try:
+        from cockpit.core import paths
+        root = paths.repo_root().resolve()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "entries": []}
+
+    log_dir = root / "logs" / "run"
+    if not log_dir.exists():
+        return {"ok": True, "entries": [], "days_scanned": 0}
+
+    # Construye un set de tokens que identifican al episodio.
+    eid = entity_id.strip()
+    tokens: set[str] = {eid}
+    # M3_T1 → también token M3_T01, M3_TX_T1, y matchea audio M3_T1.mp3
+    if "_T" in eid:
+        mod, suf = eid.split("_T", 1)
+        try:
+            num = int(suf)
+            tokens.add(f"{mod}_T{num:02d}")
+            tokens.add(f"{mod}_TX_T{num}")
+            tokens.add(f"{mod}_TX_E_T{num}")
+        except ValueError:
+            pass
+
+    # Patrón regex con word-boundary para evitar M3 → M30.
+    import re as _re
+    pat = _re.compile(
+        r"(?<![A-Za-z0-9_])(" + "|".join(_re.escape(t) for t in tokens) + r")(?![A-Za-z0-9])",
+        _re.IGNORECASE,
+    )
+
+    today = _dt.date.today()
+    entries: list[dict] = []
+    days_scanned = 0
+    for delta in range(days):
+        day = today - _dt.timedelta(days=delta)
+        p: _P = log_dir / f"maquinaria_{day.isoformat()}.log"
+        if not p.exists():
+            continue
+        days_scanned += 1
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if not pat.search(line):
+                        continue
+                    entries.append({"day": day.isoformat(), "line": line.rstrip()})
+                    if len(entries) >= limit * 2:
+                        break
+        except OSError:
+            continue
+        if len(entries) >= limit * 2:
+            break
+
+    # Ordena por timestamp (las líneas empiezan con ISO datetime).
+    entries.sort(key=lambda e: e["line"][:19])
+    if len(entries) > limit:
+        entries = entries[-limit:]
+    return {
+        "ok": True,
+        "entity_id": entity_id,
+        "days_scanned": days_scanned,
+        "count": len(entries),
+        "entries": entries,
+    }
+
+
 def _api_json(payload, status: int = 200) -> Response:
     """Respuesta JSON con Cache-Control: no-store. Usa `default=str` para
     serializar Paths/dataclasses igual que el server anterior."""
@@ -1380,6 +1460,10 @@ def create_app() -> FastAPI:
         if detail is None or detail.get("kind") != "T":
             return _api_json({"error": "not found"}, status=404)
         return _api_json(detail)
+
+    @app.get("/api/entity/{entity_id}/log-lines")
+    def entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> Response:
+        return _api_json(load_entity_log_lines(entity_id, days=days, limit=limit))
 
     @app.get("/api/stream")
     def stream(request: Request) -> StreamingResponse:

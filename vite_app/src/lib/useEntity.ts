@@ -229,3 +229,47 @@ export async function generateSlot(entityId: string, kind: SlotMeta["kind"]) {
   if (!script) return { error: "no script" };
   return runPipeline(script, ["--ep", entityId]);
 }
+
+// ───────────────────────── useEntityLogLines ─────────────────────────
+
+export interface LogEntry {
+  day: string;     // "2026-05-16"
+  line: string;    // raw daylog line
+}
+
+export interface LogLinesPayload {
+  ok: boolean;
+  entity_id?: string;
+  days_scanned?: number;
+  count?: number;
+  entries: LogEntry[];
+  error?: string;
+}
+
+/** Filtra el daylog por menciones a `entityId` (M3, M3_T1, etc.). */
+export function useEntityLogLines(entityId: string | null, days = 7, limit = 300) {
+  const [data, setData] = React.useState<LogLinesPayload>({ ok: false, entries: [] });
+  const [loading, setLoading] = React.useState<boolean>(!!entityId);
+  const [version, setVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!entityId) {
+      setData({ ok: false, entries: [] });
+      setLoading(false);
+      return;
+    }
+    const ctrl = new AbortController();
+    setLoading(true);
+    fetchJSON<LogLinesPayload>(
+      `/api/entity/${encodeURIComponent(entityId)}/log-lines?days=${days}&limit=${limit}`,
+      ctrl.signal,
+    ).then((d) => {
+      setData(d ?? { ok: false, entries: [] });
+      setLoading(false);
+    });
+    return () => ctrl.abort();
+  }, [entityId, days, limit, version]);
+
+  const refresh = React.useCallback(() => setVersion((v) => v + 1), []);
+  return { data, loading, refresh };
+}
