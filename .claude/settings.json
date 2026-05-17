@@ -8,8 +8,8 @@
           {
             "type": "command",
             "command": "bash /home/user/maquinaria-pesada/.claude/scripts/posttool_check.sh",
-            "timeout": 60,
-            "statusMessage": "Verificando ruff + pytest…"
+            "timeout": 180,
+            "statusMessage": "Verificando ruff + pytest (+ e2e si MP_RUN_E2E=1)…"
           }
         ]
       }

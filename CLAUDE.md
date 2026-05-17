@@ -48,13 +48,19 @@ no debería auto-modificarse vía su propio chat.
 ## Antes de cada cambio en código
 
 1. **Tests obligatorios**: tras Edit/Write/MultiEdit sobre `cockpit/`,
-   `tests/`, `web_server.py` o `pyproject.toml`, el hook
-   `.claude/scripts/posttool_check.sh` ejecuta `ruff check` + `pytest`. Si
-   fallan, bloquean. No se continúa con fallos.
-2. **No se commitea sin OK explícito del usuario**.
-3. **No tocar pipelines top-level salvo petición explícita**: son scripts
+   `tests/`, `web_server.py`, `pyproject.toml` o `vite_app/src/`, el hook
+   `.claude/scripts/posttool_check.sh` ejecuta `ruff check` + `pytest`
+   (sin la suite e2e). Si fallan, bloquean. No se continúa con fallos.
+2. **Suite e2e Playwright** (`tests/test_e2e_vite.py`, 19 tests, ~90 s):
+   no se ejecuta automáticamente. Si quieres que el hook también la
+   corra al editar UI o `web_server.py`/`episodes.py`, exporta
+   `MP_RUN_E2E=1` antes de la sesión. Manualmente:
+   `python3 -m pytest tests/test_e2e_vite.py -v`. CI la corre siempre en
+   el job `e2e-cockpit-v3`.
+3. **No se commitea sin OK explícito del usuario**.
+4. **No tocar pipelines top-level salvo petición explícita**: son scripts
    CLI estables con generación real y costosa.
-4. **Cambios en `vite_app/src/`** requieren `cd vite_app && npm run build`
+5. **Cambios en `vite_app/src/`** requieren `cd vite_app && npm run build`
    para que `web_server.py` sirva el frontend actualizado desde
    `vite_app/dist/`.
 
