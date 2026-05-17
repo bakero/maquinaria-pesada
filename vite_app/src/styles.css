@@ -3896,15 +3896,15 @@ h1, h2, h3, h4, h5, h6,
 .v3-mod-child.ok    { background: var(--ok); }
 .v3-mod-child.warn  { background: var(--warn); }
 .v3-mod-child.alert { background: var(--alert); }
-.v3-mod-pct {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  font-family: var(--f-mono);
-  font-size: 11px;
-  color: var(--text-mute);
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
+/* .v3-mod-pct retirado: el % vive ahora dentro de .v3-mod-meta para evitar
+   que el span absoluto se solape con done/total cuando los números crecen. */
+
+/* Bloque "Temas de Mx" en PageModuloTema · margen y separación visual. */
+.v3-mt-subtemas {
+  margin: 24px 0 8px;
+}
+.v3-mt-subtemas .v3-mods {
+  margin-top: 12px;
 }
 
 /* ── Module/Tema page · two-column layout ─────────────────────────── */

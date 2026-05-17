@@ -186,12 +186,11 @@ export function PageProduccion({ onNav, onOpenPalette }: PageProduccionProps) {
           const prog = moduleProgress(m.id);
           return (
             <div key={m.id} className="v3-mod" onClick={() => onNav("modulo", m.id)}>
-              <span className="v3-mod-pct">{prog.pct}%</span>
               <div className="v3-mod-row">
                 <span className="v3-mod-id">{m.id}</span>
                 <span className={`v3-mod-state-dot ${m.status}`}/>
                 <span className="v3-mod-meta">
-                  {prog.done}/{prog.total}
+                  {prog.done}/{prog.total} · {prog.pct}%
                   {prog.alert > 0 && <span style={{ color: "var(--alert)" }}> · {prog.alert}f</span>}
                   {prog.warn > 0  && <span style={{ color: "var(--warn)" }}> · {prog.warn}w</span>}
                 </span>

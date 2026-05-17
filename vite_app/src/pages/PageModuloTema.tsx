@@ -144,7 +144,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
         </div>
       </header>
 
-      {/* Sibling rail · sticky con contador "X / N generados" */}
+      {/* Sibling rail · navegación rápida entre módulo paraguas y sus temas */}
       {(isModule || temas.length > 0) && (() => {
         const temasCompletos = temas.filter(
           (t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok"),
@@ -155,14 +155,14 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
         return (
           <div className="v3-mt-rail-wrap">
             <div className="v3-mt-rail-meta">
-              <span className="v3-mt-rail-meta-label">Temas del módulo</span>
+              <span className="v3-mt-rail-meta-label">Navegación · {modId}</span>
               <span className="v3-mt-rail-meta-count">
                 <strong>{temasCompletos}</strong>
                 <span style={{ color: "var(--text-mute)" }}> completos · </span>
                 <strong>{temasConAlgo}</strong>
                 <span style={{ color: "var(--text-mute)" }}> con algo · </span>
                 <strong>{temas.length}</strong>
-                <span style={{ color: "var(--text-mute)" }}> total</span>
+                <span style={{ color: "var(--text-mute)" }}> temas</span>
               </span>
             </div>
             <div className="v3-mt-rail">
@@ -172,7 +172,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
                   onClick={() => onNav("modulo", modId)}
                   title={moduleEpisode.title}
                 >
-                  <span>{modId}</span>
+                  <span>{modId} · paraguas</span>
                   <span className="v3-mt-rail-cell-dot ok"/>
                 </div>
               )}
@@ -199,6 +199,49 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
           </div>
         );
       })()}
+
+      {/* Sub-temas · grid prominente justo debajo del rail cuando hay temas */}
+      {isModule && temas.length > 0 && (
+        <section className="v3-mt-subtemas">
+          <header className="v3-hd">
+            <div className="v3-hd-left">
+              <span className="v3-hd-eyebrow">Temas de {modId}</span>
+              <h2 className="v3-hd-title">{temas.length} tema{temas.length !== 1 ? "s" : ""} · click para abrir</h2>
+            </div>
+            <div className="v3-hd-meta">
+              {temas.filter((t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok")).length} / {temas.length} completos
+            </div>
+          </header>
+          <div className="v3-mods">
+            {temas.map((t) => (
+              <TemaCard
+                key={t.id}
+                tema={{ id: t.id, title: t.title, state: t.state as Record<string, string> }}
+                onClick={() => onNav("tema", t.id)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Aviso si esperamos temas pero el backend no los devolvió todavía */}
+      {isModule && temas.length === 0 && (
+        <section className="v3-mt-subtemas">
+          <header className="v3-hd">
+            <div className="v3-hd-left">
+              <span className="v3-hd-eyebrow">Temas de {modId}</span>
+              <h2 className="v3-hd-title">cargando o sin temas</h2>
+            </div>
+          </header>
+          <div className="v3-empty" style={{ padding: 32 }}>
+            <p className="v3-empty-title">Sin temas detectados todavía</p>
+            <p className="v3-empty-hint">
+              El backend no devolvió sub-temas para {modId}.
+              Comprueba que existan PDFs <code>{modId}_T*.pdf</code> en la carpeta <code>PDFs/</code>.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Toast */}
       {toast && (
@@ -228,28 +271,6 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
             />
           ))}
 
-          {isModule && temas.length > 0 && (
-            <>
-              <header className="v3-hd">
-                <div className="v3-hd-left">
-                  <span className="v3-hd-eyebrow">Sub-temas</span>
-                  <h2 className="v3-hd-title">{temas.length} temas en {modId}</h2>
-                </div>
-                <div className="v3-hd-meta">
-                  {temas.filter((t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok")).length} / {temas.length} completos
-                </div>
-              </header>
-              <div className="v3-mods">
-                {temas.map((t) => (
-                  <TemaCard
-                    key={t.id}
-                    tema={{ id: t.id, title: t.title, state: t.state as Record<string, string> }}
-                    onClick={() => onNav("tema", t.id)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
         </div>
 
         <aside>
@@ -477,11 +498,13 @@ function TemaCard({ tema, onClick }: { tema: { id: string; title: string; state:
   const total = SLOT_KINDS.length;
   const pct = Math.round((done / total) * 100);
   const tnum = tema.id.split("_").slice(1).join("_");
+  const status: "ok" | "warn" | "empty" = done === total ? "ok" : done > 0 ? "warn" : "empty";
   return (
-    <div className="v3-mod" onClick={onClick}>
-      <span className="v3-mod-pct">{pct}%</span>
+    <div className="v3-mod" onClick={onClick} title={`Abrir ${tema.id}`}>
       <div className="v3-mod-row">
         <span className="v3-mod-id">{tnum}</span>
+        <span className={`v3-mod-state-dot ${status}`}/>
+        <span className="v3-mod-meta">{done}/{total} · {pct}%</span>
       </div>
       <div className="v3-mod-name">{cleanEpisodeTitle(tema.title, "T")}</div>
       <div className="v3-mod-children">
