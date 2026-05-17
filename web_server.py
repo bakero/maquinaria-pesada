@@ -1220,7 +1220,7 @@ def generate_episode_guion(ep_id: str) -> dict:
     salida (que incluye la traza de validación y regeneración) a la ruta
     determinista Guiones/logs/{ep_id}_gen.log."""
     try:
-        from cockpit.core import episode_sources, gen_log, paths, runner
+        from cockpit.core import episode_sources, gen_log, paths
     except Exception as exc:
         return {"ok": False, "error": f"módulos no disponibles: {exc}"}
 
@@ -1232,7 +1232,10 @@ def generate_episode_guion(ep_id: str) -> dict:
     if not script_path.exists():
         return {"ok": False, "error": f"script no existe: {src.script}"}
 
-    argv = runner.build_argv(str(script_path), list(src.flags))
+    # src.flags ya es una lista plana shell-ready (['--modulo', '0', '--pdf', '…']),
+    # NO una lista de tuplas como espera runner.build_argv. Construimos el argv
+    # directamente para evitar el ValueError("too many values to unpack").
+    argv = [sys.executable, str(script_path), *src.flags]
     log_path = gen_log.gen_log_path(src.ep_id)
     log_path.parent.mkdir(parents=True, exist_ok=True)
 

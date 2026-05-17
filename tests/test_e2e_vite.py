@@ -248,7 +248,9 @@ def test_modulo_header_shows_clean_title_and_id(page, live_url):
 
 
 def test_modulo_sibling_rail_is_sticky_with_counter(page, live_url):
-    """Sibling rail tiene wrapper sticky con contador 'completos/con algo/total'."""
+    """Sibling rail tiene wrapper sticky con 3 contadores numéricos
+    (completos / con algo / total temas). El texto exacto del último cambió
+    de "total" a "temas" cuando re-etiquetamos el rail."""
     _wait_for_app(page, live_url)
     _open_module_via_palette(page, "M3")
     page.wait_for_selector(".v3-mt-rail-wrap", timeout=5000)
@@ -258,7 +260,7 @@ def test_modulo_sibling_rail_is_sticky_with_counter(page, live_url):
     assert pos == "sticky"
     assert page.locator(".v3-mt-rail-meta-count strong").count() == 3
     text = page.locator(".v3-mt-rail-meta-count").inner_text().lower()
-    assert "completo" in text and "con algo" in text and "total" in text
+    assert "completo" in text and "con algo" in text and ("tema" in text or "total" in text)
 
 
 def test_modulo_slot_guion_button_is_primary_yellow(page, live_url):
@@ -417,3 +419,164 @@ def test_dist_assets_have_hashed_names():
     assets = list((DIST_DIR / "assets").glob("index-*.js"))
     assert assets, "no se encontró ningún bundle JS en dist/assets/"
     assert any(re.search(r"index-[A-Za-z0-9_-]{6,}\.js$", str(a)) for a in assets)
+
+
+# ════════════════════════════════════════════════════════════════════════
+# Regresiones — bugs detectados por la auditoría con Playwright (mayo 2026)
+# ════════════════════════════════════════════════════════════════════════
+
+
+def test_hash_with_slash_prefix_routes_correctly(page, live_url):
+    """Bug previo: parseHash() solo aceptaba `#modulo/M0` (sin slash inicial),
+    pero los usuarios suelen teclear `#/modulo/M0` (formato HashRouter).
+    El fix en parseHash debe tolerar ambos formatos."""
+    _wait_for_app(page, f"{live_url}/#/modulo/M3")
+    # Debe rederizar PageModuloTema (header v3-mt-hd), no caer al fallback.
+    page.wait_for_selector(".v3-mt-hd", timeout=5_000)
+    assert page.locator(".v3-mt-hd").count() == 1
+    # Y la url se mantiene con el slash (no la reescribimos)
+    assert "#/modulo/M3" in page.url or "#modulo/M3" in page.url
+
+
+@pytest.mark.parametrize("hash_route,expected_heading", [
+    ("#consumo",    re.compile(r"Coste IA|Consumo", re.I)),
+    ("#metricas",   re.compile(r"Difusión|Métricas", re.I)),
+    ("#optimizar",  re.compile(r"Optimización|Optimizar", re.I)),
+    ("#logs",       re.compile(r"Logs", re.I)),
+    ("#conectores", re.compile(r"Conectores", re.I)),
+    ("#lanzador",   re.compile(r"Lanzar|Lanzador", re.I)),
+    ("#fuentes",    re.compile(r"Fuentes", re.I)),
+    ("#mapa",       re.compile(r"Mapa", re.I)),
+    ("#ajustes",    re.compile(r"Ajustes", re.I)),
+])
+def test_subpage_renders_its_own_content_not_produccion_fallback(
+    page, live_url, hash_route, expected_heading,
+):
+    """Bug previo: las subpáginas (#consumo, #metricas, #conectores, etc.) no
+    estaban manejadas en el switch del shell y caían al fallback que
+    pintaba PageProduccion (15 módulos). Cada subpágina debe rinderizar SU
+    contenido propio en su h2 y NO mostrar el grid de módulos."""
+    _wait_for_app(page, f"{live_url}/{hash_route}")
+    # No debe haber cards de módulo de PageProduccion
+    assert page.locator(".v3-mod").count() == 0, (
+        f"{hash_route} sigue cayendo al fallback de Producción"
+    )
+    # Debe haber un h2 con el título esperado de la subpágina
+    h2s = page.locator("h2").all_inner_texts()
+    assert any(expected_heading.search(t) for t in h2s), (
+        f"{hash_route} no muestra el heading esperado. h2 vistos: {h2s}"
+    )
+
+
+def test_modulo_subtemas_block_appears_above_slots(page, live_url):
+    """El bloque "Temas de Mx" (cards de sub-temas, lo más útil del módulo)
+    debe aparecer ANTES de los slots PDF/Guion/Audio en el DOM, para que el
+    usuario lo vea sin scrollear hasta el final."""
+    _wait_for_app(page, live_url)
+    _open_module_via_palette(page, "M3")
+    # Posición vertical del bloque subtemas vs primer slot
+    subtemas = page.locator(".v3-mt-subtemas")
+    slots = page.locator(".v3-slot")
+    if subtemas.count() == 0 or slots.count() == 0:
+        pytest.skip("M3 no tiene subtemas en fake_repo, no se puede comparar orden")
+    sub_box = subtemas.first.bounding_box()
+    slot_box = slots.first.bounding_box()
+    assert sub_box and slot_box
+    assert sub_box["y"] < slot_box["y"], (
+        "Bloque 'Temas de Mx' debe ir ARRIBA de los slots (regresión: "
+        f"subtemas y={sub_box['y']}, primer slot y={slot_box['y']})"
+    )
+
+
+def test_module_card_percent_no_overlap_in_meta(page, live_url):
+    """Bug previo: `.v3-mod-pct` absolute top-right se solapaba con
+    `.v3-mod-meta` cuando done/total crecía → se leía "640%". Ahora el % vive
+    DENTRO del meta ("done/total · pct%") y no hay span absoluto."""
+    _wait_for_app(page, live_url)
+    # NO debe haber spans con clase v3-mod-pct (la regla CSS también fue retirada)
+    assert page.locator(".v3-mod-pct").count() == 0
+    # El meta de cualquier card debe contener "X/Y · Z%" en una sola línea
+    first_meta = page.locator(".v3-mod .v3-mod-meta").first.inner_text()
+    assert re.search(r"\d+/\d+\s+·\s+\d+%", first_meta), (
+        f"meta de card no tiene formato 'done/total · pct%': {first_meta!r}"
+    )
+
+
+def test_api_generate_inexistente_returns_200_not_500(live_url):
+    """Bug previo: POST /api/episode/<id>/generate devolvía HTTP 500 con
+    ValueError("too many values to unpack") porque runner.build_argv() recibía
+    flags planas (list[str]) cuando esperaba tuplas (list[tuple]). Ahora
+    devuelve {ok:false, error:"…"} con HTTP 200 para ids inexistentes."""
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(
+        f"{live_url}/api/episode/EP_QUE_NO_EXISTE/generate",
+        method="POST",
+        data=b"{}",
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req) as r:
+            assert r.status == 200
+            body = json.loads(r.read())
+        assert body.get("ok") is False
+        assert "EP_QUE_NO_EXISTE" in body.get("error", "")
+    except urllib.error.HTTPError as e:
+        pytest.fail(f"endpoint devolvió HTTP {e.code} (regresión del bug del 500)")
+
+
+def test_files_endpoint_does_not_serve_index_html_for_text_files(live_url):
+    """Bug previo (visto en captura del usuario): cuando el server estaba caído
+    y un dev-server de Vite estaba corriendo en paralelo, /files/Guiones/X.txt
+    devolvía el index.html. Aunque el dev-server es otro proceso, este test
+    asegura que cuando NUESTRO /files/ devuelve algo, es el fichero real
+    (content-type text/plain) y NUNCA index.html."""
+    import urllib.request
+    with urllib.request.urlopen(f"{live_url}/files/Guiones/M0_Introduccion.txt") as r:
+        assert r.status == 200
+        body = r.read().decode("utf-8", errors="replace")
+        ctype = r.headers.get("content-type", "")
+    assert "<!doctype html" not in body.lower()
+    assert "<html" not in body.lower()
+    assert "text/plain" in ctype or "text/" in ctype
+
+
+def test_command_palette_uses_cmdp_class_and_opens_with_ctrl_k(page, live_url):
+    """CommandPalette real usa clases `cmdp-*` (no `palette`/`cmdk`). Este
+    test valida el contrato implícito que el frontend de la app depende de:
+    Ctrl+K abre `.cmdp` con un input de búsqueda."""
+    _wait_for_app(page, live_url)
+    assert page.locator(".cmdp").count() == 0  # cerrado al inicio
+    page.keyboard.press("Control+K")
+    page.wait_for_selector(".cmdp", timeout=3_000)
+    assert page.locator(".cmdp-input input").count() == 1
+    # Escape cierra
+    page.keyboard.press("Escape")
+    page.wait_for_selector(".cmdp", state="detached", timeout=3_000)
+
+
+def test_modulo_rail_has_paraguas_marker(page, live_url):
+    """Tras los fixes del rail, la celda del módulo paraguas se etiqueta
+    explícitamente como `Mx · paraguas` para distinguirla de los temas."""
+    _wait_for_app(page, live_url)
+    _open_module_via_palette(page, "M3")
+    rail_texts = page.locator(".v3-mt-rail-cell").all_inner_texts()
+    assert any("paraguas" in t.lower() for t in rail_texts), (
+        f"rail no tiene celda 'paraguas': {rail_texts}"
+    )
+
+
+def test_topnav_marks_subpage_section_active(page, live_url):
+    """mapSectionFor() debe marcar "Datos" como activo cuando navegamos a
+    `#consumo`, `#metricas`, `#optimizar` o `#logs`. Lo mismo para "Sistema"
+    con sus subpáginas. Garantiza que el breadcrumb visual del TopNav es
+    coherente con la subpágina actual."""
+    _wait_for_app(page, f"{live_url}/#consumo")
+    # La sección "Datos" debe tener clase de activo (topnav3-section.active)
+    active = page.locator(".topnav3-item.active").inner_text().strip()
+    assert active.lower() == "datos", f"se esperaba 'Datos' activo, se vio {active!r}"
+
+    page.goto(f"{live_url}/#mapa", wait_until="domcontentloaded")
+    page.wait_for_selector(".topnav3", timeout=5_000)
+    active = page.locator(".topnav3-item.active").inner_text().strip()
+    assert active.lower() == "sistema", f"se esperaba 'Sistema' activo, se vio {active!r}"

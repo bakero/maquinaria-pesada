@@ -122,9 +122,11 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "masterView": "lista"
 }/*EDITMODE-END*/;
 
-// Parsea el hash de routing: "#modulo/M3" → { base: "modulo", payload: "M3" }
+// Parsea el hash de routing.
+// Acepta ambos formatos: "#modulo/M3" y "#/modulo/M3" (slash inicial es
+// común en routers tipo HashRouter y los usuarios suelen teclearlo así).
 function parseHash() {
-  const h = window.location.hash.replace("#", "");
+  const h = window.location.hash.replace(/^#\/?/, "");
   const [base, payload] = h.split("/");
   return { base, payload: payload ? decodeURIComponent(payload) : null };
 }
@@ -176,6 +178,26 @@ function App() {
     root.setAttribute("data-mode", t.mode);
     root.setAttribute("data-density", t.density);
   }, [t]);
+
+  // Sincroniza el state con cambios de hash externos: browser back/forward,
+  // bookmarks/deep-links, y `page.goto(url+"#otraruta")` desde tests. Sin
+  // este listener, sólo la primera navegación tras un reload funcionaría.
+  React.useEffect(() => {
+    function onHashChange() {
+      const { base, payload } = parseHash();
+      const next = WIRED.has(base) ? base : "produccion";
+      setPage(next);
+      if (payload) {
+        if (next === "modulo") {
+          setSel((s) => ({ ...s, modulo: payload }));
+        } else if (next === "tema" || next === "episodio") {
+          setSel((s) => ({ ...s, episodio: payload, modulo: payload.split("_")[0] }));
+        }
+      }
+    }
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   // nav(id) navega de página; nav("modulo", "M3") / nav("episodio", "M3_T2")
   // además fija qué módulo/episodio mostrar. Al abrir un episodio se deriva
@@ -358,11 +380,27 @@ function App() {
         {page === "produccion" && <PageProduccion onNav={nav} onOpenPalette={openPalette}/>}
         {page === "modulo"     && <PageModuloTema entityId={sel.modulo || "M3"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
         {page === "tema"       && <PageModuloTema entityId={sel.episodio || "M3_T1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
-        {page === "datos"      && <PageDatos      onNav={nav} onOpenAI={openAI}/>}
-        {page === "sistema"    && <PageSistema    onNav={nav} onOpenAI={openAI}/>}
 
-        {/* v3 fallback · si alguien llega a una página legacy, mostramos Producción */}
-        {!["produccion","modulo","tema","datos","sistema"].includes(page) && (
+        {/* Datos · acepta page === "datos" o cualquier subtab (consumo/metricas/optimizar/logs) */}
+        {["datos","consumo","metricas","optimizar","logs"].includes(page) && (
+          <PageDatos
+            onNav={nav} onOpenAI={openAI}
+            initialTab={page === "datos" ? "consumo" : page}
+          />
+        )}
+
+        {/* Sistema · acepta page === "sistema" o cualquier subtab (conectores/lanzador/fuentes/mapa/ajustes) */}
+        {["sistema","conectores","lanzador","fuentes","mapa","ajustes"].includes(page) && (
+          <PageSistema
+            onNav={nav} onOpenAI={openAI}
+            initialTab={page === "sistema" ? "conectores" : page}
+          />
+        )}
+
+        {/* Fallback · página desconocida → Producción para no dejar pantalla vacía */}
+        {!["produccion","modulo","tema",
+           "datos","consumo","metricas","optimizar","logs",
+           "sistema","conectores","lanzador","fuentes","mapa","ajustes"].includes(page) && (
           <PageProduccion onNav={nav} onOpenPalette={openPalette}/>
         )}
       </main>
