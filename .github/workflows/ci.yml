@@ -22,6 +22,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ruff pytest python-dotenv pip-audit
+          # Las deps de abajo cubren tests preexistentes que estaban rojos
+          # en lint-and-test porque el job sólo instalaba ruff+pytest:
+          #   - elevenlabs/pydub/httpx → import de generar_episodio_v2.py
+          #     en tests/test_generar_episodio.py (aborta con SystemExit)
+          #   - pdfplumber → import de guion_common.py en
+          #     tests/test_guion_common.py
+          #   - anthropic/openai/fastapi/uvicorn/psutil → imports en
+          #     cockpit.core (ai_client, monitor, web_server)
+          # Se instalan puntualmente (no `pip install -r requirements-cockpit.txt`)
+          # para mantener el job ligero — el job e2e ya instala el archivo entero.
+          # `num2words` se omite a propósito: la lib es opcional (try/except en
+          # generadores/shared/num2words_es.py) y los tests >=1000 se skippean.
+          pip install elevenlabs pydub httpx anthropic openai fastapi uvicorn \
+            psutil pdfplumber
 
       - name: Verify .env.example is committed
         run: test -f .env.example
