@@ -287,13 +287,15 @@ def _state_for_episode(ep) -> dict:
 
 
 def _modulo_status_from_eps(eps: list, ratio: float) -> str:
-    """Mapea ratio (0..1) a status UI: ok/warn/alert/empty."""
+    """Mapea ratio (0..1) a status UI: ok/warn/empty.
+
+    Reservamos "alert" para fallos reales (CI rota, logs con errores, etc.).
+    Un módulo "empezado" no es un fallo aunque esté muy poco avanzado.
+    """
     if ratio >= 1.0:
         return "ok"
-    if ratio >= 0.5:
-        return "warn"
     if ratio > 0.0:
-        return "alert"
+        return "warn"
     return "empty"
 
 

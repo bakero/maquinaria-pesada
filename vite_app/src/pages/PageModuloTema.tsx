@@ -11,11 +11,11 @@
 
 import * as React from "react";
 import { Icon } from "../components";
-import { FIXTURE_EPISODES, FIXTURE_MODULES } from "../data";
+import { FIXTURE_EPISODES, FIXTURE_MODULES, cleanEpisodeTitle } from "../data";
 import type { Episode } from "../types";
 import {
   generateSlot,
-  useEntity, useLiveStream, useModule,
+  useEntity, useEntityLogLines, useLiveStream, useModule,
   type EpisodeDetail, type LiveProcess, type SlotMeta, type StreamSnapshot,
 } from "../lib/useEntity";
 
@@ -128,7 +128,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
           </nav>
           <div className="v3-mt-title">
             <span className="v3-mt-id">{ent.id.replace("_", " · ")}</span>
-            <h1 className="v3-mt-name">{cleanTitle(ent.title, ent.kind)}</h1>
+            <h1 className="v3-mt-name">{cleanEpisodeTitle(ent.title, ent.kind)}</h1>
           </div>
           <div className="v3-mt-sub">
             {isModule
@@ -260,10 +260,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
   );
 }
 
-function cleanTitle(t: string, kind: "M" | "T"): string {
-  return t.replace(/^Episodio [A-Z0-9_]+ — /, "")
-          .replace(/^T\d+ — /, kind === "T" ? "" : "");
-}
+// cleanTitle se centralizó en data.ts → cleanEpisodeTitle.
 
 // ════════════════════════════ Slot ════════════════════════════
 
@@ -434,7 +431,6 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
   if (!slotMeta?.log_path) return null;
 
   const pipe = SLOT_PIPELINE[kind];
-  const logUrl = `/files/${slotMeta.log_path}`;
   return (
     <div style={{ marginTop: 12 }}>
       <div style={{
@@ -443,9 +439,9 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
       }}>
         <span style={{ fontFamily: "var(--f-mono)", fontSize: 10.5, letterSpacing: "0.14em",
                        textTransform: "uppercase", color: "var(--text-mute)" }}>
-          Log de generación · {pipe}
+          Actividad · {pipe}
           {slotMeta.log_mtime_human && slotMeta.log_mtime_human !== "—"
-            ? <span style={{ marginLeft: 8, letterSpacing: 0, textTransform: "none" }}>· {slotMeta.log_mtime_human}</span>
+            ? <span style={{ marginLeft: 8, letterSpacing: 0, textTransform: "none" }}>· última run {slotMeta.log_mtime_human}</span>
             : null}
         </span>
         <button className="v3-btn xs ghost"
@@ -453,31 +449,24 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
           Diagnosticar con IA
         </button>
       </div>
-      <LogFileViewer url={logUrl} kind={kind} entityId={entity.id}/>
+      <EntityLogViewer entityId={entity.id} kind={kind}/>
     </div>
   );
 }
 
-function LogFileViewer({ url, kind, entityId }: { url: string | null; kind: string; entityId: string }) {
-  const [text, setText] = React.useState<string>("Cargando log…");
-  React.useEffect(() => {
-    if (!url) {
-      setText(`(sin log de ${kind} para ${entityId})`);
-      return;
-    }
-    let cancel = false;
-    fetch(url)
-      .then((r) => r.ok ? r.text() : Promise.reject(r.status))
-      .then((t) => {
-        if (!cancel) {
-          // Mostrar las últimas 80 líneas (suficiente para diagnosticar).
-          const lines = t.split("\n");
-          setText(lines.slice(-80).join("\n"));
-        }
-      })
-      .catch((e) => { if (!cancel) setText(`(error al leer log: ${e})`); });
-    return () => { cancel = true; };
-  }, [url, kind, entityId]);
+/**
+ * Visor del log de actividad de una entidad. Consume /api/entity/{id}/log-lines
+ * vía useEntityLogLines: el backend filtra el daylog por la entidad y devuelve
+ * solo las líneas relevantes (en vez de bajar el log entero al cliente).
+ */
+function EntityLogViewer({ entityId, kind }: { entityId: string; kind: string }) {
+  const { data, loading } = useEntityLogLines(entityId, 7, 200);
+  if (loading) return <pre>Cargando actividad…</pre>;
+  if (!data.ok && data.error) return <pre>(error: {data.error})</pre>;
+  if (!data.entries.length) {
+    return <pre>(sin actividad de {kind} para {entityId} en los últimos 7 días)</pre>;
+  }
+  const text = data.entries.map((e) => `[${e.day}] ${e.line}`).join("\n");
   return <pre>{text}</pre>;
 }
 
@@ -494,7 +483,7 @@ function TemaCard({ tema, onClick }: { tema: { id: string; title: string; state:
       <div className="v3-mod-row">
         <span className="v3-mod-id">{tnum}</span>
       </div>
-      <div className="v3-mod-name">{tema.title.replace(/^T\d+ — /, "")}</div>
+      <div className="v3-mod-name">{cleanEpisodeTitle(tema.title, "T")}</div>
       <div className="v3-mod-children">
         {SLOT_KINDS.map((k) => (
           <span key={k} className={`v3-mod-child ${(tema.state[k] ?? "empty") === "ok" ? "ok" : (tema.state[k] ?? "empty") === "warn" ? "warn" : (tema.state[k] ?? "empty") === "alert" ? "alert" : ""}`}/>

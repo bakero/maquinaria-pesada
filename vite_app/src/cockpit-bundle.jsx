@@ -19,6 +19,7 @@ import {
   FIXTURE_MODULES as MODULES, FIXTURE_EPISODES as EPISODES,
   FIXTURE_RECENT_FILES as RECENT_FILES, FIXTURE_TOKEN_DATA as TOKEN_DATA,
   FIXTURE_AI_LOG as AI_LOG, GUION_PREVIEW, CHECKS_M3, applyBootstrap,
+  cleanEpisodeTitle,
 } from "./data";
 import { Sidebar, Topbar, AIDrawer } from "./shell";
 import { CommandPalette } from "./shell/CommandPalette";
@@ -30,12 +31,11 @@ import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
 } from "./components/tweaks/TweaksPanel";
 import {
-  PageInicio, PageMaster, PageModulo, PagePizarra, PageMapa, PageConectores,
-  PageLanzador, PageFuentes, PagePlayer, PageLogs, PageOptimizar, PageConsumo,
-  PageAjustes, PageMetricas, PageEpisodio,
-  PageDatos, PagePipeline, PageRecursos,
-  // v3
-  PageProduccion, PageModuloTema, PageSistema,
+  // Sub-páginas embebidas dentro de PageDatos / PageSistema
+  PageMapa, PageConectores, PageLanzador, PageFuentes,
+  PageLogs, PageOptimizar, PageConsumo, PageAjustes, PageMetricas,
+  // v3 (montadas directamente por el shell)
+  PageDatos, PageProduccion, PageModuloTema, PageSistema,
 } from "./pages";
 
 
@@ -226,7 +226,7 @@ function App() {
     EPISODES.filter((e) => e.kind === "T").slice(0, 30).forEach((e) => {
       acts.push({
         id: `ep-${e.id}`,
-        label: `Tema ${e.id} — ${e.title.replace(/^T\d+ — /, "")}`,
+        label: `Tema ${e.id} — ${cleanEpisodeTitle(e.title, "T")}`,
         section: "Temas",
         icon: "episode",
         hint: `${e.mod} · ${e.dur}`,
@@ -417,17 +417,6 @@ function App() {
           onChange={(v) => setTweak("density", v)}
         />
 
-        {page === "master" && (
-          <React.Fragment>
-            <TweakSection label="Vista del Master"/>
-            <TweakRadio
-              label="Variante"
-              value={t.masterView}
-              options={["lista", "matriz", "gantt"]}
-              onChange={(v) => setTweak("masterView", v)}
-            />
-          </React.Fragment>
-        )}
       </TweaksPanel>
     </div>
   );

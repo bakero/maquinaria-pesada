@@ -150,6 +150,20 @@ export function applyBootstrap(d: Partial<BootstrapPayload> | null): void {
 
 export function getModules(): Module[] { return _modules; }
 export function getEpisodes(): Episode[] { return _episodes; }
+
+/**
+ * Limpia los prefijos que ya están implícitos en el contexto donde se pinta
+ * el título de un episodio. El backend devuelve cosas como "M3 · T1 · tipos
+ * aprendizaje" o "Episodio M3 — Machine Learning"; según el contexto los
+ * prefijos sobran. Pasa el `kind` para que los temas pierdan el "Tk —"
+ * cuando ya hay otro indicador de número.
+ */
+export function cleanEpisodeTitle(t: string, kind?: "M" | "T"): string {
+  return t
+    .replace(/^Episodio [A-Z0-9_]+ — /, "")
+    .replace(/^M\d+ · T\d+ · /, "")
+    .replace(/^T\d+ — /, kind === "T" ? "" : "");
+}
 export function getModule(id: string | null | undefined): Module | undefined {
   return _modules.find((m) => m.id === id);
 }
