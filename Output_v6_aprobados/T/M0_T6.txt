@@ -1,0 +1,159 @@
+# HOOK
+MARIA: [enfático] Ochenta por ciento de las empresas grandes han lanzado pilotos de inteligencia artificial. Solo el cinco por ciento los han escalado con impacto real en resultados. La distancia entre "tenemos un piloto" y "esto genera valor" es donde mueren la mayoría de los proyectos. Y no es una distancia técnica: es organizativa. Hoy desentrañamos el ciclo de adopción de inteligencia artificial en organizaciones: las cinco fases, los blockers reales, la estrategia de campeones internos y la gobernanza que separa a los líderes de los rezagados. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [pausa de tres segundos]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [cálido] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+<break time="500ms"/>
+IAGO: [conversacional] Yo soy Iago, tu guía en los aspectos técnicos y estratégicos de la inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [claro] Y yo soy Maria. Este episodio ha sido generado íntegramente por un sistema automático de inteligencia artificial a partir de materiales del máster. Como cualquier contenido creado por inteligencia artificial, puede contener errores o imprecisiones. Te recomendamos contrastar la información crítica con las fuentes originales del curso.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [analítico] El estudio del MIT de dos mil veinticinco sobre más de doscientas empresas grandes documenta una realidad incómoda. El ochenta por ciento han explorado o pilotado herramientas de inteligencia artificial. Pero solo el cinco por ciento las han escalado con impacto material en la cuenta de resultados. Esto no es un problema de acceso a la tecnología: es un problema de gestión organizativa.
+<break time="500ms"/>
+MARIA: [curioso] ¿Qué significa exactamente ese salto del piloto a la escala?
+<break time="500ms"/>
+IAGO: [didáctico] Significa la diferencia entre tener un proyecto funcionando en condiciones controladas con un equipo dedicado, y tener sistemas de inteligencia artificial integrados en procesos de negocio críticos, con monitorización continua, mantenimiento y actualización. El piloto usa datos curados, tiene atención especial del equipo técnico y opera en un entorno que no representa la producción real. La escala enfrenta datos sucios, usuarios resistentes al cambio, sistemas legacy que no hablan entre sí y política organizativa.
+IAGO: [contundente] Deloitte en su informe de dos mil veintiséis documenta que el cuarenta y dos por ciento de las empresas creen que su estrategia está altamente preparada para la inteligencia artificial. Pero se sienten menos preparadas en infraestructura, datos, riesgo y talento. El sesenta y uno por ciento ya tienen un Chief AI Officer. Sin embargo, solo una de cada cinco tiene un modelo maduro de gobernanza de agentes autónomos. La brecha no está en la visión: está en la ejecución.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y qué pasa con la adopción informal?
+<break time="500ms"/>
+IAGO: [enfático] Ahí está uno de los datos más reveladores. El noventa por ciento de los empleados ya usan inteligencia artificial personal para el trabajo. chat ge pe te, asistente conversacional basado en inteligencia artificial, modelo generativo preentrenado, copilot, herramientas públicas sin política corporativa ni integración formal. Solo el cuarenta por ciento tienen acceso corporativo oficial. Esto crea dos problemas: primero, un riesgo de seguridad porque datos sensibles salen a a pe ies no corporativas. Segundo, las organizaciones están ignorando la señal más clara de dónde está la demanda real de inteligencia artificial.
+<break time="500ms"/>
+MARIA: [conversacional] ¿Y cómo se relaciona esto con la infraestructura tecnológica real de las empresas?
+
+<break time="500ms"/>
+IAGO: [explicativo] La mayoría de las organizaciones grandes tienen décadas de sistemas legacy que no fueron diseñados para integrarse con inteligencia artificial. Bases de datos relacionales sin a pe ies modernas, procesos batch que corren una vez al día, sistemas mainframe con lógica de negocio crítica pero inaccesible. Escalar inteligencia artificial en este contexto requiere inversión en modernización de infraestructura, no solo en modelos. Las empresas que nacieron digitales tienen ventaja estructural porque sus sistemas ya están diseñados para ser componibles y accesibles vía a pe i, interfaz de programación.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Entonces el problema no es solo organizativo: también es técnico en el sentido de deuda técnica acumulada.
+
+<break time="500ms"/>
+IAGO: [contundente] Exacto. Y esa deuda técnica se convierte en deuda organizativa cuando los equipos de IT están sobrecargados manteniendo sistemas legacy y no tienen capacidad para construir nuevas capacidades de inteligencia artificial. El círculo vicioso es: no podemos escalar inteligencia artificial porque nuestros sistemas no lo permiten, pero no podemos modernizar los sistemas porque estamos ocupados manteniéndolos funcionando.
+IAGO: [analítico] El ciclo de adopción no es lineal ni homogéneo. Una misma organización puede estar en fase de exploración para casos de uso de generación de contenido, en fase de piloto para mantenimiento predictivo y en fase de producción para sistemas de recomendación. El diagnóstico debe ser granular: por capacidad de inteligencia artificial, por departamento, por caso de uso. Decir "estamos adoptando inteligencia artificial" es demasiado abstracto para ser útil.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] El ciclo de adopción de inteligencia artificial tiene cinco fases diferenciadas. La fase uno es la exploración: experimentación individual o de equipo con herramientas disponibles públicamente, sin política corporativa ni integración formal. En esta fase el uso es oportunista y no hay medición de impacto.
+<break time="500ms"/>
+MARIA: [claro] La fase dos es el piloto. Aquí la organización lanza proyectos formales con un equipo dedicado, datos reales y criterios de éxito definidos. El problema es que muchos pilotos no se escalan: se convierten en demos permanentes sin impacto en procesos reales. El MIT documenta que esta es la fase donde mueren la mayoría de los proyectos.
+<break time="500ms"/>
+IAGO: [explicativo] La fase tres es la producción. Los sistemas de inteligencia artificial están integrados en procesos de negocio críticos, con monitorización, mantenimiento y actualización continua. Esta fase requiere eme ele ops: versionado de modelos, paiplains de datos automatizados, ci ci di para inteligencia artificial y equipos de guardia para resolver incidencias. Sin estas capacidades técnicas, el sistema no sobrevive al primer cambio en los datos de entrada o al primer bug en producción.
+<break time="500ms"/>
+MARIA: [analítico] La fase cuatro es la escala. Aquí hay múltiples sistemas de inteligencia artificial en producción, integración en toda la cadena de valor e impacto medible en KPIs de negocio. Solo el cinco por ciento de las organizaciones están en esta fase. La diferencia crítica con la fase tres es que la escala requiere estandarización: fréimuorks comunes, políticas de gobernanza transversales y un operating model que permita replicar el éxito de un caso de uso a otros departamentos.
+MARIA: [reflexivo] Para escalar, necesitas resolver tres problemas organizativos. Primero: cómo aprobar nuevos casos de uso sin ralentizar la innovación pero garantizando que cumplen con regulación y estándares de riesgo. Segundo: cómo formar a los equipos de negocio para que adopten las herramientas sin depender eternamente del equipo técnico. Tercero: cómo medir el impacto de forma consistente para justificar la inversión continua.
+<break time="500ms"/>
+IAGO: [contundente] La fase cinco es la transformación. La organización ha rediseñado sus procesos, roles y modelos de negocio alrededor de las capacidades de inteligencia artificial. Esta fase es aspiracional para la mayoría. El setenta y cuatro por ciento de las organizaciones esperan crecer ingresos con inteligencia artificial en el futuro, pero solo el veinte por ciento ya lo están haciendo según Deloitte dos mil veintiséis.
+<break time="500ms"/>
+MARIA: [didáctico] Ahora, los habilitadores críticos. Primero: datos. Ningún proyecto de inteligencia artificial puede escalar sin datos de calidad. Las propiedades universales son volumen suficiente para entrenar o evaluar el modelo, buena calidad sin errores sistemáticos, representatividad que cubra la distribución real de casos en producción y accesibilidad en formatos usables, no bloqueados en silos o sistemas legacy.
+<break time="500ms"/>
+IAGO: [didáctico] Un aspecto crítico de la gobernanza es el inventario de sistemas de inteligencia artificial. Muchas organizaciones no saben cuántos modelos tienen en producción, quién los mantiene, qué datos usan o qué riesgos representan. Sin inventario, no hay gobernanza real. El primer paso para escalar es visibilidad: un registro centralizado de todos los sistemas de inteligencia artificial, sus propietarios, sus casos de uso y sus métricas de rendimiento.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y cómo se construye ese inventario sin ralentizar la innovación?
+
+<break time="500ms"/>
+IAGO: [explicativo] Con un proceso ligero de registro obligatorio antes de pasar a producción. No un comité que tarda tres meses en aprobar un proyecto, sino un formulario que documenta el caso de uso, los datos, los riesgos y las métricas de éxito. El objetivo no es controlar, sino tener visibilidad para poder ayudar cuando algo falla o para replicar el éxito en otros departamentos.
+IAGO: [enfático] Segundo habilitador: talento. El informe de Deloitte dos mil veintiséis identifica el gap de skills de inteligencia artificial como la principal barrera de integración. Las organizaciones que escalan exitosamente tienen tres perfiles. Primero: AI champions, empleados de negocio que entienden la inteligencia artificial y lideran la adopción en sus equipos. Segundo: ingenieros y científicos de datos que construyen y mantienen los sistemas. Tercero: líderes con criterio suficiente para tomar decisiones estratégicas sobre inteligencia artificial. La escasez del segundo perfil es conocida, pero la del primero y el tercero es más determinante para el éxito.
+<break time="500ms"/>
+MARIA: [claro] Tercer habilitador: gobernanza. Las organizaciones con estructura formal de gobernanza de inteligencia artificial tienen tasas de éxito significativamente superiores. Esto incluye políticas de uso, comité de aprobación, inventario de sistemas y criterios de riesgo. Las que tienen estrategia formal de inteligencia artificial reportan ochenta por ciento de tasa de éxito. Las que no, el treinta y siete por ciento. La gobernanza no es burocracia: es el sistema operativo que permite escalar de forma sostenible.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didáctico] El caso de Qualcomm es especialmente revelador. Han desplegado soluciones de inteligencia artificial a cientos de usuarios en marketing, comunicaciones, legal, producto, análisis, ventas, learning and development y recursos humanos. El ochenta y ocho por ciento de los empleados y el noventa y siete por ciento de los ejecutivos reportan beneficios directos. Esto es adopción a escala: múltiples departamentos, múltiples casos de uso, impacto medible en productividad. No es un piloto: es transformación organizativa.
+<break time="500ms"/>
+IAGO: [conversacional] ¿Y qué pasa con los pilotos que nunca escalan?
+<break time="500ms"/>
+MARIA: [analítico] Caso típico: empresa manufacturera que lanzó un proyecto de mantenimiento predictivo con sensores IoT y modelos de machine learning hace dieciocho meses. El piloto funcionó bien en la línea de producción A. Pero nunca se extendió a las otras siete líneas. ¿Por qué? No había un equipo de eme ele ops para mantener los modelos. No había datos de calidad en las otras líneas. Y el sponsor ejecutivo cambió de posición. El proyecto quedó como un demo permanente sin impacto real.
+MARIA: [contundente] Morgan Stanley implementó un sistema rag, generación aumentada por recuperación, para sus asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. Resultado: reducción del tiempo de búsqueda de información de horas a minutos. Socio tecnológico: open ei ai con ge pe te-cuatro. Esto fue presentado públicamente en open ei ai DevDay dos mil veintitrés.
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Qué diferencia a Morgan Stanley del caso de la manufacturera?
+<break time="500ms"/>
+MARIA: [enfático] Tres cosas. Primero: sponsor ejecutivo activo que no cambió de posición. Segundo: inversión en infraestructura de datos antes de lanzar el proyecto. Tercero: equipo de eme ele ops desde el día uno, no como un afterthought. El piloto fue diseñado desde el principio para escalar, no para impresionar en una demo.
+MARIA: [serio] El caso de JPMorgan con COIN es canónico. COIN significa Contract Intelligence. Sistema basado en machine learning clásico que analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Este es el tipo de ROI cuantificado y verificable que justifica la inversión en escala.
+<break time="500ms"/>
+IAGO: [curioso] ¿Y hay casos de fracaso documentados?
+<break time="500ms"/>
+MARIA: [grave] IBM Watson Health para oncología. Promesa inicial: diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo uso. Causa raíz documentada: el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. Lección: las expectativas sobre inteligencia artificial deben calibrarse con la calidad de los datos de entrenamiento.
+MARIA: [didáctico] Lemonade, la aseguradora digital, procesa siniestros con inteligencia artificial en tres segundos en casos simples. El récord documentado: un siniestro aprobado y pagado en dos segundos. La inteligencia artificial analiza el vídeo de declaración del cliente, cruza con bases de datos de fraude y aprueba o rechaza automáticamente. Esto solo funciona porque Lemonade nació digital: sus datos están limpios, estructurados y accesibles desde el día uno. Las aseguradoras legacy con treinta años de datos en sistemas incompatibles no pueden replicar esto sin antes resolver su deuda técnica.
+<break time="500ms"/>
+IAGO: [analítico] Otro caso relevante es el de Stitch Fix, la empresa de moda personalizada. Usan machine learning para predecir qué prendas le gustarán a cada cliente basándose en su historial de compras, devoluciones y fídbac explícito. El sistema procesa millones de combinaciones de cliente-producto cada día. Resultado: tasa de retención significativamente superior a competidores tradicionales. La clave: construyeron toda la empresa alrededor de la capacidad de inteligencia artificial desde el día uno. No intentaron añadir inteligencia artificial a un modelo de negocio existente.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Eso plantea una pregunta importante: ¿es más fácil escalar inteligencia artificial en empresas que nacen digitales que en incumbentes?
+
+<break time="500ms"/>
+IAGO: [contundente] Sí, pero no es imposible para los incumbents. Requiere voluntad de rediseñar procesos, no solo automatizar los existentes. Las empresas que usan inteligencia artificial para hacer lo mismo que antes pero más rápido obtienen mejoras incrementales. Las que rediseñan el proceso completo alrededor de las capacidades de inteligencia artificial obtienen ventajas competitivas estructurales.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [contundente] El primer error crítico es asumir que un piloto exitoso garantiza escalabilidad. Un piloto opera en condiciones controladas: datos curados, atención especial del equipo técnico, usuarios seleccionados. La producción real enfrenta datos sucios, usuarios no técnicos, integración con sistemas legacy y casos edge que no aparecieron en el piloto. La validación de escalabilidad requiere pruebas en producción con datos reales y usuarios reales, no demos en entornos de laboratorio.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Qué pasa cuando se ignora esto?
+<break time="500ms"/>
+IAGO: [firme] El proyecto muere en la primera revisión presupuestaria. Sin métricas de impacto predefinidas, es imposible demostrar el ROI. Los proyectos de inteligencia artificial sin KPIs claros desde el principio no sobreviven al cambio de sponsor ejecutivo o a la siguiente ronda de recortes de costes.
+IAGO: [analítico] El segundo error es creer que la tecnología sola impulsa la adopción. El MIT documenta que el sesenta y ocho por ciento de los ejecutivos reportan fricción entre IT y otros departamentos. El setenta y dos por ciento observan que las aplicaciones de inteligencia artificial se desarrollan en silos. La resistencia al cambio, la falta de formación y la política organizativa bloquean más proyectos que los problemas técnicos. Un sistema técnicamente perfecto que nadie usa no genera valor.
+<break time="500ms"/>
+MARIA: [curioso] ¿Cómo se manifiesta esa resistencia?
+<break time="500ms"/>
+IAGO: [explicativo] Los usuarios no confían en las recomendaciones del sistema. No entienden cómo funciona. Tienen miedo de que la inteligencia artificial les quite el trabajo. O simplemente prefieren seguir haciendo las cosas como siempre. Sin change management, sin formación y sin incentivos alineados, el sistema queda infrautilizado. El problema no es técnico: es humano.
+IAGO: [enfático] El tercer error es ignorar el shadow AI. El noventa por ciento de los empleados ya usan inteligencia artificial personal para el trabajo. Ignorar esto no lo elimina: crea un riesgo de seguridad porque datos sensibles salen a a pe ies no corporativas. Y desperdicia la señal de dónde está la demanda real. Las organizaciones que aprenden del shadow AI para identificar casos de uso tienen ventaja competitiva.
+IAGO: [serio] El ciclo de adopción no debe confundirse con un proyecto de IT. Es un proceso de transformación organizativa que requiere liderazgo ejecutivo, cambio cultural y rediseño de procesos. Las empresas que lo tratan como un proyecto técnico más fallan en la transición de piloto a producción. Las que lo entienden como un cambio estratégico tienen ochenta por ciento de tasa de éxito frente al treinta y siete por ciento de las que no.
+<break time="500ms"/>
+MARIA: [didáctico] Otro límite importante es la expectativa de que la inteligencia artificial resolverá problemas que en realidad son de proceso o de datos. Si tu proceso de negocio es caótico, añadir inteligencia artificial no lo arreglará: amplificará el caos. Si tus datos son inconsistentes, incompletos o sesgados, el modelo heredará esos problemas. La inteligencia artificial no es magia: es un amplificador de capacidades existentes. Antes de escalar, necesitas procesos claros y datos de calidad.
+
+<break time="500ms"/>
+IAGO: [enfático] Y un límite que pocas organizaciones reconocen: la capacidad de absorción de cambio. Puedes tener la mejor tecnología y el mejor plan, pero si tu organización ya está saturada con otras iniciativas de transformación, no tiene capacidad para absorber una más. El timing importa. A veces la decisión correcta es esperar a que termine otra iniciativa antes de lanzar la siguiente.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Cuándo no tiene sentido escalar un piloto?
+<break time="500ms"/>
+IAGO: [contundente] Cuando el ROI no justifica la inversión en eme ele ops y gobernanza. Cuando los datos no están disponibles en las otras líneas de negocio. Cuando no hay talento para mantener el sistema en producción. O cuando el caso de uso resuelve un problema que no es prioritario para el negocio. El error común es escalar por inercia, porque el piloto funcionó, sin validar que las condiciones de éxito se replican en el resto de la organización.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Las fuentes clave para este episodio. Primera: el estudio del MIT titulado NANDA, publicado en dos mil veinticinco. Analiza más de doscientas empresas grandes y documenta que solo el cinco por ciento han escalado inteligencia artificial con impacto material. Identifica los blockers organizativos: fricción entre IT y negocio, desarrollo en silos y falta de estrategia formal.
+
+<break time="500ms"/>
+MARIA: [claro] Segunda fuente: el informe de Deloitte sobre el estado de la inteligencia artificial en empresas, publicado en dos mil veintiséis. Documenta que el sesenta y uno por ciento de las empresas grandes ya tienen un Chief AI Officer. Y que las organizaciones con estrategia formal de inteligencia artificial tienen ochenta por ciento de tasa de éxito frente al treinta y siete por ciento de las que no. También identifica el gap de skills como la principal barrera de integración.
+
+<break time="500ms"/>
+IAGO: [analítico] Tercera fuente: el estudio de Writer sobre AI champions en organizaciones, publicado en dos mil veintitrés. Documenta que el setenta y siete por ciento de los usuarios activos de inteligencia artificial se auto-identifican como potenciales campeones internos. Y que la estrategia bottom-up de identificar y empoderar a estos campeones es más efectiva que los rollouts top-down para acelerar la adopción.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [didáctico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: el ciclo de adopción tiene cinco fases. Exploración, piloto, producción, escala y transformación. Solo el cinco por ciento de las organizaciones han alcanzado la fase de escala con impacto material. La distancia entre piloto y escala es organizativa, no técnica.
+
+<break time="500ms"/>
+IAGO: [claro] Segundo: los tres habilitadores críticos para escalar. Datos de calidad con volumen, representatividad y accesibilidad. Talento en tres perfiles: AI champions en negocio, ingenieros de datos y líderes con criterio estratégico. Y gobernanza formal con políticas, comité de aprobación e inventario de sistemas. Sin estos tres, el proyecto no pasa de piloto.
+
+<break time="500ms"/>
+MARIA: [contundente] Tercero: la estrategia de AI champions. Identifica en cada departamento los empleados que ya usan inteligencia artificial de forma activa. Dales recursos, reconocimiento y la misión de extender la adopción en su equipo. Esta estrategia bottom-up es más efectiva que los rollouts top-down porque garantiza que las herramientas responden a necesidades reales.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [conversacional] En el siguiente capítulo del módulo cero exploraremos la aplicación práctica de estos conceptos: cómo diagnosticar en qué fase está tu organización, cómo identificar los blockers específicos y cómo construir un roadmap de adopción realista.
+
+<break time="500ms"/>
+MARIA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [pausa de dos segundos]

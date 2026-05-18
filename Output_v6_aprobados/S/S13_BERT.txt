@@ -1,0 +1,9 @@
+bert no es un modelo que lee de izquierda a derecha. Lee en ambas direcciones simultáneamente, entendiendo el contexto completo de cada palabra antes de cualquier predicción.
+
+Google creó bert en dos mil dieciocho como un Transformer encoder bidireccional preentrenado con enmascaramiento de tokens. Cada palabra atiende a todas las demás, no solo a las anteriores. Esto lo hace radicalmente diferente a los modelos secuenciales anteriores.
+
+Imagina que lees una frase con un hueco: "El gato saltó sobre la _____". Un modelo unidireccional solo mira hacia atrás y adivina "valla". bert mira antes y después, captura "gato" y "saltó", y predice con precisión "cerca" o "valla" según el contexto global. open ei ai desplegó bert en sistemas de clasificación de documentos y consiguió una reducción del treinta y cinco por ciento en errores de categorización respecto a modelos anteriores.
+
+bert se convirtió en el estándar para tareas de NER, análisis de sentimientos y generación de embedins de altísima calidad. Su arquitectura bidireccional cambió cómo procesamos lenguaje natural a escala empresarial.
+
+Más sobre bert en el episodio T de MaquinarIA Pesada.

@@ -82,3 +82,40 @@ def test_summary_returns_counts():
     assert s["datos_numericos_count"] >= 4
     assert s["casos_nombre_propio_count"] >= 3
     assert s["has_frase_fuerza"] is True
+
+
+def test_extract_pre_writing_cached_creates_file(tmp_path):
+    cache_dir = tmp_path / "cache"
+    res = pw.extract_pre_writing_cached(SAMPLE_PDF_TEXT, cache_dir)
+    files = list(cache_dir.glob("*.json"))
+    assert len(files) == 1
+    assert res.datos_numericos
+
+
+def test_extract_pre_writing_cached_uses_cache_on_second_call(tmp_path, monkeypatch):
+    cache_dir = tmp_path / "cache"
+    pw.extract_pre_writing_cached(SAMPLE_PDF_TEXT, cache_dir)
+
+    calls = {"n": 0}
+    real = pw.extract_pre_writing
+
+    def spy(text):
+        calls["n"] += 1
+        return real(text)
+
+    monkeypatch.setattr(pw, "extract_pre_writing", spy)
+    pw.extract_pre_writing_cached(SAMPLE_PDF_TEXT, cache_dir)
+    assert calls["n"] == 0  # cache hit, no recomputo
+
+
+def test_extract_pre_writing_cached_different_texts_get_different_files(tmp_path):
+    cache_dir = tmp_path / "cache"
+    pw.extract_pre_writing_cached(SAMPLE_PDF_TEXT, cache_dir)
+    pw.extract_pre_writing_cached(SAMPLE_PDF_TEXT + " extra", cache_dir)
+    assert len(list(cache_dir.glob("*.json"))) == 2
+
+
+def test_extract_pre_writing_cached_empty_text_returns_empty():
+    res = pw.extract_pre_writing_cached("", Path("/no/se/usa"))
+    assert res.datos_numericos == []
+    assert res.casos_nombre_propio == []

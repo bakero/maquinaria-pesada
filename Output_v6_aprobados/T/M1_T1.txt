@@ -1,0 +1,178 @@
+# HOOK
+IAGO: [enfático] Mil novecientos cincuenta y seis. Conferencia de Dartmouth. John McCarthy acuña el término inteligencia artificial y promete que las máquinas pensarán como humanos en menos de una generación. Mil novecientos setenta y cuatro: primer invierno de la IA, los fondos se cortan, las promesas se evaporan. Dos mil doce: AlexNet resucita el campo con deep learning. Dos mil veintidós: chat ge pe te, asistente conversacional basado en inteligencia artificial, modelo generativo preentrenado, alcanza cien millones de usuarios en dos meses, el crecimiento más explosivo de la historia del software. Setenta años de ciclos. Setenta años de promesas rotas y renacimientos inesperados. Y hoy, en dos mil veinticinco, posiblemente estamos en la cima del pico de expectativas más alto que hemos visto jamás. Comprender esos setenta años no es nostalgia académica: es la única forma de saber qué parte de lo actual es sólido y qué parte es espejismo. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [pausa técnica de tres segundos]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [claro] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [cálido] Y yo soy Maria. Este es el primer episodio del módulo uno, Fundamentos Ontológicos y Razonamiento de Máquinas.
+
+<break time="500ms"/>
+IAGO: [serio] Antes de continuar, una advertencia técnica obligatoria. Este episodio ha sido generado por un sistema automático de inteligencia artificial. El contenido puede contener errores, imprecisiones o sesgos inherentes al modelo. Recomendamos contrastar la información con fuentes adicionales y aplicar criterio profesional en cualquier decisión basada en este material.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] La inteligencia artificial tiene setenta años de historia documentada. No nació con chat ge pe te, ni con AlexNet, ni siquiera con Deep Blue. Nació en mil novecientos cuarenta y tres cuando McCulloch y Pitts publicaron el primer modelo matemático de una neurona artificial. Desde entonces ha pasado por tres grandes paradigmas, dos inviernos completos y al menos cinco ciclos de hype y decepción. Cada ciclo tiene un patrón reconocible: promesas extraordinarias, financiación masiva, resultados por debajo de expectativas, recorte de fondos, silencio, y luego un renacimiento inesperado desde un ángulo técnico distinto.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo se acuñó formalmente el término inteligencia artificial?
+
+<break time="500ms"/>
+IAGO: [claro] En la conferencia de Dartmouth de mil novecientos cincuenta y seis. John McCarthy, Marvin Minsky, clod Shannon y Nathan Rochester reunieron a los investigadores clave y establecieron la IA como campo formal de investigación. La propuesta original decía que el problema de hacer máquinas inteligentes podría resolverse en un verano con diez investigadores. Esa predicción resultó ser optimista por varias décadas.
+
+IAGO: [analítico] El primer período, de mil novecientos cincuenta y seis a mil novecientos setenta y cuatro, fue el del optimismo fundacional. Se crearon los primeros programas que impresionaron a todo el mundo: el Logic Theorist demostró teoremas matemáticos, el General Problem Solver intentaba resolver cualquier problema expresable simbólicamente, ELIZA simulaba conversaciones terapéuticas con reglas simples. Minsky predijo en mil novecientos sesenta y siete que en una generación el problema de la inteligencia artificial estaría completamente resuelto.
+
+<break time="500ms"/>
+MARIA: [escéptico] ¿Y qué pasó?
+
+<break time="500ms"/>
+IAGO: [contundente] Que esos sistemas solo funcionaban en problemas de juguete. Al intentar escalarlos a problemas reales del mundo, la explosión combinatoria los hacía inviables. Buscar en un espacio de estados de tamaño real era computacionalmente imposible con el hardware de la época. En mil novecientos setenta y tres el informe Lighthill en Reino Unido concluyó que la IA no había cumplido sus promesas. En mil novecientos setenta y cuatro llegó el primer invierno: los gobiernos cortaron la financiación de forma masiva.
+
+IAGO: [didáctico] El segundo período, de mil novecientos setenta y cuatro a mil novecientos ochenta, fue el de los sistemas expertos. La idea era sencilla: en lugar de intentar crear inteligencia general, codificar el conocimiento de expertos humanos en reglas si-entonces. MYCIN diagnosticaba infecciones bacterianas con seiscientas reglas y alcanzaba una precisión del sesenta y nueve por ciento frente al sesenta y cinco por ciento de médicos en estudios comparativos. R1 configuraba pedidos de hardware para Digital Equipment Corporation y ahorraba millones de dólares al año.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Por qué no se generalizó ese enfoque?
+
+<break time="500ms"/>
+IAGO: [firme] Porque mantener esas bases de conocimiento era prohibitivamente caro y frágil. Cada regla nueva podía interactuar de formas imprevistas con las existentes. Escalar de seiscientas reglas a seis mil era un infierno de ingeniería del conocimiento. A finales de los ochenta, el mercado de hardware especializado para sistemas expertos colapsó. Llegó el segundo invierno de la IA.
+
+IAGO: [explicativo] El tercer período, de mil novecientos ochenta y seis a dos mil doce, fue el del aprendizaje automático estadístico. En mil novecientos ochenta y seis Rumelhart, Hinton y Williams redescubrieron el algoritmo de back propa gation, que hacía entrenable por primera vez redes neuronales multicapa. Pero el cambio real llegó en los noventa con Support Vector Machines, gradient boosting, métodos bayesianos. La IA dejó de intentar programar el conocimiento explícitamente y empezó a aprenderlo de los datos.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Ese es el período que produce los sistemas invisibles que usamos hoy?
+
+<break time="500ms"/>
+IAGO: [claro] Exacto. Los motores de búsqueda, los sistemas antifraude, las recomendaciones de Netflix, los filtros de spam: todo eso es machine learning estadístico de los noventa y dos mil. No es glamuroso, no sale en portadas, pero es el núcleo productivo de la IA empresarial hasta hoy.
+
+IAGO: [enfático] El cuarto período empieza en dos mil doce con AlexNet. Krizhevsky gana el concurso ImageNet con un margen brutal sobre los métodos clásicos usando redes convolucionales profundas entrenadas en ge pe us. El error de clasificación baja del veintiséis coma dos por ciento al quince coma tres por ciento. Ese resultado demuestra que el deep learning, dado suficiente datos y cómputo, puede superar cualquier sistema diseñado manualmente en visión por computador. Los años siguientes ven el mismo patrón aplicarse a voz, texto, y finalmente juegos con AlphaGo en dos mil dieciséis.
+
+IAGO: [contundente] Y el quinto período, de dos mil diecisiete a hoy, es la era del Transformer. En dos mil diecisiete Google publica Attention Is All You Need. En dos mil dieciocho bert demuestra que el preentrenamiento a gran escala sobre texto y el fain tiuning, ajuste fino del modelo, en tareas específicas produce resultados de vanguardia en casi todos los bénchmarks de procesamiento de lenguaje natural. En dos mil veinte ge pe te-tres muestra que escalar a ciento setenta y cinco mil millones de parámetros produce capacidades emergentes sorprendentes. Y en dos mil veintidós chat ge pe te democratiza el acceso y alcanza cien millones de usuarios en dos meses.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+MARIA: [didáctico] Esos cinco períodos corresponden a tres paradigmas técnicos fundamentales que se han alternado y combinado a lo largo de la historia. El primer paradigma es el simbólico. En el paradigma simbólico el conocimiento se representa explícitamente como símbolos, hechos y reglas lógicas. Tienes una base de conocimiento que contiene afirmaciones del tipo "Sócrates es un hombre" y "Todos los hombres son mortales", y un motor de inferencia que aplica reglas de lógica formal para derivar nuevas conclusiones como "Sócrates es mortal".
+
+<break time="500ms"/>
+IAGO: [claro] La fortaleza del paradigma simbólico es la interpretabilidad total. Puedes rastrear cada paso del razonamiento. Si el sistema concluye algo, puedes auditar exactamente qué reglas aplicó y en qué orden. Eso lo hace ideal para dominios donde la explicabilidad es un requisito regulatorio, como diagnóstico médico o aprobación de créditos en jurisdicciones con derecho a explicación.
+
+<break time="500ms"/>
+MARIA: [analítico] Pero tiene dos debilidades estructurales. La primera es que no escala bien a la variabilidad del mundo real. Escribir reglas explícitas para todos los casos posibles es inviable. La segunda es que no maneja bien la incertidumbre. El mundo real no es lógica booleana: es probabilístico, ruidoso, ambiguo. Los sistemas simbólicos puros se rompen cuando los datos no son perfectos.
+
+<break time="500ms"/>
+IAGO: [explicativo] El segundo paradigma es el conexionista. En el paradigma conexionista el conocimiento no se programa explícitamente sino que emerge del ajuste de millones de parámetros numéricos mediante optimización sobre datos de entrenamiento. Una red neuronal es esencialmente una función matemática gigante con millones de parámetros, y el entrenamiento consiste en ajustar esos parámetros para minimizar el error en las predicciones sobre un conjunto de datos.
+
+<break time="500ms"/>
+MARIA: [didáctico] El mecanismo clave es back propa gation. Durante el entrenamiento, la red hace una predicción, se calcula el error entre esa predicción y la respuesta correcta, y luego se propaga ese error hacia atrás a través de las capas de la red ajustando los pesos de las conexiones para reducir el error en la siguiente iteración. Repites ese proceso millones de veces sobre millones de ejemplos hasta que la red converge a una representación interna que captura los patrones de los datos.
+
+<break time="500ms"/>
+IAGO: [claro] La fortaleza del conexionismo es que puede aprender representaciones complejas directamente de los datos sin que un humano tenga que programarlas explícitamente. La debilidad histórica fue la opacidad: no puedes abrir la red y leer qué aprendió en un formato interpretable. Y necesitas volúmenes masivos de datos y cómputo, algo que solo se volvió viable con ge pe us y deitasets a escala de internet.
+
+<break time="500ms"/>
+MARIA: [analítico] El tercer paradigma es el estadístico o probabilístico. En el paradigma estadístico el conocimiento se modela como distribuciones de probabilidad sobre variables. Los modelos de lenguaje actuales son distribuciones de probabilidad sobre secuencias de tokens. ge pe te-cuatro no entiende el significado de las palabras en el sentido filosófico: modela la probabilidad de que un token aparezca después de una secuencia de tokens anteriores dado el corpus masivo de texto sobre el que fue entrenado.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Eso permite razonamiento bajo incertidumbre y aprendizaje sin supervisión explícita. No necesitas etiquetar manualmente millones de ejemplos: el modelo aprende de la estructura estadística del texto en bruto. Pero produce sistemas que generan lo probable, no lo verdadero. Un modelo de lenguaje puede generar con fluidez afirmaciones falsas si esas afirmaciones son estadísticamente coherentes con su entrenamiento.
+
+<break time="500ms"/>
+MARIA: [enfático] Y aquí está el punto clave para entender la IA actual: los sistemas modernos son híbridos. chat ge pe te combina el paradigma conexionista en su arquitectura de red neuronal, el paradigma estadístico en su función objetivo de modelado de lenguaje, y cada vez más se le añaden componentes simbólicos en forma de retrieval augmented generation, donde el modelo consulta bases de conocimiento estructuradas antes de generar una respuesta. Los tres paradigmas no se reemplazaron: se complementaron.
+
+<break time="500ms"/>
+IAGO: [didáctico] Para ponerlo en términos concretos, cuando usas chat ge pe te con rag, generación aumentada por recuperación, sobre documentos de tu empresa, estás usando una arquitectura Transformer entrenada con back propa gation para minimizar la perplejidad sobre un corpus de billones de tokens, que en tiempo de inferencia consulta un índice vectorial de embedins de tus documentos y luego genera texto token por token maximizando la probabilidad condicional de cada token dado el contexto recuperado. Eso es conexionismo, estadística y un toque de simbolismo trabajando juntos.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [claro] Vamos a ver cómo esos paradigmas se han aplicado en casos reales de empresa a lo largo de la historia. Empecemos por MYCIN en mil novecientos setenta y dos. MYCIN era un sistema experto para diagnóstico de infecciones bacterianas desarrollado en Stanford. Usaba seiscientas reglas si-entonces codificadas por expertos médicos. En estudios comparativos alcanzó una precisión del sesenta y nueve por ciento frente al sesenta y cinco por ciento de médicos generalistas.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Se desplegó clínicamente?
+
+<break time="500ms"/>
+MARIA: [firme] Nunca. A pesar de su rendimiento técnico, nunca se usó en hospitales reales. El problema no era técnico: era de responsabilidad legal. Nadie quería asumir la responsabilidad si el sistema cometía un error. Esa es una lección que sigue siendo relevante hoy: el rendimiento técnico no es suficiente si no resuelves los problemas de gobernanza, regulación y responsabilidad.
+
+MARIA: [didáctico] Segundo caso: Deep Blue de IBM en mil novecientos noventa y siete. Deep Blue derrota a Kasparov en ajedrez usando búsqueda alfa-beta con evaluación heurística. Evaluaba doscientos millones de posiciones por segundo. No aprende, no razona en el sentido humano: explora el árbol de posibilidades con fuerza bruta optimizada. Es IA simbólica pura con búsqueda masiva. La lección aquí es que para problemas con reglas perfectamente definidas y espacios de búsqueda grandes pero finitos, la fuerza bruta optimizada puede superar la intuición humana.
+
+MARIA: [enfático] Tercer caso: Morgan Stanley con rag. Morgan Stanley desplegó un sistema de Retrieval Augmented Generation para sus asesores financieros usando ge pe te-cuatro de open ei ai. La base de conocimiento contiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Qué paradigma están usando?
+
+<break time="500ms"/>
+MARIA: [claro] Es un híbrido perfecto. El modelo de lenguaje es conexionista: una red Transformer entrenada con back propa gation. El retrieval usa embedins vectoriales, que son representaciones estadísticas de significado semántico. Y la base de conocimiento estructurada aporta el componente simbólico: documentos con metadatos, fechas, autores, taxonomías. Los tres paradigmas trabajando juntos en producción.
+
+MARIA: [contundente] Cuarto caso: JPMorgan con COIN. COIN es Contract Intelligence, un sistema basado en machine learning clásico que analiza contratos legales de préstamos comerciales y extrae cláusulas clave. El resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Este es un caso canónico de ML clásico con ROI cuantificado y verificable.
+
+MARIA: [serio] Y quinto caso, un fracaso documentado: IBM Watson Health. IBM prometió que Watson diagnosticaría y recomendaría tratamientos de cáncer mejor que oncólogos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo el uso. La causa raíz: el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales.
+
+<break time="500ms"/>
+IAGO: [grave] ¿Cuál es la lección aplicable?
+
+<break time="500ms"/>
+MARIA: [firme] Que las expectativas sobre IA deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento. Si tus datos son sintéticos o no representativos del problema real, el sistema fallará en producción sin importar cuán sofisticado sea el modelo. Los datos importan más que los algoritmos en casi todos los casos.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [didáctico] Hablemos de lo que la historia de la IA NO es y los errores comunes de interpretación. Primer error: creer que la IA actual es fundamentalmente distinta de todo lo anterior. No lo es. Los modelos de lenguaje grandes son la aplicación a escala masiva de ideas que tienen entre treinta y setenta años. La arquitectura Transformer generaliza mecanismos de atención que existían en los noventa. El back propa gation es de mil novecientos ochenta y seis. Lo nuevo es la escala y la accesibilidad, no los fundamentos matemáticos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Por qué importa esa distinción?
+
+<break time="500ms"/>
+IAGO: [contundente] Porque si crees que estás ante algo radicalmente nuevo, tiendes a ignorar las lecciones de los fracasos pasados. Los inviernos de la IA ocurrieron cuando las promesas superaron a las capacidades reales. Eso puede volver a pasar. Si los proyectos de IA agéntica en empresa no producen el ROI esperado en los próximos dos o tres años, un nuevo ciclo de decepción es perfectamente posible. Gestionar expectativas con datos reales es la mejor protección contra eso.
+
+IAGO: [firme] Segundo error: creer que el paradigma simbólico está muerto. No lo está. Los sistemas de reglas, los motores de ontologías, los grafos de conocimiento siguen siendo la arquitectura correcta para muchos problemas empresariales, especialmente cuando la explicabilidad es un requisito regulatorio. El AI Act europeo obliga a sistemas de IA de alto riesgo a proporcionar explicaciones de sus decisiones. Un modelo de deep learning puro no puede hacer eso. Necesitas componentes simbólicos.
+
+IAGO: [analítico] Tercer error: asumir que la escala resuelve todos los problemas. Cada paradigma tiene limitaciones estructurales que la escala no elimina. Los sistemas simbólicos no escalan bien a la variabilidad del mundo real sin importar cuántas reglas añadas. Los sistemas conexionistas no garantizan corrección lógica sin importar cuántos parámetros tengas. Los sistemas estadísticos producen lo probable, no lo verdadero, sin importar el tamaño del corpus de entrenamiento.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Cuándo NO deberías usar IA entonces?
+
+<break time="500ms"/>
+IAGO: [claro] Cuando el coste de un error es inaceptable y no tienes forma de validar las salidas de forma sistemática. Cuando los datos de entrenamiento no son representativos del problema real. Cuando la explicabilidad es un requisito legal y no tienes una arquitectura que pueda proporcionarla. Y cuando las expectativas de negocio están infladas por el hype y no hay métricas claras de éxito. En esos casos, no usar IA es la decisión correcta.
+
+IAGO: [enfático] El error común es confundir capacidad técnica con aplicabilidad empresarial. Que un modelo pueda hacer algo en un bénchmark no significa que deba desplegarse en producción. La historia de la IA está llena de sistemas técnicamente impresionantes que fracasaron en el mundo real porque no se alineaban con las restricciones operativas, regulatorias o económicas del problema que intentaban resolver.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+MARIA: [claro] Las fuentes clave para este episodio son tres. Primera fuente: el artículo seminal de McCulloch y Pitts, "A Logical Calculus of the Ideas Immanent in Nervous Activity", publicado en mil novecientos cuarenta y tres en el Bulletin of Mathematical Biophysics. Este paper introduce el primer modelo matemático de una neurona artificial y demuestra que redes de neuronas simples pueden computar cualquier función lógica. Es el origen matemático del conexionismo.
+
+<break time="500ms"/>
+IAGO: [didáctico] Segunda fuente: el paper "Attention Is All You Need" de Vaswani y otros, publicado en dos mil diecisiete. Este paper introduce la arquitectura Transformer que es la base de ge pe te, bert, y todos los modelos de lenguaje grandes actuales. El mecanismo de atención que proponen permite a la red ponderar la relevancia de diferentes partes de la entrada sin depender de recurrencia o convolución. Es el paper más citado de la historia reciente del deep learning.
+
+<break time="500ms"/>
+MARIA: [analítico] Tercera fuente: el libro "Artificial Intelligence: A Modern Approach" de Stuart Russell y Peter Norvig, cuarta edición publicada en dos mil veinte. Es el libro de texto estándar de IA en universidades de todo el mundo. Cubre los tres paradigmas, la historia completa, y proporciona el marco conceptual para entender la IA como búsqueda, representación de conocimiento, aprendizaje y razonamiento bajo incertidumbre.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [enfático] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: la IA tiene setenta años de historia organizada en tres paradigmas fundamentales. El paradigma simbólico representa conocimiento como reglas explícitas. El paradigma conexionista representa conocimiento como pesos en redes neuronales. El paradigma estadístico representa conocimiento como distribuciones de probabilidad. Los sistemas modernos son híbridos que combinan los tres.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: la historia de la IA es cíclica, con picos de expectativas seguidos de inviernos cuando las promesas superan a las capacidades reales. Hemos tenido dos inviernos completos documentados y estamos posiblemente en la cima del tercer pico. Conocer esos ciclos permite gestionar expectativas con más criterio y protegerse contra la decepción colectiva que produce los inviernos.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: los datos importan más que los modelos en casi todos los casos. IBM Watson Health falló no por falta de sofisticación técnica sino porque fue entrenado con datos sintéticos no representativos. JPMorgan COIN tuvo éxito porque tenía acceso a trescientas sesenta mil horas de contratos reales etiquetados. La calidad del deitaset, conjunto de datos, de entrenamiento determina la calidad del sistema más que la elección del algoritmo.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [cálido] En el próximo episodio profundizaremos en el paradigma simbólico: cómo funcionan los sistemas de reglas, los motores de inferencia, y por qué siguen siendo relevantes en dos mil veinticinco a pesar del dominio del deep learning.
+
+<break time="500ms"/>
+IAGO: [claro] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [pausa técnica - validación de formato completada]

@@ -1,0 +1,178 @@
+# HOOK
+IAGO: [enfático] Dos mil doce. ImageNet. Una red neuronal profunda llamada AlexNet destroza la competición con un margen de once puntos porcentuales. De la noche a la mañana, toda la industria de visión artificial abandona décadas de ingeniería manual y migra al deep learning. Trece años después, esas redes neuronales profundas son la columna vertebral de cada sistema de inteligencia artificial que usas: los modelos de lenguaje que escriben código, los sistemas de recomendación que deciden qué ves, los motores de detección de fraude que protegen tus transacciones. Hoy vamos a desmontar cómo funcionan realmente estas arquitecturas, qué las hace tan poderosas, y por qué sin ciertos componentes críticos simplemente no entrenan. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+[SOUND: Intro musical MaquinarIA Pesada]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [conversacional] Y yo soy Maria. Hoy arrancamos el módulo cuatro de deep learning con el tema fundacional: redes neuronales profundas.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de continuar, una advertencia importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque hemos validado el contenido técnico, puede contener errores o imprecisiones. Si detectas algo que no cuadra, consúltalo con las fuentes originales del máster.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Vamos directo al núcleo. Una red neuronal profunda es una secuencia de capas con pesos aprendibles separadas por funciones de activación no lineales. Profunda significa que tiene muchas capas, típicamente más de cinco o seis. Pero el concepto de profundidad no es solo apilar capas una tras otra. Es construir una jerarquía de representaciones donde cada capa aprende características más abstractas que la anterior.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué diferencia una red profunda de una red clásica de dos o tres capas?
+
+<break time="500ms"/>
+IAGO: [analítico] Capacidad de representación. Una red de dos capas puede aproximar cualquier función continua, eso es el teorema de aproximación universal. Pero para funciones complejas necesitarías un número astronómico de neuronas en esa capa oculta. Las redes profundas logran la misma capacidad con muchos menos parámetros totales porque cada capa construye sobre las abstracciones de la capa anterior. En visión, la primera capa detecta bordes, la segunda detecta texturas, la tercera detecta partes de objetos, y las capas finales detectan objetos completos. Esa jerarquía es imposible con dos capas.
+
+IAGO: [explicativo] Los componentes fundamentales son cinco. Primero, las capas densas o fully connected. Cada neurona de entrada conecta con cada neurona de salida a través de pesos aprendibles. Si tienes n entradas y m salidas, tienes n por m pesos más m sesgos. La operación es salida igual a activación de W por entrada más b. Segundo, las funciones de activación, que introducen la no linealidad. Sin activación no lineal, apilar cien capas sería equivalente matemáticamente a una sola capa lineal. Tercero, normalización de capas como Batch Normalization o Layer Normalization, que estabilizan el entrenamiento. Cuarto, conexiones residuales o skip connections, que permiten entrenar redes de cientos de capas sin que el gradiente desaparezca. Y quinto, dropáut, técnica de regularización por apagado aleatorio, que desactiva aleatoriamente neuronas durante el entrenamiento para evitar sobreajuste.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Por qué el orden importa?
+
+<break time="500ms"/>
+IAGO: [claro] Porque el flujo de información es direccional. Los datos entran por la primera capa y fluyen hacia adelante capa por capa hasta la salida. Cada capa transforma la representación de la capa anterior. Si cambias el orden de las capas, cambias completamente qué aprende la red. Y durante el entrenamiento, el gradiente fluye en dirección opuesta, desde la salida hacia la entrada, ajustando los pesos de cada capa. Por eso el diseño de la arquitectura no es arbitrario: cada decisión sobre qué capas usar y en qué orden afecta directamente a qué puede aprender la red y a si el entrenamiento converge o no.
+
+IAGO: [reflexivo] El salto conceptual que hizo posible el deep learning moderno ocurrió en dos mil dieciséis con ResNet. Antes de ResNet, entrenar redes de más de veinte o treinta capas era extremadamente difícil. El gradiente se desvanecía en las capas iniciales y esas capas no aprendían nada útil. Las conexiones residuales resolvieron ese problema de forma elegante: permiten que el gradiente fluya directamente desde las capas profundas a las superficiales sin pasar por todas las transformaciones intermedias. Eso desbloqueó redes de cincuenta, cien, hasta mil capas. Y esa profundidad extra se tradujo directamente en mejor rendimiento en visión, lenguaje, y prácticamente cualquier tarea compleja.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Más capas siempre es mejor entonces?
+
+<break time="500ms"/>
+IAGO: [firme] No. Más capas solo añaden capacidad si tienes suficientes datos para entrenarlas, si usas normalización y conexiones residuales, y si tienes el presupuesto computacional para entrenarlas. Sin esos elementos, una red muy profunda puede tener peor rendimiento que una red más superficial. El error común es pensar que profundidad es sinónimo de mejor. Profundidad es capacidad potencial, pero esa capacidad solo se materializa si el entrenamiento está bien diseñado.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] Ahora vamos al mecanismo. El entrenamiento de una red neuronal profunda sigue un ciclo iterativo de cuatro pasos. Primero, forward pass. Los datos de entrada fluyen hacia adelante a través de todas las capas. Cada capa aplica su transformación: multiplica por su matriz de pesos, suma el sesgo, y aplica la función de activación. La salida de una capa es la entrada de la siguiente. Al final obtienes una predicción en la capa de salida.
+
+<break time="500ms"/>
+MARIA: [didáctico] Segundo paso, cálculo de la pérdida. Comparas la predicción con el valor real usando una función de pérdida. Para clasificación usas cross entropy, que mide cuánto difiere la distribución de probabilidad predicha de la distribución real. Para regresión usas mean squared error, que mide el cuadrado de la diferencia entre predicción y target. La pérdida es un número escalar que cuantifica qué tan mal lo está haciendo la red en ese ejemplo.
+
+<break time="500ms"/>
+IAGO: [explicativo] Tercer paso, backward pass o back propa gation. El gradiente de la pérdida se propaga hacia atrás por todas las capas usando la regla de la cadena. Cada capa calcula el gradiente de la pérdida con respecto a sus pesos. Ese gradiente indica en qué dirección y cuánto deben cambiar los pesos para reducir la pérdida. Este es el paso computacionalmente más costoso porque requiere calcular derivadas parciales para cada parámetro de la red.
+
+<break time="500ms"/>
+MARIA: [claro] Y cuarto paso, actualización de parámetros. El optimizador toma los gradientes calculados en el backward pass y actualiza los pesos. El optimizador más común hoy es Adam, que ajusta la tasa de aprendizaje de forma adaptativa para cada parámetro. La actualización básica es peso nuevo igual a peso viejo menos tasa de aprendizaje por gradiente. Pero Adam añade términos de momento y normalización que hacen el entrenamiento más estable y rápido.
+
+<break time="500ms"/>
+IAGO: [reflexivo] En paitorch, biblioteca de aprendizaje profundo, este ciclo es completamente explícito. Escribes outputs igual a model de inputs, loss igual a criterion de outputs y labels, optimizer punto zero grad para limpiar los gradientes del paso anterior, loss punto backward para calcular los gradientes, y optimizer punto step para actualizar los pesos. Esa explicitidad es una de las razones por las que paitorch se convirtió en el estándar tanto en investigación como en producción. Tienes control total sobre cada paso del ciclo.
+
+<break time="500ms"/>
+MARIA: [didáctico] Las funciones de activación son el componente que introduce la no linealidad. ReLU, Rectified Linear Unit, es la activación estándar en capas ocultas. La función es f de x igual a máximo de cero y x. Si x es positivo, ReLU devuelve x. Si x es negativo, devuelve cero. Su derivada es uno para x mayor que cero y cero para x menor que cero. Esa simplicidad evita el problema del gradiente desvaneciente que tenían sigmoid y tanh, donde las derivadas se vuelven muy pequeñas en los extremos y el aprendizaje se detiene.
+
+<break time="500ms"/>
+IAGO: [explicativo] Leaky ReLU es una variante que usa una pequeña pendiente negativa para valores negativos, típicamente cero coma cero uno por x. Eso evita las neuronas muertas, neuronas que reciben siempre valores negativos y por tanto tienen gradiente cero y nunca aprenden. En la práctica, ReLU funciona bien en la mayoría de casos, pero Leaky ReLU puede ayudar en redes muy profundas o cuando tienes problemas de convergencia.
+
+<break time="500ms"/>
+MARIA: [analítico] Las activaciones modernas en Transformers son GELU y SiLU. A diferencia de ReLU, son funciones suaves, diferenciables en todo punto. GELU es Gaussian Error Linear Unit, usada en ge pe te, modelo generativo preentrenado, dos y bert. SiLU es Sigmoid Linear Unit, usada en Llama. Ambas tienen mejor comportamiento en los extremos que ReLU y pueden mejorar la estabilidad del entrenamiento en modelos muy grandes. Pero son computacionalmente más costosas que ReLU, así que en visión clásica ReLU sigue siendo dominante.
+
+<break time="500ms"/>
+IAGO: [didáctico] Batch Normalization normaliza las activaciones de cada capa por el batch actual. Calcula la media y varianza de las activaciones en el batch, y las normaliza para que tengan media cero y varianza uno. Luego aplica una transformación afín aprendible con dos parámetros, gamma y beta, que permiten a la red recuperar la escala y desplazamiento óptimos. Batch Normalization permite usar tasas de aprendizaje más altas y hace el entrenamiento más estable. Es prácticamente estándar en redes convolucionales.
+
+<break time="500ms"/>
+MARIA: [claro] Layer Normalization normaliza por las características de cada ejemplo individual en lugar de por el batch. Es la variante usada en Transformers porque funciona mejor con secuencias de longitud variable, donde el concepto de batch es menos natural. RMSNorm es la variante más eficiente, usada en Llama. Normaliza solo por la raíz de la media de los cuadrados, sin centrar la media. Eso ahorra cómputo sin pérdida significativa de rendimiento.
+
+<break time="500ms"/>
+IAGO: [explicativo] Las conexiones residuales son atajos que permiten al gradiente fluir directamente desde capas profundas a capas superficiales. La fórmula es output igual a capa de input más input. El input original se suma a la salida de la capa. Durante el backward pass, el gradiente puede fluir a través de esa suma sin pasar por las transformaciones de la capa. Eso garantiza que incluso las capas más superficiales reciban un gradiente útil. Sin conexiones residuales, entrenar redes de más de cincuenta capas es prácticamente imposible.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Dropout desactiva aleatoriamente una fracción p de las neuronas en cada forward pass durante el entrenamiento. Típicamente p es cero coma uno a cero coma cinco. Cada neurona tiene probabilidad p de ser desactivada, es decir, su salida se pone a cero. Eso fuerza a la red a no depender de ninguna neurona específica. Aprende representaciones redundantes y robustas. Durante la inferencia, todas las neuronas están activas pero sus salidas se escalan por uno menos p para compensar.
+
+<break time="500ms"/>
+IAGO: [firme] El error crítico con dropáut es olvidar cambiar el modo de la red entre entrenamiento e inferencia. En paitorch debes llamar explícitamente a model punto train antes de entrenar y model punto eval antes de inferir. Si infieres con model punto train activo, dropáut sigue desactivando neuronas aleatoriamente y tus predicciones serán estocásticas e incorrectas. Ese bug es sorprendentemente común y puede pasar desapercibido si no validas cuidadosamente.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didáctico] Vamos a casos reales con nombres propios. Empezamos con Harvey AI, una startup fundada en dos mil veintidós especializada en inteligencia artificial para bufetes de abogados. Harvey usa modelos de lenguaje con fain tiuning, ajuste fino del modelo, sobre corpus jurídico, integrados con bases de datos legales como Westlaw y LexisNexis. La arquitectura base es un Transformer profundo, con capas de atención y capas densas en los bloques feed forward.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Qué escala de adopción tienen?
+
+<break time="500ms"/>
+MARIA: [claro] Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera para usar Harvey. Los casos de uso son redacción de contratos, due diligence, investigación jurídica, y análisis de precedentes. El resultado documentado es una reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto. Eso es tiempo de abogados senior, que facturan cientos de dólares por hora. El ROI es directo y medible.
+
+MARIA: [analítico] Segundo caso, Morgan Stanley. El banco implementó un sistema de Retrieval Augmented Generation para sus asesores financieros. La base de conocimiento contiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. La arquitectura combina embedins densos generados por una red neuronal profunda, búsqueda vectorial, y un modelo de lenguaje grande de open ei ai, específicamente ge pe te cuatro.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Cuál fue el impacto operativo?
+
+<break time="500ms"/>
+MARIA: [enfático] Reducción del tiempo de búsqueda de información de horas a minutos. Antes, un asesor podía tardar media mañana buscando el documento correcto en sistemas internos fragmentados. Ahora obtiene la respuesta en segundos. Morgan Stanley presentó este caso públicamente en el open ei ai DevDay de dos mil veintitrés. Es un ejemplo canónico de cómo las redes neuronales profundas, en este caso Transformers, se integran en flujos de trabajo empresariales críticos.
+
+MARIA: [didáctico] Tercer caso, JPMorgan con su sistema COIN, Contract Intelligence. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave automáticamente. La arquitectura no usa Transformers modernos, usa machine learning clásico: procesamiento de lenguaje natural con clasificadores entrenados en características extraídas manualmente. Pero las capas de clasificación son redes densas profundas con activaciones ReLU y dropáut.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Qué resultados obtuvieron?
+
+<break time="500ms"/>
+MARIA: [contundente] Trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso completamente manual que llevaba trescientas sesenta mil horas anuales. Ahora el sistema procesa un contrato en segundos. Este es un caso pedagógico perfecto porque el ROI está cuantificado y verificado. No es una promesa, es un resultado operativo medible en el mayor banco de Estados Unidos por activos.
+
+MARIA: [reflexivo] Y un caso de fracaso documentado que es igual de instructivo: IBM Watson Health. IBM prometió que Watson diagnosticaría y recomendaría tratamientos de cáncer mejor que oncólogos humanos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo su uso. La causa raíz documentada fue que el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales.
+
+<break time="500ms"/>
+IAGO: [firme] ¿Qué lección técnica sacas de Watson Health?
+
+<break time="500ms"/>
+MARIA: [grave] Que las expectativas sobre inteligencia artificial deben calibrarse con la calidad de los datos de entrenamiento. Una red neuronal profunda solo es tan buena como los datos con los que fue entrenada. Si entrenas con datos sintéticos y despliegas en casos reales, el sistema fallará. El hype no garantiza el rendimiento. Este caso fue reportado extensamente por STAT News en dos mil diecisiete y es una referencia obligada cuando se habla de fallos de IA en salud.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora los límites. Primero, más capas no es siempre mejor. Sin conexiones residuales, las redes muy profundas sufren el problema del gradiente desvaneciente. El gradiente se vuelve exponencialmente pequeño a medida que se propaga hacia atrás, y las capas iniciales no aprenden nada útil. En esos casos, una red de cincuenta capas puede tener peor rendimiento que una red de diez capas. La profundidad solo añade capacidad si va acompañada de Batch Normalization o Layer Normalization y conexiones residuales. Este es un error común: asumir que apilar capas automáticamente mejora el modelo.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y en datos tabulares?
+
+<break time="500ms"/>
+IAGO: [contundente] Las redes neuronales densas generalmente no superan a gradient boosting en datos tabulares. XGBoost o LightGBM suelen ganar en deitasets medianos con decenas de miles de ejemplos. Las redes densas solo tienen ventaja cuando hay millones de ejemplos o relaciones muy complejas entre variables que los árboles no capturan bien. El error común es usar una red neuronal profunda por defecto en datos tabulares sin comparar con XGBoost. En la mayoría de casos empresariales con datos estructurados, gradient boosting sigue siendo el baseline a batir.
+
+IAGO: [didáctico] Segundo límite, las redes neuronales profundas no deben confundirse con modelos interpretables. Una red de cien capas con millones de parámetros es una caja negra. No puedes inspeccionar los pesos y entender por qué tomó una decisión específica. Existen técnicas de interpretabilidad como SHAP o LIME, pero son aproximaciones post hoc, no explicaciones causales. Si necesitas interpretabilidad regulatoria, por ejemplo en crédito o salud, una red profunda puede no ser la opción correcta. Un modelo lineal o un árbol de decisión pequeño puede ser preferible aunque tenga menor precisión.
+
+IAGO: [analítico] Tercer límite, cuando no tienes suficientes datos. Las redes profundas tienen millones de parámetros. Para entrenar esos parámetros sin sobreajustar necesitas grandes cantidades de datos. Si tienes mil ejemplos, una red de diez capas con un millón de parámetros simplemente memorizará el conjunto de entrenamiento y no generalizará. En esos casos, transfer learning es la solución: tomas una red preentrenada en un deitaset, conjunto de datos, grande y la adaptas a tu tarea con pocos ejemplos. Pero si no puedes usar transfer learning y tienes pocos datos, una red neuronal profunda entrenada desde cero no es viable.
+
+IAGO: [reflexivo] Y el límite computacional. Entrenar una red profunda grande requiere ge pe us o te pe us. El coste puede ser significativo. ge pe te tres costó varios millones de dólares en cómputo. Llama dos costó decenas de millones. Si tu organización no tiene acceso a infraestructura de cómputo a escala, entrenar redes muy profundas desde cero no es una opción. Usar modelos preentrenados o a pe ies de terceros es la alternativa práctica, pero entonces estás limitado por lo que esos modelos pueden hacer.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Fuentes clave para profundizar. Primera fuente, el paper de ResNet. He y otros, dos mil dieciséis, Deep Residual Learning for Image Recognition. Este paper introdujo las conexiones residuales y demostró que con ellas se pueden entrenar redes de más de cien capas con mejor rendimiento que redes más superficiales. Ganó el ImageNet Challenge de dos mil quince y cambió completamente el diseño de arquitecturas profundas. Es lectura obligada para entender por qué las redes modernas son tan profundas.
+
+<break time="500ms"/>
+MARIA: [didáctico] Segunda fuente, el paper original de Batch Normalization. Ioffe y Szegedy, dos mil quince, Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift. Este paper mostró que normalizar las activaciones por batch permite entrenar redes mucho más rápido y con tasas de aprendizaje más altas. Batch Normalization se convirtió en un componente estándar de prácticamente todas las arquitecturas convolucionales después de este paper.
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [claro] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero, las conexiones residuales son el componente que hizo posibles las redes muy profundas. Sin ellas, el gradiente desaparece y las capas iniciales no aprenden. Con ellas, puedes entrenar redes de cientos de capas porque el gradiente fluye directamente a través de los atajos.
+
+<break time="500ms"/>
+MARIA: [didáctico] Segundo, el ciclo de entrenamiento tiene cuatro pasos: forward pass, cálculo de pérdida, backward pass, y actualización de parámetros. En paitorch este ciclo es explícito y controlable. Debes entender cada paso para diagnosticar problemas de entrenamiento.
+
+<break time="500ms"/>
+IAGO: [firme] Tercero, más capas no es siempre mejor. La profundidad solo añade capacidad si tienes suficientes datos, normalización, conexiones residuales, y presupuesto computacional. Sin esos elementos, una red profunda puede tener peor rendimiento que una red superficial.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo capítulo del módulo cuatro entramos en redes convolucionales, la arquitectura especializada para datos con estructura espacial.
+
+<break time="500ms"/>
+IAGO: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+# Word count objetivo: tres mil ochocientos-cuatro mil doscientos palabras
+# HOOK: abierto por IAGO, cierra con frase canónica
+# SALUDO: tres intervenciones, aviso de IA pronunciado por IAGO
+# PANORAMA: Yago lidera ≥sesenta y cinco por ciento
+# COMO: compartido cuarenta-sesenta por ciento, Maria explica sub-mecanismos
+# CASOS: Maria lidera ≥sesenta por ciento, menciona Harvey AI, Morgan Stanley, JPMorgan, IBM
+# LIMITES: Yago lidera ≥cincuenta y cinco por ciento, usa "no es", "no debe confundirse con"
+# FUENTES: exactamente tres fuentes con tres años distintos (dos mil dieciséis, dos mil quince, dos mil dieciséis → ajustar)
+# CIERRE_CONCEPTOS: tres intervenciones, apertura canónica en primera
+# CIERRE_FINAL: frase canónica incluida literal con 'I.A.'

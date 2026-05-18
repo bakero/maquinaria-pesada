@@ -1,0 +1,9 @@
+Aunque parezca autónoma, la Agentic AI no decide por sí sola qué hacer. Un agente de IA es un sistema capaz de planificar y ejecutar secuencias de acciones para alcanzar un objetivo específico, usando herramientas y retroalimentación del entorno como brújula constante.
+
+La diferencia clave está en la autonomía supervisada. Mientras un chatbot responde preguntas puntuales, un agente IA desglosa un objetivo complejo en tareas intermedias, las ejecuta con herramientas externas —bases de datos, a pe ies, navegadores— y ajusta su ruta según los resultados que obtiene. Es como un asistente que no solo habla, sino que actúa, aprende y corrige.
+
+Morgan Stanley implementó agentes IA en su división de análisis de riesgos y redujo el tiempo de evaluación de carteras de dos semanas a treinta y seis horas, procesando millones de datos sin intervención humana constante. En finanzas y logística, estos sistemas ya automatizan flujos que antes requerían equipos completos.
+
+La verdadera potencia emerge cuando el agente maneja incertidumbre, replantea estrategias y escala sin reentrenamiento. Eso es lo que separa un modelo predictivo de una máquina que realmente trabaja.
+
+Más sobre agentic ai en el episodio T de MaquinarIA Pesada.

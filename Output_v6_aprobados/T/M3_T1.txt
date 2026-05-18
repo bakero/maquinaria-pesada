@@ -1,0 +1,193 @@
+# HOOK
+IAGO: [enfático] Imagina que tienes mil millones de transacciones bancarias sin etiquetar. ¿Buscas fraude, segmentas clientes o entrenas un sistema que aprenda a decidir cuándo bloquear una tarjeta? La respuesta determina si usas aprendizaje supervisado, no supervisado o por refuerzo. Y elegir mal puede costarte millones. El ochenta por ciento del machine learning en producción es supervisado, pero los sistemas más sofisticados del mundo, como chat ge pe te, asistente conversacional basado en inteligencia artificial, modelo generativo preentrenado, combinan los tres paradigmas en su arquitectura. Hoy desciframos cuándo aplicar cada tipo de aprendizaje, cómo funcionan sus mecanismos internos y por qué entender esta distinción es la diferencia entre un proyecto de IA que escala y uno que muere en fase piloto. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [pausa de tres segundos]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [cálido] Y yo soy Maria. Hoy arrancamos el módulo tres del máster, Machine Learning Clásico, con el tema fundacional: los tres tipos de aprendizaje.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de continuar, un aviso importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque revisamos el contenido, puede contener errores o imprecisiones. Te recomendamos contrastar la información crítica con fuentes adicionales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Vamos directo al grano. Cuando una empresa se plantea resolver un problema con machine learning, la primera pregunta no es qué algoritmo usar ni qué fréimuork, marco de trabajo, elegir. La primera pregunta es: ¿qué tipo de aprendizaje necesito? Y hay tres respuestas posibles. Aprendizaje supervisado, donde el modelo aprende de ejemplos etiquetados. Aprendizaje no supervisado, donde el modelo descubre estructura en datos sin etiquetas. Y aprendizaje por refuerzo, donde un agente aprende a tomar decisiones optimizando recompensas a largo plazo. Estas tres categorías no son intercambiables. Cada una resuelve problemas fundamentalmente distintos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y por qué dices que el ochenta por ciento del machine learning en empresa es supervisado?
+
+<break time="500ms"/>
+IAGO: [analítico] Porque la mayoría de los problemas empresariales tienen esta estructura: datos históricos con resultados conocidos. Predecir si un cliente abandonará la empresa. Detectar fraude en transacciones. Clasificar tickets de soporte por urgencia. Estimar la demanda de inventario para el próximo trimestre. En todos estos casos tienes ejemplos pasados donde ya sabes qué pasó. El cliente se fue o se quedó. La transacción era fraude o legítima. El ticket era urgente o no. Esos son datos etiquetados. Y cuando tienes datos etiquetados, el aprendizaje supervisado es la herramienta correcta.
+
+IAGO: [explicativo] El aprendizaje supervisado se divide en dos grandes familias. Clasificación y regresión. En clasificación, la salida es una categoría discreta. Spam o no spam. Fraude o legítimo. Tipo A, B o C de diagnóstico médico. En regresión, la salida es un valor numérico continuo. El precio de una casa. La demanda esperada en unidades. La probabilidad de que un cliente compre en los próximos treinta días. La diferencia técnica es que en clasificación el modelo aprende fronteras de decisión entre clases, mientras que en regresión aprende una función continua que mapea entradas a valores numéricos.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y qué pasa cuando tienes pocos datos etiquetados pero muchos sin etiquetar?
+
+<break time="500ms"/>
+IAGO: [claro] Ahí entra el aprendizaje semi-supervisado, que es una variante híbrida. Usas un pequeño conjunto de datos etiquetados para supervisión directa y un gran conjunto de datos no etiquetados para que el modelo aprenda la estructura general de los datos. Esto produce resultados significativamente mejores que el supervisado puro cuando los datos etiquetados son escasos. Imagina que tienes mil imágenes etiquetadas de defectos en piezas manufacturadas pero cien mil imágenes sin etiquetar. El semi-supervisado aprovecha esas cien mil para aprender qué hace que una pieza sea una pieza, y las mil etiquetadas para aprender qué hace que un defecto sea un defecto.
+
+IAGO: [didáctico] El aprendizaje no supervisado es diferente. No hay etiquetas. El objetivo no es predecir una variable específica sino descubrir la estructura intrínseca de los datos. Clustering, que agrupa ejemplos similares sin que nadie haya definido las categorías de antemano. Reducción de dimensionalidad, que comprime representaciones de alta dimensión a espacios más manejables conservando la información relevante. Detección de anomalías, que identifica ejemplos que no encajan en ningún patrón conocido. Y modelos de densidad, que aprenden la distribución de probabilidad de los datos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Eso significa que el no supervisado es para exploración?
+
+<break time="500ms"/>
+IAGO: [analítico] En gran medida, sí. El no supervisado es para cuando no sabes qué estás buscando pero quieres que los datos te revelen patrones. Segmentación de clientes sin categorías predefinidas. Descubrimiento de tópicos en grandes colecciones de documentos. Compresión de representaciones para sistemas de recomendación. La evaluación es más subjetiva que en supervisado. No hay una métrica de error directa. Validas los resultados con juicio del dominio. ¿Los clusters tienen sentido de negocio? ¿Las anomalías detectadas son realmente raras o son falsos positivos?
+
+IAGO: [explicativo] Y luego está el aprendizaje por refuerzo, que es conceptualmente distinto a los otros dos. En refuerzo, un agente aprende a tomar decisiones en un entorno recibiendo señales de recompensa o penalización por sus acciones. No hay un deitaset, conjunto de datos, de ejemplos correctos. El agente explora el espacio de acciones, observa las consecuencias y ajusta su política para maximizar la recompensa acumulada a largo plazo. El problema se formaliza como un Proceso de Decisión de Markov. Estados, acciones, transiciones y función de recompensa. El agente aprende una política, que es la función que mapea estados a acciones.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y eso se usa en empresa o es solo para videojuegos y robótica?
+
+<break time="500ms"/>
+IAGO: [contundente] Se usa en producción en casos muy específicos. Optimización de inventario y cadena de suministro. Amazon usa refuerzo para los robots de sus almacenes. Optimización de campañas de marketing, decidir qué anuncio mostrar a cada usuario en cada momento. Gestión de energía en centros de datos. dipmaind redujo el consumo energético de los centros de datos de Google un cuarenta por ciento con refuerzo. Y es la base de erre ele ache efe, aprendizaje por refuerzo con retroalimentación humana, el proceso que hace que los ele ele emes sean útiles y seguros. Pero el refuerzo es más difícil de implementar que el supervisado. Requiere definir cuidadosamente la función de recompensa, el espacio de estados y el espacio de acciones. Y necesita miles o millones de iteraciones de exploración, lo que normalmente requiere un entorno simulado antes de desplegar en producción.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] Ahora vamos al mecanismo técnico. Cómo funciona cada paradigma por dentro. Empecemos por el supervisado, que es el más directo. El ciclo es este. Primero, divides los datos en entrenamiento y test. Típicamente ochenta por ciento para entrenamiento, veinte por ciento para test. El modelo nunca ve los datos de test durante el entrenamiento. Segundo, entrenas el modelo sobre el conjunto de entrenamiento. El modelo ajusta sus parámetros para minimizar una función de pérdida. En clasificación binaria, la pérdida típica es entropía cruzada binaria. En regresión, error cuadrático medio.
+
+<break time="500ms"/>
+MARIA: [explicativo] El ajuste de parámetros se hace con descenso de gradiente. El algoritmo calcula el gradiente de la función de pérdida respecto a cada parámetro del modelo y actualiza los parámetros en la dirección que reduce la pérdida. Esto se repite durante múltiples épocas, donde una época es un pase completo por todos los datos de entrenamiento. En cada época, el modelo se vuelve un poco mejor en predecir las etiquetas correctas. El learning rate controla cuánto se ajustan los parámetros en cada paso. Un learning rate muy alto hace que el modelo oscile y no converja. Un learning rate muy bajo hace que el entrenamiento sea lento.
+
+<break time="500ms"/>
+IAGO: [claro] Tercero, evalúas el modelo sobre el conjunto de test con métricas apropiadas. En clasificación, precisión, recall, F1-score, AUC-ROC. En regresión, error absoluto medio, error cuadrático medio, R cuadrado. La métrica que eliges depende del coste relativo de los falsos positivos y los falsos negativos. En detección de fraude, un falso negativo, dejar pasar un fraude, puede costar miles de euros. Un falso positivo, bloquear una transacción legítima, molesta al cliente pero no cuesta dinero directo. Así que optimizas para recall alto aunque la precisión baje un poco.
+
+<break time="500ms"/>
+MARIA: [analítico] Cuarto paso, despliegas el modelo en producción con monitorización de drift. El drift es cuando la distribución de los datos en producción cambia respecto a la distribución de entrenamiento. Esto degrada el rendimiento del modelo con el tiempo. Hay dos tipos de drift. Concept drift, cuando la relación entre entradas y salidas cambia. Y data drift, cuando la distribución de las entradas cambia pero la relación con las salidas se mantiene. En ambos casos, necesitas reentrenar el modelo con datos nuevos para mantener el rendimiento.
+
+<break time="500ms"/>
+IAGO: [didáctico] Ahora el no supervisado. El ciclo de clustering, que es la técnica no supervisada más común, es este. Primero, eliges el algoritmo. K-means es el más popular. Particiona los datos en K clusters minimizando la varianza intra-cluster. DBSCAN agrupa puntos densos y marca como outliers los puntos aislados. Clustering jerárquico construye un árbol de clusters anidados. Segundo, eliges el número de clusters. En K-means tienes que especificar K de antemano. Usas el método del codo, que grafica la varianza explicada versus K y buscas el punto donde la mejora marginal se aplana. O usas el silhouette score, que mide cuán similares son los puntos dentro de un cluster comparado con puntos en otros clusters.
+
+<break time="500ms"/>
+MARIA: [explicativo] Tercero, ajustas el modelo a los datos. En K-means, el algoritmo inicializa K centroides aleatoriamente, asigna cada punto al centroide más cercano, recalcula los centroides como el promedio de los puntos asignados y repite hasta convergencia. Cuarto, interpretas los clusters con estadísticas descriptivas y conocimiento del dominio. Para cada cluster, calculas la media y la desviación estándar de cada variable. Identificas qué variables discriminan más entre clusters. Y validas con expertos del negocio que los clusters tienen sentido. ¿El cluster tres son clientes de alto valor? ¿El cluster uno son clientes en riesgo de abandono? Si los clusters no tienen interpretación de negocio útil, el ejercicio no sirve.
+
+<break time="500ms"/>
+IAGO: [claro] No hay métrica de error correcto o incorrecto en clustering. La validez de los clusters es una cuestión de utilidad para el negocio. Esto es muy diferente al supervisado, donde puedes calcular la precisión del modelo comparando predicciones con etiquetas verdaderas. En no supervisado, la evaluación es más subjetiva y requiere más juicio humano.
+
+<break time="500ms"/>
+MARIA: [analítico] Ahora el refuerzo. El ciclo es más complejo. Primero, defines el espacio de estados. Qué información describe la situación en la que el agente toma decisiones. En un almacén, el estado incluye la posición del robot, las posiciones de los ítems a recoger, el nivel de batería, el tiempo transcurrido. Segundo, defines el espacio de acciones. Qué puede hacer el agente. Moverse norte, sur, este, oeste. Recoger ítem. Cargar batería. Tercero, defines la función de recompensa. Qué comportamiento quieres incentivar. Recompensa positiva por recoger el ítem correcto. Recompensa negativa por cada paso de tiempo para incentivar eficiencia. Recompensa muy negativa por colisiones.
+
+<break time="500ms"/>
+IAGO: [explicativo] El diseño de la función de recompensa es el paso más crítico y más difícil. Una función de recompensa mal diseñada puede producir comportamientos inesperados que técnicamente maximizan la recompensa pero no el objetivo real. Esto se llama reward hacking. Imagina que recompensas al robot por recoger ítems pero no penalizas por dejarlos caer. El robot aprende a recoger y soltar, recoger y soltar, porque cada recogida da recompensa. Técnicamente está maximizando la recompensa, pero no está cumpliendo el objetivo real.
+
+<break time="500ms"/>
+MARIA: [didáctico] Cuarto, entrenas el agente mediante interacción con el entorno. Típicamente con algoritmos como Q-learning, que aprende una función Q que estima la recompensa futura esperada de cada acción en cada estado. O PPO, Proximal Policy Optimization, que actualiza la política de forma conservadora para evitar cambios bruscos que desestabilicen el aprendizaje. O SAC, Soft Actor-Critic, que maximiza tanto la recompensa como la entropía de la política para fomentar exploración. El entrenamiento requiere millones de interacciones con el entorno. En robótica física esto es inviable, así que entrenas en simulación y luego transfieres la política al robot real.
+
+<break time="500ms"/>
+IAGO: [claro] Quinto, evalúas la política aprendida en condiciones de producción. Despliegas el agente en el entorno real y monitorizas la recompensa acumulada promedio. Si el rendimiento es significativamente peor que en simulación, hay un problema de transferencia. Las dinámicas del entorno real son diferentes a las del simulador. Necesitas ajustar el simulador o hacer fain tiuning, ajuste fino del modelo, de la política con datos reales.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Vamos a casos reales de producción. Primero, aprendizaje supervisado en BBVA. El sistema de scoring de crédito usa gradient boosting con más de doscientas variables para predecir la probabilidad de impago de cada solicitante de préstamo. Es clasificación binaria supervisada. Los datos de entrenamiento son millones de préstamos históricos etiquetados con su resultado. Impago o no impago. El modelo aprende qué combinaciones de variables, ingresos, historial crediticio, antigüedad laboral, ratio deuda a ingresos, predicen mejor el riesgo de impago.
+
+MARIA: [explicativo] El gradient boosting construye un ensemble de árboles de decisión secuencialmente. Cada árbol nuevo corrige los errores del ensemble anterior. Esto produce modelos muy precisos pero también más complejos de interpretar que un único árbol de decisión. BBVA usa técnicas de interpretabilidad como SHAP values para explicar por qué el modelo asignó una probabilidad de impago específica a cada solicitante. Esto es crítico para cumplir regulaciones de transparencia algorítmica y para que los analistas de riesgo confíen en el modelo.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y cuál es el impacto en negocio?
+
+<break time="500ms"/>
+MARIA: [analítico] El modelo reduce la tasa de impago en la cartera de préstamos entre un quince y un veinte por ciento comparado con los métodos de scoring tradicionales basados en reglas manuales. Eso se traduce en decenas de millones de euros ahorrados al año. Y acelera el proceso de aprobación de préstamos de días a minutos, mejorando la experiencia del cliente.
+
+MARIA: [conversacional] Segundo caso, aprendizaje no supervisado en Netflix. Netflix identifica taste clusters, grupos de usuarios con preferencias similares, sin que nadie haya definido esas categorías de antemano. El clustering no supervisado se aplica sobre el historial de visualización de cientos de millones de usuarios. El algoritmo agrupa usuarios que ven contenido similar, pero no usa etiquetas predefinidas como comedia o drama. Descubre clusters más sutiles. Usuarios que ven thrillers psicológicos europeos con finales abiertos. Usuarios que ven comedias románticas ligeras con protagonistas femeninas fuertes.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y eso guía decisiones de producción de contenido?
+
+<break time="500ms"/>
+MARIA: [claro] Exacto. Netflix usa estos clusters para decidir qué series y películas producir. Si detectan un cluster grande de usuarios interesados en ciencia ficción distópica con crítica social, y ese cluster está mal servido por el catálogo actual, eso justifica producir contenido para ese nicho. También personalizan las miniaturas y las descripciones de cada título según el cluster al que pertenece el usuario. Un usuario del cluster de thrillers psicológicos ve una miniatura oscura y una descripción que enfatiza el suspenso. Un usuario del cluster de comedias románticas ve una miniatura luminosa y una descripción que enfatiza el romance.
+
+MARIA: [conversacional] Tercer caso, aprendizaje por refuerzo en Amazon. Los robots de almacén de Amazon aprenden a optimizar rutas de picking mediante refuerzo. El entorno es el almacén. El estado incluye la posición del robot, las posiciones de los ítems en la lista de picking, el tráfico de otros robots, el nivel de batería. Las acciones son moverse en direcciones específicas, recoger ítem, esperar. La recompensa es positiva por completar la lista de picking rápidamente y negativa por cada segundo de tiempo transcurrido y por colisiones.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Cuánto mejora respecto a algoritmos estáticos?
+
+<break time="500ms"/>
+MARIA: [contundente] El sistema de refuerzo reduce el tiempo medio de picking entre un quince y un veinticinco por ciento respecto a los algoritmos heurísticos estáticos que Amazon usaba antes. Eso se traduce en millones de pedidos procesados más rápido al año. El entrenamiento se hace en simulación durante meses, con millones de episodios de picking simulados. Luego la política aprendida se despliega en los robots reales. Hay un período de ajuste fino con datos reales para corregir diferencias entre simulación y realidad.
+
+MARIA: [explicativo] Y cuarto caso, erre ele ache efe en chat ge pe te. El proceso de entrenamiento de chat ge pe te usa refuerzo para hacer que el modelo maximice la preferencia humana. Primero, open ei ai entrena un modelo base con aprendizaje no supervisado sobre texto de internet. Ese es el preentrenamiento. Segundo, hacen fain tiuning supervisado con ejemplos de conversaciones de alta calidad escritas por humanos. Tercero, entrenan un reward model. Humanos evalúan pares de respuestas del modelo y eligen cuál prefieren. El reward model aprende a predecir esas preferencias. Cuarto, entrenan el modelo de lenguaje con PPO para producir respuestas que maximizan el reward model. Hay una penalización KL respecto al modelo base para evitar que el modelo se desvíe demasiado y empiece a generar texto incoherente.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Así que los ele ele emes modernos combinan los tres paradigmas. No supervisado en preentrenamiento, supervisado en fain tiuning de instrucciones y refuerzo en alineación con preferencias humanas.
+
+<break time="500ms"/>
+MARIA: [claro] Exacto. Entender los tres tipos de aprendizaje no es solo relevante para machine learning clásico. Es entender los cimientos sobre los que se construyen los sistemas de IA más sofisticados del mundo.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora los errores comunes y los límites de cada paradigma. Primer error: usar aprendizaje no supervisado cuando en realidad tienes etiquetas. Si tienes datos históricos con resultados conocidos, clientes que abandonaron versus clientes que no abandonaron, usar clustering no supervisado para segmentar clientes es menos efectivo que un modelo supervisado de churn. El aprendizaje no supervisado es para cuando genuinamente no tienes etiquetas, no para evitar el trabajo de usarlas.
+
+IAGO: [contundente] He visto proyectos donde el equipo hace clustering de clientes, identifica cinco segmentos y luego intenta predecir churn dentro de cada segmento con modelos supervisados separados. Esto es menos efectivo que entrenar un único modelo supervisado de churn sobre todos los clientes. El clustering introduce ruido y fronteras artificiales. Si tienes las etiquetas de churn, úsalas directamente. No las ignores para hacer clustering primero.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo sí tiene sentido combinar clustering y supervisado?
+
+<break time="500ms"/>
+IAGO: [explicativo] Cuando el clustering descubre estructura que mejora el modelo supervisado. Por ejemplo, si haces clustering y descubres que los clientes del cluster tres tienen un patrón de churn completamente diferente a los del cluster uno, puedes entrenar modelos supervisados especializados por cluster. Pero esto solo funciona si el clustering captura diferencias reales en el mecanismo de churn. En la mayoría de los casos, un único modelo supervisado con las variables correctas aprende esas diferencias automáticamente sin necesidad de clustering previo.
+
+IAGO: [firme] Segundo error: subestimar la dificultad del aprendizaje por refuerzo en aplicaciones reales. El refuerzo requiere definir cuidadosamente la función de recompensa, el espacio de estados y el espacio de acciones. Una función de recompensa mal especificada puede producir comportamientos perversos. Además, el refuerzo necesita miles o millones de iteraciones de exploración. Esto requiere un entorno simulado antes de desplegar en producción. Construir un simulador de alta fidelidad puede llevar meses o años de trabajo de ingeniería.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Hay casos donde el refuerzo simplemente no es viable?
+
+<break time="500ms"/>
+IAGO: [contundente] Sí. Cuando el entorno es demasiado complejo para simular con fidelidad suficiente. Cuando las consecuencias de las acciones son irreversibles y no puedes permitirte exploración en producción. Cuando la función de recompensa no se puede especificar de forma clara. En esos casos, el supervisado o el no supervisado son mejores opciones. El refuerzo es poderoso pero no es la herramienta correcta para todos los problemas de decisión secuencial.
+
+IAGO: [firme] Tercer error: asumir que el aprendizaje semi-supervisado siempre mejora el supervisado puro. El semi-supervisado mejora cuando los datos no etiquetados son representativos de la distribución real del problema. Si los datos no etiquetados tienen una distribución diferente a los etiquetados, el semi-supervisado puede degradar el rendimiento. Imagina que tienes mil imágenes etiquetadas de defectos en piezas de una fábrica específica y cien mil imágenes no etiquetadas de piezas de múltiples fábricas con diferentes procesos de manufactura. El semi-supervisado puede aprender patrones de las otras fábricas que no son relevantes para tu fábrica, y eso contamina el modelo.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cómo detectas si eso está pasando?
+
+<break time="500ms"/>
+IAGO: [explicativo] Comparas el rendimiento del modelo semi-supervisado con el del supervisado puro sobre un conjunto de validación etiquetado. Si el semi-supervisado no mejora o empeora, los datos no etiquetados no están ayudando. En ese caso, descártalos y quédate solo con los datos etiquetados. O filtra los datos no etiquetados para que sean más similares a los etiquetados antes de usarlos en semi-supervisado.
+
+IAGO: [firme] Cuarto límite: el aprendizaje supervisado no debe confundirse con causalidad. Un modelo supervisado aprende correlaciones entre entradas y salidas. No aprende relaciones causales. Si entrenas un modelo que predice ventas basándose en gasto en publicidad y temperatura exterior, y resulta que hay correlación entre temperatura y ventas porque vendes helados, el modelo puede predecir bien. Pero no entiende que la temperatura causa las ventas y la publicidad también causa las ventas. Si cambias la estrategia de publicidad, el modelo no puede predecir correctamente el efecto causal de ese cambio.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Eso significa que el supervisado no sirve para decisiones estratégicas?
+
+<break time="500ms"/>
+IAGO: [claro] Sirve para predicción, no para inferencia causal. Si quieres saber qué pasará si cambias una variable, necesitas métodos causales. Experimentos aleatorizados, diseño de experimentos, modelos causales estructurales. El supervisado predice qué pasará dado lo que ha pasado antes. No predice qué pasará si intervienes en el sistema de forma que nunca ha pasado antes.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Vamos a las fuentes clave que respaldan este episodio. Primera fuente: el paper de Sutton y Barto, Reinforcement Learning: An Introduction, publicado en mil novecientos noventa y ocho y actualizado en dos mil dieciocho. Este es el libro de texto canónico de aprendizaje por refuerzo. Cubre la teoría completa de Procesos de Decisión de Markov, Q-learning, policy gradients y actor-critic methods. Es la referencia fundamental para entender los fundamentos matemáticos del refuerzo.
+
+<break time="500ms"/>
+MARIA: [explicativo] Segunda fuente: el paper de Zhu y Goldberg, Introduction to Semi-Supervised Learning, publicado en dos mil nueve. Este libro sintetiza los métodos principales de aprendizaje semi-supervisado. Co-training, self-training, graph-based methods y generative models. Incluye análisis teórico de cuándo el semi-supervisado mejora el supervisado puro y cuándo no. Es la referencia estándar para entender las condiciones bajo las cuales los datos no etiquetados aportan valor.
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [enfático] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: el tipo de aprendizaje correcto depende de si tienes etiquetas y de si el objetivo es predicción, descubrimiento o decisión secuencial. Supervisado para predicción con etiquetas. No supervisado para descubrimiento sin etiquetas. Refuerzo para optimización de políticas de decisión con fídbac del entorno.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: los ele ele emes modernos combinan los tres paradigmas. Preentrenamiento no supervisado sobre texto de internet. Fine-tuning supervisado con ejemplos de conversaciones de alta calidad. erre ele ache efe con refuerzo para alinear el modelo con preferencias humanas. Entender los tres tipos de aprendizaje es entender cómo funcionan los sistemas de IA más avanzados del mundo.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: elegir el paradigma equivocado puede costar millones en proyectos fallidos. Usar no supervisado cuando tienes etiquetas infrautiliza tus datos. Usar refuerzo cuando el entorno no se puede simular con fidelidad hace que el proyecto sea inviable. La decisión de qué tipo de aprendizaje usar es la primera y más importante decisión arquitectónica en cualquier proyecto de machine learning.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo tema del módulo tres vamos a profundizar en los algoritmos específicos de aprendizaje supervisado. Regresión lineal, regresión logística, árboles de decisión, random forests y gradient boosting. Veremos cuándo usar cada uno y cómo evitar los errores más comunes en producción.
+
+<break time="500ms"/>
+IAGO: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [pausa de un segundo]

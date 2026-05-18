@@ -33,7 +33,8 @@ def test_post_process_applies_pronunciation_overrides():
     out = bg.post_process_text("Hablamos de LLM",
                                 apply_num2words=False,
                                 apply_ssml_pauses=False)
-    assert "elemen" in out.lower()
+    # Siglas inglesas se deletrean con nombres castellanos: LLM -> "ele ele eme".
+    assert "ele ele eme" in out.lower()
 
 
 def test_post_process_applies_ssml_pauses():
@@ -90,11 +91,12 @@ def test_run_pipeline_retries_once_on_hard_fail(monkeypatch, tmp_path):
     monkeypatch.setattr(ac, "generate", fake_generate)
 
     def validate_fn(text, ep):
-        # 1er intento: hard-fail. 2º intento: ok.
         if "intento 1" in text:
             return [fail("rule_x", "HARD", "boom")]
         return [ok("rule_x", "HARD")]
 
+    # Forzamos retry_strategy="full" para que el test compruebe el camino de
+    # regeneración completa (sin patch retry intermedio).
     req = bg.PipelineRequest(
         episode_id="M0", kind="M",
         system_prompt="s", user_prompt="u",
@@ -102,6 +104,7 @@ def test_run_pipeline_retries_once_on_hard_fail(monkeypatch, tmp_path):
         apply_num2words=False, apply_pronunciation_overrides=False,
         apply_ssml_pauses=False,
         validate_fn=validate_fn,
+        retry_strategy="full",
     )
     result = bg.run_pipeline(req)
     assert result.used_retry is True
@@ -109,6 +112,46 @@ def test_run_pipeline_retries_once_on_hard_fail(monkeypatch, tmp_path):
     assert "intento 2" in result.final_text
     # El 2º prompt llevaba el feedback explicito.
     assert any("FEEDBACK" in c for c in calls)
+
+
+def test_run_pipeline_uses_patch_retry_when_localized(monkeypatch, tmp_path):
+    """Con retry_strategy='auto' y 1 hard localizado, debe intentar patch retry."""
+    calls: list[dict] = []
+    patch_response = (
+        '{"patches": [{"section": "HOOK", "operation": "replace_intervention",'
+        ' "intervention_idx": 0, "new_content": "IAGO: nuevo"}]}'
+    )
+    script_with_section = "# HOOK\nIAGO: hook viejo\n"
+
+    def fake_generate(**kw):
+        calls.append(kw)
+        # Primera llamada = generación normal del guion.
+        if len(calls) == 1:
+            return _ok_result(script_with_section)
+        # Siguientes = patch retry response (formato JSON).
+        return _ok_result(patch_response)
+
+    monkeypatch.setattr(ac, "generate", fake_generate)
+
+    seen_texts: list[str] = []
+
+    def validate_fn(text, ep):
+        seen_texts.append(text)
+        if "nuevo" not in text:
+            return [fail("m_fuentes_count", "HARD", "boom")]
+        return [ok("m_fuentes_count", "HARD")]
+
+    req = bg.PipelineRequest(
+        episode_id="M0", kind="M",
+        system_prompt="s", user_prompt="u",
+        model="claude-sonnet-4-5", repo_root=tmp_path,
+        apply_num2words=False, apply_pronunciation_overrides=False,
+        apply_ssml_pauses=False,
+        validate_fn=validate_fn,
+    )
+    result = bg.run_pipeline(req)
+    assert result.patch_retries >= 1
+    assert "nuevo" in result.final_text
 
 
 def test_run_pipeline_tracks_cost(monkeypatch, tmp_path):

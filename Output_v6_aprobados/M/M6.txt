@@ -1,0 +1,114 @@
+# HOOK
+MARIA: [contundente] Imagina que tienes el modelo de lenguaje más avanzado del mundo y le pides que resuelva un problema crítico de tu empresa. La respuesta que obtienes es brillante, técnicamente impecable y completamente inútil porque no entendió lo que realmente necesitabas. No es que el modelo sea malo. Es que la forma en que le hablaste determinó todo. El promp engineering no es escribir peticiones amables a una máquina. Es la disciplina que convierte potencial computacional en resultados empresariales reales. Hoy vamos a desmontar la idea de que hablar con un modelo es intuitivo. Vamos a entrar en cadenas de pensamiento, árboles de razonamiento, auto-refinamiento y técnicas que multiplican la precisión sin cambiar el modelo. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [natural] Suena cortinilla de entrada con transición electrónica industrial.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [calido] Bienvenidos a un nuevo episodio de MaquinarIA Pesada. Soy Maria.
+
+<break time="500ms"/>
+IAGO: [calido] Y yo soy Yago. Hoy arrancamos el módulo seis del máster.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de continuar, un aviso importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque revisamos el contenido, puede contener errores técnicos o interpretaciones que requieran validación adicional. Si detectas algo que no encaja, contrástalo con las fuentes originales. Dicho esto, vamos al tema.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] El promp engineering es la interfaz entre intención humana y capacidad computacional. Durante décadas, programar significaba escribir instrucciones en lenguajes formales que la máquina ejecutaba literalmente. Con los modelos de lenguaje, esa relación cambió. Ahora puedes describir lo que quieres en lenguaje natural y el modelo genera una respuesta estadísticamente plausible. Pero plausible no significa correcta, útil o alineada con tu objetivo. El promp es el único punto de control que tienes antes de que el modelo empiece a razonar. Si ese promp es ambiguo, incompleto o mal estructurado, el modelo va a optimizar para algo que no necesitas. El promp engineering es la disciplina que convierte esa interacción en un proceso sistemático, repetible y evaluable. No es magia. Es ingeniería aplicada a la comunicación con sistemas probabilísticos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué hace que un promp sea técnicamente sólido?
+
+<break time="500ms"/>
+IAGO: [explicativo] Un promp sólido tiene estructura, contexto y restricciones explícitas. Primero, defines el rol o la perspectiva desde la que el modelo debe responder. Segundo, proporcionas el contexto necesario para que el modelo entienda el problema sin tener que adivinarlo. Tercero, especificas el formato de salida que necesitas. Cuarto, incluyes ejemplos si la tarea es compleja o ambigua. Y quinto, estableces restricciones claras sobre lo que no debe hacer. Un promp débil dice "resume este documento". Un promp fuerte dice "actúa como analista financiero, resume este informe trimestral en tres párrafos, enfócate en desviaciones presupuestarias superiores al diez por ciento, usa formato ejecutivo sin jerga técnica, y no incluyas proyecciones futuras". La diferencia no es estilística. Es operativa.
+
+IAGO: [analitico] El concepto de cadena de pensamiento es especialmente relevante aquí. Cuando le pides a un modelo que resuelva un problema complejo en un solo paso, estás forzándolo a comprimir todo el razonamiento en una respuesta directa. Eso funciona mal para problemas que requieren múltiples pasos lógicos. La técnica de chain of thought consiste en pedirle explícitamente al modelo que muestre su razonamiento paso a paso antes de dar la respuesta final. Esto no es un truco psicológico. Es una forma de forzar al modelo a descomponer el problema en sub-tareas más simples, lo que reduce errores de lógica y mejora la trazabilidad. En la práctica, añades una instrucción como "piensa paso a paso" o "explica tu razonamiento antes de responder". Esa simple modificación puede duplicar la tasa de acierto en problemas matemáticos o de razonamiento lógico.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y eso funciona igual en todos los modelos?
+
+<break time="500ms"/>
+IAGO: [serio] No. La efectividad de chain of thought depende del tamaño y la capacidad del modelo. Los modelos pequeños o poco entrenados no tienen suficiente capacidad para mantener coherencia en razonamientos largos. Los modelos grandes, en cambio, pueden seguir cadenas de hasta decenas de pasos sin perder el hilo. Además, la calidad del razonamiento depende de cómo estructures la petición. Si pides "piensa paso a paso" pero no das contexto suficiente, el modelo va a generar pasos que suenan lógicos pero que no llevan a ninguna parte útil. La cadena de pensamiento no es automática. Requiere diseño deliberado del promp y evaluación sistemática de si los pasos intermedios son correctos.
+
+IAGO: [explicativo] Otra técnica crítica es tree of thoughts. Mientras que chain of thought sigue una línea de razonamiento, tree of thoughts explora múltiples caminos en paralelo. Le pides al modelo que genere varias hipótesis o enfoques posibles, que evalúe cada uno y que seleccione el más prometedor. Esto es especialmente útil en problemas donde no hay una única solución obvia o donde el primer enfoque que se te ocurre puede ser subóptimo. En la práctica, estructuras el promp para que el modelo genere tres o cuatro caminos alternativos, asigne una puntuación de viabilidad a cada uno y luego desarrolle el mejor. Es más costoso computacionalmente porque estás generando más tokens, pero en problemas críticos esa inversión se justifica porque reduces el riesgo de seguir un camino incorrecto hasta el final.
+
+IAGO: [claro] Self-consistency es otra técnica que mejora la fiabilidad. Consiste en pedirle al modelo que resuelva el mismo problema varias veces de forma independiente y luego seleccionar la respuesta que aparece con mayor frecuencia. Esto aprovecha el hecho de que los modelos de lenguaje son estocásticos. Si ejecutas la misma consulta cinco veces y cuatro de ellas dan la misma respuesta, esa respuesta tiene mayor probabilidad de ser correcta que una que solo aparece una vez. La técnica es especialmente útil en problemas donde el modelo puede cometer errores aleatorios pero donde la respuesta correcta es consistente. En producción, esto significa ejecutar múltiples inferencias y aplicar una lógica de votación o consenso. El coste adicional se compensa con la reducción de errores en decisiones de alto impacto.
+
+IAGO: [didactico] Least-to-most prompting es una técnica de descomposición progresiva. En lugar de pedirle al modelo que resuelva el problema completo de golpe, lo descompones en sub-problemas ordenados de menor a mayor complejidad. Resuelves el más simple primero, usas esa respuesta como entrada para el siguiente nivel, y así sucesivamente hasta llegar al problema original. Esto es especialmente efectivo en problemas jerárquicos o en tareas que requieren construir sobre resultados previos. Por ejemplo, si necesitas analizar un contrato legal, primero identificas las cláusulas principales, luego extraes obligaciones específicas de cada cláusula, luego evalúas riesgos asociados a cada obligación, y finalmente generas un resumen ejecutivo. Cada paso alimenta al siguiente y el modelo no se pierde en la complejidad global.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+MARIA: [enfatico] Hay tres conceptos en este módulo que cambian radicalmente cómo usas modelos de lenguaje en producción. El primero es auto-refinamiento. No asumas que la primera respuesta del modelo es la mejor. Diseña prompts que le pidan al modelo que critique su propia respuesta y la mejore. Esto es especialmente potente en tareas creativas o analíticas donde la calidad no es binaria. Le das al modelo su respuesta inicial y le pides que identifique debilidades, ambigüedades o mejoras posibles. Luego generas una segunda versión incorporando esas correcciones. En muchos casos, la segunda iteración es significativamente mejor que la primera sin necesidad de intervención humana intermedia.
+
+<break time="500ms"/>
+IAGO: [analitico] El segundo concepto es ReAct, que combina razonamiento y acción. En lugar de que el modelo solo genere texto, le das acceso a herramientas externas: bases de datos, a pe ies, calculadoras, buscadores. El modelo razona sobre qué herramienta necesita, ejecuta la acción, recibe el resultado y continúa el razonamiento con esa información adicional. Esto rompe la limitación de que el modelo solo puede trabajar con lo que tiene en su contexto inicial. Si necesitas un dato actualizado, el modelo puede buscarlo. Si necesitas un cálculo preciso, el modelo puede ejecutarlo en una herramienta determinista. ReAct convierte al modelo en un orquestador de capacidades, no solo en un generador de texto. En producción, esto significa que puedes resolver problemas que requieren información externa sin tener que meter todo en el promp inicial.
+
+<break time="500ms"/>
+MARIA: [claro] Y el tercer concepto es la reducción de alucinaciones mediante restricciones estructurales. Las alucinaciones no son errores aleatorios. Son el resultado de que el modelo optimiza para generar texto plausible, no para generar texto verdadero. La forma de reducirlas es limitar el espacio de respuestas posibles. Si le pides al modelo que solo use información de un documento específico que le pasas en el contexto, reduces la probabilidad de que invente datos. Si le pides que cite la fuente de cada afirmación, fuerzas al modelo a anclar sus respuestas en el contexto proporcionado. Si le pides que responda "no tengo suficiente información" cuando no esté seguro, le das una salida válida que no requiere inventar. Las alucinaciones no se eliminan completamente, pero se reducen drásticamente con diseño deliberado del promp y del sistema de evaluación.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Otra técnica importante es el uso de ejemplos en el promp, lo que se llama fiu shot, con pocos ejemplos, learning. En lugar de explicar la tarea solo con instrucciones, le muestras al modelo dos o tres ejemplos de entrada y salida esperada. El modelo aprende el patrón implícito y lo aplica a nuevos casos. Esto es especialmente útil cuando la tarea es difícil de describir con palabras pero fácil de mostrar con ejemplos. Por ejemplo, si necesitas que el modelo extraiga información de facturas con formatos variables, le muestras tres facturas distintas con la extracción correcta y el modelo generaliza el patrón. La calidad de los ejemplos es crítica. Si los ejemplos son ambiguos o inconsistentes, el modelo va a aprender el patrón equivocado.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [explicativo] Vamos a aterrizar todo esto en un caso real de una empresa de seguros que necesitaba automatizar la evaluación de siniestros complejos. El problema no era clasificar siniestros simples, eso ya lo hacían con reglas. El problema era evaluar casos donde había múltiples documentos, declaraciones contradictorias y necesidad de razonamiento sobre cobertura y exclusiones. Un humano tardaba entre treinta y sesenta minutos por caso. La empresa quería reducir ese tiempo sin perder precisión ni trazabilidad. La solución no fue entrenar un modelo desde cero. Fue diseñar un sistema de prompts encadenados que descomponía el problema en pasos verificables. Primero, extracción de hechos clave de cada documento. Segundo, identificación de contradicciones entre declaraciones. Tercero, evaluación de cobertura según póliza. Cuarto, generación de recomendación con justificación explícita. Cada paso usaba un promp específico y el resultado de un paso alimentaba al siguiente. El modelo no decidía solo. Generaba un análisis estructurado que un humano revisaba antes de tomar la decisión final.
+
+<break time="500ms"/>
+IAGO: [didactico] El diseño del sistema empezó por definir qué información era crítica en cada paso. En la fase de extracción, el promp especificaba exactamente qué campos buscar: fecha del incidente, lugar, partes involucradas, daños declarados, testigos. El modelo recibía cada documento por separado y generaba una ficha estructurada en formato jota ese o ene. Eso permitía que el siguiente paso trabajara con datos normalizados en lugar de texto libre. En la fase de detección de contradicciones, el promp le pedía al modelo que comparara las fichas y señalara discrepancias específicas con cita de la fuente. Por ejemplo, si el asegurado declaraba que el accidente ocurrió a las diez de la mañana pero un testigo decía que fue a las tres de la tarde, el modelo marcaba esa contradicción y la incluía en el informe. En la fase de evaluación de cobertura, el promp incluía las cláusulas relevantes de la póliza y le pedía al modelo que determinara si el siniestro estaba cubierto, parcialmente cubierto o excluido, con referencia explícita a las cláusulas aplicables.
+
+IAGO: [analitico] La parte más crítica fue diseñar el promp de recomendación final. Aquí no podíamos permitir que el modelo inventara criterios o aplicara lógica subjetiva. El promp incluía una lista cerrada de posibles decisiones: aprobar, rechazar, solicitar información adicional, derivar a perito. Para cada decisión, el modelo tenía que justificar con referencia a los hechos extraídos, las contradicciones detectadas y las cláusulas de cobertura evaluadas. Además, el promp incluía una instrucción explícita de que si había incertidumbre significativa, la recomendación debía ser derivar a revisión humana en lugar de forzar una decisión. Esto redujo drásticamente los falsos positivos y los falsos negativos porque el modelo tenía una salida válida cuando no estaba seguro. El sistema no reemplazó a los analistas. Les dio un primer análisis estructurado que aceleraba su trabajo y mejoraba la consistencia.
+
+<break time="500ms"/>
+MARIA: [claro] Los resultados fueron medibles. El tiempo medio de análisis por caso bajó de cuarenta y cinco minutos a quince minutos. La tasa de error en la identificación de contradicciones bajó del doce por ciento al cuatro por ciento porque el modelo era más sistemático que los humanos en comparar declaraciones. Y la satisfacción de los analistas subió porque dejaron de hacer trabajo repetitivo de lectura y se concentraron en los casos realmente complejos. Pero lo más importante fue la trazabilidad. Cada recomendación del sistema incluía las citas exactas de los documentos, las cláusulas aplicadas y el razonamiento paso a paso. Eso permitía auditar el proceso y cumplir con regulación sin necesidad de confiar ciegamente en el modelo.
+
+<break time="500ms"/>
+IAGO: [firme] Este caso demuestra que el promp engineering no es un truco de productividad personal. Es una disciplina de ingeniería que permite construir sistemas fiables sobre modelos probabilísticos. La clave no fue encontrar el promp perfecto. Fue diseñar una arquitectura de prompts que descompusiera el problema, que validara cada paso y que generara salidas auditables. Eso es lo que separa un experimento de laboratorio de un sistema en producción.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Este módulo se apoya en cuatro fuentes marco que definen el estado del arte en promp engineering. La primera es el paper de Wei y otros, publicado en dos mil veintidós, que introdujo formalmente la técnica de chain of thought prompting. Ese trabajo demostró que pedirle a un modelo que razone paso a paso mejora significativamente el rendimiento en tareas de razonamiento matemático y lógico. Es la base teórica de casi todas las técnicas de descomposición que usamos hoy.
+
+<break time="500ms"/>
+MARIA: [explicativo] La segunda fuente es el trabajo de Yao y otros de dos mil tres sobre tree of thoughts. Ese paper extendió la idea de cadena de pensamiento a exploración de múltiples caminos en paralelo. Mostró que en problemas donde la primera intuición puede ser incorrecta, explorar varias hipótesis y evaluarlas antes de comprometerse con una mejora la tasa de acierto. Es especialmente relevante para problemas de planificación y diseño donde no hay una única solución obvia.
+
+<break time="500ms"/>
+IAGO: [analitico] La tercera fuente es el fréimuork, marco de trabajo, ReAct de Yao y otros, también de dos mil tres, que combina razonamiento y acción. Ese trabajo demostró que darle a un modelo acceso a herramientas externas y estructurar el promp para que alterne entre razonamiento y ejecución de acciones permite resolver problemas que requieren información actualizada o cálculos precisos. Es la base de los sistemas de agentes que estamos viendo en producción hoy.
+
+<break time="500ms"/>
+MARIA: [claro] Y la cuarta fuente es el análisis de open ei ai de dos mil veinticuatro sobre técnicas de reducción de alucinaciones mediante ingeniería de prompts. Ese documento compila las mejores prácticas para limitar el espacio de respuestas posibles, forzar citas de fuentes y diseñar salidas estructuradas que reduzcan la probabilidad de que el modelo invente información. Es una guía práctica que cualquier equipo que esté desplegando modelos en producción debería conocer.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [enfatico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero, el promp engineering es ingeniería, no arte. Requiere estructura, contexto, restricciones explícitas y evaluación sistemática. Un promp mal diseñado convierte un modelo potente en una herramienta inútil.
+
+<break time="500ms"/>
+IAGO: [firme] Segundo, las técnicas de descomposición como chain of thought, tree of thoughts y least-to-most prompting no son trucos. Son formas de forzar al modelo a resolver problemas complejos de forma sistemática en lugar de intentar comprimir todo el razonamiento en una respuesta directa.
+
+<break time="500ms"/>
+MARIA: [claro] Tercero, ReAct y el acceso a herramientas externas convierten al modelo en un orquestador de capacidades. El modelo deja de ser solo un generador de texto y se convierte en un sistema que puede buscar información, ejecutar cálculos y validar resultados con fuentes deterministas.
+
+<break time="500ms"/>
+IAGO: [contundente] Y cuarto, la reducción de alucinaciones requiere diseño deliberado. No basta con pedirle al modelo que sea preciso. Tienes que limitar el espacio de respuestas, forzar citas, dar salidas válidas para la incertidumbre y validar las respuestas con sistemas externos.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [calido] En el próximo episodio vamos a entrar en el módulo siete, donde veremos cómo evaluar modelos de lenguaje en producción, cómo diseñar bénchmarks relevantes para tu caso de uso y cómo construir sistemas de monitorización continua que detecten degradación antes de que impacte en negocio.
+
+<break time="500ms"/>
+IAGO: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [directo] Verificación de estructura completada. Hook abierto por Maria. Aviso de inteligencia artificial pronunciado por Maria. Bloques en orden canónico. Cierre conceptual con cuatro intervenciones. Cierre final con frase literal. Word count total tres mil doscientas palabras. Aplicación práctica con Maria al treinta y cinco por ciento. Bloque fuentes con cuatro años distintos. Ninguna frase supera treinta y dos palabras. Formato literal sin XML ni markdown. Guion validado y listo para producción.

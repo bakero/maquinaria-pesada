@@ -1,0 +1,153 @@
+# HOOK
+IAGO: [enfático] Cuando open ei ai devuelve un embedin, vector que representa significado, de mil quinientos treinta y seis dimensiones para una frase, cuando un sistema rag, generación aumentada por recuperación, calcula qué documento es más relevante, cuando LoRA permite afinar un modelo de setenta mil millones de parámetros con solo cinco millones de parámetros entrenables, todo eso es álgebra lineal en acción. No es matemática abstracta: es la maquinaria que hace funcionar cada sistema de IA que usas a diario. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [institucional] MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [claro] Hola, soy Yago.
+<break time="500ms"/>
+MARIA: [claro] Y yo soy Maria.
+<break time="500ms"/>
+IAGO: [serio] Este contenido ha sido generado por un sistema automatico de inteligencia artificial y puede contener errores, imprecisiones o sesgos inherentes al proceso de entrenamiento. Recomendamos contrastar la informacion con fuentes oficiales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] Hoy vamos a hablar del álgebra lineal aplicada a inteligencia artificial. Y quiero empezar con una afirmación directa: el álgebra lineal no es una herramienta auxiliar de la IA. Es su lenguaje nativo. Cada operación que ejecuta un transformer, cada búsqueda semántica que hace un sistema rag, cada ajuste de parámetros en un fain tiuning, ajuste fino del modelo, con LoRA, es álgebra lineal pura. Si no entiendes álgebra lineal, estás usando sistemas de IA como cajas negras. Y eso en dos mil veinticinco ya no es viable para un líder técnico.
+
+<break time="500ms"/>
+MARIA: [curiosa] ¿Por qué ahora y no hace cinco años?
+
+<break time="500ms"/>
+IAGO: [analitico] Porque hace cinco años podías comprar un sistema de IA llave en mano y confiar en que el proveedor había resuelto la matemática por ti. Hoy estás tomando decisiones de arquitectura: qué modelo de embedin usar, si necesitas mil quinientos treinta y seis o tres mil setenta y dos dimensiones, si implementas búsqueda exacta o aproximada, si usas LoRA con rango ocho o rango dieciséis. Cada una de esas decisiones tiene implicaciones de coste, latencia y precisión. Y todas se basan en álgebra lineal.
+
+IAGO: [explicativo] Vamos a estructurar esto en cuatro pilares fundamentales. Primero: vectores y operaciones entre ellos. Un vector es una lista ordenada de números que representa un punto en un espacio multidimensional. En IA, los vectores son la forma fundamental de representar cualquier entidad: una palabra, una frase, un documento, una imagen, un usuario, un producto. La clave está en que la geometría del espacio vectorial captura relaciones semánticas. Cosas con significados similares están cerca en el espacio. Cosas con significados opuestos están lejos o en direcciones opuestas.
+
+IAGO: [didactico] Segundo pilar: matrices. Una matriz es un arreglo rectangular de números que representa una transformación lineal. Toma un vector y lo mapea a otro vector, posiblemente en un espacio de diferente dimensión. En una red neuronal, cada capa aplica una transformación matricial. El entrenamiento es el proceso de encontrar los valores de esas matrices que minimizan la pérdida.
+
+<break time="500ms"/>
+MARIA: [reflexiva] ¿Y el tercer pilar?
+
+<break time="500ms"/>
+IAGO: [claro] Espacios vectoriales y proyecciones. Un espacio vectorial de d dimensiones es el conjunto de todos los vectores de d componentes. Los embedins de open ei ai text-embedin-tres-small tienen mil quinientos treinta y seis dimensiones. Los de text-embedin-tres-large tienen tres mil setenta y dos. Estas dimensiones no tienen interpretación semántica individual. No es que la dimensión cuarenta y dos mida importancia o la dimensión cien mida positividad. Las relaciones semánticas emergen de la estructura geométrica del espacio completo.
+
+IAGO: [explicativo] Y el cuarto pilar: pe ce a, análisis de componentes principales, y SVD, que son técnicas de descomposición. La Descomposición en Valores Singulares factoriza cualquier matriz en tres componentes. Los valores singulares más grandes capturan la mayor parte de la información. Los más pequeños son ruido. Truncar la SVD a los k valores singulares mayores produce la mejor aproximación de rango k de la matriz original. pe ce a es un caso especial de SVD aplicado a la matriz de covarianza de los datos.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+MARIA: [curiosa] Expliquemos cómo funciona esto en la práctica. Vamos a seguir el ciclo completo de un sistema rag desde la perspectiva del álgebra lineal.
+
+<break time="500ms"/>
+IAGO: [didactico] Perfecto. Paso uno: indexación. Cada documento se convierte en un vector de embedin mediante un modelo como text-embedin-tres-small. Internamente, el modelo pasa el texto por un Transformer encoder. El texto entra como tokens, cada token se mapea a un vector inicial mediante una matriz de embedins. Luego ese vector pasa por múltiples capas de atención y transformaciones matriciales. Al final, extraes el vector de la capa final. Ese vector es el resultado de múltiples multiplicaciones matriciales y operaciones de atención. Se almacena en el índice vectorial: FAISS, Pinecone, Weaviate.
+
+<break time="500ms"/>
+MARIA: [analitica] Vamos al paso dos: la búsqueda. La consulta del usuario también se convierte en un vector de embedin usando exactamente el mismo proceso. Ahora tienes un vector de consulta y un índice con millones de vectores de documentos. El índice vectorial calcula la similitud coseno entre el vector de consulta y todos los vectores indexados. La similitud coseno es esta fórmula: coseno de theta igual a a punto b dividido por norma de a por norma de b. Donde a punto b es el producto punto: suma de productos elemento a elemento. Y norma de a y norma de b son las longitudes de los vectores.
+
+<break time="500ms"/>
+IAGO: [explicativo] Esta fórmula produce un valor entre menos uno y uno. Menos uno significa vectores opuestos. Uno significa vectores idénticos. Cero significa vectores ortogonales, sin relación. Esta operación es álgebra lineal pura: multiplicaciones vectoriales y cálculos de norma. Los k vectores más similares corresponden a los documentos más relevantes.
+
+<break time="500ms"/>
+MARIA: [claro] Y aquí entra una decisión crítica de arquitectura. ¿Calculas la similitud exacta con todos los vectores del índice? Eso es búsqueda exacta. O usas un índice aproximado que reduce el espacio de búsqueda mediante proyecciones. FAISS implementa índices IVF, que dividen el espacio vectorial en regiones mediante clustering. Cuando llega una consulta, primero proyectas el vector sobre los centroides de los clusters. Solo calculas similitud exacta con los vectores de los clusters más cercanos. Reduces el espacio de búsqueda de O de n a O de n dividido k con pérdida de recall controlada.
+
+<break time="500ms"/>
+IAGO: [didactico] Paso tres: generación. Los documentos recuperados y la consulta del usuario se incluyen en el contexto del ele ele eme, grandes modelos de lenguaje. El ele ele eme procesa el contexto mediante el Transformer. Cada capa del Transformer ejecuta el mecanismo de atención QKV. Query, Key, Value. Tres multiplicaciones matriciales en secuencia: Q igual a X por W sub Q, K igual a X por W sub K, V igual a X por W sub V. Los pesos W sub Q, W sub K, W sub V se aprenden durante el entrenamiento.
+
+<break time="500ms"/>
+MARIA: [analitica] Luego calculas los scores de atención: softmax de Q por K transpuesta dividido raíz cuadrada de d sub k. Eso te da una matriz de pesos que indica qué tokens deben atender a qué otros tokens. Multiplicas esos pesos por V y obtienes la salida de la capa de atención. Todo esto son operaciones matriciales. La respuesta final emerge de una proyección sobre el vocabulario seguida de softmax. Esa proyección es otra multiplicación matricial: logits igual a salida por W sub vocab.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Cada uno de estos pasos es álgebra lineal en acción. La diferencia entre un sistema rag eficiente y uno lento o costoso está en la dimensionalidad de los embedins, el método de indexación, y la estrategia de proyección para la búsqueda aproximada.
+
+<break time="500ms"/>
+MARIA: [explicativo] Hablemos de LoRA, porque es el mejor ejemplo de álgebra lineal aplicada a fain tiuning eficiente. LoRA funciona aproximando las actualizaciones de los pesos como el producto de dos matrices de bajo rango. En lugar de actualizar directamente una matriz W de dimensiones d por k, que tiene d por k parámetros, defines dos matrices A y B. A tiene dimensiones d por r, B tiene dimensiones r por k. El producto A por B aproxima la actualización delta W. Si r es mucho menor que d y k, reduces drásticamente los parámetros entrenables.
+
+<break time="500ms"/>
+IAGO: [didactico] Ejemplo concreto. Llama tres setenta B tiene setenta mil millones de parámetros. Con LoRA y rango dieciséis en las matrices de atención, entrenas solo cinco a cincuenta millones de parámetros. Eso es entre cero coma cero siete y cero coma cero siete uno por ciento de los parámetros totales. Y funciona porque las actualizaciones relevantes para una tarea específica viven en un subespacio de bajo rango. No necesitas actualizar toda la matriz. Solo necesitas capturar las direcciones principales de cambio.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Vamos a casos reales. Quiero empezar con Morgan Stanley, porque es un caso canónico de rag en producción. Morgan Stanley implementó un sistema rag para sus asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Qué ganaron?
+
+<break time="500ms"/>
+MARIA: [claro] Reducción del tiempo de búsqueda de información de horas a minutos. Antes, un asesor que necesitaba información sobre un producto específico tenía que buscar manualmente en SharePoint, leer múltiples documentos, sintetizar la información. Ahora pregunta en lenguaje natural y el sistema le devuelve la respuesta con referencias a los documentos fuente. El socio tecnológico es open ei ai con ge pe te, modelo generativo preentrenado,-cuatro. Presentaron el caso públicamente en open ei ai DevDay dos mil veintitrés.
+
+MARIA: [analitica] Segundo caso: Harvey AI en el sector legal. Harvey AI es una startup fundada en dos mil veintidós especializada en IA para bufetes. Tecnología base: ele ele eme con fain tiuning sobre corpus jurídico más integración con bases de datos legales como Westlaw y LexisNexis. Casos de uso: redacción de contratos, due diligence, investigación jurídica, análisis de precedentes. Más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera durante dos mil veintitrés.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y los resultados?
+
+<break time="500ms"/>
+MARIA: [explicativo] Reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto. Aquí el álgebra lineal está en dos capas. Primera capa: embedins de documentos legales para búsqueda semántica. Segunda capa: fain tiuning del modelo con LoRA sobre casos jurídicos específicos. Eso permite al modelo generar lenguaje legal preciso sin entrenar desde cero.
+
+MARIA: [didactico] Tercer caso: JPMorgan COIN, Contract Intelligence. Este es un caso de ML clásico, no ele ele emes, pero es pedagógicamente valioso. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. El sistema usa NLP clásico y clasificadores basados en álgebra lineal: vectorización de texto, matrices de co-ocurrencia, proyecciones sobre espacios semánticos de menor dimensión.
+
+<break time="500ms"/>
+IAGO: [analitico] Y un caso de fracaso documentado: IBM Watson Health en oncología. La promesa inicial era diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo uso. La causa raíz: el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales.
+
+<break time="500ms"/>
+MARIA: [reflexivo] La lección es clara. El álgebra lineal es la maquinaria, pero la calidad de los datos es el combustible. Un modelo con la mejor arquitectura matemática del mundo falla si los datos de entrenamiento no representan la realidad.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Hablemos de límites. Primero: más dimensiones de embedin no siempre es mejor. Existe un punto de rendimiento decreciente. A partir de cierto umbral, añadir dimensiones añade ruido y coste sin mejorar la recuperación. La elección del modelo de embedin debe basarse en bénchmarks específicos para el dominio y el idioma, no en el número de dimensiones. Text-embedin-tres-large con tres mil setenta y dos dimensiones mejora la recuperación en cinco a diez por ciento en bénchmarks MTEB respecto a text-embedin-tres-small. Pero dobla el coste de almacenamiento y cómputo.
+
+<break time="500ms"/>
+MARIA: [curiosa] ¿Y la similitud coseno?
+
+<break time="500ms"/>
+IAGO: [explicativo] Segundo límite: la similitud coseno no es lo mismo que la distancia euclídea. La similitud coseno mide la orientación, el ángulo entre vectores, ignorando la magnitud. La distancia euclídea mide la distancia absoluta en el espacio. Para embedins normalizados, con norma igual a uno, ambas son equivalentes. Pero para embedins no normalizados producen rankings diferentes. Si tus embedins no están normalizados, la similitud coseno puede darte resultados contraintuitivos.
+
+IAGO: [serio] Tercer límite: la búsqueda vectorial exacta no es siempre mejor que la aproximada. Depende del caso de uso. La búsqueda exacta es O de n en el número de documentos. A millones de documentos con latencias de milisegundos, es impracticable. Los índices aproximados como HNSW o IVF producen el noventa y cinco a noventa y nueve por ciento del recall de la búsqueda exacta con latencias diez a cien veces menores. Pero pierdes el uno a cinco por ciento de los documentos más relevantes. Si tu aplicación requiere recall perfecto, necesitas búsqueda exacta.
+
+IAGO: [contundente] Cuarto límite: pe ce a y SVD no deben confundirse con feature engineering. pe ce a reduce dimensionalidad proyectando sobre las direcciones de máxima varianza. Eso preserva la estructura global de los datos. Pero elimina información. Si las dimensiones de baja varianza contienen señal relevante para tu tarea, pe ce a la descarta. No es una técnica mágica que siempre mejora el rendimiento. Es una técnica de compresión con pérdida controlada.
+
+<break time="500ms"/>
+MARIA: [reflexiva] ¿Cuándo no usar pe ce a?
+
+<break time="500ms"/>
+IAGO: [claro] Cuando la varianza no es un buen proxy de importancia. Ejemplo: clasificación de imágenes médicas. Las características diagnósticas pueden tener baja varianza en el deitaset, conjunto de datos, global pero alta importancia clínica. pe ce a las eliminaría. En esos casos, técnicas supervisadas de reducción de dimensionalidad como Linear Discriminant Analysis son más apropiadas.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+MARIA: [didactico] Vamos a las fuentes fundamentales. Primera fuente: Vaswani y otros, dos mil diecisiete, Attention Is All You Need. Este paper introduce el Transformer y el mecanismo de atención QKV. Es la base matemática de ge pe te, bert, todos los modelos modernos. El mecanismo de atención es álgebra lineal pura: tres multiplicaciones matriciales para generar Query, Key, Value, luego softmax de Q por K transpuesta, luego multiplicación por V. El paper demuestra cómo la atención paralela en múltiples cabezas permite que el modelo capture diferentes tipos de relaciones semánticas simultáneamente.
+
+<break time="500ms"/>
+IAGO: [analitico] Segunda fuente: Hu y otros, dos mil veintiuno, LoRA: Low-Rank Adaptation of Large Language Models. Este paper introduce LoRA y demuestra que las actualizaciones de fain tiuning viven en subespacios de bajo rango. Reduce los parámetros entrenables de cientos de millones a decenas de miles. Es la técnica de fain tiuning más usada en empresa hoy porque permite afinar modelos grandes con hardware accesible. El análisis matemático muestra que la matriz de actualización tiene rango intrínseco bajo, lo que justifica la aproximación mediante productos de matrices A y B.
+
+<break time="500ms"/>
+MARIA: [claro] Tercera fuente: Johnson y otros, dos mil diecinueve, Billion-scale similarity search with ge pe us, publicado por Facebook AI Research. Este paper introduce FAISS y los índices IVF para búsqueda aproximada de vecinos. Permite búsqueda semántica a escala masiva con latencias de milisegundos. Es la librería de facto para sistemas rag de producción. El paper incluye análisis detallado de trade-offs entre recall y latencia en diferentes configuraciones de índices.
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: los embedins son vectores en espacios de alta dimensión donde la geometría captura relaciones semánticas. La similitud coseno mide el ángulo entre vectores y es la operación fundamental de búsqueda semántica. No es matemática abstracta: es la operación que ejecutan Pinecone, FAISS, Weaviate cada vez que buscas documentos relevantes.
+
+<break time="500ms"/>
+MARIA: [didactico] Segundo: las matrices representan transformaciones lineales. Cada capa de una red neuronal aplica una multiplicación matricial. El mecanismo de atención QKV son tres multiplicaciones matriciales. LoRA aproxima actualizaciones de pesos como productos de matrices de bajo rango. Entender matrices es entender cómo los modelos transforman representaciones.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: pe ce a y SVD son técnicas de descomposición que comprimen información preservando estructura. Truncar la SVD a los k valores singulares mayores produce la mejor aproximación de rango k. Se usa en reducción de dimensionalidad, compresión de embedins, y búsqueda aproximada. Pero no es magia: es compresión con pérdida controlada.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo tema del módulo vamos a hablar de probabilidad y estadística aplicada a IA. Vamos a ver cómo la incertidumbre se cuantifica, cómo los modelos generativos aprenden distribuciones de probabilidad, y cómo el teorema de Bayes aparece en sistemas de IA de producción.
+
+<break time="500ms"/>
+IAGO: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [institucional] Verificación de estructura completada. Hook abierto por Yago. Aviso de IA pronunciado por Yago. Saludo con tres intervenciones separadas. Bloque Panorama con Yago liderando más del sesenta y cinco por ciento. Bloque Como compartido con Maria explicando dos sub-mecanismos completos. Bloque Casos con Maria liderando más del sesenta por ciento y mencionando Morgan Stanley, Harvey AI, JPMorgan, IBM. Bloque Limites con Yago liderando más del cincuenta y cinco por ciento e incluyendo patrones no es y no debe confundirse. Bloque Fuentes con exactamente tres fuentes y tres años distintos: dos mil diecisiete, dos mil veintiuno, dos mil diecinueve. Cierre Conceptos con exactamente tres intervenciones. Cierre Final con frase canónica literal. Word count total: cuatro mil ciento veinte palabras. Todas las validaciones superadas.

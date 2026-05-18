@@ -1,0 +1,105 @@
+# HOOK
+IAGO: [enfático] Imagina que tienes una tabla con miles de clientes, sus compras, sus quejas, su historial. Y necesitas predecir quién se va a ir el mes que viene. No necesitas un modelo de lenguaje gigante. Necesitas machine learning clásico. Árboles de decisión, gradient boosting, validación cruzada. Las herramientas que ganaron Kaggle durante años y que siguen siendo la columna vertebral de la predicción empresarial en dos mil veinticinco. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [natural] Suena intro del podcast.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Hola, soy Yago, y bienvenidos a un nuevo capítulo de MaquinarIA Pesada, el podcast del máster en inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [cálido] Y yo soy Maria. Hoy vamos a hablar de machine learning clásico, los algoritmos que muchos creen obsoletos pero que siguen resolviendo la mayoría de problemas de predicción en producción.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de arrancar, un aviso importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque revisamos el contenido, puede contener errores o imprecisiones. Si detectas algo que no cuadra, contrástalo siempre con las fuentes originales del máster.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Vamos al grano. El machine learning clásico es el conjunto de algoritmos que dominaron la inteligencia artificial antes de la explosión del deep learning. Regresión lineal, árboles de decisión, support vector machines, gradient boosting. En dos mil veinticinco, con los modelos de lenguaje en todas las noticias, mucha gente piensa que estos algoritmos son historia. Esa percepción es completamente equivocada. El ML clásico sigue siendo la herramienta correcta para una enorme cantidad de problemas reales. Es más interpretable que un modelo de lenguaje, requiere muchísimos menos datos y poder computacional, es más fácil de auditar, y tiene décadas de literatura científica sobre su comportamiento, sus límites y sus mejores prácticas. Además, los conceptos fundamentales del ML clásico se aplican directamente a los sistemas de deep learning. Sobreajuste, validación, ingeniería de variables, regularización. Todo eso nace aquí.
+
+<break time="500ms"/>
+MARIA: [curiosa] O sea, no es que el ML clásico haya muerto. Es que sigue siendo la base.
+
+<break time="500ms"/>
+IAGO: [explicativo] Exacto. El profesional competente en dos mil veinticinco no elige entre ML clásico y modelos de lenguaje. Elige la herramienta correcta para cada problema. Si tienes que predecir el churn de clientes con datos tabulares estructurados, un XGBoost bien optimizado te va a superar en precisión, velocidad, interpretabilidad y coste a cualquier modelo de lenguaje. Si tienes que analizar contratos legales en texto libre y extraer cláusulas clave, un modelo de lenguaje con rag, generación aumentada por recuperación, te va a superar ampliamente a cualquier modelo clásico. El mapa del territorio del ML es tu instrumento de navegación para estas decisiones.
+
+IAGO: [analítico] El machine learning se divide en tres grandes paradigmas según la naturaleza de los datos y el tipo de fídbac disponible. Aprendizaje supervisado, no supervisado y por refuerzo. El aprendizaje supervisado es el más común en aplicaciones empresariales. El modelo aprende de pares de input y output correcto, donde el output correcto ha sido proporcionado por humanos. Clasificación, regresión, detección de anomalías. ¿Este email es spam o no? ¿Cuál será el precio de este inmueble? ¿Esta transacción es fraudulenta? El aprendizaje no supervisado aprende estructura en los datos sin etiquetas. Los casos de uso más comunes son segmentación de clientes, reducción de dimensionalidad con pe ce a, análisis de componentes principales, y detección de anomalías sin ejemplos previos de anomalías. Y el aprendizaje por refuerzo aprende a través de la interacción con un entorno, recibiendo recompensas por acciones beneficiosas y penalizaciones por acciones perjudiciales. Es la base del erre ele ache efe, el reinforcement learning from human fídbac que se usa para alinear los modelos de lenguaje con las preferencias humanas.
+
+<break time="500ms"/>
+MARIA: [reflexiva] ¿Y cómo se estructura un proyecto de ML clásico en la práctica?
+
+<break time="500ms"/>
+IAGO: [claro] Un proyecto de ML clásico sigue un paiplain, flujo de procesamiento, bien establecido que es relevante incluso para proyectos de modelos de lenguaje. Primero, análisis exploratorio de datos. Entender la distribución de los datos, identificar valores faltantes y outliers, visualizar las relaciones entre variables. Sin análisis exploratorio, es imposible diseñar un modelo adecuado. Segundo, feature engineering. Esta etapa es frecuentemente la que más impacto tiene en el rendimiento del modelo. Transformar, combinar y crear variables a partir de los datos brutos para que el modelo pueda aprender las relaciones relevantes. Tercero, selección del modelo y optimización de hiperparámetros. Es un proceso iterativo de prueba y evaluación de distintas arquitecturas y configuraciones. Y cuarto, evaluación con datos de test separados de los datos de entrenamiento. Eso te da la estimación imparcial del rendimiento en producción.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+IAGO: [enfático] Ahora vamos a los algoritmos más importantes. Empezamos por la regresión lineal y logística. La regresión lineal modela la relación entre una variable de respuesta continua y una o más variables predictoras como una función lineal. Es el modelo más simple de ML supervisado, pero proporciona un punto de referencia excelente para cualquier problema de regresión. Si un modelo más complejo no supera a la regresión lineal, algo está mal. O los datos no tienen patrones no lineales que el modelo complejo pueda explotar, o el modelo complejo está sobreajustando. La regresión logística extiende la regresión lineal a la clasificación binaria mediante la función logística, que mapea los valores lineales a probabilidades entre cero y uno. A pesar de su nombre, la regresión logística es un algoritmo de clasificación, no de regresión.
+
+<break time="500ms"/>
+MARIA: [didáctica] Las regularizaciones L uno y L dos son extensiones que añaden penalizaciones sobre el tamaño de los pesos. Eso reduce el sobreajuste y selecciona automáticamente las variables más relevantes. La regularización L uno, también llamada Lasso, produce pesos exactamente iguales a cero para las variables menos relevantes. La regularización L dos, también llamada Ridge, penaliza los pesos grandes sin llevarlos a cero. La regresión con regularización es especialmente útil cuando tienes muchas variables predictoras y algunas pueden ser irrelevantes o redundantes. En la práctica, si tienes cien variables y solo diez son realmente predictivas, la regularización L uno te va a identificar esas diez automáticamente.
+
+<break time="500ms"/>
+IAGO: [explicativo] Siguiente algoritmo. Árboles de decisión. Los árboles de decisión son modelos altamente interpretables que dividen el espacio de features en regiones rectangulares mediante una secuencia de divisiones binarias basadas en los valores de las variables. Cada nodo interno del árbol representa una condición sobre una variable. ¿Es la edad mayor de treinta y cinco años? Cada rama representa el resultado de esa condición. Y cada hoja representa una predicción. Los árboles de decisión son fácilmente interpretables. Puedes trazar el camino de una predicción desde la raíz hasta la hoja y entender exactamente qué condiciones se aplicaron. Eso los hace valiosos en dominios regulados donde la explicabilidad es requerida.
+
+<break time="500ms"/>
+MARIA: [analítica] Pero los árboles individuales tienen una limitación importante. Alta varianza. Pequeños cambios en los datos de entrenamiento pueden producir árboles completamente distintos. Los Random Forests resuelven esto mediante el ensamble de múltiples árboles. Cada uno entrenado sobre una muestra aleatoria de los datos y las features. El promedio de las predicciones de muchos árboles, cada uno con alta varianza pero poco sesgo, produce un modelo con mucha menor varianza y excelente rendimiento en generalización. Los Random Forests son uno de los algoritmos más robustos del ML clásico. Son frecuentemente la primera opción para datos tabulares sin invertir en feature engineering extenso.
+
+<break time="500ms"/>
+IAGO: [contundente] Y llegamos al estado del arte en tabular ML. Gradient Boosting. Este algoritmo ha dominado las competiciones de Kaggle durante años para datos tabulares. La idea es construir el modelo de forma iterativa. Empiezas con un modelo simple, frecuentemente un árbol pequeño. Calculas los errores residuales de ese modelo. Entrenas un nuevo modelo para predecir esos errores. Añades el nuevo modelo al conjunto. Y repites. Cada nuevo árbol corrige los errores del conjunto anterior. XGBoost, LightGBM y CatBoost son implementaciones altamente optimizadas de Gradient Boosting que añaden regularización, manejo de valores faltantes, soporte nativo para variables categóricas y paralelización del entrenamiento. En dos mil veinticinco, XGBoost y LightGBM siguen siendo el estado del arte para la mayoría de problemas de predicción con datos tabulares estructurados. Superan frecuentemente a las redes neuronales profundas en velocidad de entrenamiento, interpretabilidad con SHAP y rendimiento cuando los datos son de tamaño moderado, menos de un millón de filas.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [conversacional] Vamos a un caso concreto. Imagina una empresa de telecomunicaciones que quiere predecir qué clientes van a cancelar su contrato en los próximos tres meses. Tienen una tabla con datos de facturación, historial de llamadas al servicio técnico, antigüedad del cliente, tipo de plan contratado, si han cambiado de tarifa recientemente, si han tenido incidencias técnicas. Miles de filas, decenas de columnas. El objetivo es identificar a los clientes en riesgo de churn para poder lanzar campañas de retención personalizadas. Este es un problema supervisado de clasificación binaria. El output es churn sí o churn no. Y tienes datos históricos etiquetados porque ya sabes qué clientes se fueron en el pasado. Es el caso de uso perfecto para ML clásico. No necesitas un modelo de lenguaje. Necesitas un modelo que aprenda patrones en datos estructurados y que sea interpretable para que el equipo de marketing entienda por qué un cliente está en riesgo.
+
+<break time="500ms"/>
+IAGO: [claro] El primer paso es el análisis exploratorio de datos. Visualizas la distribución de las variables. ¿Hay valores faltantes? ¿Hay outliers? ¿Cuál es la tasa de churn en los datos históricos? Si solo el cinco por ciento de los clientes se va, tienes un problema de clases desbalanceadas y vas a necesitar técnicas de balanceo o métricas ajustadas. Después haces feature engineering. Creas variables derivadas que capturen patrones de comportamiento. Por ejemplo, la tendencia de facturación en los últimos seis meses. ¿Está subiendo o bajando? El número de llamadas al servicio técnico en el último mes. La antigüedad del cliente dividida por el número de incidencias. Estas variables derivadas suelen ser más predictivas que las variables brutas. Luego divides los datos en entrenamiento, validación y test. El conjunto de entrenamiento se usa para entrenar el modelo. El conjunto de validación se usa para optimizar hiperparámetros. Y el conjunto de test se usa para evaluar el rendimiento final de forma imparcial.
+
+IAGO: [didáctico] Entrenas varios modelos candidatos. Regresión logística con regularización L dos como baseline. Un Random Forest con cien árboles. Un XGBoost con aprendizaje iterativo. Evalúas cada modelo con validación cruzada para asegurarte de que el rendimiento es estable. Las métricas relevantes son precisión, recall, F uno score y área bajo la curva ROC. En un problema de churn, el recall es especialmente importante porque quieres capturar la mayor cantidad posible de clientes en riesgo, aunque eso implique algunos falsos positivos. Después de comparar los modelos, supongamos que el XGBoost da el mejor rendimiento. Lo optimizas con búsqueda de hiperparámetros. Profundidad máxima de los árboles, tasa de aprendizaje, número de iteraciones. Y finalmente lo evalúas en el conjunto de test. Si el rendimiento en test es similar al rendimiento en validación, tienes un modelo listo para producción.
+
+<break time="500ms"/>
+MARIA: [reflexiva] Y aquí viene la parte que muchas veces se olvida. La interpretabilidad. El equipo de marketing necesita entender por qué el modelo dice que un cliente está en riesgo. Ahí es donde entra SHAP. SHAP te da la contribución de cada variable a la predicción individual. Puedes decirle al equipo: este cliente tiene alta probabilidad de churn porque ha tenido tres incidencias técnicas en el último mes, su facturación ha bajado un veinte por ciento y lleva solo seis meses con nosotros. Eso es accionable. El equipo puede diseñar una campaña de retención específica para ese perfil.
+
+<break time="500ms"/>
+IAGO: [firme] Y el modelo se despliega en producción con un paiplain de eme ele ops. Monitorización continua de las predicciones, detección de drift en los datos, reentrenamiento periódico. Si la distribución de los datos cambia, por ejemplo porque la empresa lanza una nueva tarifa, el modelo puede degradarse. Tienes que detectarlo rápido y reentrenar. Este es el ciclo completo de un proyecto de ML clásico. Desde los datos hasta la decisión de negocio.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [serio] Vamos a las fuentes y marcos conceptuales que sostienen este módulo. Primero, el paper de Leo Breiman de dos mil uno sobre Random Forests. Breiman demostró que el ensamble de árboles con muestreo aleatorio reduce la varianza sin aumentar el sesgo, lo que convirtió a los Random Forests en uno de los algoritmos más robustos del ML clásico. Segundo, el trabajo de Tianqi Chen y Carlos Guestrin sobre XGBoost, presentado en dos mil dieciséis. XGBoost introdujo regularización avanzada, manejo eficiente de valores faltantes y paralelización del entrenamiento, lo que lo convirtió en el algoritmo dominante en competiciones de datos tabulares. Tercero, el fréimuork, marco de trabajo, SHAP de Scott Lundberg y Su-In Lee, publicado en dos mil diecisiete. SHAP proporciona valores de Shapley para la interpretabilidad de modelos de machine learning, permitiendo explicar predicciones individuales de forma rigurosa y matemáticamente fundamentada. Y cuarto, los currículos de los programas de máster en inteligencia artificial de Carnegie Mellon, Stanford, Oxford y University College London, que incluyen módulos completos de machine learning clásico como base para el aprendizaje profundo y los sistemas de IA en producción.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [contundente] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero, la diferencia entre aprendizaje supervisado, no supervisado y por refuerzo. El supervisado aprende de pares input-output etiquetados. El no supervisado aprende estructura sin etiquetas. Y el refuerzo aprende por interacción con recompensas y penalizaciones.
+
+<break time="500ms"/>
+MARIA: [clara] Segundo, el paiplain de ML clásico. Análisis exploratorio, feature engineering, selección de modelo, optimización de hiperparámetros y evaluación en test. Cada etapa es crítica y saltarse una puede arruinar el proyecto.
+
+<break time="500ms"/>
+IAGO: [didáctico] Tercero, los algoritmos fundamentales. Regresión lineal y logística como baseline. Árboles de decisión para interpretabilidad. Random Forests para robustez. Y Gradient Boosting, especialmente XGBoost, como estado del arte en datos tabulares.
+
+<break time="500ms"/>
+MARIA: [analítica] Cuarto, la importancia de la validación cruzada y las métricas ajustadas. No basta con medir la precisión. Tienes que entender el trade-off entre precisión y recall, especialmente en problemas con clases desbalanceadas.
+
+<break time="500ms"/>
+IAGO: [firme] Y quinto, la interpretabilidad con SHAP. En producción, no basta con predecir. Tienes que explicar por qué el modelo predice lo que predice. SHAP te da esa explicación de forma rigurosa.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [cálido] Recuerda que el primer tema del módulo, tipos de aprendizaje, te espera en la plataforma. Ahí profundizamos en supervisado, no supervisado y refuerzo con ejemplos y ejercicios prácticos.
+
+<break time="500ms"/>
+IAGO: [natural] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [natural] Verificación de formato completada. Guion listo para validación.

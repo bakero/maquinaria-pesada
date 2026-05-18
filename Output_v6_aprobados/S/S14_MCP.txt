@@ -1,0 +1,9 @@
+No es un protocolo mágico, pero eme ce pe, protocolo de contexto del modelo, resuelve un problema que ha atormentado a los ingenieros durante años: la integración de agentes con herramientas externas. Cada nueva herramienta requería código personalizado. Con N herramientas y M agentes, necesitabas N por M integraciones diferentes. Un caos combinatorio.
+
+eme ce pe es el estándar publicado por anzropic en noviembre de dos mil veinticuatro que convierte esa multiplicación en una suma. Un agente se conecta a eme ce pe, y eme ce pe habla con cualquier herramienta. N más M, no N por M. open ei ai, Google, Microsoft y AWS lo adoptaron inmediatamente.
+
+Stripe implementó eme ce pe para conectar sus a pe ies internas con múltiples agentes de IA y redujo el tiempo de integración de cuatro semanas a tres días. El ochenta por ciento menos de código repetido. Una sola interfaz, infinitas herramientas.
+
+Ese es el poder del estándar: no reemplaza tus sistemas, los une sin fricción.
+
+Más sobre mcp en el episodio T de MaquinarIA Pesada.

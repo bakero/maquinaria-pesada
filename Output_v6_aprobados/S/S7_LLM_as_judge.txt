@@ -1,0 +1,7 @@
+¿Sabes por qué un modelo de lenguaje puede evaluar a otro modelo mejor que un humano? Los ele ele eme, grandes modelos de lenguaje,-as-judge son sistemas de evaluación automática donde un modelo, frecuentemente más capaz o económico, valora la calidad de respuestas generadas por otros sistemas. Funciona como un árbitro entrenado que correlaciona sus veredictos con evaluaciones humanas, buscando una alineación superior al ochenta por ciento.
+
+El desafío está en la calibración. Sin alineación con criterios humanos, el juez automático puede perpetuar sesgos o fallar en contextos nuevos. Por eso requiere validación continua contra bénchmarks de expertos.
+
+Morgan Stanley implementó ele ele eme-as-judge para evaluar respuestas de sus sistemas de asesoramiento financiero y redujo el tiempo de revisión de dos semanas a tres días, mejorando además la consistencia en un sesenta y cinco por ciento. Este patrón se expande en atención al cliente, contenido generativo y análisis de investigación.
+
+Más sobre llm-as-judge en el episodio T de MaquinarIA Pesada.

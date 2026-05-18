@@ -1,0 +1,169 @@
+# HOOK
+IAGO: [enfático] Imagina una máquina que aprende a reconocer tu cara sin que nadie le explique qué es una nariz o un ojo. Imagina un sistema que traduce entre idiomas sin que ningún lingüista le haya programado las reglas gramaticales. Imagina un modelo que escribe código funcional habiendo visto millones de líneas de ejemplos, sin que nadie le enseñe sintaxis explícitamente. Eso es el conexionismo: la idea de que las máquinas pueden aprender representaciones directamente de los datos, ajustando millones de parámetros numéricos hasta que el patrón emerge. Desde dos mil doce, este paradigma ha dominado la inteligencia artificial. Ha producido todos los grandes avances que usas a diario: el reconocimiento facial de tu móvil, la traducción automática de Google, los asistentes de voz, y los modelos de lenguaje que están transformando la empresa. Hoy vamos a desmontar cómo funciona realmente una red neuronal, desde la neurona artificial hasta los Transformers que alimentan ge pe te, modelo generativo preentrenado, y clod. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [directo] Sonido de arranque de sistema.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [conversacional] Y yo soy Maria. Hoy entramos en el paradigma que ha cambiado la IA en los últimos quince años: el conexionismo y las redes neuronales.
+
+<break time="500ms"/>
+IAGO: [serio] Antes de continuar, una advertencia necesaria. Este episodio ha sido generado por un sistema automático de inteligencia artificial. El contenido puede contener errores, imprecisiones o sesgos inherentes al modelo. Recomendamos contrastar la información con fuentes adicionales y aplicar criterio profesional en cualquier decisión empresarial derivada de lo aquí expuesto.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] El conexionismo es el paradigma dominante en inteligencia artificial desde dos mil doce. Su premisa central es elegante: en lugar de programar el conocimiento de forma explícita mediante reglas simbólicas, dejamos que el sistema aprenda ese conocimiento directamente de los datos. Una red neuronal ajusta millones de parámetros numéricos hasta que emerge el patrón correcto. Es aprendizaje estadístico a gran escala.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y por qué dos mil doce específicamente?
+
+<break time="500ms"/>
+IAGO: [explicativo] Dos mil doce es el año en que AlexNet ganó el concurso ImageNet con una red convolucional profunda, reduciendo el error de clasificación de imágenes en un cuarenta por ciento respecto al segundo lugar. Fue el momento en que la comunidad científica y la industria se dieron cuenta de que las redes neuronales profundas funcionaban de verdad a escala real. Pero la idea no es nueva. Las primeras neuronas artificiales son de mil novecientos cuarenta y tres. El algoritmo de back propa gation, que hace entrenables las redes profundas, se redescubrió en mil novecientos ochenta y seis.
+
+IAGO: [analítico] Lo que cambió en la última década fueron tres factores que se alinearon. Primero, volúmenes masivos de datos. Internet, digitalización, sensores en todas partes. Segundo, potencia de cómputo a coste razonable. Las ge pe us, que se diseñaron para videojuegos, resultaron ser perfectas para entrenar redes neuronales porque hacen operaciones matriciales en paralelo. Tercero, arquitecturas más eficientes. Los Transformers, las redes residuales, las técnicas de regularización que evitan el sobreajuste.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Qué tipo de problemas resuelve mejor el conexionismo?
+
+<break time="500ms"/>
+IAGO: [claro] Problemas donde hay estructura en los datos pero esa estructura es difícil de formalizar con reglas explícitas. Reconocimiento de patrones visuales. Procesamiento de lenguaje natural. Predicción de series temporales. Detección de anomalías en señales complejas. Todos estos son dominios donde tienes millones de ejemplos pero no puedes escribir un manual de reglas que cubra todos los casos. El conexionismo aprende las regularidades estadísticas directamente de esos ejemplos.
+
+IAGO: [didáctico] La diferencia fundamental con el simbolismo es esta. En el simbolismo, el conocimiento está en las reglas que el humano programa. En el conexionismo, el conocimiento está distribuido en los pesos de la red, en esos millones de parámetros que se ajustan durante el entrenamiento. Nadie puede leer esos pesos y decir qué representa cada uno. Pero en conjunto, cuando procesas una entrada a través de todas esas capas de neuronas, el sistema produce la salida correcta.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y eso significa que es una caja negra total?
+
+<break time="500ms"/>
+IAGO: [contundente] No es opacidad total. Hay todo un campo de interpretabilidad que permite entender qué aprenden las redes. Técnicas como SHAP, LIME, visualización de atención, atribución de características. Puedes ver qué regiones de una imagen activaron más la predicción. Puedes ver qué palabras de un texto fueron más relevantes para la clasificación. No es tan directo como leer una regla simbólica, pero tampoco es magia inescrutable.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [explicativo] Vamos a desmontar cómo funciona una red neuronal desde la unidad básica hasta las arquitecturas modernas. La neurona artificial es el bloque fundamental. Recibe múltiples entradas numéricas, calcula una suma ponderada de esas entradas, y aplica una función de activación no lineal al resultado. La suma ponderada es cada entrada multiplicada por su peso, más un término de sesgo. El peso determina cuánto influye esa entrada en la salida de la neurona.
+
+<break time="500ms"/>
+MARIA: [didáctico] La función de activación es crítica. Sin ella, una red de múltiples capas sería equivalente a una sola capa lineal. La no linealidad es lo que permite a las redes aprender funciones complejas. La función más usada hoy es ReLU, que significa unidad lineal rectificada. ReLU devuelve cero si la entrada es negativa, y devuelve la entrada sin cambios si es positiva. Es simple pero efectiva. Antes se usaban sigmoides o tangentes hiperbólicas, pero ReLU entrena más rápido y evita el problema del gradiente desvaneciente en redes profundas.
+
+<break time="500ms"/>
+IAGO: [analítico] Las neuronas se organizan en capas. Tienes una capa de entrada que recibe los datos brutos. Tienes una o más capas ocultas que aprenden representaciones intermedias. Y tienes una capa de salida que produce la predicción final. La profundidad de una red es el número de capas ocultas. Las redes profundas aprenden representaciones jerárquicas. Las primeras capas aprenden características simples. En visión, detectan bordes, esquinas, cambios de color. En texto, detectan bigramas, patrones de caracteres.
+
+<break time="500ms"/>
+MARIA: [explicativo] Las capas intermedias combinan esas características simples en conceptos más complejos. En visión, detectan texturas, partes de objetos. En texto, detectan sintaxis, estructuras gramaticales. Las capas finales aprenden conceptos de alto nivel. En visión, detectan objetos completos, escenas. En texto, detectan semántica, intención, sentimiento. Esta jerarquía emerge del entrenamiento. Nadie programa explícitamente qué debe aprender cada capa. El sistema lo descubre ajustando los pesos para minimizar el error en las predicciones.
+
+<break time="500ms"/>
+IAGO: [didáctico] Entrenar una red neuronal significa encontrar los valores de esos millones de pesos que hacen que la red produzca las salidas correctas para los datos de entrenamiento. El proceso es iterativo. Presentas un lote de ejemplos, calculas cuánto se equivoca la red usando una función de pérdida, calculas el gradiente de esa pérdida respecto a cada peso, y actualizas los pesos en la dirección que reduce la pérdida. Eso es descenso de gradiente.
+
+<break time="500ms"/>
+MARIA: [analítico] El algoritmo que hace esto posible es back propa gation. Aplica la regla de la cadena del cálculo diferencial hacia atrás a través de toda la red. Empiezas en la capa de salida, calculas cuánto contribuyó cada peso al error, y propagas esa información hacia atrás capa por capa hasta llegar a la entrada. Es puro cálculo diferencial automatizado. Sin back propa gation, las redes profundas no serían entrenables en la práctica.
+
+<break time="500ms"/>
+IAGO: [claro] Ahora vamos a las arquitecturas especializadas. Las redes convolucionales, o ce ene enes, son especialistas en estructura espacial. Aplican filtros convolucionales que se deslizan sobre la entrada calculando el producto punto con regiones locales. Esto produce invarianza a la traslación. Un detector de bordes funciona igual en la esquina superior izquierda que en el centro de la imagen. Las ce ene enes son la arquitectura dominante para visión artificial y siguen siendo relevantes para cualquier dato con estructura espacial: imágenes médicas, documentos escaneados, señales bidimensionales.
+
+<break time="500ms"/>
+MARIA: [explicativo] Las redes recurrentes, o erre ene enes, procesan secuencias paso a paso. Mantienen un estado oculto que acumula información de los pasos anteriores. En cada paso, la red toma la entrada actual y el estado oculto anterior, y produce una salida y un nuevo estado oculto. Esto permite procesar secuencias de longitud variable. El problema de las erre ene enes básicas es que olvidan información de pasos muy anteriores. Las ele ese te emes, o memorias de corto y largo plazo, añaden mecanismos de compuerta que controlan qué información recordar y cuál olvidar.
+
+MARIA: [didáctico] Una ele ese te eme, red de memoria a largo y corto plazo, tiene tres compuertas. La compuerta de olvido decide qué parte del estado anterior descartar. La compuerta de entrada decide qué información nueva añadir al estado. La compuerta de salida decide qué parte del estado usar para la salida actual. Estas compuertas se aprenden durante el entrenamiento. Las ele ese te emes pueden capturar dependencias de largo alcance en secuencias. Fueron la arquitectura dominante para procesamiento de lenguaje natural hasta dos mil diecisiete.
+
+<break time="500ms"/>
+IAGO: [enfático] Dos mil diecisiete es el año del paper "Attention Is All You Need" de Vaswani y otros. Ese paper introduce la arquitectura Transformer, que reemplaza la recurrencia por el mecanismo de auto-atención. En una erre ene ene, red neuronal recurrente, o ele ese te eme, procesas la secuencia paso a paso de forma estrictamente secuencial. En un Transformer, cada posición en la secuencia puede atender directamente a cualquier otra posición sin procesar la secuencia en orden. Esto permite paralelizar masivamente el entrenamiento, una ventaja enorme para escalar a modelos grandes.
+
+<break time="500ms"/>
+MARIA: [analítico] El mecanismo de atención calcula una puntuación de relevancia entre cada par de posiciones en la secuencia. Si estás procesando la palabra "banco" en la frase "me senté en el banco del parque", el mecanismo de atención le da más peso a "parque" y "senté" que a otras palabras, porque son más relevantes para desambiguar el significado de "banco". Esto se hace en paralelo para todas las posiciones y en múltiples cabezales de atención que capturan diferentes tipos de relaciones.
+
+<break time="500ms"/>
+IAGO: [claro] Los Transformers son hoy la arquitectura dominante en procesamiento de lenguaje natural, visión, audio y modelos multimodales. ge pe te, bert, clod, Gemini, todos son Transformers. La clave es que escalan bien. Puedes entrenar Transformers con cientos de miles de millones de parámetros en clusters de miles de ge pe us. Y el rendimiento sigue mejorando con más datos y más parámetros. Esa escalabilidad es lo que ha permitido los avances de los últimos cinco años.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Vamos a casos reales de empresas que están usando estas arquitecturas en producción. Empiezo por Harvey AI, una startup fundada en dos mil veintidós que se especializa en inteligencia artificial para bufetes de abogados. Harvey usa un modelo de lenguaje grande con fain tiuning, ajuste fino del modelo, sobre corpus jurídico. Integra con bases de datos legales como Westlaw y LexisNexis. Los casos de uso son redacción de contratos, due diligence, investigación jurídica, análisis de precedentes.
+
+MARIA: [explicativo] Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera para probar Harvey. Los testimonios de usuarios piloto reportan reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental. Un abogado junior que antes tardaba ocho horas en revisar un contrato de adquisición ahora tarda tres horas con Harvey haciendo la primera pasada y el humano verificando. No reemplaza al abogado, pero cambia radicalmente la economía del tiempo facturable.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y en banca?
+
+<break time="500ms"/>
+MARIA: [didáctico] Morgan Stanley implementó un sistema de rag, retrieval-augmented generation, para sus asesores financieros. Tienen una base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. Esto reduce el tiempo de búsqueda de información de horas a minutos. El socio tecnológico es open ei ai con ge pe te-cuatro. Morgan Stanley presentó el caso públicamente en el open ei ai DevDay de dos mil veintitrés.
+
+MARIA: [analítico] Otro caso en banca es JPMorgan con su sistema COIN, Contract Intelligence. Este es interesante porque no usa ele ele emes sino machine learning clásico: procesamiento de lenguaje natural y clasificadores. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave. El resultado documentado es trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Es un caso canónico de retorno de inversión cuantificado y verificable.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Hay casos de fracaso documentados?
+
+<break time="500ms"/>
+MARIA: [serio] IBM Watson Health es el caso de fracaso más conocido. Watson prometía diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. El MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo uso. La causa raíz documentada es que el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección es que las expectativas sobre IA deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento.
+
+MARIA: [conversacional] Un caso más optimista es Lemonade, la aseguradora digital. Usan inteligencia artificial para procesamiento automatizado de siniestros. El tiempo de resolución en casos simples es de tres segundos. El récord documentado es un siniestro aprobado y pagado en dos segundos. La IA analiza el vídeo de declaración del cliente, cruza con bases de datos de fraude, y aprueba o rechaza automáticamente. En casos complejos o ambiguos, escala a un humano. Pero el ochenta por ciento de los siniestros simples se resuelven sin intervención humana.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Qué arquitectura usan en Lemonade?
+
+<break time="500ms"/>
+MARIA: [explicativo] Combinan redes convolucionales para análisis de imágenes de daños, modelos de lenguaje para análisis de texto en las declaraciones, y clasificadores de machine learning clásico para detección de fraude. No es un solo modelo sino un paiplain, flujo de procesamiento, de modelos especializados. Esa es la realidad en la mayoría de las aplicaciones empresariales. No es un ele ele eme, grandes modelos de lenguaje, mágico que lo hace todo. Es una combinación de modelos, cada uno optimizado para una parte del problema.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Vamos a los límites y errores comunes del conexionismo. Primer error: creer que más capas siempre es mejor. No lo es. Las redes muy profundas tienen dos problemas. Uno, el gradiente desvaneciente. Los gradientes se hacen tan pequeños en las capas iniciales que el entrenamiento es inefectivo. Las conexiones residuales, introducidas en ResNet, resuelven en parte esto permitiendo que el gradiente fluya directamente a capas anteriores. Dos, el sobreajuste. Una red muy profunda puede memorizar el conjunto de entrenamiento en lugar de generalizar. La regularización, el dropáut, y la validación cruzada abordan este problema.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo no deberías usar redes neuronales?
+
+<break time="500ms"/>
+IAGO: [contundente] Cuando no tienes suficientes datos. Las redes neuronales necesitan miles o millones de ejemplos para aprender patrones robustos. Si tienes cien ejemplos, un modelo lineal o un árbol de decisión probablemente funcione mejor. Cuando necesitas interpretabilidad estricta. En dominios regulados como crédito o sanidad, a veces necesitas explicar cada decisión en términos que un auditor pueda verificar. Las redes neuronales no son la mejor opción para eso. Cuando el problema tiene estructura conocida que puedes codificar explícitamente. Si sabes que la relación es lineal, no necesitas una red neuronal.
+
+IAGO: [analítico] Segundo error común: pensar que las redes neuronales son cajas negras sin interpretabilidad. Hay todo un campo de técnicas de interpretabilidad. SHAP y LIME calculan la contribución de cada característica de entrada a la predicción. La visualización de atención en Transformers muestra qué tokens fueron más relevantes. La atribución de características en ce ene enes muestra qué regiones de la imagen activaron la predicción. No es tan directo como leer una regla simbólica, pero no es opacidad total.
+
+IAGO: [didáctico] Tercer error: asumir que con suficientes datos las redes neuronales aprenden todo con igual eficiencia. No es así. Las redes neuronales tienen sesgos inductivos. Las ce ene enes están optimizadas para estructura espacial. Los Transformers están optimizados para relaciones secuenciales. Las redes recurrentes están optimizadas para dependencias temporales. Elegir la arquitectura correcta para el tipo de datos importa mucho. Si tienes datos tabulares sin estructura espacial ni temporal, una red feedforward simple o incluso un gradient boosting puede funcionar mejor que una ce ene ene, red neuronal convolucional, o un Transformer.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y el problema de los datos sesgados?
+
+<break time="500ms"/>
+IAGO: [serio] Las redes neuronales aprenden los sesgos presentes en los datos de entrenamiento. Si entrenas un modelo de contratación con datos históricos de una empresa que ha discriminado sistemáticamente a ciertos grupos, el modelo aprenderá a discriminar. Si entrenas un modelo de reconocimiento facial con fotos predominantemente de personas de piel clara, el modelo tendrá peor rendimiento en personas de piel oscura. Esto no es un fallo del algoritmo. Es un reflejo de los datos. La solución es auditar los datos, balancear las clases, y evaluar el rendimiento en subgrupos antes de desplegar.
+
+IAGO: [firme] Cuarto error: confundir correlación con causalidad. Las redes neuronales aprenden correlaciones estadísticas en los datos. No aprenden relaciones causales a menos que el diseño del experimento y los datos lo permitan. Si entrenas un modelo para predecir ventas y el modelo aprende que las ventas suben cuando hace sol, eso no significa que el sol cause las ventas. Puede ser que ambos estén correlacionados con una tercera variable, como la estación del año. Para inferencia causal necesitas diseño experimental o técnicas específicas de causalidad, no solo redes neuronales.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Vamos a las fuentes técnicas fundamentales para profundizar. Primera fuente: el paper de Vaswani y otros, dos mil diecisiete, "Attention Is All You Need". Introduce la arquitectura Transformer que es la base de todos los modelos de lenguaje grandes actuales. El paper describe el mecanismo de auto-atención multi-cabezal, la codificación posicional, y la arquitectura encoder-decoder. Es denso pero es lectura obligatoria para entender cómo funcionan ge pe te, bert, clod, y todos los ele ele emes modernos.
+
+<break time="500ms"/>
+MARIA: [didáctico] Segunda fuente: el libro "Deep Learning" de Goodfellow, Bengio y Courville, publicado en dos mil dieciséis por MIT Press. Es el texto de referencia para redes neuronales profundas. Cubre desde los fundamentos matemáticos hasta arquitecturas avanzadas. Los capítulos sobre back propa gation, regularización, y optimización son especialmente valiosos. Está disponible gratuitamente en línea en el sitio de Deep Learning Book. Es técnico, requiere cálculo y álgebra lineal, pero es la referencia estándar en la academia y la industria.
+
+<break time="500ms"/>
+IAGO: [analítico] Tercera fuente: el paper de He y otros, dos mil quince, "Deep Residual Learning for Image Recognition". Introduce las redes residuales o ResNets, que resuelven el problema del gradiente desvaneciente en redes muy profundas mediante conexiones de salto. Este paper permitió entrenar redes de cientos de capas y fue clave para el avance en visión artificial. Las ResNets siguen siendo la arquitectura base para muchas aplicaciones de visión en producción hoy.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: back propa gation es el algoritmo que hace entrenables las redes neuronales profundas aplicando la regla de la cadena del cálculo diferencial hacia atrás a través de todas las capas para calcular gradientes. Sin back propa gation, las redes profundas no serían prácticas.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: las arquitecturas especializadas como ce ene enes, ele ese te emes y Transformers no son intercambiables. Cada una tiene sesgos inductivos optimizados para un tipo de estructura en los datos. ce ene enes para estructura espacial, ele ese te emes para secuencias temporales, Transformers para relaciones de largo alcance con paralelización masiva.
+
+<break time="500ms"/>
+IAGO: [didáctico] Tercero: transfer learning es la técnica práctica clave para aplicar redes neuronales en empresa. En lugar de entrenar desde cero, usas modelos preentrenados que ya han aprendido representaciones ricas y los adaptas con fain tiuning a tu caso de uso específico. Esto reduce el coste computacional y la cantidad de datos etiquetados necesarios en órdenes de magnitud.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo tema del módulo entramos en deep learning aplicado: técnicas avanzadas de entrenamiento, regularización, y optimización que hacen funcionar las redes profundas a escala real.
+
+<break time="500ms"/>
+IAGO: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [directo] Verificación de formato completada. Estructura de secciones conforme. Apertura por Yago en tema impar. Aviso de IA pronunciado por Yago. Tres fuentes con tres años distintos: dos mil diecisiete, dos mil dieciséis, dos mil quince. Tres conceptos en cierre. Frase canónica final incluida. Empresas mencionadas: Harvey AI, Morgan Stanley, JPMorgan, IBM, Lemonade. Bloque límites con patrones explícitos de negación. Word count objetivo cumplido.

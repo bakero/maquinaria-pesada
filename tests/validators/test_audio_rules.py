@@ -37,9 +37,10 @@ def test_digits_allowed_with_publication_marker():
 
 
 def test_reaction_over_limit_fails():
-    # ≤2 frases pero claramente más de 15 palabras: reacción demasiado larga.
-    intervention = ("Pues mira, eso que dices me parece bastante discutible la "
-                    "verdad, y la mayoría de la gente tampoco lo ve nada claro.")
+    # ≤2 frases pero claramente más de 22 palabras: reacción demasiado larga.
+    intervention = ("Pues mira, eso que dices me parece bastante discutible "
+                    "la verdad, y la mayoría de la gente tampoco lo ve nada "
+                    "claro, parece que falta más contexto y datos concretos.")
     r = ar.check_reaction_length([intervention])
     assert r.passed is False
     assert r.severity == "HARD"

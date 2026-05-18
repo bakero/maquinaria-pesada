@@ -1,0 +1,9 @@
+No es lo mismo un modelo entrenado que un modelo verificado. Un golden deitaset, conjunto de datos, es el conjunto curado de cincuenta a quinientos casos representativos con outputs de referencia verificados manualmente, usado como test suite para medir de forma objetiva el rendimiento de un sistema de IA antes del despliegue.
+
+Imagina que desarrollas un chatbot para atención al cliente. Sin golden deitaset, no sabes si tu modelo responde bien o mal a preguntas complejas. Con él, tienes casos reales: "El cliente pregunta sobre reembolsos", "El cliente pide cambios de producto", cada uno con la respuesta correcta documentada. Así comparas modelos versión uno contra versión dos y ves exactamente dónde mejora o falla cada uno.
+
+open ei ai usó golden deitasets para validar ge pe te, modelo generativo preentrenado, antes de lanzarlo. anzropic lo hace con clod. Sin esos casos de referencia, desplegar es lanzar al aire sin paracaídas.
+
+El impacto es directo: empresas que usan golden deitasets detectan errores antes de producción, reducen costos de reentrenamiento entre treinta y cincuenta por ciento, y aceleran ciclos de iteración de semanas a días.
+
+Más sobre golden deitaset en el episodio T de MaquinarIA Pesada.

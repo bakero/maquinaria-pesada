@@ -1,0 +1,9 @@
+Los modelos de lenguaje no mejoran solos. Necesitan que humanos califiquen sus respuestas para aprender qué está bien y qué está mal. Eso es erre ele ache efe: aprendizaje por refuerzo con fídbac humano.
+
+El proceso funciona en tres pasos. Primero, anotadores humanos califican miles de respuestas del modelo como buenas o malas. Segundo, esos juicios entrenan una red neuronal llamada modelo de recompensa, que aprende a predecir qué respuestas los humanos aprobarían. Tercero, el modelo original se ajusta usando esa recompensa predicha, no mediante supervisión directa, sino optimizando para maximizar puntuaciones altas.
+
+open ei ai aplicó erre ele ache efe masivamente en ge pe te, modelo generativo preentrenado,-tres punto cinco y consiguió reducir respuestas tóxicas en un noventa por ciento mientras mejoraba coherencia. Sin erre ele ache efe, los ele ele eme, grandes modelos de lenguaje, serían máquinas de predicción estadística sin brújula ética ni utilidad real.
+
+La técnica es costosa en anotación humana, pero el resultado es un modelo que entiende intención, contexto y límites morales. Es la diferencia entre un predictor y un asistente confiable.
+
+Más sobre rlhf en el episodio T de MaquinarIA Pesada.

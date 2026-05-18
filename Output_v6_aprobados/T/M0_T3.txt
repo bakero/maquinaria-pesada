@@ -1,0 +1,154 @@
+# HOOK
+IAGO: [enfático] Imagina que tienes que elegir el cerebro artificial que va a procesar los datos más sensibles de tu empresa. open ei ai te ofrece el modelo más potente del mercado. anzropic te promete seguridad y alineamiento. Google te da contextos de un millón de tokens. Meta te regala los pesos del modelo para que lo instales donde quieras. ¿Cuál eliges? La respuesta correcta es: depende. Y de esa dependencia pueden colgar millones de euros, años de dependencia tecnológica, y el cumplimiento o incumplimiento de regulaciones que te pueden costar el treinta por ciento de tu facturación anual. Hoy diseccionamos el oligopolio de los modelos de inteligencia artificial, cómo comparar proveedores sin caer en el hype, y por qué la decisión técnica de hoy es la decisión estratégica que vas a arrastrar durante los próximos tres años. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [pausa de tres segundos para cortinilla]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [cálido] Soy Maria, tu copiloto en este viaje por las tripas técnicas de los modelos de lenguaje y las decisiones que importan.
+
+<break time="500ms"/>
+IAGO: [claro] Y yo soy Yago. Antes de seguir, aviso obligatorio: este episodio ha sido generado por un sistema automático de inteligencia artificial. Puede contener errores, imprecisiones o sesgos propios de estos sistemas. Contrasta siempre la información crítica con fuentes adicionales y consulta a profesionales cuando tomes decisiones empresariales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [analítico] El mercado de modelos de inteligencia artificial en dos mil veinticinco es un oligopolio concentrado con una cola larga de alternativas abiertas. Cuatro empresas controlan los modelos frontera: open ei ai con la familia ge pe te, modelo generativo preentrenado, anzropic con clod, Google con Gemini, y Meta con Llama. El gasto empresarial global en inteligencia artificial generativa alcanzó los treinta y siete mil millones de dólares en dos mil veinticinco. Eso es más que el PIB de algunos países europeos. Y la mayor parte de ese dinero se lo reparten esos cuatro nombres.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué diferencia a un proveedor de otro más allá del marketing?
+
+<break time="500ms"/>
+IAGO: [didáctico] Tres ejes fundamentales: capacidad técnica medida en bénchmarks reales, modelo de negocio y acceso a los pesos del modelo, y garantías contractuales de privacidad y residencia de datos. open ei ai tiene los modelos ge pe te cuatro o y ge pe te cinco para razonamiento general, y la familia o uno, o tres, o cuatro para razonamiento extendido con cadenas de pensamiento largas. anzropic tiene clod Opus cuatro para máxima complejidad, clod Sonnet cuatro como equilibrio calidad-coste, y clod Haiku para latencia baja. Google tiene Gemini con ventanas de contexto de hasta un millón de tokens y capacidades nativas multimodales: texto, imagen, audio, vídeo en el mismo modelo.
+
+IAGO: [firme] Pero aquí viene el primer problema estratégico. Usar un modelo frontera implica aceptar cuatro condiciones no negociables. Primera: los datos de tus usuarios pasan por la infraestructura del proveedor. Segunda: pagas por token procesado, y a escala eso puede ser millones de euros al año. Tercera: dependes del proveedor para disponibilidad, latencia y precios. Cuarta: las actualizaciones de modelo pueden cambiar el comportamiento de tu sistema sin previo aviso. Eso no es especulación, eso pasó con ge pe te tres punto cinco a ge pe te cuatro, y volverá a pasar.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y la alternativa?
+
+<break time="500ms"/>
+IAGO: [explicativo] Los modelos de pesos abiertos. Meta publica Llama tres en versiones de ocho mil millones, setenta mil millones y cuatrocientos cinco mil millones de parámetros. Mistral AI tiene Mistral y Mixtral. Alibaba tiene Qwen. Technology Innovation Institute tiene Falcon. Pesos abiertos significa que puedes descargar el modelo completo, instalarlo en tu infraestructura, y hacer inferencia sin que los datos salgan de tu perímetro. Eso resuelve privacidad, residencia de datos, y a volúmenes muy altos puede ser más barato que pagar por token a un proveedor externo.
+
+IAGO: [contundente] La contrapartida es obvia: necesitas hardware, necesitas ge pe us NVIDIA A cien o H cien, necesitas un equipo técnico que sepa operar el stack de serving con fréimuorks como uve ele ele eme, grandes modelos de lenguaje, o TensorRT-ele ele eme, y necesitas mantener el ciclo de actualizaciones de hardware y software. No es trivial. Pero para hospitales, firmas legales, bancos, o cualquier organización con datos sensibles y obligaciones regulatorias estrictas, puede ser la única opción viable. Y a escala, también la más barata.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo deja de tener sentido pagar por token y empieza a tener sentido el self-hosting?
+
+<break time="500ms"/>
+IAGO: [analítico] Depende del volumen y del coste de la ge pe u, unidad de procesamiento gráfico. Pero como regla aproximada: si procesas más de cien millones de tokens al mes de forma sostenida, y tienes capacidad técnica interna, el análisis de coste total de propiedad empieza a favorecer el self-hosting. A mil millones de tokens al mes, es casi siempre más barato. Eso son números reales de empresas que han hecho la migración y han publicado los resultados.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] Ahora vamos a la mecánica: cómo se evalúa y compara un modelo de inteligencia artificial de forma rigurosa. Hay seis dimensiones críticas que tienes que medir antes de tomar una decisión. Primera dimensión: capacidad de razonamiento. Eso se mide con bénchmarks estandarizados. MMLU mide conocimiento general multidisciplinar. GPQA mide razonamiento científico avanzado. SWE-bench mide capacidad de escribir y depurar código real en repositorios de GitHub. HumanEval mide generación de funciones de programación. Esos bénchmarks no son perfectos, pero son la mejor aproximación objetiva que tenemos.
+
+<break time="500ms"/>
+MARIA: [explicativo] Segunda dimensión: latencia. Latencia es el tiempo que tarda el modelo en generar cada token de respuesta. Se mide en milisegundos por token. Para aplicaciones interactivas, chatbots o asistentes en tiempo real, necesitas latencias por debajo de cincuenta milisegundos por token. Para procesamiento batch de documentos, puedes tolerar doscientos o trescientos milisegundos. La latencia depende de tres factores: el tamaño del modelo en parámetros, la infraestructura de serving del proveedor, y la carga concurrente en ese momento. Los modelos más grandes son más lentos. Eso es física: más parámetros implica más operaciones matriciales.
+
+<break time="500ms"/>
+IAGO: [claro] Tercera dimensión: coste por millón de tokens. Los proveedores cobran de forma separada por tokens de entrada y tokens de salida. Un token es aproximadamente cuatro caracteres en inglés, tres en español. open ei ai cobra entre dos y quince dólares por millón de tokens de entrada según el modelo. anzropic tiene precios similares. Google Gemini es más barato en algunos niveles. Pero el coste real no es el precio de lista: es el coste a tu volumen proyectado multiplicado por doce meses. Si tu aplicación procesa mil millones de tokens al mes, estás hablando de entre veinticuatro mil y ciento ochenta mil dólares al año solo en costes de modelo.
+
+<break time="500ms"/>
+MARIA: [analítico] Cuarta dimensión: ventana de contexto. La ventana de contexto es la cantidad máxima de texto que el modelo puede procesar en una sola llamada. ge pe te cuatro o tiene ciento veintiocho mil tokens de contexto. clod Opus cuatro llega a doscientos mil. Gemini uno punto cinco llega a un millón. ¿Por qué importa? Porque si necesitas que el modelo analice un contrato legal de cien páginas, o un informe técnico de doscientas páginas, o un historial completo de conversación con un cliente, necesitas que todo eso quepa en la ventana. Si no cabe, tienes que fragmentar el documento, procesar por partes, y luego agregar. Eso añade complejidad, latencia, y coste.
+
+<break time="500ms"/>
+IAGO: [explicativo] Quinta dimensión: multimodalidad. Los modelos más avanzados pueden procesar no solo texto, sino también imágenes, audio, vídeo. ge pe te cuatro o y Gemini son nativamente multimodales. clod Opus cuatro puede procesar imágenes pero no vídeo. Llama tres punto dos tiene capacidades limitadas de visión. ¿Cuándo necesitas multimodalidad? Cuando tu caso de uso incluye análisis de documentos escaneados, interpretación de gráficos, transcripción de audio, o análisis de contenido visual. Si solo procesas texto, pagar por multimodalidad es un sobrecoste innecesario.
+
+<break time="500ms"/>
+MARIA: [firme] Sexta dimensión: privacidad y residencia de datos. Esta es la dimensión que más empresas ignoran al principio y la que más problemas causa después. La configuración por defecto de las a pe ies de open ei ai, anzropic y Google permite que el proveedor retenga los datos procesados para mejorar el servicio. Eso significa que tus prompts y las respuestas del modelo pueden ser almacenados, analizados, y potencialmente usados para reentrenar modelos futuros. Para datos sensibles, eso es inaceptable. Necesitas configurar explícitamente zero data retention, que suele estar disponible solo en planes enterprise con sobreprecio. O necesitas migrar a opciones de despliegue privado: Azure open ei ai Service con red virtual privada, AWS Bedrock con aislamiento de tenant, o self-hosting completo.
+
+<break time="500ms"/>
+IAGO: [contundente] Y aquí viene el concepto clave: el modelo correcto para tu caso de uso no es el que tiene el mejor bénchmark general. Es el modelo que tiene capacidad suficiente para resolver tu tarea, latencia aceptable para tu caso de uso, coste sostenible a tu volumen proyectado, y opciones de privacidad compatibles con tus obligaciones regulatorias. Esa es la función de optimización real. No es una dimensión, son seis simultáneas.
+
+<break time="500ms"/>
+MARIA: [conversacional] ¿Y cómo se gestiona eso en la práctica sin quedar atado a un solo proveedor?
+
+<break time="500ms"/>
+IAGO: [didáctico] Con capas de abstracción. Las arquitecturas bien diseñadas no llaman directamente a la a pe i, interfaz de programación, de open ei ai o anzropic desde el código de aplicación. Usan una capa intermedia que abstrae el proveedor subyacente. lait ele ele eme es el estándar de facto: es una biblioteca de Python que expone una a pe i unificada y traduce las llamadas al formato específico de cada proveedor. Con lait ele ele eme puedes cambiar de open ei ai a anzropic, de anzropic a un modelo local en Ollama, o de un modelo local a Google Gemini cambiando una línea de configuración. Eso reduce el lock-in y te permite aprovechar la competencia entre proveedores.
+
+<break time="500ms"/>
+MARIA: [explicativo] Esa estrategia multiproveedores tiene otra ventaja: puedes usar el modelo más barato para tareas simples y reservar el modelo más potente solo cuando la calidad lo requiere. Por ejemplo: usas clod Haiku o ge pe te cuatro o mini para clasificación de texto, extracción de entidades, resumen de documentos. Son tareas donde la capacidad de razonamiento no es crítica y el coste por token sí lo es. Y reservas clod Opus o el modelo o tres de open ei ai para análisis complejos, razonamiento multi-paso, o generación de código donde la calidad justifica el sobrecoste. Eso puede reducir tu factura de modelos en un cincuenta o sesenta por ciento sin sacrificar calidad en las tareas que importan.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Vamos a casos reales. Empresas que han tomado estas decisiones y han vivido las consecuencias. Primer caso: Harvey AI, una startup especializada en inteligencia artificial para bufetes de abogados. Harvey usa ge pe te cuatro como modelo base, pero con acuerdos enterprise de zero data retention y contratos de confidencialidad específicos con open ei ai. ¿Por qué? Porque la privacidad del cliente en un bufete es un requisito deontológico y legal no negociable. Un bufete no puede permitir que los datos de un caso penal o de una fusión empresarial salgan de su control. Harvey tiene más del noventa y siete por ciento de los grandes bufetes de Estados Unidos en lista de espera durante dos mil veintitrés. El caso de uso es redacción de contratos, due diligence, investigación jurídica, análisis de precedentes. El resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y en banca?
+
+<break time="500ms"/>
+MARIA: [analítico] Morgan Stanley implementó un sistema de rag, retrieval-augmented generation, para sus asesores financieros. La base de conocimiento tiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. El socio tecnológico es open ei ai con ge pe te cuatro. Esto se presentó públicamente en el open ei ai DevDay de dos mil veintitrés. Morgan Stanley es un banco de inversión con más de doscientos años de historia. No toman decisiones tecnológicas a la ligera.
+
+MARIA: [firme] Tercer caso: JPMorgan Chase con el sistema COIN, Contract Intelligence. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Esto es machine learning clásico, no modelos de lenguaje grandes, pero es relevante porque tiene un ROI cuantificado y verificable. Resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. JPMorgan es el mayor banco de Estados Unidos por activos. Este caso es canónico porque demuestra que no siempre necesitas el modelo más grande: necesitas el modelo correcto para la tarea.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y casos de self-hosting?
+
+<break time="500ms"/>
+MARIA: [explicativo] BBVA y otros bancos europeos han optado por despliegues de modelos de pesos abiertos, Llama y Mistral principalmente, en infraestructura propia o en Azure con aislamiento de datos. ¿Por qué? Para cumplir con los requisitos del GDPR y las regulaciones bancarias sobre residencia y tratamiento de datos. Un banco europeo no puede enviar datos de clientes a servidores en Estados Unidos sin garantías contractuales muy específicas. El self-hosting resuelve ese problema de raíz: los datos nunca salen del perímetro corporativo. El coste operativo es mayor, pero el riesgo regulatorio es cero.
+
+MARIA: [conversacional] Cuarto caso: empresas de manufactura con datos industriales sensibles. Hay fabricantes que usan Llama tres setenta mil millones de parámetros o Mistral en servidores on-premise con ge pe us NVIDIA A cien para procesar manuales técnicos, órdenes de trabajo, datos de producción. Los datos nunca salen de la fábrica. Eso es crítico en sectores como defensa, aeroespacial, o automoción, donde los diseños y procesos son propiedad intelectual de alto valor y están sujetos a controles de exportación.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora los límites y los errores comunes. Primer error: elegir el modelo con el mejor bénchmark sin evaluar en tu caso de uso propio. Los bénchmarks miden capacidad general en tareas académicas. Tu caso de uso puede tener propiedades específicas, vocabulario de dominio, formato de salida, tipo de razonamiento, que hacen que un modelo peor en bénchmarks genéricos funcione mejor en tu aplicación concreta. La única forma de saberlo es evaluar con tus datos reales en tu tarea real. Eso se llama evaluación de dominio. Y es lo que separa las implementaciones que funcionan de las que no.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Qué otros errores son frecuentes?
+
+<break time="500ms"/>
+IAGO: [contundente] Segundo error: ignorar la política de privacidad del proveedor. La opción por defecto en las a pe ies de la mayoría de los proveedores permite retención de datos para mejora del servicio. Eso está en la letra pequeña del contrato. Para datos sensibles, eso requiere configuración explícita de zero data retention o migración a opciones enterprise. Y eso tiene un sobrecoste que puede duplicar o triplicar el precio por token. Las empresas que no leen el contrato se llevan sorpresas desagradables cuando auditoría interna o el departamento legal revisa la implementación seis meses después.
+
+IAGO: [analítico] Tercer error: asumir que el proveedor más conocido es el correcto. open ei ai tiene la marca más fuerte, pero en dos mil veinticinco los modelos de Meta, Mistral, y otros proveedores menores compiten de forma muy efectiva en muchas tareas. Y los costes de inferencia en self-hosting pueden ser un orden de magnitud menores. Un orden de magnitud es diez veces menos. Eso no es marginal, eso cambia la economía del proyecto. Pero requiere capacidad técnica interna que no todas las organizaciones tienen.
+
+IAGO: [grave] Cuarto error, y este es crítico: no planificar la estrategia de salida del proveedor. Los contratos de inteligencia artificial enterprise suelen ser anuales con renovación automática. Si no has diseñado una capa de abstracción desde el primer día, cambiar de proveedor puede requerir reescribir partes significativas del sistema. Eso puede llevar meses y costar cientos de miles de euros en ingeniería. Las arquitecturas bien diseñadas abstraen el proveedor desde el día cero. Eso no es sobre-ingeniería, eso es ingeniería responsable.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y cuándo no deberías usar modelos de lenguaje grandes en absoluto?
+
+<break time="500ms"/>
+IAGO: [didáctico] Cuando el problema se puede resolver con machine learning clásico de forma más barata y más fiable. Clasificación de texto con bert fine-tuneado. Extracción de entidades con spaCy. Análisis de sentimiento con modelos pequeños especializados. Los modelos de lenguaje grandes son herramientas increíblemente potentes, pero no son la solución universal. Son caros, son opacos, y tienen modos de fallo impredecibles. Si puedes resolver el problema con un modelo más simple, más barato, y más interpretable, hazlo. La complejidad tiene un coste de mantenimiento que se paga durante años.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Vamos a las fuentes. Primera fuente: el paper de Vaswani y otros, dos mil diecisiete, "Attention Is All You Need", que introduce la arquitectura transformer. Es el paper fundacional de todos los modelos de lenguaje grandes modernos. ge pe te, bert, clod, Gemini, Llama: todos son transformers. Ese paper tiene más de ciento veinte mil citas en Google Scholar. Es el paper más citado en la historia de la inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [analítico] Segunda fuente: el AI Index Report de Stanford, dos mil veinticinco. Es un informe anual que recopila datos sobre inversión, adopción empresarial, bénchmarks técnicos, y tendencias regulatorias en inteligencia artificial. El dato de los treinta y siete mil millones de dólares de gasto empresarial en inteligencia artificial generativa viene de ese informe. Stanford HAI, Human-Centered Artificial Intelligence, es una fuente rigurosa y verificable.
+
+<break time="500ms"/>
+IAGO: [firme] Tercera fuente: el NIST AI Risk Management Framework, publicado en enero de dos mil veintitrés y actualizado en dos mil veinticinco. Es el marco de referencia para gestión de riesgos de inteligencia artificial en Estados Unidos. Define cuatro funciones: GOVERN para gobernanza organizativa, MAP para identificación de riesgos, MEASURE para evaluación y métricas, MANAGE para tratamiento y respuesta. Es un marco voluntario, pero es el estándar de facto en empresas Fortune quinientas. Y está diseñado para ser compatible con ISO cuarenta y dos mil uno y el AI Act europeo.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [didáctico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: la decisión de proveedor de modelos no es solo técnica, es estratégica. Implica coste, privacidad, dependencia, y cumplimiento regulatorio. Y las consecuencias se extienden durante años. El modelo correcto es el que tiene capacidad suficiente para tu tarea, latencia aceptable para tu caso de uso, coste sostenible a tu volumen proyectado, y opciones de privacidad compatibles con tus obligaciones regulatorias. No es el que tiene el mejor bénchmark general.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: las arquitecturas bien diseñadas abstraen el proveedor subyacente desde el día cero. lait ele ele eme, lang chein, LlamaIndex: son capas de abstracción que te permiten cambiar de proveedor sin reescribir código. Eso reduce el lock-in y te permite aprovechar la competencia entre proveedores. Y te permite usar el modelo más barato para tareas simples y reservar el modelo más potente solo cuando la calidad lo requiere.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: para datos sensibles, el self-hosting de modelos de pesos abiertos puede ser la única opción viable. Y a escala, también la más económica. Llama, Mistral, Qwen: son modelos con capacidades que hace dos años solo tenían los proveedores comerciales. Pero requieren hardware, capacidad técnica, y mantenimiento. No es trivial. Pero para hospitales, bancos, firmas legales, o cualquier organización con obligaciones regulatorias estrictas, puede ser la única forma de cumplir con la ley sin renunciar a la inteligencia artificial.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo capítulo del módulo cero vamos a hablar de algo que suena aburrido pero que es crítico: gobernanza de inteligencia artificial. Cómo se estructura un comité de gobernanza, qué decisiones tiene que tomar, y por qué las empresas que no tienen gobernanza formal van a tener problemas regulatorios muy serios en dos mil veintiseis cuando entre en vigor el grueso del AI Act europeo.
+
+<break time="500ms"/>
+IAGO: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [pausa para validación técnica]

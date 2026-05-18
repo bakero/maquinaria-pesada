@@ -1,0 +1,9 @@
+Aunque parezca contraintuitivo, pedirle a un modelo que razone paso a paso antes de responder mejora drásticamente su precisión. Eso es chain-of-thought: una técnica de prompting que instruye al modelo a mostrar su razonamiento intermedio en lugar de saltar directo a la conclusión.
+
+Sin chain-of-thought, un modelo puede cometer errores lógicos por prisa. Con ella, expone cada paso del pensamiento, lo que reduce alucinaciones y mejora tareas complejas como matemáticas, lógica y análisis.
+
+Un ejemplo: en lugar de preguntar "¿Cuánto es cuarenta y siete más treinta y ocho?", pides "Explica cómo sumas cuarenta y siete más treinta y ocho paso a paso". El modelo desglosa: primero unidades, luego decenas, luego suma parciales. Eso ancla su razonamiento y minimiza errores.
+
+Es especialmente poderoso en problemas que requieren múltiples pasos de deducción. Muchos fallos de IA ocurren porque el modelo no verbaliza su lógica intermedia.
+
+Más sobre chain-of-thought en el episodio T de MaquinarIA Pesada.
