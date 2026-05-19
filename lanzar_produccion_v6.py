@@ -50,6 +50,9 @@ def _run(kind: str, args: argparse.Namespace, repo_root: Path):
 
 
 def main(argv: list[str] | None = None) -> int:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("lanzar_produccion_v6")
+
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--kind", required=True, choices=["M", "T", "S"])
     ap.add_argument("--ep", required=True, help="id del episodio (M3, M3_T2, S1_RAG)")
@@ -61,22 +64,33 @@ def main(argv: list[str] | None = None) -> int:
 
     repo_root = args.repo_root.resolve()
     print(f"\n=== Generando {args.kind} · {args.ep} ===")
+    log.step("plan", kind=args.kind, ep=args.ep, dry_run=args.dry_run)
 
+    log.step("produce", kind=args.kind, ep=args.ep)
     result = _run(args.kind, args, repo_root)
     gen = result.generation
     print(f"  Modelo:          {gen.model}")
     print(f"  Tokens input:    {gen.input_tokens}")
     print(f"  Tokens output:   {gen.output_tokens}")
     print(f"  Coste estimado:  {gen.cost_usd:.4f} USD")
+    log.info("generación completada",
+             model=gen.model, tokens_in=gen.input_tokens,
+             tokens_out=gen.output_tokens, cost_usd=round(gen.cost_usd, 4))
     if result.used_retry:
         rg = result.retry_generation
+        log.retry(attempt=2, reason="validation_hard_fail",
+                  extra_tokens_out=rg.output_tokens, extra_cost_usd=round(rg.cost_usd, 4))
         print(f"  Retry aplicado:  +{rg.output_tokens} tokens output, "
               f"+{rg.cost_usd:.4f} USD")
     if not gen.ok:
+        log.error("generación falló", error=str(gen.error)[:200])
         print(f"  ERROR generación: {gen.error}")
         return 2
 
+    log.step("validate")
     summary = summarize(result.validation_results)
+    log.info("validación", passed=summary["passed"], total=summary["total"],
+             hard_failed=summary["hard_failed"], soft_failed=summary["soft_failed"])
     print(f"  Validación:      {summary['passed']}/{summary['total']} reglas "
           f"OK (hard-fail: {summary['hard_failed']}, soft-warn: "
           f"{summary['soft_failed']})")
@@ -86,10 +100,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.dry_run:
         print("  [dry-run] guion NO guardado")
+        log.info("dry-run · guion no guardado")
         return 0 if not summary["blocking"] else 1
 
+    log.step("save")
     out = _save_script(result.final_text, args.ep, repo_root)
     print(f"  Guion guardado:  {out.relative_to(repo_root).as_posix()}")
+    if summary["blocking"]:
+        log.warn("guion guardado con hard-fails de validación", path=str(out))
+    else:
+        log.ok("guion guardado", path=str(out))
     return 0 if not summary["blocking"] else 1
 
 
