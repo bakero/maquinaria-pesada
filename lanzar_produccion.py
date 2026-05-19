@@ -19,7 +19,7 @@ Cada llamada usa el generador especialista correspondiente
   - valida con el validador del formato,
   - reintenta con feedback explícito si hay hard-fail,
   - registra la corrida en `costes_generacion.log`,
-  - guarda el guion final en `Guiones/<ep>.md`.
+  - guarda el guion final en `Guiones/<ep>.txt`.
 """
 from __future__ import annotations
 
@@ -31,7 +31,18 @@ from validators.result import summarize
 
 
 def _save_script(text: str, ep: str, repo_root: Path) -> Path:
-    out = repo_root / "Guiones" / f"{ep}_v6.md"
+    """Guarda el guion en `Guiones/<ep>.txt`.
+
+    Nomenclatura canónica por tipo:
+      - M: `M{N}.txt`              (p. ej. `M3.txt`)
+      - T: `M{N}_T{K}.txt`         (p. ej. `M3_T2.txt`)
+      - S: `S{N}_{term}.txt`       (p. ej. `S1_RAG.txt`)
+
+    El `--ep` ya viene formateado correctamente por el caller. El guion se
+    guarda como texto plano (.txt) porque va al TTS y los marcadores `# X`
+    son estructurales — no markdown semántico. Ver `GENERACION.md`.
+    """
+    out = repo_root / "Guiones" / f"{ep}.txt"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")
     return out

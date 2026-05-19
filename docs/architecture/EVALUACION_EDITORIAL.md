@@ -22,8 +22,7 @@ técnicas ya existentes en el repositorio.
                        ▼
         ┌──────────────────────────────────────────────┐
         │  Capa 2 — Validación técnica externa         │
-        │  validar_episodio_v6.py + validators/*       │
-        │  podcast_spec.validate_script_text (legacy)  │
+        │  validar_episodio.py + validators/*          │
         │  - 54+ checks HARD/SOFT                      │
         │  - frases canónicas, secciones, balances,    │
         │    blacklists, expansión de siglas...        │
@@ -141,7 +140,7 @@ hacia el otro lado (cubrir reglas obsoletas que ya no existen).
 |---|---|---|
 | `costes_generacion.log` | capa 1 (`anthropic_client.track_cost`) | CSV |
 | `logs/episode_state/{ep}.json` | `episode_state.py` durante producción audio | JSON |
-| Reporte de validación técnica | `validar_episodio_v6.py` | stdout + exit code |
+| Reporte de validación técnica | `validar_episodio.py` | stdout + exit code |
 | Reporte editorial | `evaluador_editorial.py` (capa 3) | Markdown / JSON |
 
 El reporte editorial JSON está pensado para consumo programático futuro

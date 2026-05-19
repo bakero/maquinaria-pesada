@@ -50,7 +50,7 @@ def fake_repo(tmp_path, monkeypatch):
         f"{today}T10:00:01 [INFO ] run=ccc333 script=s_generator.py pid=10200 | paso → iterate step=iterate term=RAG",
         f"{today}T10:00:05 [INFO ] run=ccc333 script=s_generator.py pid=10200 | AI call → generate_short model=claude-haiku-4-5 purpose=short",
         f"{today}T10:00:09 [OK   ] run=ccc333 script=s_generator.py pid=10200 | AI call ok → generate_short model=claude-haiku-4-5 ms=4200 tokens_in=500 tokens_out=180",
-        f"{today}T10:00:10 [OK   ] run=ccc333 script=s_generator.py pid=10200 | short guardado path=Guiones/S1_RAG_v6.md",
+        f"{today}T10:00:10 [OK   ] run=ccc333 script=s_generator.py pid=10200 | short guardado path=Guiones/S1_RAG.txt",
         f"{today}T10:00:11 [END  ] run=ccc333 script=s_generator.py pid=10200 | ejecución completada status=ok elapsed_s=11.4 out_lines=8 err_lines=0",
     ]
     log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")

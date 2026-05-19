@@ -502,7 +502,7 @@ Para cada fichero .txt en Guiones/:
 Al final, si pasé --corpus, ejecuta también el prompt del §6.2 sobre el
 conjunto y añade la sección AUDITORÍA DE CORPUS.
 
-NO valides reglas técnicas — para eso uso validators/ y validar_episodio_v6.py.
+NO valides reglas técnicas — para eso uso validators/ y validar_episodio.py.
 NO modifiques los guiones.
 NO inventes datos.
 NO juzgues la frase canónica del cierre.
@@ -520,7 +520,7 @@ Sé directo, sin "¡excelente!" ni "mucho potencial".
   `cierre` solo evalúa cómo se integra la intervención previa (CTA M /
   puente T) con esa frase canónica.
 - **No mide audio.** Es evaluación textual del guion; el audio se valida
-  con `validar_episodio_v6.py`.
+  con `validar_episodio.py`.
 - **No predice métricas reales** de audiencia.
 - **No reemplaza el juicio editorial humano final.** Es panel asesor, no
   comité de aprobación.

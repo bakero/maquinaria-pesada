@@ -1444,7 +1444,7 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
         tokens.add(f"--ep {eid}")
         tokens.add(f"ep={eid}")        # estructurados (paso → kind=S ep=S1)
         tokens.add(f"{eid}_")
-        # Su guion canónico vive en Guiones/S{N}_<slug>_v6.md
+        # Su guion canónico vive en Guiones/S{N}_<slug>.txt
         tokens.add(f"/{eid}_")
 
     # Patrón regex con word-boundary para evitar M3 → M30.

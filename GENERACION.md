@@ -3,11 +3,9 @@
 Mapa único y canónico de generación de guiones de MaquinarIA Pesada. Si
 tienes que tocar la generación, empieza aquí.
 
-> **Versiones**: este documento describe la única versión vigente del
-> pipeline. No hay "v5/v6/v7" en lo que se ejecuta hoy. Los scripts top-level
-> con sufijo numérico (`lanzar_produccion_v6.py`, `validar_episodio_v6.py`)
-> son nombres heredados a la espera de un rename mecánico; el código que
-> ejecutan ya es el único pipeline activo.
+> **Sin versiones**: este documento describe la única versión vigente del
+> pipeline. Los scripts top-level no llevan sufijo numérico ni los guiones
+> tampoco. Todo lo que termina en `_v4/_v5/_v6` está retirado (ver §8).
 
 ---
 
@@ -17,24 +15,24 @@ Toda generación de episodios pasa por estos dos scripts:
 
 | Acción | Script | Flags clave |
 |---|---|---|
-| Generar guion | `lanzar_produccion_v6.py` | `--kind {M,T,S} --ep <id> [--term <slug> para S]` |
-| Validar guion | `validar_episodio_v6.py` | `--kind {M,T,S} --ep <id> --guion Guiones/<id>_v6.md` |
+| Generar guion | `lanzar_produccion.py` | `--kind {M,T,S} --ep <id> [--term <slug> para S]` |
+| Validar guion | `validar_episodio.py` | `--kind {M,T,S} --ep <id> --guion Guiones/<id>.txt` |
 
 ```bash
 # Episodio de módulo
-python lanzar_produccion_v6.py --kind M --ep M3
-python validar_episodio_v6.py  --kind M --ep M3 --guion Guiones/M3_v6.md
+python lanzar_produccion.py --kind M --ep M3
+python validar_episodio.py  --kind M --ep M3 --guion Guiones/M3.txt
 
 # Episodio de tema
-python lanzar_produccion_v6.py --kind T --ep M3_T2
-python validar_episodio_v6.py  --kind T --ep M3_T2 --guion Guiones/M3_T2_v6.md
+python lanzar_produccion.py --kind T --ep M3_T2
+python validar_episodio.py  --kind T --ep M3_T2 --guion Guiones/M3_T2.txt
 
 # Short
-python lanzar_produccion_v6.py --kind S --ep S1_RAG --term RAG
-python validar_episodio_v6.py  --kind S --ep S1_RAG --guion Guiones/S1_RAG_v6.md
+python lanzar_produccion.py --kind S --ep S1_RAG --term RAG
+python validar_episodio.py  --kind S --ep S1_RAG --guion Guiones/S1_RAG.txt
 ```
 
-`lanzar_produccion_v6.py` delega cada `--kind` en el generador especialista
+`lanzar_produccion.py` delega cada `--kind` en el generador especialista
 del paquete `generadores/` (ver §3). Cada llamada:
 
 1. Lee las fuentes (PDF resumen/tema, glosario, fuentes-marco).
@@ -45,7 +43,7 @@ del paquete `generadores/` (ver §3). Cada llamada:
 6. Si hay HARD-FAIL, reintenta con feedback explícito desde
    `_RULE_ACTION_HINTS` en `generadores/base_generator.py`.
 7. Registra la corrida en `costes_generacion.log`.
-8. Guarda el guion final en `Guiones/<ep>_v6.md`.
+8. Guarda el guion final en `Guiones/<ep>.txt`.
 
 ---
 
@@ -85,7 +83,7 @@ editorial/                    # panel editorial multi-perspectiva (LLM)
   benchmark.py                  # mapa de referentes (Lex Fridman, Dot CSV, etc.)
   scoring.py                    # score ponderado + veredicto + asimetría de marca
   ...
-                              # CLI: python evaluador_editorial.py --file Guiones/M3_v6.md
+                              # CLI: python evaluador_editorial.py --file Guiones/M3.txt
 ```
 
 ---
@@ -105,7 +103,7 @@ editorial/                    # panel editorial multi-perspectiva (LLM)
   - PANORAMA → Yago lidera ≥60%.
   - DESTACADO → balance 35-65%.
   - APLICACION_PRACTICA → Maria 25-45%.
-- **Salida**: `Guiones/M{n}_v6.md`.
+- **Salida**: `Guiones/M{n}.txt` (p. ej. `Guiones/M3.txt`).
 
 ### 3.2 T — Episodio de tema (~25-28 min)
 
@@ -120,7 +118,7 @@ editorial/                    # panel editorial multi-perspectiva (LLM)
   - PANORAMA → Yago ≥60%, LIMITES → Yago ≥50%.
   - COMO → balance 35-65%.
   - CASOS → Maria ≥55% con ≥2 empresas con nombre propio.
-- **Salida**: `Guiones/M{n}_T{k}_v6.md`.
+- **Salida**: `Guiones/M{n}_T{k}.txt` (p. ej. `Guiones/M3_T2.txt`).
 
 ### 3.3 S — Short de 60-90s
 
@@ -139,7 +137,7 @@ editorial/                    # panel editorial multi-perspectiva (LLM)
   H3 (pregunta) — HARD-FAIL si no encaja.
 - **Cierre**: frase canónica literal:
   > *"Más sobre [tema] en el episodio T de MaquinarIA Pesada."*
-- **Salida**: `Guiones/S{n}_{term}_v6.md`.
+- **Salida**: `Guiones/S{n}_{term}.txt` (p. ej. `Guiones/S1_RAG.txt`).
 
 > Los tres tipos comparten arquitectura, fuentes y validador-pipeline. Lo
 > que cambia es la spec y el prompt del generador. No hay un
@@ -171,7 +169,7 @@ guion .txt o .md
       ▼
 ┌────────────────────────────────────────────────────────────┐
 │ CAPA 1 — Validación técnica (HARD-FAIL bloquea)            │
-│ validar_episodio_v6.py + validators/                        │
+│ validar_episodio.py + validators/                           │
 │ ~54 reglas:                                                 │
 │  · estructura, secciones, word count, frases canónicas      │
 │  · reparto Yago/Maria por bloque                            │
@@ -183,7 +181,7 @@ guion .txt o .md
       ▼
 ┌────────────────────────────────────────────────────────────┐
 │ CAPA 2 — Auditor mecánico opcional                          │
-│ python -m evaluador --kind M --files Guiones/M3_v6.md       │
+│ python -m evaluador --kind M --files Guiones/M3.txt         │
 │ Reportes en markdown / JSON / terminal. Mismas reglas       │
 │ técnicas que la capa 1 pero formato batch + rendering.      │
 └────────────────────────────────────────────────────────────┘
@@ -191,7 +189,7 @@ guion .txt o .md
       ▼
 ┌────────────────────────────────────────────────────────────┐
 │ CAPA 3 — Panel editorial (no técnico)                       │
-│ python evaluador_editorial.py --file Guiones/M3_v6.md       │
+│ python evaluador_editorial.py --file Guiones/M3.txt         │
 │ 5 perspectivas: productor, marca, oyente, experto, SEO.     │
 │ Score 1-10 + veredicto PUBLICAR/REVISAR/BLOQUEAR.           │
 │ Asimetría: 1 crítico en MARCA = BLOQUEAR.                   │
@@ -242,27 +240,26 @@ intencional. Ver `PODCAST_MASTER_SPEC.md §13.1`.
 
 ## 8. Scripts legacy retirados
 
-Los siguientes scripts top-level **están retirados** y disparan
-`SystemExit(2)` con un mensaje de redirección. No los uses:
+Los siguientes scripts top-level **fueron borrados** del repo (eran v5
+con sufijo o utilidades manuales sobre guiones pre-v5). No los uses,
+no existen:
 
-| Legacy | Reemplazo |
+| Script borrado | Reemplazo canónico |
 |---|---|
-| `generar_guion.py` | `python lanzar_produccion_v6.py --kind M --ep M<N>` |
-| `generar_guion_t.py` | `python lanzar_produccion_v6.py --kind T --ep M<N>_T<K>` |
-| `lanzar_produccion.py` | `python lanzar_produccion_v6.py` |
-| `validar_episodio.py` | `python validar_episodio_v6.py --kind ... --ep ... --guion ...` |
+| `generar_guion.py` | `python lanzar_produccion.py --kind M --ep M<N>` |
+| `generar_guion_t.py` | `python lanzar_produccion.py --kind T --ep M<N>_T<K>` |
+| `lanzar_produccion.py` (versión v5) | `python lanzar_produccion.py --kind {M,T,S} --ep <id>` |
+| `validar_episodio.py` (versión v5) | `python validar_episodio.py --kind ... --ep ... --guion ...` |
+| `fix_guiones_v4.py` | utilidad manual, sin reemplazo (no se necesita con el nuevo pipeline) |
+| `rebalance_blocks.py` | utilidad manual, sin reemplazo |
+| `normalizar_guiones.py` | utilidad manual, sin reemplazo |
+| `producir_episodio.py` | `lanzar_produccion.py` + `generar_episodio_v2.py` |
+| `run_iteration.py` | `lanzar_guiones.py` |
 
-También son legacy (utilidades manuales sobre guiones ya escritos, no
-parte del pipeline activo): `fix_guiones_v4.py`, `rebalance_blocks.py`,
-`normalizar_guiones.py`. ⚠️ `normalizar_guiones.py` genera estructura
-**pre-v5** (`BLOQUE_1..4`, `INSERCION`) incompatible con los validadores
-actuales. No usar sobre guiones vigentes.
-
-> Próximo PR de limpieza: renombrar `lanzar_produccion_v6.py` →
-> `lanzar_produccion.py` y `validar_episodio_v6.py` → `validar_episodio.py`
-> tras eliminar los scripts legacy y actualizar las 29 referencias en
-> `cockpit/connectors/pipelines/`, docs y daylog. Mantener el sufijo
-> `_v6` hasta entonces evita rupturas.
+Los nombres de los pipelines vigentes (`lanzar_produccion.py`,
+`validar_episodio.py`) son los **únicos** y **no llevan sufijo de versión**.
+Si alguien menciona `lanzar_produccion_v6.py` o `validar_episodio_v6.py`,
+está mirando docs anteriores: el rename mecánico ya se hizo.
 
 ---
 

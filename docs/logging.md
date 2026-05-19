@@ -232,7 +232,7 @@ de pasos por entrypoint:
 | `generar_episodio_v2.py` | `load_script`, `audio`, `render` |
 | `validar_episodio.py` | `load_script`, `validate` |
 | `produce_pending.py` | `scan_pending`, `produce` |
-| `lanzar_produccion_v6.py` | `plan`, `produce` |
+| `lanzar_produccion.py` | `plan`, `produce` |
 | `entrenar_v6.py` | `iterate` |
 | `dual_debate.py` | `debate` |
 | `evaluador/cli.py` | `discover`, `evaluate` |
