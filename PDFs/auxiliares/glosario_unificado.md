@@ -3,10 +3,26 @@
 Definiciones canónicas de términos técnicos del corpus del máster.
 Cualquier término que aparezca en un guion Y esté aquí debe usar esta definición.
 
-Cada entrada incluye una línea `**Fuentes:**` con los PDFs donde aparece el concepto,
-en formato `MX_TY` (módulo X, tema Y) o `MX_RESUMEN` (resumen del módulo X).
-Esta línea es de lectura programática: `generar_guion.py` y `validar_episodio.py` la
-parsean para alimentar y medir la cobertura de conceptos en los guiones.
+Cada entrada puede incluir las siguientes líneas estructuradas (lectura
+programática para `generar_guion.py`, `validar_episodio.py`, validators):
+
+- `**Fuentes:** M3_T1, M3_T2, M5_RESUMEN, base`
+  PDFs donde aparece el concepto. Formato `MX_TY` (módulo X, tema Y) o
+  `MX_RESUMEN` (resumen del módulo X).
+
+- `**S:** N`  *(opcional)*
+  Número de orden de publicación del Short asociado al término. Lo asigna
+  `scripts/seleccionar_y_ordenar_shorts.py` por score.
+
+- `**ES:** generación aumentada por recuperación`  *(añadido v6.1, 2026-05-19)*
+  Expansión castellana de la sigla/nombre inglés. Cuando exista, el validador
+  exige que el guion la incluya en aposición con comas la **primera vez que
+  aparezca la sigla** en el texto hablado. Ejemplo:
+  > `"los LLM, modelos de lenguaje grandes, han revolucionado..."`
+  Si una entrada NO tiene campo `**ES:**`, no se exige expansión (rollout
+  gradual). Se va completando entrada a entrada según se reescriba el
+  glosario. Ver `EVALUADOR_EDITORIAL_GUIONES.md §11.5` y
+  `PODCAST_MASTER_SPEC.md §13.1`.
 
 ---
 
@@ -20,6 +36,7 @@ Abreviatura canónica en el podcast: **I.A.** (con puntos).
 ## LLM (Large Language Model)
 **Fuentes:** M0_T1, M0_T2, M0_T3, M0_T4, M0_RESUMEN, M5_T2, M5_T3, M5_RESUMEN
 **S:** 23
+**ES:** modelo de lenguaje grande
 Modelo de lenguaje de gran escala entrenado sobre corpus masivos de texto.
 Genera texto prediciendo el siguiente token dado un contexto previo.
 
@@ -38,6 +55,7 @@ Unidad mínima de procesamiento de un LLM. Aproximadamente 0.75 palabras en ingl
 ## RAG (Retrieval-Augmented Generation)
 **Fuentes:** M0_T1, M0_T2, M0_T4, M0_T5, M1_T7, M1_T11, M1_RESUMEN, M3_RESUMEN, M5_T3, M5_T4, M5_T8, M5_RESUMEN, M7_T1, M7_T2, M7_T3, M7_T4, M7_T5, M7_T6, M7_T7, M7_T8, M7_RESUMEN, M8_T2, M9_T1, M9_T4, M9_T5, M9_T6, M9_T7, M9_RESUMEN, M12_T1, M12_T3, M12_T5, M14_T1, M14_T2, M14_T4, M14_T6
 **S:** 1
+**ES:** generación aumentada por recuperación
 Técnica que combina recuperación de documentos relevantes con generación de texto.
 El modelo accede a una base de conocimiento externa en el momento de la inferencia.
 
@@ -62,6 +80,7 @@ para alcanzar un objetivo, usando herramientas y retroalimentación del entorno.
 ## Chain-of-Thought (CoT)
 **Fuentes:** M1_T4, M1_T12, M1_RESUMEN, M5_T8, M6_T1, M6_T2, M6_T3, M6_T4, M6_T5, M6_T6, M6_T9, M6_RESUMEN
 **S:** 9
+**ES:** cadena de pensamiento
 Técnica de prompting que instruye al modelo a razonar paso a paso antes de responder.
 Mejora la precisión en tareas de razonamiento complejo.
 
@@ -85,6 +104,7 @@ Generación de información factualmente incorrecta pero presentada con confianz
 por un LLM. Efecto emergente del entrenamiento por predicción de tokens.
 
 ## RLHF (Reinforcement Learning from Human Feedback)
+**ES:** aprendizaje por refuerzo con retroalimentación humana
 **Fuentes:** M2_T4, M2_T8, M3_T1, M3_RESUMEN, M4_T5, M4_RESUMEN, M5_T3, M5_T8
 **S:** 11
 Técnica de alineación que usa feedback humano para entrenar un modelo de recompensa

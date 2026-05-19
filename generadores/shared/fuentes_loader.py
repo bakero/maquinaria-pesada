@@ -22,6 +22,8 @@ _DEFAULT_GLOSARIO = (
 HEADING_RE = re.compile(r"^##\s+(?P<name>[^\n]+?)\s*$", re.MULTILINE)
 FUENTES_LINE_RE = re.compile(r"^\*\*Fuentes:\*\*\s+(?P<src>[^\n]+)$", re.MULTILINE)
 S_LINE_RE = re.compile(r"^\*\*S:\*\*\s+(?P<n>\d+)\s*$", re.MULTILINE)
+# v6.1 — Expansión castellana del término (siglas/anglicismos).
+ES_LINE_RE = re.compile(r"^\*\*ES:\*\*\s+(?P<es>[^\n]+)$", re.MULTILINE)
 
 
 @dataclass
@@ -42,6 +44,7 @@ class GlosarioEntry:
     fuentes: list[GlosarioFuente] = field(default_factory=list)
     s_number: int | None = None        # número de orden de publicación del Short
     definicion: str = ""
+    expansion_es: str | None = None    # v6.1 — expansión castellana al primer uso
 
     @property
     def modulos_distintos(self) -> set[str]:
@@ -50,6 +53,41 @@ class GlosarioEntry:
     @property
     def aparece_en_resumen(self) -> bool:
         return any(f.es_resumen for f in self.fuentes)
+
+    @property
+    def bilingual_split(self) -> str | None:
+        """Si el heading tiene formato 'X / Y' devuelve Y (la traducción).
+
+        Permite usar el segundo segmento del heading bilingüe como expansión
+        castellana implícita cuando no hay campo `**ES:**` explícito.
+        Ej: 'Hallucination / Alucinación' → 'Alucinación'.
+        """
+        parts = [p.strip() for p in self.name.split("/")]
+        if len(parts) == 2 and parts[1]:
+            return parts[1]
+        return None
+
+    @property
+    def expansion_castellana(self) -> str | None:
+        """Expansión castellana efectiva: campo `**ES:**` si existe, si no,
+        segundo segmento del heading bilingüe. None si nada disponible.
+        """
+        if self.expansion_es:
+            return self.expansion_es
+        return self.bilingual_split
+
+    @property
+    def needs_first_use_expansion(self) -> bool:
+        """¿Esta entrada debe expandirse al primer uso en un guion?
+
+        Sí cuando hay sigla canónica entre paréntesis o cuando el nombre es
+        un anglicismo evidente. En la práctica: hay expansión castellana
+        disponible (campo `**ES:**` o heading bilingüe) Y el término tiene
+        sigla o lleva paréntesis con la versión extendida.
+        """
+        return (self.expansion_castellana is not None) and (
+            self.sigla is not None or "/" in self.name
+        )
 
 
 def _parse_fuentes_line(src: str) -> list[GlosarioFuente]:
@@ -99,9 +137,13 @@ def parse_glosario(text: str) -> list[GlosarioEntry]:
         sm = S_LINE_RE.search(body)
         if sm:
             entry.s_number = int(sm.group("n"))
+        em = ES_LINE_RE.search(body)
+        if em:
+            entry.expansion_es = em.group("es").strip()
         # Definición = todo el body sin las líneas estructuradas.
         def_text = FUENTES_LINE_RE.sub("", body)
         def_text = S_LINE_RE.sub("", def_text)
+        def_text = ES_LINE_RE.sub("", def_text)
         entry.definicion = def_text.strip()
         entries.append(entry)
     return entries

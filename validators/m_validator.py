@@ -266,4 +266,8 @@ def validate(script_text: str, episode_id: str,
     results.append(check_aviso_duration(parts))
     # Anti-pingpong en bloques liderados
     results.append(bv.check_pingpong(parts, "BLOQUE_PANORAMA", "IAGO"))
+    # v6.1 — Expansión castellana de siglas al primer uso (regla §13.1).
+    from validators.shared import glossary_expansion
+    results.append(glossary_expansion.check_glossary_term_first_use_expanded(
+        parts.full_text))
     return results

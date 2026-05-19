@@ -277,3 +277,94 @@ Etiquetas TTS:
 }
 ```
 <!-- PODCAST_SPEC_JSON_END -->
+
+---
+
+## §13. Reglas editoriales (extensión v6.1 — 2026-05-19)
+
+Las siguientes reglas extienden el spec base y se aplican a M, T y S salvo
+indicación específica. Son HARD-FAIL del validador técnico.
+
+### §13.1 Expansión castellana de siglas al primer uso
+
+Toda sigla canónica del glosario unificado debe **expandirse en castellano la
+primera vez que aparezca en el guion**, en formato aposición con comas:
+
+- ✓ `"los LLM, modelos de lenguaje grandes, han revolucionado..."`
+- ✓ `"el RAG, generación aumentada por recuperación, permite..."`
+- ✓ `"el MLOps, operaciones de aprendizaje automático, se diferencia..."`
+- ✗ `"los LLM han revolucionado..."` (sin expansión al primer uso)
+- ✗ `"los LLM, large language models, han..."` (expansión inglesa, NO castellana)
+- ✗ `"los LLM (modelos de lenguaje grandes) han..."` (paréntesis hablado, NO aposición con comas)
+
+**Después del primer uso**, ya solo se nombra la sigla.
+
+**Fuente de verdad**: campo `**ES:**` de cada entrada del glosario
+`PDFs/auxiliares/glosario_unificado.md`. Ejemplo:
+
+```markdown
+## RAG (Retrieval-Augmented Generation)
+**ES:** generación aumentada por recuperación
+**Fuentes:** M3_T1, M7_RESUMEN
+...
+```
+
+**Aplica a M y T.** No aplica a S (el Short cubre un único término que ya
+viene con la definición canónica completa en el body).
+
+**Severidad**: HARD-FAIL (`glossary_term_first_use_expanded`).
+
+### §13.2 Blacklists editoriales adicionales
+
+Además de las 8 interjecciones-coro de la `BLACKLIST_INTERJECTIONS`
+(§audio_rules v6), se añaden tres listas más, todas HARD-FAIL técnico.
+
+**Detección**: match al inicio de intervención (tras opcional `[tag]`) en
+todos los casos. Las frases de 1-2 palabras requieren además que la
+intervención sea corta (≤6 palabras), igual que las interjecciones-coro;
+las frases de ≥3 palabras se detectan por inicio aunque la intervención sea
+larga.
+
+**BLACKLIST_AI_BRO_PHRASES** (`blacklist_ai_bro`):
+```
+"en el mundo actual de la ia"
+"sin más preámbulos"
+"es importante destacar que"
+"cabe mencionar"
+```
+
+**BLACKLIST_COACH_PHRASES** (`blacklist_coach`):
+```
+"excelente pregunta"
+"espero que esto te ayude"
+"adelante con tu proyecto"
+```
+(Nota: `"tienes toda la razón"` ya estaba cubierta por
+`BLACKLIST_INTERJECTIONS`).
+
+**BLACKLIST_CLIFFHANGER_PHRASES** (`blacklist_cliffhanger`):
+```
+"stay tuned"
+"lo veremos en próximos episodios"
+```
+Si una intervención remite a un episodio T concreto del módulo, la frase
+debe nombrar el tema explícitamente (p. ej. `"...lo desarrollamos en el T
+sobre limitaciones de LLMs del módulo 1"`); el cliffhanger genérico sin
+referencia es HARD-FAIL.
+
+Estas listas se nutren con el tiempo a partir de patrones detectados durante
+la generación.
+
+### §13.3 Capa editorial complementaria
+
+Existe una segunda capa de evaluación NO técnica documentada en
+`EVALUADOR_EDITORIAL_GUIONES.md`. Esa capa juzga el guion como producto
+(marca, retención, rigor, distribución) y NO altera los HARD-FAIL técnicos.
+
+**Asimetría editorial**: un issue crítico en la perspectiva *Editor de
+marca* basta para que el panel emita veredicto `BLOQUEAR`, aunque el guion
+pase los 54 checks técnicos.
+
+La frase canónica del cierre (`Y hasta aqui ha llegado...`) sigue siendo
+HARD-FAIL técnico y el panel editorial NO la juzga.
+

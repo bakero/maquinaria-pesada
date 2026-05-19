@@ -51,6 +51,12 @@ Reglas duras de formato v6:
    - CUALQUIER meta-texto: NO escribas "Word count: 180" ni "✓" ni
      "Hook template: H1" ni "S3:" ni nada que no sea el texto narrado.
    - NO uses cabeceras de sección como `# HOOK`.
+   - Frases AI-bro: "En el mundo actual de la IA", "Sin más preámbulos",
+     "Es importante destacar que", "Cabe mencionar".
+   - Frases coach motivacional: "¡Excelente pregunta!", "Espero que esto
+     te ayude", "¡Adelante con tu proyecto!".
+   - Cliffhangers genéricos: "Stay tuned", "lo veremos en próximos
+     episodios" (el cierre canónico ya remite al T, no necesitas otro).
 7. "MaquinarIA Pesada" solo se menciona UNA vez, en el cierre canónico.
 8. Aviso de IA: NO se narra. Va en la descripción + texto en pantalla.
 9. Una idea técnica central, máximo un tecnicismo secundario aterrizado.

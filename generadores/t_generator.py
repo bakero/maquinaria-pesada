@@ -111,7 +111,38 @@ Reglas duras de formato v6:
     de papers acompañados de autor.
 24. NO incluyas APLICACION_PRACTICA — eso es exclusivo del M.
 
-25. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
+25. EXPANSIÓN CASTELLANA DE SIGLAS AL PRIMER USO (regla §13.1 v6.1):
+    Toda sigla canónica del glosario (LLM, RAG, GPT, MLOps, CoT, RLHF, RPA,
+    SVM, CNN, RNN, etc.) la PRIMERA vez que aparezca en el guion va
+    expandida en CASTELLANO, en aposición con comas:
+        ✓ "los LLM, modelos de lenguaje grandes, han revolucionado..."
+        ✓ "el RAG, generación aumentada por recuperación, permite..."
+        ✗ "los LLM han revolucionado..." (sin expansión al primer uso)
+        ✗ "los LLM, large language models, han..." (NO inglés)
+        ✗ "los LLM (modelos de lenguaje grandes) han..." (NO paréntesis)
+    Tras el primer uso, ya solo se nombra la sigla. La fuente canónica de
+    cada expansión está en el campo **ES:** del glosario unificado. Si la
+    primera mención cae en el HOOK o INTRO_SONIDO, la expansión se hace en
+    la PRIMERA mención del resto del guion (SALUDO, PANORAMA, etc.).
+
+26. BLACKLISTS EDITORIALES (regla §13.2 v6.1) — HARD-FAIL si una intervención
+    EMPIEZA con alguna de estas frases:
+    AI-BRO POMPOSO:
+      - "En el mundo actual de la IA..."
+      - "Sin más preámbulos..."
+      - "Es importante destacar que..."
+      - "Cabe mencionar..."
+    COACH MOTIVACIONAL:
+      - "¡Excelente pregunta!"
+      - "Espero que esto te ayude"
+      - "¡Adelante con tu proyecto!"
+    INTRIGA MANUFACTURADA:
+      - "Stay tuned"
+      - "lo veremos en próximos episodios" (sin nombrar el T concreto)
+    Si remites a otro T del módulo en CIERRE_FINAL, nómbralo:
+    "...y en el próximo T sobre [tema concreto] entramos en..."
+
+27. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
     Antes de devolver el guion, RECORRE mentalmente esta checklist:
     [ ] HOOK termina con "Esto es MaquinarIA Pesada. Arrancamos."
     [ ] HOOK lo abre el speaker correcto por paridad del nº de TEMA
@@ -140,6 +171,10 @@ Reglas duras de formato v6:
         en una misma intervención. Fusiona con conectores.
     [ ] TAGS TTS: usa SOLO [didactico], [analitico], [reflexivo], [claro],
         [explicativo], [curioso], [escéptico], [enfático].
+    [ ] SIGLAS EXPANDIDAS: cada sigla del glosario (LLM/RAG/GPT/etc.) va
+        expandida en castellano la 1ª vez en aposición con comas.
+    [ ] BLACKLISTS EDITORIALES: ninguna intervención empieza con frase
+        AI-bro, coach motivacional o cliffhanger artificial.
     Si alguna casilla falla, CORRIGE antes de devolver.
 
 Devuelve SOLO el guion.

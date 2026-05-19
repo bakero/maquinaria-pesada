@@ -217,6 +217,34 @@ _RULE_ACTION_HINTS: dict[str, str] = {
         "ACCIÓN: hay alguna intervención que supera el máximo permitido. "
         "Pártela en dos turnos del mismo speaker o redistribuye con un "
         "turno corto del otro en medio.",
+
+    # ---- v6.1 — reglas editoriales ----
+    "glossary_term_first_use_expanded":
+        "ACCIÓN: cada sigla del glosario (LLM, RAG, GPT, MLOps, CoT, RLHF, "
+        "etc.) debe expandirse en CASTELLANO la PRIMERA vez que aparezca en "
+        "el guion, en aposición con comas: 'los LLM, modelos de lenguaje "
+        "grandes, son...'. La expansión castellana exacta está en el campo "
+        "**ES:** del glosario unificado (PDFs/auxiliares/glosario_unificado.md). "
+        "Tras el primer uso ya solo se nombra la sigla. NO expandas en "
+        "inglés ('large language models') ni con paréntesis hablado.",
+
+    "blacklist_ai_bro":
+        "ACCIÓN: elimina las frases AI-bro pomposas al inicio de "
+        "intervención ('En el mundo actual de la IA', 'Sin más preámbulos', "
+        "'Es importante destacar que', 'Cabe mencionar'). Empieza la "
+        "intervención con contenido específico del tema, no con clichés de "
+        "divulgador genérico.",
+
+    "blacklist_coach":
+        "ACCIÓN: elimina las frases de coach motivacional ('¡Excelente "
+        "pregunta!', 'Espero que esto te ayude', '¡Adelante con tu "
+        "proyecto!'). MaquinarIA Pesada NO aplaude al oyente — es anti-marca.",
+
+    "blacklist_cliffhanger":
+        "ACCIÓN: elimina cliffhangers artificiales al inicio de intervención "
+        "('Stay tuned', 'lo veremos en próximos episodios' sin nombrar un "
+        "tema concreto). Si quieres remitir a un episodio T del módulo, "
+        "nómbralo: '...lo desarrollamos en el T sobre [tema concreto]'.",
 }
 
 

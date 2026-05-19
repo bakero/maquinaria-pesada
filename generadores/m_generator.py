@@ -117,7 +117,38 @@ Reglas duras de formato v6 — debes respetarlas todas:
     y "puede contener errores"; el aviso debe tener entre 45 y 75 palabras
     (18-25 segundos).
 
-24. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
+24. EXPANSIÓN CASTELLANA DE SIGLAS AL PRIMER USO (regla §13.1 v6.1):
+    Toda sigla canónica del glosario (LLM, RAG, GPT, MLOps, CoT, RLHF, RPA,
+    SVM, CNN, RNN, etc.) la PRIMERA vez que aparezca en el guion va
+    expandida en CASTELLANO, en aposición con comas:
+        ✓ "los LLM, modelos de lenguaje grandes, han revolucionado..."
+        ✓ "el RAG, generación aumentada por recuperación, permite..."
+        ✗ "los LLM han revolucionado..." (sin expansión al primer uso)
+        ✗ "los LLM, large language models, han..." (NO inglés)
+        ✗ "los LLM (modelos de lenguaje grandes) han..." (NO paréntesis)
+    Tras el primer uso, ya solo se nombra la sigla. La fuente canónica de
+    cada expansión está en el campo **ES:** del glosario unificado. Si la
+    primera mención cae en el HOOK o INTRO_SONIDO, la expansión se hace en
+    la PRIMERA mención del resto del guion (SALUDO, PANORAMA, etc.).
+
+25. BLACKLISTS EDITORIALES (regla §13.2 v6.1) — HARD-FAIL si una intervención
+    EMPIEZA con alguna de estas frases:
+    AI-BRO POMPOSO:
+      - "En el mundo actual de la IA..."
+      - "Sin más preámbulos..."
+      - "Es importante destacar que..."
+      - "Cabe mencionar..."
+    COACH MOTIVACIONAL:
+      - "¡Excelente pregunta!"
+      - "Espero que esto te ayude"
+      - "¡Adelante con tu proyecto!"
+    INTRIGA MANUFACTURADA:
+      - "Stay tuned"
+      - "lo veremos en próximos episodios" (sin nombrar el T concreto)
+    Si remites a un T del módulo, nómbralo: "...lo desarrollamos en el T
+    sobre [tema concreto] de este mismo módulo."
+
+26. ⚠️ PRE-CIERRE DE GUION — VERIFICACIÓN OBLIGATORIA antes de devolver:
     Antes de devolver el guion, RECORRE mentalmente la siguiente checklist:
     [ ] HOOK termina con "Esto es MaquinarIA Pesada. Arrancamos."
     [ ] HOOK lo abre el speaker correcto por paridad (M par→Maria, M impar→Yago).
@@ -143,6 +174,10 @@ Reglas duras de formato v6 — debes respetarlas todas:
         o usa frases medianas (15-25 palabras).
     [ ] TAGS TTS: usa SOLO [didactico], [analitico], [reflexivo], [claro],
         [explicativo], [curioso], [escéptico], [enfático]. Nada más.
+    [ ] SIGLAS EXPANDIDAS: cada sigla del glosario (LLM/RAG/GPT/etc.) va
+        expandida en castellano la 1ª vez en aposición con comas.
+    [ ] BLACKLISTS EDITORIALES: ninguna intervención empieza con frase
+        AI-bro, coach motivacional o cliffhanger artificial.
     Si alguna casilla falla, CORRIGE antes de devolver.
 
 Genera SOLO el guion en este formato, sin explicaciones ni preámbulos.
