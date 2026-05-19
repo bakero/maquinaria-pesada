@@ -94,20 +94,49 @@ def make_anthropic_client():
 def call_claude(
     client, model: str, system: str, user: str,
     max_tokens: int, temperature: float, source: str = "generar_guion.py",
+    purpose: str = "generation",
 ) -> tuple[str, object]:
     """Llama a Claude y devuelve (content_text, response).
 
     `source` identifica el script llamante en el tracker de uso de tokens.
+    `purpose` es la etiqueta de propósito que aparece en el día-log
+    (`extract_concepts`, `generate_block`, etc.).
+
+    Toda llamada queda trazada en `logs/run/maquinaria_*.log` vía
+    `cockpit.core.log_helpers.RunLogger.ai_call`: modelo, propósito, tokens
+    de entrada/salida, latencia y error (si lo hubo). Además se sigue
+    actualizando `logs/ai_usage.jsonl` con `track_anthropic`.
     """
     import time as _t
+    try:
+        from cockpit.core.log_helpers import get_run_logger as _glog
+        _logger = _glog(source.replace(".py", ""))
+    except Exception:  # noqa: BLE001 - el logging jamás rompe la llamada
+        _logger = None
+
     _t0 = _t.monotonic()
-    response = client.messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-    )
+    if _logger is not None:
+        _ai_ctx = _logger.ai_call(model=model, purpose=purpose, source=source)
+    else:
+        from contextlib import nullcontext as _nullcontext
+        _ai_ctx = _nullcontext()
+
+    with _ai_ctx as _call:
+        response = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system=system,
+            messages=[{"role": "user", "content": user}],
+        )
+        if _call is not None:
+            usage = getattr(response, "usage", None)
+            if usage is not None:
+                _call.set_tokens(
+                    in_=getattr(usage, "input_tokens", None),
+                    out_=getattr(usage, "output_tokens", None),
+                )
+
     try:
         from cockpit.core.usage_tracker import track_anthropic
         track_anthropic(

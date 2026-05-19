@@ -284,5 +284,9 @@ def validate(script_text: str, episode_id: str,
     results.append(audio_rules.check_digits_in_speech([script_text]))
     # apellidos inventados
     results.append(canonical_phrases.check_no_surnames(script_text))
+    # Regla pedagogica SOFT: primera (y unica) mencion del termino expandida.
+    # Critica en S porque el Short ES sobre ese termino.
+    from validators.shared.pedagogy_check import check_first_mention_expansion
+    results.append(check_first_mention_expansion(script_text))
 
     return results

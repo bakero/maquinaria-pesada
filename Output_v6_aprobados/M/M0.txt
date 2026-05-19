@@ -1,0 +1,124 @@
+# HOOK
+MARIA: [enfático] Ochenta y ocho por ciento de las organizaciones usa inteligencia artificial en al menos una función de negocio. El mercado global supera los doscientos mil millones de dólares y crece más de un treinta y cinco por ciento cada año. Pero aquí está la trampa: la mayoría de esas empresas no entiende realmente qué está comprando, qué puede hacer con ello, ni cuándo va a fallar. La inteligencia artificial dejó de ser ciencia ficción para convertirse en infraestructura crítica, y la diferencia entre usarla bien o mal puede significar millones de euros en pérdidas o ventaja competitiva insalvable. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [natural] Música de introducción.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [cálido] Bienvenidos a MaquinarIA Pesada, el podcast del máster en inteligencia artificial donde cada episodio es un módulo completo de formación técnica y estratégica.
+
+<break time="500ms"/>
+IAGO: [conversacional] Hola a todos, soy Yago y junto a Maria vamos a recorrer desde los fundamentos hasta la implementación real de sistemas de inteligencia artificial en producción.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de empezar, un aviso importante: este contenido ha sido generado por un sistema automático de inteligencia artificial diseñado para crear episodios educativos sobre IA. Aunque revisamos el proceso, el contenido puede contener errores o imprecisiones. Os recomendamos contrastar siempre con fuentes adicionales y documentación oficial. Dicho esto, vamos al contenido.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Empecemos por el principio. Cuando hablamos de inteligencia artificial en dos mil veinticinco, no estamos hablando de una tecnología uniforme. Estamos hablando de un ecosistema completo de técnicas, arquitecturas y paradigmas que han evolucionado durante más de sesenta años. La historia de la IA es la historia de varias oleadas de expectativas, decepciones y renacimientos. El primer invierno de la IA llegó en los años setenta cuando los sistemas basados en reglas no pudieron escalar más allá de dominios muy específicos. El segundo invierno llegó en los ochenta cuando las redes neuronales de la época no podían entrenarse con los datos y el poder computacional disponibles.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué cambió para que saliéramos de esos inviernos?
+
+<break time="500ms"/>
+IAGO: [explicativo] Tres factores convergentes. Primero, la escala del poder computacional: las ge pe us y las te pe us permitieron entrenar modelos con miles de millones de parámetros durante semanas enteras. Segundo, la disponibilidad masiva de datos: internet produjo cantidades inimaginables de texto, imágenes, código y conversaciones que sirven de corpus de entrenamiento. Tercero, los avances arquitectónicos: la llegada de la arquitectura Transformer en dos mil diecisiete y los modelos fundacionales a partir de dos mil veinte demostraron capacidades de generalización que superan ampliamente lo que los sistemas anteriores podían hacer. El renacimiento de las redes neuronales profundas desde dos mil doce, impulsado por hardware ge pe u, unidad de procesamiento gráfico, y deitasets masivos, produjo avances espectaculares en visión por computadora, reconocimiento de voz y procesamiento del lenguaje natural.
+
+IAGO: [analítico] Pero aquí viene la parte crítica que muchas organizaciones no entienden. Toda la inteligencia artificial disponible hoy es IA estrecha. Son sistemas optimizados para una tarea o un conjunto de tareas relacionadas que no generalizan bien fuera de su dominio de entrenamiento. Un modelo de lenguaje puede escribir código y analizar contratos, pero no puede conducir un coche o controlar un robot físico directamente. Un sistema de visión por computadora entrenado para detectar tumores en radiografías no puede usarse para analizar imágenes de satélite sin reentrenamiento. La inteligencia artificial general, esa capacidad de razonar y aprender sobre cualquier dominio con la flexibilidad de la inteligencia humana, sigue siendo objeto de debate sobre cuándo y si llegará.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Entonces toda la IA que usamos es especializada?
+
+<break time="500ms"/>
+IAGO: [claro] Exacto. Y eso tiene implicaciones enormes para cómo diseñas soluciones. La distinción práctica más relevante para las organizaciones es entre IA discriminativa e IA generativa. La IA discriminativa son modelos que clasifican, predicen o detectan: machine learning clásico, redes neuronales de clasificación. Esta lleva décadas en producción y es la base de los sistemas de recomendación, detección de fraude y análisis predictivo. La IA generativa son modelos que generan nuevo contenido: texto, imágenes, código, audio, vídeo. Esta es el fenómeno de los últimos tres o cuatro años y es la que está produciendo la mayor disrupción en las formas de trabajar.
+
+IAGO: [didáctico] Ahora, la jerarquía técnica. Machine Learning es la disciplina que estudia cómo los sistemas aprenden de datos sin ser programados explícitamente. En lugar de escribir reglas, proporcionas ejemplos y el algoritmo infiere las reglas. Deep Learning es un subconjunto del machine learning que usa redes neuronales artificiales con muchas capas para aprender representaciones de los datos a múltiples niveles de abstracción. Los Large Language Models son redes neuronales profundas basadas en la arquitectura Transformer, entrenadas sobre cantidades masivas de texto para predecir el siguiente token en una secuencia. Esta capacidad de predicción de tokens emerge en comportamientos complejos: razonamiento, escritura, análisis y conversación.
+
+IAGO: [enfático] La jerarquía es importante. Todo ele ele eme, grandes modelos de lenguaje, es deep learning, todo deep learning es machine learning, y todo machine learning es IA. Pero no toda IA es deep learning: hay sistemas basados en reglas, en lógica simbólica, en algoritmos evolutivos. Y no todo machine learning es deep learning: algoritmos clásicos como regresión logística, random forests y XGBoost siguen siendo ampliamente usados en producción para muchos casos de uso. Elegir la herramienta correcta para cada problema requiere entender este mapa completo.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+MARIA: [claro] Vamos a destacar tres conceptos que son críticos para entender el momento actual. El primero es la brecha entre expectativas y realidad. Los modelos de lenguaje alucinan, inventan hechos con total confianza. Tienen sesgos heredados de sus datos de entrenamiento. No tienen acceso a información en tiempo real sin herramientas adicionales. No tienen persistencia de memoria entre conversaciones por defecto. Los sistemas agénticos fallan en el paso cuarenta y siete de un proceso de cincuenta pasos. La capacidad de distinguir entre lo que la IA puede hacer de forma fiable hoy, lo que puede hacer de forma probabilística y lo que todavía no puede hacer es una de las competencias más valiosas de cualquier profesional en dos mil veinticinco.
+
+<break time="500ms"/>
+IAGO: [analítico] El segundo concepto es la economía del razonamiento. Hoy los modelos pueden "pensar más" antes de responder, pero ese razonamiento adicional tiene un coste. En las a pe ies modernas aparecen tokens internos o presupuestos de deliberación adicionales a los tokens de entrada y salida. Esos tokens de razonamiento ocupan contexto y se facturan como tokens de salida. La pregunta empresarial es: ¿cuándo compensa usar más cómputo deliberativo? La respuesta es: solo cuando las evaluaciones demuestren una mejora real en precisión, seguridad o capacidad de planificación. No puedes permitir que todos los prompts usen razonamiento extendido porque el coste se dispara sin beneficio proporcional.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y el tercer concepto es el ecosistema de modalidades. La IA generativa en dos mil veinticinco abarca texto con modelos como ge pe te, modelo generativo preentrenado, cuatro, clod o Gemini. Abarca imágenes con modelos de difusión como DALL E, Midjourney o Stable Diffusion. Abarca código con GitHub copilot o Cursor. Abarca audio con ElevenLabs para síntesis de voz o Suno para música. Abarca vídeo con Sora de open ei ai o Runway. Y cada vez más, abarca sistemas multimodales que procesan y generan múltiples tipos de contenido simultáneamente. Cada modalidad tiene sus propias características técnicas, casos de uso y desafíos de implementación.
+
+<break time="500ms"/>
+IAGO: [enfático] Para las organizaciones, esto significa que la pregunta ya no es si usar IA. La pregunta es qué tipo de IA, para qué problema específico, con qué arquitectura, con qué nivel de supervisión humana, con qué controles de riesgo y con qué expectativas realistas de rendimiento. Ese es el salto mental que separa a las empresas que obtienen valor real de las que solo acumulan pilotos que nunca llegan a producción.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [conversacional] Vamos a ver cómo esto se traduce en una decisión real de arquitectura. Imagina que trabajas en una aseguradora que procesa miles de partes de siniestro al día. Cada parte incluye formularios, fotos del daño, informes periciales y comunicaciones con el cliente. Hasta ahora, un equipo humano revisa cada expediente, extrae información clave, clasifica la gravedad, verifica que la documentación esté completa y decide si el caso puede resolverse de forma automática o necesita revisión especializada. El proceso tarda entre dos y cinco días. La dirección quiere automatizar la parte repetitiva sin perder control ni aumentar el riesgo de fraude. La pregunta es: ¿qué tipo de IA necesitas y cómo la combinas para que funcione en producción? Este es el tipo de problema donde entender la taxonomía de la IA marca la diferencia entre una solución que funciona y un piloto que nunca escala.
+
+<break time="500ms"/>
+IAGO: [didáctico] La arquitectura correcta aquí es híbrida y combina varios paradigmas. Primer componente: un modelo de visión por computadora entrenado para detectar tipos de daño en imágenes. Esto es IA discriminativa clásica, una red neuronal convolucional o un transformer de visión que clasifica si el daño es estructural, superficial, por agua o por impacto. Este modelo se entrena con un deitaset, conjunto de datos, etiquetado de miles de fotos históricas y se evalúa en precisión, recall y casos de borde. No genera nada, solo clasifica. Segundo componente: un modelo de lenguaje que extrae entidades y relaciones de los formularios y los informes. Aquí puedes usar un ele ele eme con prompting estructurado o fain tiuning, ajuste fino del modelo, ligero para extraer fecha del siniestro, tipo de cobertura, importe reclamado, descripción del evento y datos del perito. El modelo convierte texto no estructurado en campos estructurados que alimentan el siguiente paso.
+
+IAGO: [analítico] Tercer componente: una capa simbólica de reglas de negocio. Aquí es donde entra el paradigma neuro-simbólico. La red neuronal ha identificado el daño y ha extraído los datos, pero la decisión final de si el expediente puede cerrarse automáticamente o necesita revisión humana no puede depender solo de probabilidades. Necesitas aplicar restricciones lógicas: si el importe supera cierto umbral, revisión obligatoria. Si la cobertura no está activa en la fecha del siniestro, rechazo automático. Si el tipo de daño detectado en la imagen no coincide con la descripción del formulario, escalado a fraude. Si faltan documentos obligatorios, petición automática al cliente. Estas reglas son auditable, explicables y modificables sin reentrenar modelos. La combinación de reconocimiento de patrones probabilístico con lógica simbólica es lo que hace la solución robusta.
+
+IAGO: [claro] Cuarto componente: un sistema de recuperación de información para casos similares. Antes de cerrar el expediente automáticamente, el sistema busca en una base vectorial de expedientes pasados si hay casos parecidos que terminaron en litigio, fraude detectado o reclamación del cliente. Si encuentra coincidencias por encima de cierto umbral de similitud, el expediente se marca para revisión. Esto es retrieval augmented generation aplicado a decisiones, no a generación de texto. Y quinto componente: un panel de supervisión humana donde los analistas ven los expedientes que el sistema no pudo resolver, con toda la información extraída ya estructurada, las imágenes anotadas y las reglas que activaron la escalada. El humano revisa, decide y, si corrige al sistema, esa corrección se registra para reentrenar los modelos en el siguiente ciclo.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Lo interesante de esta arquitectura es que no usa un solo tipo de IA. Combina visión, lenguaje, lógica simbólica y recuperación de información. Cada componente hace lo que mejor sabe hacer. La red neuronal reconoce patrones visuales y lingüísticos. La capa simbólica aplica restricciones de negocio. El sistema de recuperación aporta memoria institucional. Y el humano supervisa y corrige cuando el sistema no tiene confianza suficiente.
+
+<break time="500ms"/>
+IAGO: [enfático] Y eso es exactamente lo que separa una solución de producción de un experimento de laboratorio. En producción necesitas trazabilidad, control de versiones de modelos, monitorización de deriva de datos, auditoría de decisiones, gestión de errores y un plan de contingencia cuando el modelo falla. No basta con que el sistema funcione el noventa por ciento de las veces. Necesitas saber qué hacer con el diez por ciento restante y cómo mejorar continuamente sin romper lo que ya funciona. Esa es la ingeniería de sistemas de IA y es el tema central de los módulos siguientes de este máster.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Este módulo se apoya en varias fuentes clave que estructuran el campo. La primera es el paper de Vaswani y otros publicado en dos mil diecisiete, "Attention is All You Need", que introdujo la arquitectura Transformer y es la base técnica de todos los modelos de lenguaje actuales. Entender atención, posición y escalado es fundamental para entender por qué los ele ele emes funcionan como funcionan.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [didáctico] La segunda fuente es el bénchmark de currículos de programas de máster en inteligencia artificial de universidades como Carnegie Mellon, Stanford, Oxford, University College London y ETH Zurich. Estos programas comparten una estructura recurrente: fundamentos matemáticos, aprendizaje automático, procesamiento del lenguaje natural, visión por computadora, sistemas multiagente, despliegue seguro, ética y regulación. Ese consenso académico valida la estructura de contenidos que estamos siguiendo en este máster.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [analítico] La tercera fuente es la documentación técnica de proveedores como open ei ai y Google Cloud sobre modelos de razonamiento y presupuestos de tokens. open ei ai publicó en dos mil veinticuatro la especificación de reasoning tokens en su a pe i, interfaz de programación, donde los modelos generan tokens internos de deliberación que ocupan contexto y se facturan como output. Google Cloud documentó el concepto de thinking budget en modelos compatibles. Estas fuentes son críticas para entender la economía del razonamiento y diseñar políticas de uso eficiente en producción.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [reflexivo] La cuarta fuente es el material de investigación en sistemas neuro-simbólicos, que combina aprendizaje de patrones con lógica formal. Este paradigma híbrido es especialmente relevante para sectores regulados donde la trazabilidad y la auditabilidad son obligatorias. La capacidad de fusionar redes neuronales con restricciones lógicas mejora robustez, control y cumplimiento normativo.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [didáctico] Y la quinta fuente es el informe del McKinsey Global AI Survey de dos mil veinticuatro, que documenta que el ochenta y ocho por ciento de las organizaciones ha adoptado IA en al menos una función de negocio, y que el mercado global de IA supera los doscientos mil millones de dólares con una tasa de crecimiento anual compuesta proyectada por encima del treinta y cinco por ciento hasta dos mil treinta. Este contexto de mercado es esencial para entender por qué la adopción de IA es ahora una prioridad estratégica y no una opción táctica.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [enfático] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: toda la inteligencia artificial disponible hoy es IA estrecha, optimizada para tareas específicas que no generaliza fuera de su dominio de entrenamiento. No existe IA general en producción. Cuando diseñas una solución, estás eligiendo entre sistemas especializados y combinándolos para resolver un problema de negocio concreto.
+
+<break time="500ms"/>
+IAGO: [claro] Segundo concepto: la jerarquía técnica importa. Machine learning es el campo general, deep learning es el subconjunto que usa redes neuronales profundas, y los ele ele emes son redes basadas en Transformers entrenadas para predecir tokens. Pero no todo problema necesita deep learning. Hay casos donde un modelo clásico de machine learning es más eficiente, más interpretable y más barato de operar.
+
+<break time="500ms"/>
+MARIA: [didáctico] Tercer concepto: la IA generativa abarca múltiples modalidades y cada una tiene sus propias características. Texto, imágenes, código, audio, vídeo y sistemas multimodales. Elegir la modalidad correcta y combinarlas cuando es necesario es parte del diseño de arquitectura.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Cuarto concepto: los modelos alucinan, tienen sesgos, no tienen memoria persistente por defecto y fallan en casos de borde. La brecha entre expectativas y realidad es donde se pierde más dinero en proyectos de IA. Saber cuándo un modelo es fiable y cuándo necesitas supervisión humana es crítico para producción.
+
+<break time="500ms"/>
+MARIA: [analítico] Y quinto concepto: la economía del razonamiento. Los modelos pueden pensar más antes de responder, pero ese razonamiento adicional tiene un coste en tokens y en latencia. Solo debes usar razonamiento extendido cuando las evaluaciones demuestren que mejora precisión, seguridad o capacidad de planificación. No es gratis y no siempre compensa.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [conversacional] Este ha sido el módulo cero, la introducción estratégica al máster. A partir de aquí, cada módulo profundiza en una capa del sistema: fundamentos matemáticos, modelado, ingeniería de prompts, arquitectura de agentes, despliegue seguro, evaluación, regulación y transformación organizativa. Si has llegado hasta aquí, ya tienes el mapa mental para entender el resto del programa.
+
+<break time="500ms"/>
+MARIA: [cálido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [natural] Verificación de formato completada.

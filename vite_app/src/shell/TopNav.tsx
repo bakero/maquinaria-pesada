@@ -9,6 +9,7 @@
 
 import * as React from "react";
 import { Icon } from "../components";
+import { getVersion } from "../data";
 import { formatCombo } from "../lib/useHotkeys";
 
 export interface TopNavItem {
@@ -32,6 +33,7 @@ export function mapSectionFor(page: string): string {
     case "modulo":
     case "tema":
     case "episodio":
+    case "short":
       return "produccion";
     case "datos":
     case "logs":
@@ -85,7 +87,7 @@ export function TopNav({
           </svg>
         </span>
         <span className="topnav3-wordmark">MAQUINARIA·PESADA</span>
-        <span className="topnav3-build">v0.9 — master</span>
+        <span className="topnav3-build">{getVersion().branch} · {getVersion().sha}</span>
       </div>
 
       {/* Sections */}

@@ -7,22 +7,25 @@ import { PageMetricas } from "./PageMetricas";
 import { PageOptimizar } from "./PageOptimizar";
 import { PageLogs } from "./PageLogs";
 
+export type DatosTab = "consumo" | "metricas" | "optimizar" | "logs";
+
 export interface PageDatosProps {
   onNav: (page: string, payload?: string) => void;
   onOpenAI: (ctx?: unknown) => void;
+  initialTab?: DatosTab;
 }
 
-type Tab = "consumo" | "metricas" | "optimizar" | "logs";
-
-const TABS: { id: Tab; label: string }[] = [
+const TABS: { id: DatosTab; label: string }[] = [
   { id: "consumo",   label: "Coste IA" },
   { id: "metricas",  label: "Difusión" },
   { id: "optimizar", label: "Optimización" },
   { id: "logs",      label: "Logs" },
 ];
 
-export function PageDatos({ onNav, onOpenAI }: PageDatosProps) {
-  const [tab, setTab] = React.useState<Tab>("consumo");
+export function PageDatos({ onNav, onOpenAI, initialTab = "consumo" }: PageDatosProps) {
+  const [tab, setTab] = React.useState<DatosTab>(initialTab);
+  // Si el shell cambia la subpágina (ej: #metricas → #logs), reflejarlo en el tab.
+  React.useEffect(() => { setTab(initialTab); }, [initialTab]);
   return (
     <div className="v3-page">
       <header className="v3-hd">

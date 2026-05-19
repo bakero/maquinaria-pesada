@@ -8,14 +8,15 @@ import { PageMapa } from "./PageMapa";
 import { PageAjustes } from "./PageAjustes";
 import { PageFuentes } from "./PageFuentes";
 
+export type SistemaTab = "conectores" | "lanzador" | "fuentes" | "mapa" | "ajustes";
+
 export interface PageSistemaProps {
   onNav: (page: string, payload?: string) => void;
   onOpenAI: (ctx?: unknown) => void;
+  initialTab?: SistemaTab;
 }
 
-type Tab = "conectores" | "lanzador" | "fuentes" | "mapa" | "ajustes";
-
-const TABS: { id: Tab; label: string }[] = [
+const TABS: { id: SistemaTab; label: string }[] = [
   { id: "conectores", label: "Conectores" },
   { id: "lanzador",   label: "Lanzar pipeline" },
   { id: "fuentes",    label: "Fuentes" },
@@ -23,8 +24,10 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "ajustes",    label: "Ajustes" },
 ];
 
-export function PageSistema({ onNav, onOpenAI }: PageSistemaProps) {
-  const [tab, setTab] = React.useState<Tab>("conectores");
+export function PageSistema({ onNav, onOpenAI, initialTab = "conectores" }: PageSistemaProps) {
+  const [tab, setTab] = React.useState<SistemaTab>(initialTab);
+  // Si el shell cambia la subpágina (ej: #lanzador → #ajustes), reflejarlo.
+  React.useEffect(() => { setTab(initialTab); }, [initialTab]);
   return (
     <div className="v3-page">
       <header className="v3-hd">

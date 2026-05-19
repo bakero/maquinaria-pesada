@@ -60,6 +60,18 @@ export const FIXTURE_EPISODES: Episode[] = [
   { id: "M14_T1",mod: "M14", kind: "T", title: "T1 — Frontier models 2026",            dur: "—",     state: st("empty","empty","empty","empty","empty","empty") },
 ];
 
+// Shorts (kind="S"): píldoras de glosario de 60-90 s. No tienen módulo padre
+// ni PDF/escaleta — solo guion, audio y vídeo vertical. La fuente real está en
+// entrenar_v6.py:S_TERMS; el backend la lee y la sirve por /api/shorts. El
+// fixture es solo para desarrollo / offline.
+export const FIXTURE_SHORTS: Episode[] = [
+  { id: "S1", mod: "", kind: "S", title: "S1 · RAG",           term: "RAG",          dur: "—", state: st("empty","ok","empty","empty","empty","empty") },
+  { id: "S2", mod: "", kind: "S", title: "S2 · Fine-tuning",   term: "Fine-tuning",  dur: "—", state: st("empty","ok","empty","empty","empty","empty") },
+  { id: "S3", mod: "", kind: "S", title: "S3 · Hallucination", term: "Hallucination",dur: "—", state: st("empty","ok","empty","empty","empty","empty") },
+  { id: "S4", mod: "", kind: "S", title: "S4 · Embedding",     term: "Embedding",    dur: "—", state: st("empty","ok","empty","empty","empty","empty") },
+  { id: "S5", mod: "", kind: "S", title: "S5 · Prompt",        term: "Prompt",       dur: "—", state: st("empty","ok","empty","empty","empty","empty") },
+];
+
 export interface GuionLine { who: "iago" | "maria"; text: string; }
 
 export const GUION_PREVIEW: GuionLine[] = [
@@ -130,9 +142,11 @@ export const FIXTURE_TOKEN_DATA: TokenData = {
 // ── Estado mutable: fixtures por defecto, sustituidos por el bootstrap ──
 let _modules: Module[] = FIXTURE_MODULES;
 let _episodes: Episode[] = FIXTURE_EPISODES;
+let _shorts: Episode[] = FIXTURE_SHORTS;
 let _liveProc: LiveProc[] = FIXTURE_LIVE_PROC;
 let _recentFiles: RecentFile[] = FIXTURE_RECENT_FILES;
 let _tokenData: TokenData = FIXTURE_TOKEN_DATA;
+let _version: { branch: string; sha: string } = { branch: "—", sha: "—" };
 let _aiLog: UsageLogRow[] = FIXTURE_AI_LOG;
 
 /** Sustituye los datos con la respuesta real de /api/bootstrap. */
@@ -140,16 +154,36 @@ export function applyBootstrap(d: Partial<BootstrapPayload> | null): void {
   if (!d) return;
   if (Array.isArray(d.MODULES) && d.MODULES.length) _modules = d.MODULES;
   if (Array.isArray(d.EPISODES) && d.EPISODES.length) _episodes = d.EPISODES;
+  if (Array.isArray(d.SHORTS) && d.SHORTS.length) _shorts = d.SHORTS;
   if (Array.isArray(d.LIVE_PROC)) _liveProc = d.LIVE_PROC;
   if (Array.isArray(d.RECENT_FILES) && d.RECENT_FILES.length) _recentFiles = d.RECENT_FILES;
   if (d.TOKEN_DATA && Array.isArray(d.TOKEN_DATA.byModel) && d.TOKEN_DATA.byModel.length) {
     _tokenData = d.TOKEN_DATA;
     if (Array.isArray(d.TOKEN_DATA.log) && d.TOKEN_DATA.log.length) _aiLog = d.TOKEN_DATA.log;
   }
+  if (d.VERSION && d.VERSION.branch) _version = d.VERSION;
 }
 
 export function getModules(): Module[] { return _modules; }
 export function getEpisodes(): Episode[] { return _episodes; }
+export function getShorts(): Episode[] { return _shorts; }
+export function getVersion() { return _version; }
+
+/**
+ * Limpia los prefijos que ya están implícitos en el contexto donde se pinta
+ * el título de un episodio. El backend devuelve cosas como "M3 · T1 · tipos
+ * aprendizaje" o "Episodio M3 — Machine Learning"; según el contexto los
+ * prefijos sobran. Pasa el `kind` para que los temas pierdan el "Tk —"
+ * cuando ya hay otro indicador de número.
+ */
+export function cleanEpisodeTitle(t: string, kind?: "M" | "T" | "S"): string {
+  // Shorts: el backend devuelve "S1 · RAG" y queremos solo "RAG".
+  if (kind === "S") return t.replace(/^S\d+\s+·\s+/, "");
+  return t
+    .replace(/^Episodio [A-Z0-9_]+ — /, "")
+    .replace(/^M\d+ · T\d+ · /, "")
+    .replace(/^T\d+ — /, kind === "T" ? "" : "");
+}
 export function getModule(id: string | null | undefined): Module | undefined {
   return _modules.find((m) => m.id === id);
 }

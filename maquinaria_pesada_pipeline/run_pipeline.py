@@ -164,18 +164,26 @@ def main() -> int:
     log_path = output_folder / "logs" / f"{episode_id}_pipeline.log"
     log = get_logger("run_pipeline", log_file=log_path)
 
+    # Logger estructurado para marcadores `paso → ...` y métricas (día-log).
+    from cockpit.core.log_helpers import get_run_logger
+    rlog = get_run_logger("run_pipeline")
+
     log.info("=" * 60)
     log.info(f"  MAQUINARIA PESADA - PIPELINE v2.1 - {episode_id}")
     log.info(f"  preview={args.preview} from-step={args.from_step} force={args.force}")
     log.info("=" * 60)
+    rlog.step("plan", episode=episode_id, preview=args.preview,
+              from_step=args.from_step, force=args.force)
 
     transcription = content = audio_structure = aligned = None
     timeline = frames_index = srt_path = final_video = None
 
     try:
+        rlog.step("execute", episode=episode_id)
         # ─── 1. Whisper ────────────────────────────────────────────
         if args.from_step <= 1:
             log.info("[1/9] Transcripcion con Whisper...")
+            rlog.info("step 1 · whisper transcription", whisper_model=args.whisper_model)
             transcription = transcribe_episode(
                 config["assets"]["episode_audio"],
                 output_folder,
@@ -309,13 +317,16 @@ def main() -> int:
         log.info("  PIPELINE COMPLETADO")
         log.info(f"  Video: {final_video}")
         log.info("=" * 60)
+        rlog.ok("pipeline completado", episode=episode_id, video=str(final_video))
         return 0
 
     except KeyboardInterrupt:
         log.error("Interrumpido por el usuario.")
+        rlog.warn("interrumpido por usuario")
         return 130
     except Exception as exc:
         log.exception(f"Pipeline fallido: {exc}")
+        rlog.error("pipeline falló", exc_type=type(exc).__name__, msg=str(exc)[:200])
         return 1
 
 

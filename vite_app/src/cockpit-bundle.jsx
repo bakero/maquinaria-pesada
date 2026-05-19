@@ -19,6 +19,7 @@ import {
   FIXTURE_MODULES as MODULES, FIXTURE_EPISODES as EPISODES,
   FIXTURE_RECENT_FILES as RECENT_FILES, FIXTURE_TOKEN_DATA as TOKEN_DATA,
   FIXTURE_AI_LOG as AI_LOG, GUION_PREVIEW, CHECKS_M3, applyBootstrap,
+  cleanEpisodeTitle,
 } from "./data";
 import { Sidebar, Topbar, AIDrawer } from "./shell";
 import { CommandPalette } from "./shell/CommandPalette";
@@ -30,12 +31,11 @@ import {
   useTweaks, TweaksPanel, TweakSection, TweakSlider, TweakRadio, TweakSelect,
 } from "./components/tweaks/TweaksPanel";
 import {
-  PageInicio, PageMaster, PageModulo, PagePizarra, PageMapa, PageConectores,
-  PageLanzador, PageFuentes, PagePlayer, PageLogs, PageOptimizar, PageConsumo,
-  PageAjustes, PageMetricas, PageEpisodio,
-  PageDatos, PagePipeline, PageRecursos,
-  // v3
-  PageProduccion, PageModuloTema, PageSistema,
+  // Sub-páginas embebidas dentro de PageDatos / PageSistema
+  PageMapa, PageConectores, PageLanzador, PageFuentes,
+  PageLogs, PageOptimizar, PageConsumo, PageAjustes, PageMetricas,
+  // v3 (montadas directamente por el shell)
+  PageDatos, PageProduccion, PageModuloTema, PageSistema,
 } from "./pages";
 
 
@@ -122,9 +122,11 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "masterView": "lista"
 }/*EDITMODE-END*/;
 
-// Parsea el hash de routing: "#modulo/M3" → { base: "modulo", payload: "M3" }
+// Parsea el hash de routing.
+// Acepta ambos formatos: "#modulo/M3" y "#/modulo/M3" (slash inicial es
+// común en routers tipo HashRouter y los usuarios suelen teclearlo así).
 function parseHash() {
-  const h = window.location.hash.replace("#", "");
+  const h = window.location.hash.replace(/^#\/?/, "");
   const [base, payload] = h.split("/");
   return { base, payload: payload ? decodeURIComponent(payload) : null };
 }
@@ -135,12 +137,13 @@ function App() {
     const { base } = parseHash();
     return WIRED.has(base) ? base : "produccion";
   });
-  // Selección activa: qué módulo / tema/episodio se está viendo.
+  // Selección activa: qué módulo / tema/episodio / short se está viendo.
   const [sel, setSel] = React.useState(() => {
     const { base, payload } = parseHash();
     return {
       modulo:   base === "modulo"   ? payload : null,
       episodio: (base === "tema" || base === "episodio") ? payload : null,
+      short:    base === "short"    ? payload : null,
     };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
@@ -177,6 +180,28 @@ function App() {
     root.setAttribute("data-density", t.density);
   }, [t]);
 
+  // Sincroniza el state con cambios de hash externos: browser back/forward,
+  // bookmarks/deep-links, y `page.goto(url+"#otraruta")` desde tests. Sin
+  // este listener, sólo la primera navegación tras un reload funcionaría.
+  React.useEffect(() => {
+    function onHashChange() {
+      const { base, payload } = parseHash();
+      const next = WIRED.has(base) ? base : "produccion";
+      setPage(next);
+      if (payload) {
+        if (next === "modulo") {
+          setSel((s) => ({ ...s, modulo: payload }));
+        } else if (next === "tema" || next === "episodio") {
+          setSel((s) => ({ ...s, episodio: payload, modulo: payload.split("_")[0] }));
+        } else if (next === "short") {
+          setSel((s) => ({ ...s, short: payload }));
+        }
+      }
+    }
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
   // nav(id) navega de página; nav("modulo", "M3") / nav("episodio", "M3_T2")
   // además fija qué módulo/episodio mostrar. Al abrir un episodio se deriva
   // también su módulo padre ("M3_T2" → "M3").
@@ -191,8 +216,10 @@ function App() {
         episodio: payload || s.episodio,
         modulo: payload ? payload.split("_")[0] : s.modulo,
       }));
+    } else if (id === "short") {
+      setSel((s) => ({ ...s, short: payload || s.short }));
     }
-    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio");
+    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio" || id === "short");
     window.location.hash = hasSel ? `${id}/${encodeURIComponent(payload)}` : id;
     window.scrollTo(0, 0);
   };
@@ -226,7 +253,7 @@ function App() {
     EPISODES.filter((e) => e.kind === "T").slice(0, 30).forEach((e) => {
       acts.push({
         id: `ep-${e.id}`,
-        label: `Tema ${e.id} — ${e.title.replace(/^T\d+ — /, "")}`,
+        label: `Tema ${e.id} — ${cleanEpisodeTitle(e.title, "T")}`,
         section: "Temas",
         icon: "episode",
         hint: `${e.mod} · ${e.dur}`,
@@ -358,11 +385,28 @@ function App() {
         {page === "produccion" && <PageProduccion onNav={nav} onOpenPalette={openPalette}/>}
         {page === "modulo"     && <PageModuloTema entityId={sel.modulo || "M3"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
         {page === "tema"       && <PageModuloTema entityId={sel.episodio || "M3_T1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
-        {page === "datos"      && <PageDatos      onNav={nav} onOpenAI={openAI}/>}
-        {page === "sistema"    && <PageSistema    onNav={nav} onOpenAI={openAI}/>}
+        {page === "short"      && <PageModuloTema entityId={sel.short || "S1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
 
-        {/* v3 fallback · si alguien llega a una página legacy, mostramos Producción */}
-        {!["produccion","modulo","tema","datos","sistema"].includes(page) && (
+        {/* Datos · acepta page === "datos" o cualquier subtab (consumo/metricas/optimizar/logs) */}
+        {["datos","consumo","metricas","optimizar","logs"].includes(page) && (
+          <PageDatos
+            onNav={nav} onOpenAI={openAI}
+            initialTab={page === "datos" ? "consumo" : page}
+          />
+        )}
+
+        {/* Sistema · acepta page === "sistema" o cualquier subtab (conectores/lanzador/fuentes/mapa/ajustes) */}
+        {["sistema","conectores","lanzador","fuentes","mapa","ajustes"].includes(page) && (
+          <PageSistema
+            onNav={nav} onOpenAI={openAI}
+            initialTab={page === "sistema" ? "conectores" : page}
+          />
+        )}
+
+        {/* Fallback · página desconocida → Producción para no dejar pantalla vacía */}
+        {!["produccion","modulo","tema","short",
+           "datos","consumo","metricas","optimizar","logs",
+           "sistema","conectores","lanzador","fuentes","mapa","ajustes"].includes(page) && (
           <PageProduccion onNav={nav} onOpenPalette={openPalette}/>
         )}
       </main>
@@ -417,17 +461,6 @@ function App() {
           onChange={(v) => setTweak("density", v)}
         />
 
-        {page === "master" && (
-          <React.Fragment>
-            <TweakSection label="Vista del Master"/>
-            <TweakRadio
-              label="Variante"
-              value={t.masterView}
-              options={["lista", "matriz", "gantt"]}
-              onChange={(v) => setTweak("masterView", v)}
-            />
-          </React.Fragment>
-        )}
       </TweaksPanel>
     </div>
   );

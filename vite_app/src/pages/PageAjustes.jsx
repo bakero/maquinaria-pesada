@@ -2,6 +2,7 @@
 // Estado desde /api/api-keys: presencia de cada key en .env / env vars.
 import * as React from "react";
 import { Btn, Icon, Panel, StatusDot, PageHeader, SourcePills } from "../components";
+import { getVersion } from "../data";
 import { srcFor } from "../lib/nav";
 
 function PageAjustes({ onNav, onOpenAI }) {
@@ -70,13 +71,13 @@ function PageAjustes({ onNav, onOpenAI }) {
                 {detail}
               </div>
               <div className="row gap-3 mt-8">
-                <Btn sm kind="ghost" style={{ flex: 1 }}
-                     onClick={() => window.alert(`Rota la API key de ${k.provider} editando .env y reinicia el servidor.`)}>
-                  <Icon name="settings" size={10}/> Rotar
-                </Btn>
                 <Btn sm kind="ghost" style={{ flex: 1 }} onClick={recheck}>
                   <Icon name="check" size={10}/> Re-verificar
                 </Btn>
+              </div>
+              <div className="mono dim" style={{ fontSize: 10, marginTop: 6, lineHeight: 1.4 }}>
+                Para rotar: edita <code>.env</code> en la raíz del repo y
+                reinicia <code>web_server.py</code>.
               </div>
             </div>
           );
@@ -138,12 +139,10 @@ function PageAjustes({ onNav, onOpenAI }) {
       <Panel>
         <div className="grid gap-8" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
           {[
-            { lbl: "Versión",      v: "v0.9.0"     },
-            { lbl: "Branch",       v: "master"     },
-            { lbl: "Commit",       v: "30bfb39"    },
-            { lbl: "Tests",        v: "163 ✓"      },
-            { lbl: "Python",       v: "3.11.6"     },
-            { lbl: "Streamlit",    v: "1.36.0"     },
+            { lbl: "Branch",  v: getVersion().branch },
+            { lbl: "Commit",  v: getVersion().sha    },
+            { lbl: "Python",  v: "3.11+"             },
+            { lbl: "Frontend",v: "Vite + React 18"   },
           ].map((a) => (
             <div key={a.lbl}>
               <div className="display" style={{ fontSize: 10, color: "var(--text-mute)", letterSpacing: "0.16em" }}>{a.lbl}</div>

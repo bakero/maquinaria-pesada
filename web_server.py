@@ -287,13 +287,15 @@ def _state_for_episode(ep) -> dict:
 
 
 def _modulo_status_from_eps(eps: list, ratio: float) -> str:
-    """Mapea ratio (0..1) a status UI: ok/warn/alert/empty."""
+    """Mapea ratio (0..1) a status UI: ok/warn/empty.
+
+    Reservamos "alert" para fallos reales (CI rota, logs con errores, etc.).
+    Un módulo "empezado" no es un fallo aunque esté muy poco avanzado.
+    """
     if ratio >= 1.0:
         return "ok"
-    if ratio >= 0.5:
-        return "warn"
     if ratio > 0.0:
-        return "alert"
+        return "warn"
     return "empty"
 
 
@@ -503,12 +505,25 @@ def load_connectors() -> dict:
 
 
 def load_episode_detail(ep_id: str) -> dict | None:
-    """Metadatos + rutas reales (relativas al repo) de un episodio."""
+    """Metadatos + rutas reales (relativas al repo) de un episodio.
+
+    Acepta ids de Shorts (S1, S2, …): los resuelve vía cockpit.core.shorts
+    en lugar de cockpit.core.episodes y devuelve el mismo shape. Esto permite
+    al front (PageModuloTema) usar el mismo endpoint y los mismos slots."""
     try:
         from cockpit.core import episodes, paths
     except Exception:
         return None
-    ep = episodes.get_episode(ep_id)
+
+    if ep_id.startswith("S") and ep_id[1:].isdigit():
+        try:
+            from cockpit.core import shorts
+        except Exception:
+            return None
+        ep = shorts.get_short(ep_id)
+    else:
+        ep = episodes.get_episode(ep_id)
+
     if ep is None:
         return None
     root = paths.repo_root().resolve()
@@ -972,15 +987,65 @@ def load_live_procs() -> list[dict]:
     return out[:5]
 
 
+def scan_shorts_payload() -> list[dict]:
+    """Lista de Shorts (kind=S) con su estado. Forma intencionalmente
+    similar a la de EPISODES (mismo shape de slots) para que el front
+    pueda reutilizar PageModuloTema sin caminos especiales."""
+    try:
+        from cockpit.core import shorts
+    except Exception:
+        return []
+    try:
+        items = shorts.list_shorts()
+    except Exception:
+        items = []
+    out: list[dict] = []
+    for sh in items:
+        out.append({
+            "id": sh.id,
+            "mod": "",                     # los Shorts no tienen módulo padre
+            "kind": "S",
+            "title": sh.label,
+            "term": sh.term,
+            "dur": "—",
+            "state": _state_for_episode(sh),
+        })
+    return out
+
+
+def load_version_info() -> dict:
+    """Lee branch + sha del repo. Si git no está disponible, devuelve
+    valores '—' sin romper. Usado por el header del cockpit y la página
+    Ajustes en lugar de los valores hardcoded antiguos."""
+    import subprocess
+    try:
+        from cockpit.core import paths
+        root = str(paths.repo_root())
+    except Exception:
+        root = None
+    def _run(args: list[str]) -> str:
+        try:
+            r = subprocess.run(args, cwd=root, capture_output=True,
+                               text=True, timeout=2)
+            return r.stdout.strip() if r.returncode == 0 else ""
+        except Exception:
+            return ""
+    branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"]) or "—"
+    sha = _run(["git", "rev-parse", "--short", "HEAD"]) or "—"
+    return {"branch": branch, "sha": sha}
+
+
 def bootstrap_payload() -> dict:
     modules, episodes_ = scan_modules_and_episodes()
     return {
         "MODULES": modules,
         "EPISODES": episodes_,
+        "SHORTS": scan_shorts_payload(),
         "LIVE_PROC": load_live_procs(),
         "RECENT_FILES": load_recent_files(),
         "TOKEN_DATA": load_ai_usage(),
         "ECONOMICS": load_economics(),
+        "VERSION": load_version_info(),
     }
 
 
@@ -1218,7 +1283,7 @@ def generate_episode_guion(ep_id: str) -> dict:
     salida (que incluye la traza de validación y regeneración) a la ruta
     determinista Guiones/logs/{ep_id}_gen.log."""
     try:
-        from cockpit.core import episode_sources, gen_log, paths, runner
+        from cockpit.core import episode_sources, gen_log, paths
     except Exception as exc:
         return {"ok": False, "error": f"módulos no disponibles: {exc}"}
 
@@ -1230,7 +1295,10 @@ def generate_episode_guion(ep_id: str) -> dict:
     if not script_path.exists():
         return {"ok": False, "error": f"script no existe: {src.script}"}
 
-    argv = runner.build_argv(str(script_path), list(src.flags))
+    # src.flags ya es una lista plana shell-ready (['--modulo', '0', '--pdf', '…']),
+    # NO una lista de tuplas como espera runner.build_argv. Construimos el argv
+    # directamente para evitar el ValueError("too many values to unpack").
+    argv = [sys.executable, str(script_path), *src.flags]
     log_path = gen_log.gen_log_path(src.ep_id)
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1318,6 +1386,227 @@ async def _json_body(request: Request) -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> dict:
+    """Lee los últimos `days` ficheros del daylog y devuelve las líneas que
+    mencionan a `entity_id` (M3, M3_T1, etc.).
+
+    Daylog: logs/run/maquinaria_AAAA-MM-DD.log (texto plano · una línea por
+    evento · formato:  AAAA-MM-DDTHH:MM:SS [LEVEL] run=… script=… | mensaje).
+
+    Coincide cuando la línea contiene el id exacto como token (M3 no matchea
+    M30) o cuando contiene un nombre de fichero asociado al episodio (p. ej.
+    "M3_Machine_Learning_Clasico.txt").
+    """
+    import datetime as _dt
+    from pathlib import Path as _P
+
+    try:
+        from cockpit.core import paths
+        root = paths.repo_root().resolve()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "entries": []}
+
+    log_dir = root / "logs" / "run"
+    if not log_dir.exists():
+        return {"ok": True, "entries": [], "days_scanned": 0}
+
+    # Construye un set de tokens que identifican al episodio.
+    # Los daylog NO contienen siempre el id literal — frecuentemente la línea
+    # es del tipo `script=generar_guion.py | --modulo 3 --pdf PDFs/resumenes/RESUMEN_M3_…pdf`.
+    # Añadimos todas las formas plausibles que pueden aparecer:
+    eid = entity_id.strip()
+    tokens: set[str] = {eid}
+
+    # Tema · M{N}_T{K} → también M{N}_T{K:02d}, M{N}_TX_T{K}, …
+    if "_T" in eid:
+        mod, suf = eid.split("_T", 1)
+        try:
+            num = int(suf)
+            tokens.add(f"{mod}_T{num:02d}")
+            tokens.add(f"{mod}_TX_T{num}")
+            tokens.add(f"{mod}_TX_E_T{num}")
+            tokens.add(f"--ep {eid}")
+        except ValueError:
+            pass
+
+    # Módulo paraguas · M{N} → la flag típica del pipeline es `--modulo N`
+    # (con N sin padding). Y los PDF de resumen llevan `RESUMEN_M{N}_`.
+    elif eid.startswith("M") and eid[1:].isdigit():
+        n = int(eid[1:])
+        tokens.add(f"--modulo {n}")
+        tokens.add(f"--modulo {n:02d}")
+        tokens.add(f"RESUMEN_M{n}_")
+        tokens.add(f"{eid}_")          # M3_, M3_Machine_…, M3.mp3 etc.
+
+    # Short · S{N} → flag `--ep S{N}` o paths con prefijo `S{N}_`
+    elif eid.startswith("S") and eid[1:].isdigit():
+        tokens.add(f"--ep {eid}")
+        tokens.add(f"{eid}_")
+        # Su guion canónico vive en Guiones/S{N}_<slug>_v6.md
+        tokens.add(f"/{eid}_")
+
+    # Patrón regex con word-boundary para evitar M3 → M30.
+    import re as _re
+    pat = _re.compile(
+        r"(?<![A-Za-z0-9_])(" + "|".join(_re.escape(t) for t in tokens) + r")(?![A-Za-z0-9])",
+        _re.IGNORECASE,
+    )
+
+    today = _dt.date.today()
+    entries: list[dict] = []
+    days_scanned = 0
+    for delta in range(days):
+        day = today - _dt.timedelta(days=delta)
+        p: _P = log_dir / f"maquinaria_{day.isoformat()}.log"
+        if not p.exists():
+            continue
+        days_scanned += 1
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if not pat.search(line):
+                        continue
+                    entries.append({"day": day.isoformat(), "line": line.rstrip()})
+                    if len(entries) >= limit * 2:
+                        break
+        except OSError:
+            continue
+        if len(entries) >= limit * 2:
+            break
+
+    # Ordena por timestamp (las líneas empiezan con ISO datetime).
+    entries.sort(key=lambda e: e["line"][:19])
+    if len(entries) > limit:
+        entries = entries[-limit:]
+    return {
+        "ok": True,
+        "entity_id": entity_id,
+        "days_scanned": days_scanned,
+        "count": len(entries),
+        "entries": entries,
+    }
+
+
+def load_entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> dict:
+    """Devuelve las EJECUCIONES (runs) del día-log asociadas a `entity_id`.
+
+    A diferencia de `load_entity_log_lines` (que devuelve líneas raw), aquí
+    parseamos el daylog con `cockpit.core.log_validator.parse_log()` y
+    asociamos cada run completo a la entidad si CUALQUIERA de sus líneas
+    contiene un token que la identifica (los mismos tokens que usa
+    `load_entity_log_lines`: --modulo N, --ep X, RESUMEN_Mn_…, etc.).
+
+    Para cada run devolvemos un resumen estructurado (status, elapsed, pasos
+    completados, AI calls, retries, último error), pensado para pintarse en
+    la página del episodio como timeline de actividad.
+    """
+    import datetime as _dt
+    import re as _re
+    from pathlib import Path as _P
+
+    try:
+        from cockpit.core import log_validator, paths
+        root = paths.repo_root().resolve()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "runs": []}
+
+    log_dir = root / "logs" / "run"
+    if not log_dir.exists():
+        return {"ok": True, "runs": [], "days_scanned": 0}
+
+    eid = entity_id.strip()
+    tokens: set[str] = {eid}
+    if "_T" in eid:
+        mod, suf = eid.split("_T", 1)
+        try:
+            num = int(suf)
+            tokens.add(f"{mod}_T{num:02d}")
+            tokens.add(f"{mod}_TX_T{num}")
+            tokens.add(f"--ep {eid}")
+        except ValueError:
+            pass
+    elif eid.startswith("M") and eid[1:].isdigit():
+        n = int(eid[1:])
+        tokens.add(f"--modulo {n}")
+        tokens.add(f"--modulo {n:02d}")
+        tokens.add(f"RESUMEN_M{n}_")
+        tokens.add(f"{eid}_")
+    elif eid.startswith("S") and eid[1:].isdigit():
+        tokens.add(f"--ep {eid}")
+        tokens.add(f"{eid}_")
+
+    pat = _re.compile(
+        r"(?<![A-Za-z0-9_])(" + "|".join(_re.escape(t) for t in tokens) + r")(?![A-Za-z0-9])",
+        _re.IGNORECASE,
+    )
+
+    today = _dt.date.today()
+    runs_out: list[dict] = []
+    days_scanned = 0
+    for delta in range(days):
+        day = today - _dt.timedelta(days=delta)
+        p: _P = log_dir / f"maquinaria_{day.isoformat()}.log"
+        if not p.exists():
+            continue
+        days_scanned += 1
+
+        # Parseo completo del día con el validador (resumen por run).
+        try:
+            records = log_validator.parse_log(p)
+        except Exception:
+            records = {}
+
+        # Identifica qué run_ids del día tocan a la entidad (alguna línea
+        # menciona algún token). Recorremos el fichero una sola vez.
+        run_ids_match: set[str] = set()
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if not pat.search(line):
+                        continue
+                    m = log_validator.LINE_REGEX.match(line)
+                    if m:
+                        run_ids_match.add(m["run"])
+        except OSError:
+            continue
+
+        for rid in run_ids_match:
+            rec = records.get(rid)
+            if rec is None:
+                continue
+            runs_out.append({
+                "run_id":   rec.run_id,
+                "day":      day.isoformat(),
+                "script":   rec.script,
+                "pid":      rec.pid,
+                "status":   rec.status or ("ok" if rec.ended_at else "running"),
+                "started_at": rec.started_at.isoformat() if rec.started_at else None,
+                "ended_at":   rec.ended_at.isoformat()   if rec.ended_at   else None,
+                "elapsed_s":  rec.elapsed_s,
+                "out_lines":  rec.out_lines,
+                "err_lines":  rec.err_lines,
+                "steps":      list(rec.steps),
+                "retries":    rec.retries,
+                "ai_calls": {
+                    "started": rec.ai_calls_started,
+                    "ok":      rec.ai_calls_ok,
+                    "error":   rec.ai_calls_error,
+                },
+                "last_error": rec.errors[-1] if rec.errors else None,
+            })
+
+    runs_out.sort(key=lambda r: (r.get("started_at") or ""), reverse=True)
+    if len(runs_out) > limit:
+        runs_out = runs_out[:limit]
+    return {
+        "ok": True,
+        "entity_id": entity_id,
+        "days_scanned": days_scanned,
+        "count": len(runs_out),
+        "runs": runs_out,
+    }
+
+
 def _api_json(payload, status: int = 200) -> Response:
     """Respuesta JSON con Cache-Control: no-store. Usa `default=str` para
     serializar Paths/dataclasses igual que el server anterior."""
@@ -1349,7 +1638,15 @@ def create_app() -> FastAPI:
     @app.get("/api/episodes")
     def episodes() -> Response:
         _, eps = scan_modules_and_episodes()
-        return _api_json(eps)
+        # Incluye Shorts (kind=S) en la misma lista para que el frontend
+        # pueda iterar sobre todo el catálogo sin endpoints especiales.
+        return _api_json(eps + scan_shorts_payload())
+
+    @app.get("/api/shorts")
+    def api_shorts() -> Response:
+        """Lista solo los Shorts (kind=S). Útil para PageProduccion que
+        los pinta en una sección dedicada."""
+        return _api_json(scan_shorts_payload())
 
     @app.get("/api/episode/{ep_id}/gen-log")
     def episode_gen_log(ep_id: str) -> Response:
@@ -1380,6 +1677,17 @@ def create_app() -> FastAPI:
         if detail is None or detail.get("kind") != "T":
             return _api_json({"error": "not found"}, status=404)
         return _api_json(detail)
+
+    @app.get("/api/entity/{entity_id}/log-lines")
+    def entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> Response:
+        return _api_json(load_entity_log_lines(entity_id, days=days, limit=limit))
+
+    @app.get("/api/entity/{entity_id}/runs")
+    def entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> Response:
+        """Ejecuciones (runs) del día-log asociadas al episodio. Devuelve un
+        resumen estructurado por run (status, pasos, AI calls, retries) para
+        pintarlo como timeline en la página del episodio."""
+        return _api_json(load_entity_runs(entity_id, days=days, limit=limit))
 
     @app.get("/api/stream")
     def stream(request: Request) -> StreamingResponse:

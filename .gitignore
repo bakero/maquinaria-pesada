@@ -26,6 +26,12 @@ kokoro-v*.onnx
 # ─── Audio / video / artefactos generados ───────────────────
 output/
 outputs/
+# Workspace de producción v6 (versiones intermedias + backups _pre_*).
+# Lo que se conserva en repo es Output_v6_aprobados/ con los guiones finales.
+Output_v6/
+Output_v6_revisar/
+# Caché de pre-writing extraído de PDFs (regenerable).
+episodios/cache/
 maquinaria_pesada_pipeline/outputs/
 *.mp3
 *.mp4

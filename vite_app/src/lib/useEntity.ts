@@ -218,14 +218,127 @@ export async function generateSlot(entityId: string, kind: SlotMeta["kind"]) {
       return { error: String(e) };
     }
   }
-  const scriptMap: Record<SlotMeta["kind"], string> = {
-    pdf:      "",
-    guion:    "generar_guion.py",
-    escaleta: "generar_escaleta.py",
-    audio:    "generar_episodio_v2.py",
-    video:    "generar_video.py",
+  // Solo permitimos slots cuyo pipeline existe realmente en el repo y está
+  // en la whitelist ALLOWED_SCRIPTS de web_server.py. PDF no se genera
+  // (es source); escaleta y vídeo no tienen pipeline propio aún —
+  // devolvemos un error explícito que el UI mostrará como toast.
+  const scriptMap: Partial<Record<SlotMeta["kind"], string>> = {
+    audio: "generar_episodio_v2.py",
   };
   const script = scriptMap[kind];
-  if (!script) return { error: "no script" };
+  if (!script) {
+    return {
+      error: kind === "pdf"
+        ? "El PDF es la fuente; no se genera desde la app"
+        : `Pipeline para ${kind} no disponible aún en el repo`,
+    };
+  }
   return runPipeline(script, ["--ep", entityId]);
+}
+
+// ───────────────────────── useEntityLogLines ─────────────────────────
+
+export interface LogEntry {
+  day: string;     // "2026-05-16"
+  line: string;    // raw daylog line
+}
+
+export interface LogLinesPayload {
+  ok: boolean;
+  entity_id?: string;
+  days_scanned?: number;
+  count?: number;
+  entries: LogEntry[];
+  error?: string;
+}
+
+// ── Runs estructurados desde /api/entity/{id}/runs ─────────────────────
+// Cada Run es UN ciclo START→END en logs/run/maquinaria_*.log identificado
+// por run_id (UUID corto). Espeja el shape que produce
+// cockpit.core.log_validator.parse_log + el handler `load_entity_runs` en
+// web_server.py.
+export interface RunSummary {
+  run_id: string;
+  day: string;
+  script: string;
+  pid: number;
+  status: "ok" | "error" | "running" | string;
+  started_at: string | null;
+  ended_at: string | null;
+  elapsed_s: number | null;
+  out_lines: number | null;
+  err_lines: number | null;
+  steps: string[];
+  retries: number;
+  ai_calls: { started: number; ok: number; error: number };
+  last_error: string | null;
+}
+
+export interface RunsPayload {
+  ok: boolean;
+  entity_id?: string;
+  days_scanned?: number;
+  count?: number;
+  runs: RunSummary[];
+  error?: string;
+}
+
+/** Filtra el daylog por menciones a `entityId` (M3, M3_T1, etc.). */
+export function useEntityLogLines(entityId: string | null, days = 7, limit = 300) {
+  const [data, setData] = React.useState<LogLinesPayload>({ ok: false, entries: [] });
+  const [loading, setLoading] = React.useState<boolean>(!!entityId);
+  const [version, setVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!entityId) {
+      setData({ ok: false, entries: [] });
+      setLoading(false);
+      return;
+    }
+    const ctrl = new AbortController();
+    setLoading(true);
+    fetchJSON<LogLinesPayload>(
+      `/api/entity/${encodeURIComponent(entityId)}/log-lines?days=${days}&limit=${limit}`,
+      ctrl.signal,
+    ).then((d) => {
+      setData(d ?? { ok: false, entries: [] });
+      setLoading(false);
+    });
+    return () => ctrl.abort();
+  }, [entityId, days, limit, version]);
+
+  const refresh = React.useCallback(() => setVersion((v) => v + 1), []);
+  return { data, loading, refresh };
+}
+
+/**
+ * Lista las EJECUCIONES (runs) del día-log asociadas a la entidad.
+ * Devuelve un resumen estructurado por run (no líneas raw) que pintamos
+ * como timeline de actividad en la página del episodio.
+ */
+export function useEntityRuns(entityId: string | null, days = 14, limit = 30) {
+  const [data, setData] = React.useState<RunsPayload>({ ok: false, runs: [] });
+  const [loading, setLoading] = React.useState<boolean>(!!entityId);
+  const [version, setVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!entityId) {
+      setData({ ok: false, runs: [] });
+      setLoading(false);
+      return;
+    }
+    const ctrl = new AbortController();
+    setLoading(true);
+    fetchJSON<RunsPayload>(
+      `/api/entity/${encodeURIComponent(entityId)}/runs?days=${days}&limit=${limit}`,
+      ctrl.signal,
+    ).then((d) => {
+      setData(d ?? { ok: false, runs: [] });
+      setLoading(false);
+    });
+    return () => ctrl.abort();
+  }, [entityId, days, limit, version]);
+
+  const refresh = React.useCallback(() => setVersion((v) => v + 1), []);
+  return { data, loading, refresh };
 }

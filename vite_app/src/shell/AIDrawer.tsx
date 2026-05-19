@@ -40,13 +40,14 @@ export function AIDrawer({ open, onClose, mode, context }: AIDrawerProps) {
     setStreaming(true);
     setStreamText("");
 
-    const FALLBACK = mode === "fix"
-      ? "He inspeccionado el episodio.\n\n1. El audio M3_T2 falla en el bloque 4: 'Atención escalada' — ElevenLabs devolvió 502 en el segundo intento.\n2. Voy a regenerar SOLO ese bloque con la voz María y volver a concatenar.\n3. No tocaré el guion ni la escaleta.\n\n¿Procedo?"
-      : "He analizado este episodio. Mejoras sugeridas:\n\n→ El bloque 3 del guion es 22% más largo que la media. Considera dividirlo.\n→ María lleva 4 turnos seguidos entre 18:00 y 21:30. Insertar una intervención de Iago.\n→ La escaleta no menciona RoPE — está en el guion. Refrescar.\n\n[fallback offline]";
-
-    // Llamada real al backend; si falla → fallback simulado.
-    let reply = FALLBACK;
+    // Llamada real al backend. Si falla, mostramos un error CLARO y honesto
+    // en vez de una respuesta inventada (la versión anterior simulaba un
+    // diagnóstico falso de "audio M3_T2 falla en bloque 4" que confundía
+    // al usuario haciéndole creer que era análisis real).
+    let reply = "";
     let usage: Usage | null = null;
+    let failed = false;
+    let failureReason = "";
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
@@ -59,12 +60,33 @@ export function AIDrawer({ open, onClose, mode, context }: AIDrawerProps) {
       });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.text) {
+        if (data && data.ok && data.text) {
           reply = data.text;
           usage = data.usage || null;
+        } else {
+          failed = true;
+          failureReason = (data && data.text) || "respuesta sin texto";
         }
+      } else {
+        failed = true;
+        failureReason = `HTTP ${res.status}`;
       }
-    } catch { /* keep fallback */ }
+    } catch (e) {
+      failed = true;
+      failureReason = String(e);
+    }
+
+    if (failed) {
+      reply = [
+        "⚠ No se pudo contactar con Claude.",
+        "",
+        `Razón: ${failureReason}`,
+        "",
+        "Comprueba que la API key de Anthropic está en .env (variable",
+        "ANTHROPIC_API_KEY) y que el servidor cockpit está sirviendo /api/ai/chat.",
+        "Mira el panel Sistema → Ajustes para verificar credenciales.",
+      ].join("\n");
+    }
 
     setLastUsage(usage);
 

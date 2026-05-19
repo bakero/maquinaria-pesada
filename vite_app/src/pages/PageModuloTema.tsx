@@ -11,12 +11,12 @@
 
 import * as React from "react";
 import { Icon } from "../components";
-import { FIXTURE_EPISODES, FIXTURE_MODULES } from "../data";
+import { FIXTURE_EPISODES, FIXTURE_MODULES, cleanEpisodeTitle, getShorts } from "../data";
 import type { Episode } from "../types";
 import {
   generateSlot,
-  useEntity, useLiveStream, useModule,
-  type EpisodeDetail, type LiveProcess, type SlotMeta, type StreamSnapshot,
+  useEntity, useEntityLogLines, useEntityRuns, useLiveStream, useModule,
+  type EpisodeDetail, type LiveProcess, type RunSummary, type SlotMeta, type StreamSnapshot,
 } from "../lib/useEntity";
 
 const SLOT_KINDS = ["pdf", "guion", "escaleta", "audio", "video"] as const;
@@ -58,8 +58,16 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
     || FIXTURE_EPISODES.find((e) => e.id === "M3")!;
   const ent: Episode = entityReal ? episodeFromDetail(entityReal) : fallbackEp;
   const isModule = ent.kind === "M";
+  const isShort = ent.kind === "S";
   const modId = ent.mod;
   const moduleMeta = FIXTURE_MODULES.find((m) => m.id === modId);
+
+  // Los Shorts no tienen PDF ni escaleta — la "fuente" es el propio prompt
+  // del generador. Filtramos los slots visibles para evitar pintar bloques
+  // vacíos sin uso.
+  const visibleSlots: readonly SlotKind[] = isShort
+    ? (["guion", "audio", "video"] as const)
+    : SLOT_KINDS;
 
   // Children: del backend si disponibles, si no del fixture.
   const childrenReal = moduleReal?.children ?? [];
@@ -85,6 +93,8 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
     ? Math.round((temas.reduce((acc, t) => acc + SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length, 0)
        + (moduleEpisode ? SLOT_KINDS.filter((k) => slotState(moduleEpisode, k) === "ok").length : 0))
        / ((temas.length + 1) * SLOT_KINDS.length) * 100)
+    : isShort
+    ? Math.round(visibleSlots.filter((k) => slotState(ent, k) === "ok").length / visibleSlots.length * 100)
     : pctOfChild(ent);
 
   const [expanded, setExpanded] = React.useState<SlotKind | null>(null);
@@ -116,7 +126,9 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
           <nav className="v3-mt-crumbs">
             <a onClick={() => onNav("produccion")}>Master</a>
             <span className="sep">/</span>
-            {isModule ? (
+            {isShort ? (
+              <span className="cur">Shorts · {ent.id}</span>
+            ) : isModule ? (
               <span className="cur">{modId}</span>
             ) : (
               <>
@@ -128,10 +140,12 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
           </nav>
           <div className="v3-mt-title">
             <span className="v3-mt-id">{ent.id.replace("_", " · ")}</span>
-            <h1 className="v3-mt-name">{cleanTitle(ent.title, ent.kind)}</h1>
+            <h1 className="v3-mt-name">{cleanEpisodeTitle(ent.title, ent.kind)}</h1>
           </div>
           <div className="v3-mt-sub">
-            {isModule
+            {isShort
+              ? `Short · píldora de glosario · 60-90 s${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`
+              : isModule
               ? `${moduleReal?.name || moduleMeta?.name || ""} · módulo principal · ${temas.length} tema${temas.length !== 1 ? "s" : ""}${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`
               : `tema corto · ${moduleReal?.name || moduleMeta?.name || modId}${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`}
           </div>
@@ -144,39 +158,144 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
         </div>
       </header>
 
-      {/* Sibling rail */}
-      {(isModule || temas.length > 0) && (
-        <div className="v3-mt-rail">
-          {moduleEpisode && (
-            <div
-              className={`v3-mt-rail-cell${isModule ? " active" : " parent"}`}
-              onClick={() => onNav("modulo", modId)}
-              title={moduleEpisode.title}
-            >
-              <span>{modId}</span>
-              <span className="v3-mt-rail-cell-dot ok"/>
+      {/* Sibling rail entre Shorts (S1..S5) cuando estamos en uno */}
+      {isShort && (() => {
+        const allShorts = getShorts();
+        if (allShorts.length === 0) return null;
+        const completados = allShorts.filter(
+          (s) => ["guion","audio","video"].every((k) => s.state[k as SlotKind] === "ok"),
+        ).length;
+        return (
+          <div className="v3-mt-rail-wrap">
+            <div className="v3-mt-rail-meta">
+              <span className="v3-mt-rail-meta-label">Navegación · Shorts</span>
+              <span className="v3-mt-rail-meta-count">
+                <strong>{completados}</strong>
+                <span style={{ color: "var(--text-mute)" }}> completos · </span>
+                <strong>{allShorts.length}</strong>
+                <span style={{ color: "var(--text-mute)" }}> shorts</span>
+              </span>
             </div>
-          )}
-          {temas.map((t) => {
-            const tnum = t.id.split("_").slice(1).join("_");
-            const active = !isModule && t.id === ent.id;
-            const slotDone = SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length;
-            const dot = slotDone === 5 ? "ok"
-                      : slotDone >= 1 ? "warn"
-                      : "alert";
-            return (
-              <div
+            <div className="v3-mt-rail">
+              {allShorts.map((s) => {
+                const active = s.id === ent.id;
+                const done = (["guion","audio","video"] as SlotKind[])
+                  .filter((k) => s.state[k] === "ok").length;
+                const dot = done === 3 ? "ok" : done >= 1 ? "warn" : "alert";
+                return (
+                  <div
+                    key={s.id}
+                    className={`v3-mt-rail-cell${active ? " active" : ""}`}
+                    onClick={() => onNav("short", s.id)}
+                    title={s.title}
+                  >
+                    <span>{s.id} · {s.term}</span>
+                    <span className={`v3-mt-rail-cell-dot ${dot}`}/>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Sibling rail · navegación rápida entre módulo paraguas y sus temas */}
+      {!isShort && (isModule || temas.length > 0) && (() => {
+        const temasCompletos = temas.filter(
+          (t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok"),
+        ).length;
+        const temasConAlgo = temas.filter(
+          (t) => SLOT_KINDS.some((k) => slotState(t, k) === "ok"),
+        ).length;
+        return (
+          <div className="v3-mt-rail-wrap">
+            <div className="v3-mt-rail-meta">
+              <span className="v3-mt-rail-meta-label">Navegación · {modId}</span>
+              <span className="v3-mt-rail-meta-count">
+                <strong>{temasCompletos}</strong>
+                <span style={{ color: "var(--text-mute)" }}> completos · </span>
+                <strong>{temasConAlgo}</strong>
+                <span style={{ color: "var(--text-mute)" }}> con algo · </span>
+                <strong>{temas.length}</strong>
+                <span style={{ color: "var(--text-mute)" }}> temas</span>
+              </span>
+            </div>
+            <div className="v3-mt-rail">
+              {moduleEpisode && (
+                <div
+                  className={`v3-mt-rail-cell${isModule ? " active" : " parent"}`}
+                  onClick={() => onNav("modulo", modId)}
+                  title={moduleEpisode.title}
+                >
+                  <span>{modId} · paraguas</span>
+                  <span className="v3-mt-rail-cell-dot ok"/>
+                </div>
+              )}
+              {temas.map((t) => {
+                const tnum = t.id.split("_").slice(1).join("_");
+                const active = !isModule && t.id === ent.id;
+                const slotDone = SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length;
+                const dot = slotDone === 5 ? "ok"
+                          : slotDone >= 1 ? "warn"
+                          : "alert";
+                return (
+                  <div
+                    key={t.id}
+                    className={`v3-mt-rail-cell${active ? " active" : ""}`}
+                    onClick={() => onNav("tema", t.id)}
+                    title={t.title}
+                  >
+                    <span>{tnum}</span>
+                    <span className={`v3-mt-rail-cell-dot ${dot}`}/>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Sub-temas · grid prominente justo debajo del rail cuando hay temas */}
+      {!isShort && isModule && temas.length > 0 && (
+        <section className="v3-mt-subtemas">
+          <header className="v3-hd">
+            <div className="v3-hd-left">
+              <span className="v3-hd-eyebrow">Temas de {modId}</span>
+              <h2 className="v3-hd-title">{temas.length} tema{temas.length !== 1 ? "s" : ""} · click para abrir</h2>
+            </div>
+            <div className="v3-hd-meta">
+              {temas.filter((t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok")).length} / {temas.length} completos
+            </div>
+          </header>
+          <div className="v3-mods">
+            {temas.map((t) => (
+              <TemaCard
                 key={t.id}
-                className={`v3-mt-rail-cell${active ? " active" : ""}`}
+                tema={{ id: t.id, title: t.title, state: t.state as Record<string, string> }}
                 onClick={() => onNav("tema", t.id)}
-                title={t.title}
-              >
-                <span>{tnum}</span>
-                <span className={`v3-mt-rail-cell-dot ${dot}`}/>
-              </div>
-            );
-          })}
-        </div>
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Aviso si esperamos temas pero el backend no los devolvió todavía */}
+      {!isShort && isModule && temas.length === 0 && (
+        <section className="v3-mt-subtemas">
+          <header className="v3-hd">
+            <div className="v3-hd-left">
+              <span className="v3-hd-eyebrow">Temas de {modId}</span>
+              <h2 className="v3-hd-title">cargando o sin temas</h2>
+            </div>
+          </header>
+          <div className="v3-empty" style={{ padding: 32 }}>
+            <p className="v3-empty-title">Sin temas detectados todavía</p>
+            <p className="v3-empty-hint">
+              El backend no devolvió sub-temas para {modId}.
+              Comprueba que existan PDFs <code>{modId}_T*.pdf</code> en la carpeta <code>PDFs/</code>.
+            </p>
+          </div>
+        </section>
       )}
 
       {/* Toast */}
@@ -192,7 +311,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
       {/* Two-column body */}
       <div className="v3-mt">
         <div>
-          {SLOT_KINDS.map((kind) => (
+          {visibleSlots.map((kind) => (
             <Slot
               key={kind}
               kind={kind}
@@ -207,42 +326,18 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
             />
           ))}
 
-          {isModule && temas.length > 0 && (
-            <>
-              <header className="v3-hd">
-                <div className="v3-hd-left">
-                  <span className="v3-hd-eyebrow">Sub-temas</span>
-                  <h2 className="v3-hd-title">{temas.length} temas en {modId}</h2>
-                </div>
-                <div className="v3-hd-meta">
-                  {temas.filter((t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok")).length} / {temas.length} completos
-                </div>
-              </header>
-              <div className="v3-mods">
-                {temas.map((t) => (
-                  <TemaCard
-                    key={t.id}
-                    tema={{ id: t.id, title: t.title, state: t.state as Record<string, string> }}
-                    onClick={() => onNav("tema", t.id)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
         </div>
 
         <aside>
           <LivePanel entityId={ent.id} snapshot={snapshot} />
+          <EpisodeRunsPanel entityId={ent.id} />
         </aside>
       </div>
     </div>
   );
 }
 
-function cleanTitle(t: string, kind: "M" | "T"): string {
-  return t.replace(/^Episodio [A-Z0-9_]+ — /, "")
-          .replace(/^T\d+ — /, kind === "T" ? "" : "");
-}
+// cleanTitle se centralizó en data.ts → cleanEpisodeTitle.
 
 // ════════════════════════════ Slot ════════════════════════════
 
@@ -294,8 +389,12 @@ function Slot({ kind, entity, detail, expanded, busy, onToggle, onGenerate, onGe
             </>
           ) : has ? (
             <>
-              <button className="v3-btn xs" onClick={onGenerate} disabled={busy}
-                      title={`Regenerar ${SLOT_LABEL[kind].toLowerCase()}`}>
+              <button
+                className={`v3-btn xs${kind === "guion" ? " primary" : ""}`}
+                onClick={onGenerate}
+                disabled={busy}
+                title={`Regenerar ${SLOT_LABEL[kind].toLowerCase()}`}
+              >
                 {busy ? "lanzando…" : "Regenerar"}
               </button>
               <button className="v3-btn xs ghost" onClick={onGenerateAdvanced} title="Formulario avanzado">
@@ -326,7 +425,7 @@ function Slot({ kind, entity, detail, expanded, busy, onToggle, onGenerate, onGe
       )}
 
       {expanded && (
-        <div className="v3-slot-body">
+        <div className={`v3-slot-body kind-${kind}`}>
           <SlotViewer kind={kind} entity={entity} slotMeta={slotMeta} />
           <SlotLogFull kind={kind} entity={entity} slotMeta={slotMeta} onOpenAI={onOpenAI} />
         </div>
@@ -404,8 +503,11 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
   onOpenAI: (c?: unknown) => void;
 }) {
   if (kind === "pdf") return null;
+  // Si no hay log asociado al pipeline, no renderizamos nada: evita el
+  // bloque "(sin log de X para Y)" que ensucia el visor en slots vacíos.
+  if (!slotMeta?.log_path) return null;
+
   const pipe = SLOT_PIPELINE[kind];
-  const logUrl = slotMeta?.log_path ? `/files/${slotMeta.log_path}` : null;
   return (
     <div style={{ marginTop: 12 }}>
       <div style={{
@@ -414,9 +516,9 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
       }}>
         <span style={{ fontFamily: "var(--f-mono)", fontSize: 10.5, letterSpacing: "0.14em",
                        textTransform: "uppercase", color: "var(--text-mute)" }}>
-          Log de generación · {pipe}
-          {slotMeta?.log_mtime_human && slotMeta.log_mtime_human !== "—"
-            ? <span style={{ marginLeft: 8, letterSpacing: 0, textTransform: "none" }}>· {slotMeta.log_mtime_human}</span>
+          Actividad · {pipe}
+          {slotMeta.log_mtime_human && slotMeta.log_mtime_human !== "—"
+            ? <span style={{ marginLeft: 8, letterSpacing: 0, textTransform: "none" }}>· última run {slotMeta.log_mtime_human}</span>
             : null}
         </span>
         <button className="v3-btn xs ghost"
@@ -424,31 +526,24 @@ function SlotLogFull({ kind, entity, slotMeta, onOpenAI }: {
           Diagnosticar con IA
         </button>
       </div>
-      <LogFileViewer url={logUrl} kind={kind} entityId={entity.id}/>
+      <EntityLogViewer entityId={entity.id} kind={kind}/>
     </div>
   );
 }
 
-function LogFileViewer({ url, kind, entityId }: { url: string | null; kind: string; entityId: string }) {
-  const [text, setText] = React.useState<string>("Cargando log…");
-  React.useEffect(() => {
-    if (!url) {
-      setText(`(sin log de ${kind} para ${entityId})`);
-      return;
-    }
-    let cancel = false;
-    fetch(url)
-      .then((r) => r.ok ? r.text() : Promise.reject(r.status))
-      .then((t) => {
-        if (!cancel) {
-          // Mostrar las últimas 80 líneas (suficiente para diagnosticar).
-          const lines = t.split("\n");
-          setText(lines.slice(-80).join("\n"));
-        }
-      })
-      .catch((e) => { if (!cancel) setText(`(error al leer log: ${e})`); });
-    return () => { cancel = true; };
-  }, [url, kind, entityId]);
+/**
+ * Visor del log de actividad de una entidad. Consume /api/entity/{id}/log-lines
+ * vía useEntityLogLines: el backend filtra el daylog por la entidad y devuelve
+ * solo las líneas relevantes (en vez de bajar el log entero al cliente).
+ */
+function EntityLogViewer({ entityId, kind }: { entityId: string; kind: string }) {
+  const { data, loading } = useEntityLogLines(entityId, 7, 200);
+  if (loading) return <pre>Cargando actividad…</pre>;
+  if (!data.ok && data.error) return <pre>(error: {data.error})</pre>;
+  if (!data.entries.length) {
+    return <pre>(sin actividad de {kind} para {entityId} en los últimos 7 días)</pre>;
+  }
+  const text = data.entries.map((e) => `[${e.day}] ${e.line}`).join("\n");
   return <pre>{text}</pre>;
 }
 
@@ -459,13 +554,15 @@ function TemaCard({ tema, onClick }: { tema: { id: string; title: string; state:
   const total = SLOT_KINDS.length;
   const pct = Math.round((done / total) * 100);
   const tnum = tema.id.split("_").slice(1).join("_");
+  const status: "ok" | "warn" | "empty" = done === total ? "ok" : done > 0 ? "warn" : "empty";
   return (
-    <div className="v3-mod" onClick={onClick}>
-      <span className="v3-mod-pct">{pct}%</span>
+    <div className="v3-mod" onClick={onClick} title={`Abrir ${tema.id}`}>
       <div className="v3-mod-row">
         <span className="v3-mod-id">{tnum}</span>
+        <span className={`v3-mod-state-dot ${status}`}/>
+        <span className="v3-mod-meta">{done}/{total} · {pct}%</span>
       </div>
-      <div className="v3-mod-name">{tema.title.replace(/^T\d+ — /, "")}</div>
+      <div className="v3-mod-name">{cleanEpisodeTitle(tema.title, "T")}</div>
       <div className="v3-mod-children">
         {SLOT_KINDS.map((k) => (
           <span key={k} className={`v3-mod-child ${(tema.state[k] ?? "empty") === "ok" ? "ok" : (tema.state[k] ?? "empty") === "warn" ? "warn" : (tema.state[k] ?? "empty") === "alert" ? "alert" : ""}`}/>
@@ -568,6 +665,146 @@ function shortenPath(p: string): string {
   const parts = p.split("/");
   if (parts.length <= 2) return p;
   return parts.slice(-2).join("/");
+}
+
+// ════════════════════════ Episode Runs Panel ═════════════════════════
+//
+// Timeline de las ejecuciones reales (runs) del día-log asociadas a este
+// episodio. Lee /api/entity/<id>/runs (parseado por
+// cockpit.core.log_validator.parse_log) y pinta una card por run con:
+//   · estado (ok / error / running) + script + tiempo transcurrido
+//   · pasos completados (load_spec ✓ generate ✓ validate ✓ save ✓)
+//   · llamadas IA (intentadas / OK / error)
+//   · retries · último error si lo hay
+//
+// Es la pieza que conecta la página del episodio con el sistema de logs
+// nuevo (docs/logging.md): cada vez que el operador ejecuta un pipeline
+// (M, T o S), aquí aparece en tiempo real el detalle de lo que pasó.
+
+function EpisodeRunsPanel({ entityId }: { entityId: string }) {
+  const { data, loading, refresh } = useEntityRuns(entityId, 14, 20);
+  const runs = data.runs || [];
+
+  return (
+    <div className="v3-live" style={{ marginTop: 16 }}>
+      <div className="v3-live-hd">
+        <span className={`v3-live-dot${runs.some((r) => r.status === "running") ? " running" : ""}`}/>
+        Ejecuciones
+        <span className="v3-live-meta">
+          {loading ? "cargando…"
+            : runs.length === 0 ? "sin actividad"
+            : `${runs.length} run${runs.length !== 1 ? "s" : ""}`}
+        </span>
+        <button
+          className="v3-btn xs ghost"
+          style={{ marginLeft: "auto" }}
+          onClick={refresh}
+          title="Recargar el día-log"
+        >
+          <Icon name="check" size={10}/>
+        </button>
+      </div>
+      <div className="v3-live-body">
+        {!loading && runs.length === 0 && (
+          <div className="v3-live-empty">
+            Sin runs registrados en los últimos 14 días.<br/>
+            Cuando lances el pipeline (Regenerar guion / audio / vídeo)
+            aparecerá aquí.
+          </div>
+        )}
+        {runs.map((r) => (
+          <RunCard key={r.run_id} run={r}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RunCard({ run }: { run: RunSummary }) {
+  const status = run.status;
+  const pillCls = status === "ok"      ? "ok"
+                : status === "error"   ? "alert"
+                : status === "running" ? "y"
+                : "dim";
+  const elapsed = run.elapsed_s != null ? `${run.elapsed_s.toFixed(1)}s` : "—";
+  const started = run.started_at ? new Date(run.started_at) : null;
+  const startedHuman = started
+    ? started.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+        + " · " + started.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })
+    : "—";
+  const scriptShort = run.script.replace(/\.py$/, "");
+  const aiSummary = (() => {
+    const { started: s, ok, error } = run.ai_calls;
+    if (s === 0 && ok === 0 && error === 0) return null;
+    const parts: string[] = [];
+    if (ok > 0) parts.push(`${ok} ok`);
+    if (error > 0) parts.push(`${error} fail`);
+    if (s !== ok + error) parts.push(`${s - ok - error} sin cerrar`);
+    return parts.join(" · ");
+  })();
+
+  return (
+    <div className="v3-live-card" style={{ borderLeft: `3px solid ${
+      status === "ok"    ? "var(--ok)"
+    : status === "error" ? "var(--alert)"
+    : status === "running" ? "var(--y)"
+    : "var(--border-2)"
+    }` }}>
+      <div className="v3-live-card-head" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <span className={`v3-pill ${pillCls}`}>
+          <span className="v3-pill-dot"/>{status}
+        </span>
+        <span className="v3-live-card-elapsed">{elapsed}</span>
+        <span style={{
+          marginLeft: "auto",
+          fontFamily: "var(--f-mono)", fontSize: 10,
+          color: "var(--text-mute)",
+        }}>
+          {startedHuman}
+        </span>
+      </div>
+      <div className="v3-live-card-script" style={{ marginTop: 4 }}>{scriptShort}</div>
+      {run.steps.length > 0 && (
+        <div style={{
+          marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4,
+          fontFamily: "var(--f-mono)", fontSize: 10,
+        }}>
+          {run.steps.map((s, i) => (
+            <span key={i} style={{
+              color: "var(--ok)", padding: "2px 6px",
+              border: "1px solid var(--border-2)",
+            }}>
+              ✓ {s}
+            </span>
+          ))}
+        </div>
+      )}
+      {(aiSummary || run.retries > 0) && (
+        <div style={{
+          marginTop: 6,
+          fontFamily: "var(--f-mono)", fontSize: 10, color: "var(--text-mute)",
+        }}>
+          {aiSummary && <span>IA · {aiSummary}</span>}
+          {run.retries > 0 && (
+            <span style={{ marginLeft: 10, color: "var(--warn)" }}>
+              retries · {run.retries}
+            </span>
+          )}
+          <span style={{ marginLeft: 10 }}>run {run.run_id}</span>
+        </div>
+      )}
+      {run.last_error && (
+        <div style={{
+          marginTop: 6,
+          fontFamily: "var(--f-mono)", fontSize: 10, color: "var(--alert)",
+          padding: "4px 6px", background: "var(--bg)",
+          whiteSpace: "pre-wrap", wordBreak: "break-all",
+        }}>
+          {run.last_error}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ────────────────── helpers ──────────────────

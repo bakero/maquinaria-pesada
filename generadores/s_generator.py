@@ -25,8 +25,19 @@ Reglas duras de formato v6:
    Si necesitas más palabras, añade un caso o métrica concreta antes del
    cierre. Si tienes demasiadas, recorta el ejemplo. El rango operativo
    es 170-190 — apunta ahí. PROHIBIDO entregar 130-155 o 200+.
-3. Estructura interna (no obligatoria como cabeceras): HOOK 5-7s,
+3. Estructura interna (OBLIGATORIA, sin cabeceras): HOOK 5-7s,
    DEFINICIÓN 18-22s, EJEMPLO 28-35s, APLICACIÓN/GANCHO 12-18s.
+
+3.1 ⚠️ EJEMPLO OBLIGATORIO con CASO REAL DE EMPRESA + RESULTADO MEDIDO en cifra.
+   Antes del cierre canónico, INCLUYE SIEMPRE una frase de la forma:
+   "[Empresa real] [implementó esto/aplicó esta técnica/desplegó X] y
+   consiguió [cifra concreta]".
+   Empresas válidas: Morgan Stanley, JPMorgan, Harvey AI, Lemonade, OpenAI,
+   Anthropic, Google, Microsoft, IBM, BBVA, Santander, Zara, Netflix,
+   Spotify, Meta, NVIDIA, GitHub, Stripe, Walmart, Amazon, Pfizer, Roche.
+   La cifra debe ser concreta y en palabras: "el ochenta por ciento", "diez
+   veces más rápido", "tres semanas a tres horas", "millones de dolares de
+   ahorro". Sin este ejemplo NO entregues el Short.
 4. La PRIMERA frase del Short es el HOOK y debe encajar en UNA de estas
    plantillas (elige una y aplícala SIN AMBIGÜEDAD):
    - H1 contradicción: empieza con una afirmación adversativa explícita
@@ -61,8 +72,11 @@ Reglas duras de formato v6:
 8. Aviso de IA: NO se narra. Va en la descripción + texto en pantalla.
 9. Una idea técnica central, máximo un tecnicismo secundario aterrizado.
 10. Frases ≤28 palabras. No más de 2 frases cortas seguidas.
-11. CUENTA las palabras antes de entregar — debe estar entre 157 y 198.
-    Si te quedas corto, AÑADE un ejemplo concreto antes del cierre.
+11. ⚠️⚠️ CUENTA LAS PALABRAS antes de entregar. DEBE estar entre 157 y 198.
+    Si te quedas en 110-156 (corto), EXPANDE el EJEMPLO (regla 3.1) con
+    una métrica adicional o un segundo caso de empresa, hasta llegar a
+    170-185. NO ENTREGUES un Short por debajo de 157 palabras — el
+    validador lo rechaza HARD-FAIL. Apunta a 175 palabras como objetivo.
 
 Devuelve SOLO el texto narrado del Short. PROHIBIDO devolver:
 - Cabeceras tipo "# BORRADOR", "## PLAN", "# TEXTO NARRADO", "# HOOK", "# CIERRE".
@@ -142,7 +156,14 @@ def generate(episode_id: str, term: str,
         max_output_tokens=1000, temperature=0.7,
         apply_ssml_pauses=False,  # S es texto narrativo, sin secciones
         validate_fn=_validate_factory(n, voice, filename),
-        # S es barato (Haiku, ~7s) y suele patinar en word_count. Más retries.
-        max_retries=8,
+        # S es muy barato (Haiku) — 3 retries cubre el grueso del retry-rate.
+        # El system prompt no llega a 4096 tokens, así que no aplicamos cache.
+        # S sube a 5 retries (antes 3) tras smoke test 2026-05-18: Haiku
+        # tiende a quedarse en 130-150 palabras y necesita 2-3 retries con
+        # feedback explícito para llegar al target 157-198. Coste marginal
+        # (~$0.001 por retry extra de Haiku).
+        max_retries=bg.env_max_retries("S", 5),
+        # En Shorts el patch retry no aporta (es texto único, sin secciones).
+        retry_strategy="full",
     )
     return bg.run_pipeline(request)

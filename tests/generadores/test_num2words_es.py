@@ -11,11 +11,19 @@ sys.path.insert(0, str(ROOT))
 
 from generadores.shared import num2words_es as n2w  # noqa: E402
 
+# num2words_es.py declara la lib `num2words` como opcional (try/except), pero
+# para n>=1000 el fallback nativo devuelve la cifra literal. Los casos que la
+# necesitan se skippean si la lib no está; los <1000 cubren el fallback.
+_NEEDS_LIB = not n2w._HAS_NUM2WORDS
+
 
 @pytest.mark.parametrize("n,expected_contains", [
     (0, "cero"), (1, "uno"), (10, "diez"), (15, "quince"),
     (21, "veinti"), (100, "cien"), (123, "ciento"),
-    (1000, "mil"), (2024, "dos mil"),
+    pytest.param(1000, "mil",
+                 marks=pytest.mark.skipif(_NEEDS_LIB, reason="requires num2words")),
+    pytest.param(2024, "dos mil",
+                 marks=pytest.mark.skipif(_NEEDS_LIB, reason="requires num2words")),
 ])
 def test_spell_integer_known_values(n, expected_contains):
     s = n2w.spell_integer(n)
@@ -53,6 +61,7 @@ def test_replace_numbers_dollar_millions():
     assert "$3M" not in out
 
 
+@pytest.mark.skipif(_NEEDS_LIB, reason="requires num2words for n>=1000")
 def test_replace_numbers_year_kept_as_words():
     out = n2w.replace_numbers_in_text("el paper de 2017 introdujo")
     assert "2017" not in out

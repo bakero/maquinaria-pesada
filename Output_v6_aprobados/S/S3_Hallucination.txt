@@ -1,0 +1,9 @@
+¿Sabes por qué tu chatbot empresarial sigue inventándose cifras pese a haber leído toda la documentación interna? Eso es una alucinación. Los modelos de lenguaje generan información completamente falsa pero la presentan con total confianza, como si fuera verdad absoluta.
+
+Sucede porque estos modelos no entienden el significado real. Solo predicen cuál es la siguiente palabra más probable basándose en patrones estadísticos del entrenamiento. A veces, esa predicción encadena palabras que suenan coherentes pero son completamente inventadas.
+
+Imagina un abogado que consulta un ele ele eme, grandes modelos de lenguaje, sobre jurisprudencia. El modelo genera una sentencia judicial que nunca existió, con fecha, número de expediente y todo. El abogado la cita en un documento oficial. Desastre total.
+
+Las alucinaciones ocurren porque el modelo predice tokens sin acceso real a datos verificados. No tiene mecanismo interno para decir "no sé". Simplemente continúa prediciendo, generando confianza en lo falso. Las empresas lo combaten con recuperación de información externa y validación humana, pero sigue siendo uno de los mayores riesgos en producción.
+
+Más sobre hallucination en el episodio T de MaquinarIA Pesada.

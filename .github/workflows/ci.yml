@@ -22,6 +22,20 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install ruff pytest python-dotenv pip-audit
+          # Las deps de abajo cubren tests preexistentes que estaban rojos
+          # en lint-and-test porque el job sólo instalaba ruff+pytest:
+          #   - elevenlabs/pydub/httpx → import de generar_episodio_v2.py
+          #     en tests/test_generar_episodio.py (aborta con SystemExit)
+          #   - pdfplumber → import de guion_common.py en
+          #     tests/test_guion_common.py
+          #   - anthropic/openai/fastapi/uvicorn/psutil → imports en
+          #     cockpit.core (ai_client, monitor, web_server)
+          # Se instalan puntualmente (no `pip install -r requirements-cockpit.txt`)
+          # para mantener el job ligero — el job e2e ya instala el archivo entero.
+          # `num2words` se omite a propósito: la lib es opcional (try/except en
+          # generadores/shared/num2words_es.py) y los tests >=1000 se skippean.
+          pip install elevenlabs pydub httpx anthropic openai fastapi uvicorn \
+            psutil pdfplumber
 
       - name: Verify .env.example is committed
         run: test -f .env.example
@@ -32,9 +46,62 @@ jobs:
       - name: Ruff lint (cockpit + tests)
         run: ruff check cockpit/ tests/
 
-      - name: Run tests
-        run: pytest tests/ -q
+      - name: Run tests (sin e2e — el job e2e los corre aparte)
+        run: pytest tests/ -q --ignore=tests/test_e2e_vite.py
 
       - name: Audit cockpit dependencies (non-blocking)
         run: pip-audit --requirement requirements-cockpit.txt --strict || true
         continue-on-error: true
+
+  e2e-cockpit-v3:
+    # Suite Playwright contra el build real de vite_app/dist + ThreadedServer.
+    # Cubre el shell v3 (TopNav, ⌘K, AIDrawer), PageProduccion, PageModuloTema
+    # (sibling rail sticky, botón Regenerar guion amarillo, SlotLogFull oculto
+    # sin log, EntityLogViewer), PageDatos/PageSistema y endpoints /files,
+    # /api/run, /api/episode/{id}/generate, /api/api-keys, /api/ai/chat.
+    name: E2E cockpit v3
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: vite_app/package-lock.json
+
+      - name: Install Python deps (cockpit + e2e)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-cockpit.txt
+          pip install pytest pytest-playwright anthropic
+
+      - name: Build Vite app
+        working-directory: vite_app
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install Playwright chromium (+ system deps)
+        run: playwright install --with-deps chromium
+
+      - name: Run E2E suite
+        run: python -m pytest tests/test_e2e_vite.py -v --tb=short
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

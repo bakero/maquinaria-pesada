@@ -315,6 +315,9 @@ def build_verification_section(
 # ---------------------------------------------------------------------------
 
 def main() -> None:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("generar_guion_t")
+
     parser = argparse.ArgumentParser(description="Generador de guiones T — MaquinarIA Pesada")
     parser.add_argument("--pdf",          required=True,  help="Ruta al PDF del tema (ej: PDFs/temas/M1_T11_limitaciones_llms.pdf)")
     parser.add_argument("--spec",         default=str(SPEC_PATH), help="Ruta a PODCAST_T_SPEC.md")
@@ -322,6 +325,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # ── Cargar spec ─────────────────────────────────────────────────────────
+    log.step("load_spec", spec=args.spec)
     spec          = load_spec(args.spec)
     spec_markdown = read_text(Path(args.spec))
 
@@ -356,6 +360,7 @@ def main() -> None:
     usage  = TokenUsage()
 
     # ── Conceptos ────────────────────────────────────────────────────────────
+    log.step("extract_concepts", pdf=str(pdf_path), topic=topic_display, modulo=modulo_n)
     print("  [1/3] Extrayendo conceptos del PDF...")
     concept_list = extract_concepts_with_claude(client, spec, pdf_text, topic_display, usage)
     if not concept_list:
@@ -389,7 +394,11 @@ def main() -> None:
     best_issues: list[str] = []
     best_score: tuple[int, int, int] = (999, 999, 999)  # (hard_count, word_deficit, soft_count)
 
+    log.step("generate", model=gen_model, max_intentos=args.max_intentos)
     for attempt in range(1, args.max_intentos + 1):
+        if attempt > 1:
+            log.retry(attempt=attempt, reason="hard_fails",
+                      previous_hard=len([i for i in best_issues if not i.startswith("[WARN]")]))
         print(f"\n  [2/3] Generando guion (intento {attempt}/{args.max_intentos})...")
 
         feedback_issues = best_issues if best_issues else local_issues
@@ -494,6 +503,8 @@ def main() -> None:
             hard_issues = hard_issues + extra_hard
 
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
+        log.info("validate · intento", attempt=attempt,
+                 hard=len(hard_issues), soft=len(soft_issues))
         for issue in hard_issues:
             print(f"         FAIL: {issue}")
         for issue in soft_issues:
@@ -521,10 +532,22 @@ def main() -> None:
             print(f"\n  [WARN] Max intentos. Guardando mejor intento ({best_score[0]} hard, {best_score[2]} soft).")
             draft = best_draft
 
-    # ── Guardar ──────────────────────────────────────────────────────────────
+    # ── Validate (final) + Guardar ─────────────────────────────────────────
+    log.step("validate")
+    final_hard = [i for i in local_issues if not i.startswith("[WARN]")]
+    final_soft = [i for i in local_issues if i.startswith("[WARN]")]
+    log.info("validación final", hard=len(final_hard), soft=len(final_soft))
+
+    log.step("save", path=str(guion_path))
     print("\n  [3/3] Guardando...")
     guion_path.parent.mkdir(parents=True, exist_ok=True)
     guion_path.write_text(draft.rstrip() + "\n", encoding="utf-8")
+    if final_hard:
+        log.warn("guion T guardado con hard-fails", path=str(guion_path),
+                 hard=len(final_hard), tokens_total=usage.total)
+    else:
+        log.ok("guion T guardado", path=str(guion_path),
+               tokens_total=usage.total)
 
     print(f"\n{'='*60}")
     print(f"  GUION T GENERADO : {guion_path}")

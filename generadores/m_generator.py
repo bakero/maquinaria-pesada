@@ -9,6 +9,7 @@ from pathlib import Path
 
 from generadores import base_generator as bg
 from generadores.shared import ficha_aplicacion, pdf_reader, pre_writing
+from generadores.shared.anthropic_client import CacheableBlock
 from validators import m_validator
 from validators.result import ValidationResult
 
@@ -281,9 +282,13 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
         "   COMO el primer concepto, dichos por el opener — EN UN ÚNICO BLOQUE.\n"
         "   NUNCA dejes la apertura sola en un bloque (sería una intervención extra\n"
         "   y harías que el recuento se vaya a 6 = HARD-FAIL).\n"
-        "4. CIERRE_FINAL: incluye palabra-por-palabra la frase canónica:\n"
-        "   \"Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
-        "   \"Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.\"\n"
+        "4. CIERRE_FINAL: incluye la frase canónica de cierre.\n"
+        "   ⚠️ CRÍTICO: escribe 'I.A.' con PUNTOS (NO expandas a 'inteligencia\n"
+        "   artificial'). El TTS lo pronunciará 'i-a' como marca, coherente\n"
+        "   con 'MaquinarIA'. Las tildes son válidas y se aceptan.\n"
+        "   Frase exacta a incluir literal:\n"
+        "   \"Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
+        "   \"Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.\"\n"
         "5. APLICACION_PRACTICA: Maria DEBE quedar entre 30% y 40% del total de palabras.\n"
         "   Para lograrlo: Maria abre el caso con UN turno LARGO de 120-150 palabras\n"
         "   (no menos), Yago detalla en 2-3 turnos de 140-200 palabras, y el cierre\n"
@@ -323,13 +328,17 @@ def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResul
     """Genera el guion de un episodio M y devuelve el PipelineResult."""
     repo_root = (repo_root or Path(__file__).resolve().parents[1]).resolve()
     user_prompt = build_user_prompt(episode_id=episode_id, repo_root=repo_root)
+    # SYSTEM_PROMPT cacheado con TTL 1h (estable entre TODOS los episodios).
+    # El user_prompt cambia por episodio y NO se cachea — preserva el efecto
+    # v6 del checklist enforcement detallado.
     request = bg.PipelineRequest(
         episode_id=episode_id, kind="M",
-        system_prompt=SYSTEM_PROMPT, user_prompt=user_prompt,
+        system_blocks=[CacheableBlock(text=SYSTEM_PROMPT, ttl="1h")],
+        user_prompt=user_prompt,
         model=MODEL, repo_root=repo_root,
         max_output_tokens=10000, temperature=0.7,
         validate_fn=_validate_factory(repo_root),
-        max_retries=5,
+        max_retries=bg.env_max_retries("M", 3),
         # M permite 3-4 fuentes con años distintos. Si el modelo se pasa,
         # recortamos al máximo (4).
         trim_fuentes_max_years=4,

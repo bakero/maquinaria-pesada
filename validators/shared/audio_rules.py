@@ -103,13 +103,17 @@ def _looks_like_reaction(body: str) -> bool:
 
 
 def check_reaction_length(interventions: list[str],
-                          reaction_word_limit: int = 15) -> ValidationResult:
+                          reaction_word_limit: int = 22) -> ValidationResult:
     """Hard-fail si una intervención que parece reacción/pregunta supera el
     límite de palabras.
 
     "Parece reacción" implica: ≤2 frases Y (es pregunta O empieza con
     muletilla típica). Una afirmación normal de 1 frase larga no se cuenta
     como reacción.
+
+    Límite por defecto subido de 15 → 22 tras smoke test 2026-05-18: las
+    preguntas con contexto narrativo ("¿cómo X? Porque Y") añaden valor
+    editorial sin romper el ritmo. 22 palabras ≈ 7-8s, sigue siendo breve.
     """
     offenders: list[dict] = []
     for idx, raw in enumerate(interventions):
@@ -197,7 +201,7 @@ def check_consecutive_short_sentences(
 
 
 def check_all(interventions: list[str], *,
-              reaction_word_limit: int = 15,
+              reaction_word_limit: int = 22,
               max_words: int = 200,
               max_words_per_sentence: int = 32,
               max_consecutive_short: int = 3) -> list[ValidationResult]:

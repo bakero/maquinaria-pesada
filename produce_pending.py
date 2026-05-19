@@ -36,6 +36,10 @@ def already_done(ep: str) -> bool:
 
 
 def main():
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("produce_pending")
+
+    log.step("scan_pending")
     pending = []
     for f in sorted(GUIONES.glob("*.txt")):
         ep = ep_code_from_filename(f.name)
@@ -43,15 +47,18 @@ def main():
             continue
         pending.append((ep, f))
 
+    log.info("pendientes detectados", count=len(pending))
     print(f"Pendientes: {len(pending)}")
     for ep, _ in pending:
         print(f"  - {ep}")
     print()
 
+    log.step("produce", total=len(pending))
     failed = []
     for i, (ep, guion) in enumerate(pending, 1):
         t = detect_type(guion.name)
         spec = "PODCAST_T_SPEC.md" if t == "T" else "PODCAST_M_SPEC.md"
+        log.info("produciendo episodio", ep=ep, kind=t, idx=i, total=len(pending))
         print(f"\n[{i}/{len(pending)}] === {ep} ({t}) ===")
         t0 = time.time()
         result = subprocess.run(
@@ -74,14 +81,19 @@ def main():
         status = "OK" if ok else "FAIL"
         size_mb = mp3.stat().st_size / 1_048_576 if mp3.exists() else 0
         print(f"  -> {status}  {elapsed/60:.1f} min  {size_mb:.1f} MB")
-        if not ok:
+        if ok:
+            log.ok("episodio producido", ep=ep, elapsed_s=round(elapsed, 1), size_mb=round(size_mb, 1))
+        else:
+            log.error("episodio falló", ep=ep, elapsed_s=round(elapsed, 1), returncode=result.returncode)
             failed.append(ep)
 
-    print(f"\n========== RESUMEN ==========")
+    print("\n========== RESUMEN ==========")
     print(f"Total: {len(pending)}  OK: {len(pending)-len(failed)}  FAIL: {len(failed)}")
     if failed:
         print(f"Fallaron: {failed}")
+        log.error("ejecución con episodios fallidos", failed=",".join(failed))
         return 1
+    log.ok("todos los episodios producidos", total=len(pending))
     return 0
 
 

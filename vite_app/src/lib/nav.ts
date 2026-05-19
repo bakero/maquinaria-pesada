@@ -85,7 +85,7 @@ export const NAV_GROUPS: NavGroup[] = [
 // Páginas válidas que el router del shell sabe renderizar.
 export const WIRED = new Set<string>([
   // v3 — 3 destinos del top-nav industrial + drill-downs
-  "produccion", "modulo", "tema", "datos", "sistema",
+  "produccion", "modulo", "tema", "short", "datos", "sistema",
   // sub-pages alcanzables vía palette / deep-link (renderizadas dentro de
   // los wrappers Datos / Sistema)
   "consumo", "metricas", "optimizar", "logs",

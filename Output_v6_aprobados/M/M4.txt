@@ -1,0 +1,115 @@
+# HOOK
+MARIA: [enfático] Imagina que puedes enseñar a una máquina a reconocer un gato mostrándole millones de fotos, sin explicarle jamás qué es un bigote, una oreja o una cola. Imagina que esa misma máquina puede después aprender a leer radiografías, conducir coches o traducir idiomas, todo partiendo del mismo principio: capas de neuronas artificiales que aprenden representaciones jerárquicas directamente de los datos brutos. Eso es deep learning. Y en dos mil doce, cuando AlexNet arrasó en la competición ImageNet con un margen nunca visto, el mundo entendió que algo había cambiado para siempre. Hoy, en dos mil veinticinco, los modelos de lenguaje que usas cada día, los sistemas de visión que inspeccionan fábricas y los agentes que razonan sobre problemas complejos, todos descansan sobre la misma arquitectura: redes neuronales profundas entrenadas con back propa gation, optimizadores adaptativos y cantidades industriales de datos. Este es el módulo cuatro del máster. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [natural] Suena la intro del podcast.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [conversacional] Hola, soy Maria, y estamos en el cuarto capítulo del máster en inteligencia artificial.
+
+<break time="500ms"/>
+IAGO: [conversacional] Hola, soy Yago. Hoy hablamos de deep learning, la tecnología que ha producido los avances más espectaculares en IA de los últimos quince años.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de seguir, recuerda que este contenido ha sido generado por un sistema automático de inteligencia artificial a partir del material del máster. Hemos revisado la estructura y la coherencia, pero puede contener errores o imprecisiones. Si detectas algo que no encaja, consúltalo con las fuentes oficiales del programa.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] El deep learning no es magia. Es álgebra lineal, funciones de activación no lineales y descenso del gradiente, aplicados a enormes cantidades de datos y poder computacional. Lo que lo hace difícil de entender intuitivamente es la escala. Un modelo de lenguaje moderno tiene miles de millones de parámetros organizados en cientos de capas, procesando secuencias de miles de tokens. Pero los principios básicos son exactamente los mismos que en una red neuronal de tres capas y cien parámetros. La diferencia está en la capacidad de aprender representaciones jerárquicas de los datos sin que nadie le diga qué características buscar. Una red profunda aprende automáticamente qué rasgos son relevantes y cómo combinarlos para hacer predicciones. Eso es lo que la distingue de todos los enfoques anteriores.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y por qué necesitamos tantas capas?
+
+<break time="500ms"/>
+IAGO: [explicativo] Porque cada capa aprende un nivel de abstracción distinto. En visión por computadora, las primeras capas detectan bordes y texturas simples. Las capas intermedias combinan esos bordes en formas geométricas, esquinas, patrones. Las capas más profundas reconocen objetos completos, caras, escenas enteras. Esa jerarquía de representaciones es lo que permite a una red convolucional identificar un gato en una foto sin que nadie le haya programado explícitamente qué es un bigote o una oreja. La red aprende esas características directamente de los datos brutos, capa por capa, ajustando millones de pesos mediante back propa gation. Y lo mismo ocurre en procesamiento de lenguaje: las primeras capas capturan sintaxis y morfología, las intermedias capturan semántica y relaciones entre palabras, las más profundas capturan razonamiento y contexto largo.
+
+IAGO: [analitico] Ahora bien, el deep learning es una pirámide de arquitecturas que se construyen unas sobre otras. En la base están las redes feedforward, los perceptrones multicapa, que pueden aproximar cualquier función continua con suficientes neuronas. Eso lo garantiza el teorema de aproximación universal. Sobre ellas, las redes convolucionales añaden una inducción clave: las características locales son reutilizables en diferentes posiciones del espacio. Por eso funcionan tan bien para imágenes. Las redes recurrentes, las ele ese te eme, red de memoria a largo y corto plazo, y las GRU, añaden la inducción de que el orden de los elementos en una secuencia importa. Por eso fueron el estándar para texto y series temporales durante años. Los Transformers eliminan la necesidad de procesar las secuencias en orden usando mecanismos de atención, lo que permite el procesamiento paralelo y captura dependencias de largo alcance sin el problema del desvanecimiento del gradiente. Y los modelos de lenguaje grandes son Transformers escalados que han demostrado capacidades emergentes de razonamiento cuando se entrenan con suficientes datos y suficiente cómputo.
+
+<break time="500ms"/>
+MARIA: [reflexivo] O sea, no es que haya una arquitectura mágica.
+
+<break time="500ms"/>
+IAGO: [claro] Exacto. Cada arquitectura resuelve un problema específico de inductividad o de eficiencia computacional. Las ce ene enes son eficientes para imágenes porque explotan la estructura espacial. Las erre ene enes fueron útiles para secuencias porque mantenían un estado oculto que capturaba el contexto. Los Transformers son superiores porque eliminan el cuello de botella secuencial y permiten entrenar en paralelo sobre secuencias largas. Pero todos comparten el mismo principio: capas de transformaciones no lineales, parámetros ajustables y aprendizaje por gradiente descendente. La elección de arquitectura depende de la estructura de tus datos, de tu presupuesto computacional y de las dependencias que necesites capturar.
+
+IAGO: [didactico] Vamos a centrarnos un momento en las redes convolucionales, porque son el caso más intuitivo y porque definieron la revolución del deep learning en visión. Una ce ene ene, red neuronal convolucional, aplica filtros pequeños, kernels, que se deslizan sobre la imagen calculando el producto escalar entre el filtro y cada parche de píxeles. El resultado es un mapa de activación que indica dónde aparece el patrón que el filtro detecta. Múltiples filtros aprenden distintos tipos de patrones. Y aquí está la clave: el mismo filtro se aplica a toda la imagen. Eso se llama compartición de pesos, y reduce drásticamente el número de parámetros. Además, el mismo patrón es detectado independientemente de su posición en la imagen. Eso es invariancia a la traslación. Esas dos propiedades hacen que las ce ene enes sean extremadamente eficientes para datos con estructura espacial.
+
+IAGO: [explicativo] Arquitecturas ce ene ene icónicas como LeNet, AlexNet, VGG, ResNet e Inception han definido el estado del arte en clasificación de imágenes en distintos momentos de la historia. LeNet fue la primera red convolucional exitosa en los noventa, usada para reconocimiento de dígitos. AlexNet ganó ImageNet en dos mil doce con un margen sin precedente, demostrando que el deep learning funcionaba a escala real. VGG mostró que apilar muchas capas pequeñas funcionaba mejor que pocas capas grandes. ResNet introdujo las conexiones residuales, que permiten entrenar redes de cientos de capas sin que el gradiente se desvanezca. Inception optimizó el uso de parámetros usando convoluciones de distintos tamaños en paralelo. Cada una de esas arquitecturas resolvió un problema específico de diseño o de entrenamiento, y todas siguen siendo relevantes hoy en aplicaciones industriales.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+MARIA: [claro] Ahora que entendemos la arquitectura, hablemos de los desafíos prácticos del entrenamiento. Porque una cosa es diseñar una red profunda en papel y otra muy distinta es conseguir que aprenda de verdad.
+
+<break time="500ms"/>
+IAGO: [serio] El problema número uno es el vanishing gradient, el gradiente que se desvanece. Cuando los gradientes se propagan hacia atrás a través de muchas capas, tienden a disminuir exponencialmente. Las capas más alejadas del output aprenden muy lentamente o directamente no aprenden. Durante años, eso limitó la profundidad de las redes que podíamos entrenar. Las soluciones vinieron de varios frentes. Primero, funciones de activación que no saturan. ReLU y sus variantes no saturan para valores positivos, así que el gradiente fluye sin atenuarse. Segundo, inicialización cuidadosa de los pesos. Xavier initialization y He initialization aseguran que las activaciones y los gradientes tengan varianza controlada al principio del entrenamiento. Tercero, conexiones residuales. ResNets añaden atajos que permiten a los gradientes fluir directamente de las capas posteriores a las anteriores sin pasar por todas las capas intermedias. Eso permite entrenar redes de cientos de capas sin colapso del gradiente.
+
+<break time="500ms"/>
+MARIA: [analitico] Y luego está el tema de los optimizadores. El descenso del gradiente estocástico básico es lento y puede quedarse atrapado en óptimos locales. Los optimizadores modernos mejoran eso añadiendo momento y tasas de aprendizaje adaptativas. Adam es el estándar de facto. Combina momento, que acelera la convergencia en la dirección de descenso constante, con tasas de aprendizaje adaptativas, que ajustan la tasa de cada parámetro individualmente basándose en el historial de gradientes. AdamW, que es Adam con decoupled weight decay, es el optimizador estándar para entrenar modelos de lenguaje grandes. Separa la penalización de weight decay del gradiente para una regularización más efectiva. Y para fain tiuning, ajuste fino del modelo, la tasa de aprendizaje óptima es típicamente diez a cien veces menor que para entrenamiento desde cero.
+
+<break time="500ms"/>
+IAGO: [explicativo] El tercer concepto clave es la regularización. El deep learning tiene sus propias técnicas específicas. Dropout desactiva aleatoriamente un porcentaje de las neuronas en cada forward pass, forzando a la red a aprender representaciones redundantes que no dependan de ninguna neurona específica. Batch Normalization normaliza las activaciones de cada capa en cada mini-batch durante el entrenamiento. Eso estabiliza el entrenamiento, permite tasas de aprendizaje más altas y actúa como regularizador. Layer Normalization es similar pero normaliza a través de las features en lugar del batch. Es el estándar en los Transformers porque funciona mejor con secuencias de longitud variable. Y Data Augmentation genera variaciones artificiales de los datos de entrenamiento. Rotaciones, recortes, cambios de brillo para imágenes. Sustitución de sinónimos, back-translation para texto. Eso aumenta efectivamente el tamaño del deitaset, conjunto de datos, y reduce el overfitting.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [conversacional] Vamos a ver cómo se aplica todo esto en un caso real. Imagina que trabajas en una empresa de diagnóstico médico por imagen. Tienes un deitaset de radiografías de tórax etiquetadas con patologías: neumonía, tuberculosis, nódulos, derrames. Quieres construir un sistema que ayude a los radiólogos a priorizar casos urgentes y a detectar patrones que puedan pasar desapercibidos en la lectura rápida. No tienes millones de imágenes etiquetadas, tienes decenas de miles. No tienes un equipo de cien ingenieros, tienes tres personas. No puedes entrenar un modelo desde cero porque el coste computacional sería prohibitivo y porque no tienes suficientes datos para que el modelo generalice bien. Entonces decides usar transfer learning y fain tiuning. Partes de un modelo preentrenado en ImageNet, una red ResNet o EfficientNet que ya sabe reconocer formas, texturas, bordes, patrones visuales generales. Congelas las capas más profundas, que contienen conocimiento visual genérico, y reentrenas solo las últimas capas sobre tu deitaset médico específico. Eso te permite aprovechar el conocimiento aprendido en millones de imágenes naturales y adaptarlo a tu dominio con una fracción del coste y del tiempo.
+
+<break time="500ms"/>
+IAGO: [didactico] El proceso técnico tiene varias fases. Primero, seleccionas el modelo base. ResNet cincuenta o EfficientNet B cero son opciones estándar. Ambos están preentrenados en ImageNet y tienen pesos públicos disponibles en hagin feis, plataforma comunitaria de modelos de IA, o en las librerías oficiales de paitorch y tensorflou, biblioteca de aprendizaje profundo. Segundo, reemplazas la capa de clasificación final. El modelo original clasifica mil categorías de ImageNet. Tú necesitas clasificar cinco o diez patologías. Así que eliminas la última capa fully connected y añades una nueva con el número correcto de salidas. Tercero, decides qué capas congelar. Las primeras capas aprenden características muy generales, bordes y texturas, que son útiles en cualquier dominio visual. Las últimas capas aprenden características más específicas de la tarea original. La estrategia típica es congelar todas las capas convolucionales y entrenar solo la nueva cabeza de clasificación durante unas pocas épocas. Después, descongelas las últimas capas convolucionales y haces fain tiuning con una tasa de aprendizaje muy baja, diez veces menor que la tasa inicial. Eso permite que el modelo ajuste las características de alto nivel al dominio médico sin destruir el conocimiento previo.
+
+IAGO: [explicativo] Cuarto, preparas el paiplain, flujo de procesamiento, de datos. Las imágenes médicas suelen venir en formatos específicos como DICOM. Necesitas convertirlas a formato estándar, normalizarlas, aplicar data augmentation. Para radiografías, las augmentations útiles incluyen rotaciones pequeñas, traslaciones, cambios de contraste y brillo, pero no flips horizontales si la lateralidad importa clínicamente. Quinto, defines la función de pérdida y las métricas. Si las clases están desbalanceadas, que es lo habitual en medicina, usas weighted cross-entropy o focal loss para penalizar más los errores en las clases minoritarias. Las métricas deben incluir precisión, recall, F1 y AUC-ROC por clase, porque en diagnóstico médico el coste de un falso negativo no es el mismo que el de un falso positivo. Sexto, entrenas con early stopping y guardas el mejor checkpoint según validación. Séptimo, evalúas en un test set separado y calculas intervalos de confianza. Y octavo, analizas los errores. Visualizas las imágenes que el modelo clasifica mal, identificas patrones sistemáticos, ajustas el paiplain o el balanceo de clases si es necesario.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y al final del proceso, tienes un modelo que funciona en tu dominio específico sin haber necesitado entrenar desde cero. El transfer learning y el fain tiuning son la razón por la que hoy cualquier empresa puede construir sistemas de visión competitivos sin tener los recursos de Google o Meta.
+
+<break time="500ms"/>
+IAGO: [claro] Exacto. El paradigma del preentrenamiento más fain tiuning ha democratizado el acceso al deep learning. Ya no necesitas millones de imágenes etiquetadas ni meses de entrenamiento en clusters de ge pe us. Puedes partir de un modelo que ya aprendió representaciones visuales generales y adaptarlo a tu tarea en días o semanas con hardware modesto. Y lo mismo aplica en procesamiento de lenguaje. Los modelos de lenguaje preentrenados como bert, ge pe te, modelo generativo preentrenado, RoBERTa, han hecho posible que cualquier equipo pequeño pueda construir sistemas de clasificación de texto, extracción de entidades, respuesta a preguntas o generación, simplemente haciendo fain tiuning sobre sus datos específicos. Esa es la transformación real del deep learning en empresa.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Vamos con las fuentes clave del módulo. Primera fuente: el paper de Krizhevsky, Sutskever y Hinton, ImageNet Classification with Deep Convolutional Neural Networks, publicado en dos mil doce. Ese es el paper de AlexNet, el que demostró que el deep learning funcionaba a escala real y que desencadenó la revolución del deep learning en visión. Importa porque es el punto de inflexión histórico. Antes de AlexNet, las redes neuronales profundas eran una curiosidad académica. Después de AlexNet, se convirtieron en el estándar de la industria.
+
+<break time="500ms"/>
+MARIA: [analitico] Segunda fuente: el paper de He, Zhang, Ren y Sun, Deep Residual Learning for Image Recognition, publicado en dos mil quince. Ese es el paper de ResNet, que introdujo las conexiones residuales y permitió entrenar redes de cientos de capas sin colapso del gradiente. Importa porque resolvió uno de los problemas técnicos más duros del entrenamiento profundo y porque ResNet sigue siendo una de las arquitecturas más usadas en producción hoy.
+
+<break time="500ms"/>
+IAGO: [didactico] Tercera fuente: el paper de Kingma y Ba, Adam: A Method for Stochastic Optimization, publicado en dos mil catorce. Ese es el paper que introdujo el optimizador Adam, que se convirtió en el estándar de facto para entrenar redes neuronales profundas. Importa porque Adam hace el entrenamiento más rápido, más estable y menos sensible a la elección de hiperparámetros. Es el optimizador que usa casi todo el mundo en deep learning hoy.
+
+<break time="500ms"/>
+MARIA: [explicativo] Cuarta fuente: el survey de Zhuang y otros, A Comprehensive Survey on Transfer Learning, publicado en dos mil veinte. Ese survey cubre transfer learning, fain tiuning, domain adaptation y todas las técnicas relacionadas. Importa porque el transfer learning es el paradigma dominante en aplicaciones industriales de deep learning, y ese survey es la referencia más completa sobre el tema.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [firme] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: el deep learning aprende representaciones jerárquicas de los datos directamente de los datos brutos, sin feature engineering manual. Cada capa aprende un nivel de abstracción distinto. Eso es lo que lo distingue de todos los enfoques anteriores y lo que le da su poder.
+
+<break time="500ms"/>
+IAGO: [contundente] Segundo: las redes convolucionales explotan la estructura espacial de las imágenes mediante compartición de pesos e invariancia a la traslación. Eso reduce drásticamente el número de parámetros y hace que las ce ene enes sean extremadamente eficientes para visión por computadora.
+
+<break time="500ms"/>
+MARIA: [didactico] Tercero: el vanishing gradient es el problema técnico que limitó durante años la profundidad de las redes. Las soluciones incluyen funciones de activación como ReLU, inicialización cuidadosa de los pesos y conexiones residuales como las de ResNet.
+
+<break time="500ms"/>
+IAGO: [claro] Cuarto: los optimizadores modernos como Adam y AdamW mejoran el descenso del gradiente estocástico añadiendo momento y tasas de aprendizaje adaptativas. Eso acelera la convergencia y hace el entrenamiento más estable.
+
+<break time="500ms"/>
+MARIA: [analitico] Quinto: el transfer learning y el fain tiuning permiten adaptar modelos preentrenados a tareas específicas con una fracción del coste y del tiempo que requeriría entrenar desde cero. Ese es el paradigma dominante en aplicaciones industriales de deep learning hoy.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [conversacional] Hemos recorrido los fundamentos del deep learning, desde las arquitecturas convolucionales hasta los desafíos del entrenamiento y el paradigma del transfer learning. En el próximo módulo entraremos en procesamiento de lenguaje natural, modelos de lenguaje grandes y arquitecturas Transformer. Si quieres profundizar en estos conceptos, tienes los ocho temas del módulo cuatro disponibles en el material del máster.
+
+<break time="500ms"/>
+MARIA: [natural] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [pausado] Verificación de estructura completada. Verificación de balance de intervenciones completada. Verificación de fuentes completada. Verificación de conceptos clave completada.

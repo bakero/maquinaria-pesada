@@ -1,0 +1,161 @@
+# HOOK
+MARIA: [enfático] Mientras el mundo entero habla de Chat G P T y de modelos generativos, hay miles de sistemas críticos en bancos, aseguradoras y hospitales que toman decisiones todos los días usando algo mucho más antiguo y mucho más fiable: reglas explícitas escritas en lógica formal. Son invisibles porque funcionan. Son auditables porque cada decisión deja un rastro completo. Y son la única arquitectura que cumple con las regulaciones europeas de explicabilidad que entran en vigor este año. Hoy hablamos de I A simbólica: motores de reglas, sistemas expertos, ontologías y por qué siguen siendo la columna vertebral de la automatización empresarial seria. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [pausa de tres segundos para cortinilla]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Maria.
+MARIA: [conversacional] Y yo soy Iago. Antes de comenzar, una advertencia importante: este episodio ha sido generado por un sistema automático de I A y puede contener errores o imprecisiones. Te recomendamos contrastar la información con fuentes oficiales y consultar con expertos antes de tomar decisiones basadas en este contenido.
+MARIA: [claro] Hoy nos metemos en el tema dos del módulo uno: I A simbólica. Lógica, reglas y sistemas expertos. Vamos a ver cómo funcionan los motores de decisión que procesan millones de transacciones bancarias, aprueban créditos y verifican cumplimiento normativo en tiempo real.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] Empecemos por el contexto. En dos mil veinticinco, cuando toda la conversación pública sobre I A gira alrededor de modelos de lenguaje y redes neuronales, es fácil olvidar que una parte sustancial de los sistemas de I A críticos en producción son sistemas basados en reglas. Los motores de decisión de crédito de F I C O, los sistemas de pricing de seguros, las políticas de elegibilidad de prestaciones sociales, los sistemas de cumplimiento de normas I S O en manufactura: todos son, en esencia, I A simbólica. Son invisibles precisamente porque funcionan sin fallo desde hace décadas.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Por qué invisibles?
+
+<break time="500ms"/>
+IAGO: [explicativo] Porque no generan titulares. Un sistema de reglas que procesa cien mil solicitudes de crédito al día sin error no es noticia. Un Chat G P T que escribe un poema sí lo es. Pero la realidad es que los motores de reglas mueven la infraestructura crítica del sistema financiero global. Cuando pides un préstamo, cuando una aseguradora calcula tu prima, cuando un hospital verifica la elegibilidad de tu seguro médico, hay un motor de reglas trabajando detrás. Y la razón por la que siguen siendo la arquitectura dominante en esos sectores es triple: explicabilidad, consistencia y auditabilidad.
+
+IAGO: [firme] La explicabilidad es un requisito regulatorio. El A I Act europeo, que entró en vigor en dos mil veinticinco, exige que los sistemas de I A de alto riesgo sean capaces de explicar cada decisión. Un motor de reglas produce automáticamente un trazado completo del camino de inferencia: qué reglas se dispararon, en qué orden, con qué valores de entrada. Un modelo de red neuronal, por muy preciso que sea, no puede hacer eso de forma nativa. Necesitas técnicas adicionales de interpretabilidad como S H A P o L I M E, que son aproximaciones, no explicaciones exactas.
+
+IAGO: [analitico] La consistencia significa que la misma entrada produce siempre la misma salida. Si una regla dice que un cliente con ingresos superiores a tres mil euros al mes y sin impagos en los últimos veinticuatro meses es elegible para un producto, esa regla se aplica de forma idéntica a todos los clientes que cumplan esas condiciones. No hay variabilidad estadística, no hay sesgo introducido por datos de entrenamiento, no hay deriva del modelo. Esto es crítico en sectores regulados donde la discriminación algorítmica es un riesgo legal real.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y la auditabilidad?
+
+<break time="500ms"/>
+IAGO: [contundente] La auditabilidad es la capacidad de que un regulador, un auditor interno o un juez puedan revisar exactamente cómo se tomó una decisión específica en un momento específico. En un sistema de reglas, cada decisión queda registrada con su contexto completo. Si un cliente reclama que se le denegó un crédito de forma injusta, puedes mostrarle exactamente qué reglas se aplicaron y por qué. Eso no es solo una buena práctica: es un requisito legal bajo el R G P D europeo y bajo la Fair Credit Reporting Act en Estados Unidos. Los sistemas de I A simbólica nacieron auditables. Los modelos de aprendizaje automático tienen que hacerse auditables mediante ingeniería adicional.
+
+IAGO: [didactico] Ahora, ¿qué es exactamente la I A simbólica? Es el paradigma de I A que representa el conocimiento de forma explícita mediante símbolos y relaciones lógicas, y que razona sobre ese conocimiento aplicando reglas de inferencia formales. Frente a la I A conexionista, que aprende patrones estadísticos de los datos, la I A simbólica codifica el conocimiento de expertos humanos en estructuras lógicas que una máquina puede procesar. Los tres pilares técnicos son: lógica formal, sistemas expertos y ontologías.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Lógica formal?
+
+<break time="500ms"/>
+IAGO: [explicativo] Lógica formal es el lenguaje matemático del razonamiento explícito. La lógica proposicional trabaja con proposiciones que son verdaderas o falsas y con conectivas lógicas: AND, OR, NOT, IF-THEN. Por ejemplo: si llueve Y no tengo paraguas, entonces me mojo. La lógica de predicados de primer orden añade variables, cuantificadores como para todo o existe, y relaciones entre entidades. Permite expresar conocimiento del tipo: si un cliente tiene ingresos superiores a X Y no tiene impagos en los últimos veinticuatro meses, entonces es elegible para el producto Y. Este tipo de conocimiento es directamente transferible desde las políticas de negocio escritas en lenguaje natural a un sistema de reglas ejecutable.
+
+IAGO: [claro] Los sistemas expertos son la implementación clásica de I A simbólica. Tienen dos componentes: una base de conocimiento, que contiene las reglas y los hechos del dominio, y un motor de inferencia, que es el mecanismo que aplica las reglas sobre los hechos para derivar conclusiones. El motor de inferencia puede trabajar con encadenamiento hacia adelante, que parte de los hechos conocidos y aplica reglas para derivar nuevos hechos hasta alcanzar una conclusión, o con encadenamiento hacia atrás, que parte del objetivo que quieres demostrar y busca qué hechos y reglas lo soportarían.
+
+IAGO: [analitico] Las ontologías son representaciones formales del conocimiento de un dominio: qué conceptos existen, cómo se relacionan y qué propiedades tienen. O W L, que es Web Ontology Language, y R D F son los estándares web para ontologías. Los grafos de conocimiento como el Knowledge Graph de Google, Wikidata o los grafos internos de empresas como LinkedIn o Amazon son implementaciones a gran escala de este concepto: millones de entidades conectadas por relaciones tipadas que permiten búsqueda semántica y razonamiento sobre relaciones.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didactico] Vamos al mecanismo técnico. ¿Cómo funciona un motor de reglas empresarial desde que un experto escribe una regla hasta que el sistema toma una decisión automatizada? El proceso tiene cuatro fases: definición de reglas, compilación a estructuras eficientes, evaluación en tiempo de ejecución y generación de trazabilidad.
+<break time="500ms"/>
+MARIA: [curioso] ¿Cómo se definen las reglas?
+<break time="500ms"/>
+IAGO: [explicativo] En un motor moderno como Drools, I B M O D M o F I C O Blaze Advisor, los expertos de dominio o analistas de negocio definen las reglas en un lenguaje de alto nivel, a veces casi natural. Por ejemplo: si el cliente es persona física Y sus ingresos mensuales son superiores a dos mil quinientos euros Y su antigüedad laboral es superior a doce meses Y no tiene impagos registrados en los últimos veinticuatro meses, entonces aprobar solicitud de crédito con límite de diez mil euros. Esa regla se escribe en un D S L, un Domain Specific Language, que es legible para humanos pero procesable por máquina.
+<break time="500ms"/>
+MARIA: [analitico] ¿Y cómo se convierte eso en algo que el ordenador pueda ejecutar rápido? Porque si tienes miles de reglas, evaluar cada una de forma secuencial sería lento.
+<break time="500ms"/>
+IAGO: [claro] Exacto. Por eso el motor de inferencia compila esas reglas en estructuras de datos eficientes. El algoritmo más usado es R E T E, desarrollado por Charles Forgy en los años ochenta. R E T E construye una red de nodos que representan las condiciones de las reglas. Cuando llega un nuevo hecho, el motor solo reevalúa las partes de la red que se ven afectadas por ese hecho, en lugar de recorrer todas las reglas desde cero. Eso reduce la complejidad de evaluación de forma dramática. Un motor R E T E bien optimizado puede evaluar miles de reglas en milisegundos.
+<break time="500ms"/>
+MARIA: [analitico] ¿Y cómo se convierte eso en algo que el ordenador pueda ejecutar rápido? Porque si tienes miles de reglas, evaluar cada una de forma secuencial sería lento.
+<break time="500ms"/>
+IAGO: [didactico] Correcto. Y cuando llega un caso nuevo, una solicitud, una transacción, un expediente, el motor evalúa qué reglas se disparan y en qué orden. El orden importa porque algunas reglas pueden modificar hechos que activan otras reglas. El motor gestiona esa cascada de inferencias y produce una conclusión final junto con un trazado completo del camino de inferencia: qué reglas se dispararon, qué hechos se usaron, qué valores tenían. Ese trazado es la explicación de la decisión.
+<break time="500ms"/>
+MARIA: [explicativo] Y aquí está la diferencia clave con un código condicional tradicional. En un programa con cientos de if-else anidados, el conocimiento está mezclado con la lógica de control. Si quieres cambiar una regla de negocio, tienes que modificar el código, recompilarlo, desplegarlo y rezar para no haber roto nada. En un motor de reglas, el conocimiento está separado del motor. Las reglas se almacenan en una base de conocimiento que puede modificarse sin tocar el código del motor. Eso permite que expertos no técnicos modifiquen las reglas, que se genere automáticamente documentación y explicaciones, y que se apliquen técnicas de optimización específicas para evaluación de reglas.
+<break time="500ms"/>
+IAGO: [analitico] Otro mecanismo clave es la gestión de conflictos. Cuando varias reglas se disparan al mismo tiempo, el motor necesita decidir cuál aplicar primero. Las estrategias típicas son: prioridad explícita, donde cada regla tiene un número de prioridad asignado; especificidad, donde las reglas más específicas se ejecutan antes que las generales; o orden de llegada, donde se ejecutan en el orden en que se dispararon. Un motor de reglas empresarial permite configurar estas estrategias de forma declarativa.
+<break time="500ms"/>
+MARIA: [claro] Y todo esto se integra con sistemas transaccionales. El motor de reglas no vive aislado: recibe datos de bases de datos, de sistemas C R M, de A P Is externas. Evalúa las reglas con esos datos y devuelve una decisión que se integra en el flujo de negocio. Por ejemplo, en una solicitud de crédito online, el formulario web envía los datos del cliente a un motor de reglas que evalúa elegibilidad en tiempo real y devuelve una respuesta en segundos. El usuario ve aprobado o denegado, y detrás hay un motor R E T E procesando cientos de reglas.
+<break time="500ms"/>
+IAGO: [reflexivo] La clave arquitectónica es que el motor de reglas actúa como un servicio de decisión. Recibe un contexto, aplica las reglas, devuelve una decisión y un trazado. Eso permite centralizar la lógica de negocio, versionarla, auditarla y modificarla de forma controlada. En organizaciones grandes, hay equipos enteros dedicados a la gobernanza de reglas: definir quién puede modificar qué reglas, cómo se prueban los cambios, cómo se despliegan a producción. Es ingeniería de conocimiento aplicada a escala empresarial.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didactico] Vamos a casos reales. Empecemos por F I C O, que es probablemente el sistema de I A simbólica más usado del mundo. F I C O es el sistema de scoring de crédito que usan la mayoría de bancos en Estados Unidos y en muchos otros países. El F I C O score es un número entre trescientos y ochocientos cincuenta que representa la solvencia crediticia de una persona. Y ese número se calcula aplicando un sistema de reglas sobre variables extraídas del historial crediticio: ratio de utilización de crédito, antigüedad de las cuentas, número de consultas recientes, tipos de crédito en uso, historial de pagos.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y por qué es relevante que sea un sistema de reglas?
+
+<break time="500ms"/>
+MARIA: [explicativo] Porque la explicabilidad es un requisito regulatorio. La Fair Credit Reporting Act en Estados Unidos y el R G P D en Europa exigen que si te deniegan un crédito, te digan por qué. El sistema F I C O no solo produce un score, sino una lista de las principales razones del score. Por ejemplo: ratio de utilización de crédito demasiado alto, historial de pagos con retrasos recientes, antigüedad media de cuentas demasiado baja. Esas razones vienen directamente de las reglas que se aplicaron. No es una caja negra. Es un sistema auditable que cumple con la ley.
+
+MARIA: [analitico] Otro caso es el sector de seguros. Las aseguradoras usan cientos de reglas para calcular primas en tiempo real. Si el vehículo tiene más de diez años Y el conductor tiene menos de veinticinco años Y la zona postal está en categoría de riesgo alto, aplicar recargo del veintitrés por ciento. Estas reglas son directamente auditables por los reguladores. Cuando un regulador audita una aseguradora, puede pedir el conjunto completo de reglas de pricing y verificar que no hay discriminación ilegal, que las categorías de riesgo están justificadas actuarialmente y que el sistema aplica las reglas de forma consistente.
+
+MARIA: [conversacional] Ahora vamos a un caso más moderno: Google Knowledge Graph. Más de quinientos mil millones de hechos sobre entidades del mundo real, representados como un grafo de conocimiento. Cuando buscas presidente de Francia o capital de Japón, la respuesta directa que aparece en el panel de la derecha de Google viene del Knowledge Graph, no de un modelo de lenguaje. Es una ontología a escala web: entidades como personas, lugares, organizaciones, eventos, conectadas por relaciones tipadas como nacido en, capital de, fundador de, casado con.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y cómo se mantiene actualizado un grafo de esa escala?
+
+<break time="500ms"/>
+MARIA: [claro] Combinando extracción automática de datos estructurados de la web, contribuciones de usuarios verificados y sistemas de inferencia que derivan nuevos hechos de hechos existentes. Por ejemplo, si el grafo sabe que París es la capital de Francia y que Francia está en Europa, puede inferir que París está en Europa. Eso es razonamiento simbólico puro. Y la ventaja sobre un modelo generativo es que el grafo no alucina. Si no tiene un hecho, no lo inventa. Si lo tiene, es porque está respaldado por fuentes verificables.
+
+MARIA: [didactico] Otro caso crítico es el cumplimiento normativo automatizado en banca. Los bancos tienen sistemas de reglas que verifican automáticamente que cada operación cumple con las regulaciones A M L, que es Anti Money Laundering, K Y C, que es Know Your Customer, y F A T C A, que es Foreign Account Tax Compliance Act. Estas reglas están codificadas directamente de la normativa regulatoria. Si una transacción supera cierto umbral, si el país de destino está en una lista de riesgo, si el cliente no ha actualizado su documentación en los últimos doce meses, el sistema dispara una alerta o bloquea la operación. Todo esto ocurre en tiempo real, procesando millones de transacciones al día.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Hay casos de fracaso documentados?
+
+<break time="500ms"/>
+MARIA: [serio] Sí. Uno clásico es I B M Watson Health. I B M prometió que Watson podía diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos humanos. M D Anderson Cancer Center invirtió sesenta y dos millones de dólares en el proyecto y lo canceló en dos mil diecisiete. Memorial Sloan Kettering también redujo su uso. La causa raíz documentada es que el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección: las expectativas sobre I A deben calibrarse con la calidad de los datos. Y en dominios críticos como medicina, un sistema de reglas validado por expertos puede ser más fiable que un modelo estadístico entrenado con datos deficientes.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora los límites. ¿Qué no es la I A simbólica y cuándo no debes usarla? Primero: un sistema de reglas no es un sistema de aprendizaje. No mejora automáticamente con más datos. Si quieres que el sistema maneje un caso nuevo, tienes que escribir una regla nueva. Eso es una ventaja en dominios donde el conocimiento es estable y está bien documentado, pero es una limitación en dominios donde los patrones cambian rápido o son difíciles de codificar explícitamente.
+
+IAGO: [contundente] Segundo: los sistemas de reglas no deben confundirse con sistemas de optimización. Un motor de reglas evalúa condiciones y toma decisiones, pero no busca la mejor solución en un espacio de posibilidades. Si necesitas optimizar una ruta de reparto, un plan de producción o una cartera de inversión, necesitas algoritmos de optimización, no un motor de reglas. Puedes combinar ambos: usar reglas para filtrar opciones válidas y luego optimizar dentro de ese espacio, pero son arquitecturas complementarias, no sustitutas.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Cuándo no usar un sistema de reglas?
+
+<break time="500ms"/>
+IAGO: [analitico] Cuando el conocimiento no puede codificarse explícitamente. Por ejemplo, reconocer una cara en una foto, transcribir voz a texto, traducir idiomas: esas tareas requieren aprendizaje de patrones estadísticos complejos que no pueden expresarse como reglas simbólicas. El error común es intentar forzar un problema de reconocimiento de patrones en un sistema de reglas. No funciona. Para eso existen las redes neuronales.
+
+IAGO: [didactico] Otro límite: los sistemas de reglas no escalan bien cuando el número de reglas crece sin control. Si tienes diez mil reglas sin estructura, sin modularidad, sin jerarquía, el sistema se vuelve inmantenible. La solución no es abandonar las reglas, sino aplicar ingeniería de conocimiento: organizar las reglas en módulos, usar herencia y composición, definir meta-reglas que controlen la aplicación de otras reglas. Los motores modernos como Drools permiten todo esto, pero requiere disciplina de diseño.
+
+IAGO: [serio] Y un límite crítico: un sistema de reglas no puede manejar incertidumbre de forma nativa. Las reglas son binarias: se cumplen o no se cumplen. Si necesitas razonar con probabilidades, con grados de confianza, con información incompleta, necesitas lógica difusa, redes bayesianas o modelos probabilísticos. Puedes integrar esos modelos con un motor de reglas, pero el motor por sí solo no hace inferencia probabilística.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué pasa con la escalabilidad computacional?
+
+<break time="500ms"/>
+IAGO: [claro] Un motor de reglas bien diseñado con algoritmo R E T E puede evaluar miles de reglas en milisegundos. Pero si el número de hechos crece a millones, la complejidad puede volverse prohibitiva. En esos casos, la solución es particionar el espacio de hechos, usar índices, o mover parte del razonamiento a sistemas especializados como bases de datos de grafos. La arquitectura correcta depende del caso de uso. No hay una respuesta única.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+MARIA: [didactico] Vamos a las fuentes clave. Primera fuente: el libro de Stuart Russell y Peter Norvig, Artificial Intelligence: A Modern Approach, cuarta edición, publicada en dos mil veinte. Es el libro de texto estándar en cursos universitarios de I A. Los capítulos siete a nueve cubren lógica proposicional, lógica de predicados y sistemas de inferencia. Es la referencia técnica más completa para entender los fundamentos matemáticos de la I A simbólica.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [claro] Segunda fuente: el estándar I S O cuarenta y dos mil uno, publicado en diciembre de dos mil veintitrés. Es la primera norma I S O específica para sistemas de gestión de I A. Establece requisitos para que las organizaciones desarrollen, provean y usen sistemas de I A de forma responsable. Incluye secciones sobre explicabilidad, trazabilidad y auditoría de decisiones automatizadas. Es el equivalente para I A de lo que I S O veintisiete mil uno es para seguridad de la información. Las organizaciones pueden obtener certificación de terceros bajo esta norma.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [analitico] Tercera fuente: el N I S T A I Risk Management Framework, versión N I S T punto A I punto cien guion dos e dos mil veinticinco, actualización publicada este año. Es un marco voluntario desarrollado por el National Institute of Standards and Technology de Estados Unidos. Define cuatro funciones para gestionar riesgos de I A: G O V E R N, que es gobernanza organizativa; M A P, que es identificación de riesgos; M E A S U R E, que es evaluación y métricas; y M A N A G E, que es tratamiento y respuesta. Es de facto el estándar en empresas Fortune quinientos que operan en Estados Unidos y está diseñado para ser compatible con el A I Act europeo.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [didactico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: la I A simbólica representa conocimiento de forma explícita mediante símbolos y relaciones lógicas, y razona aplicando reglas de inferencia formales. Es el paradigma de I A que produce decisiones auditables y explicables, crítico para cumplir con regulaciones como el A I Act europeo y el R G P D.
+
+<break time="500ms"/>
+IAGO: [claro] Segundo: un motor de reglas empresarial separa el conocimiento, que son las reglas definidas por expertos, del motor de inferencia, que es la lógica de evaluación. Esa separación permite que expertos no técnicos modifiquen reglas sin tocar código, que se genere automáticamente explicación de cada decisión y que se apliquen técnicas de optimización como el algoritmo R E T E para evaluar miles de reglas en milisegundos.
+
+<break time="500ms"/>
+MARIA: [firme] Tercero: los sistemas de reglas son la arquitectura correcta cuando necesitas explicabilidad, consistencia y auditabilidad, pero no son adecuados para tareas de reconocimiento de patrones complejos, optimización o razonamiento con incertidumbre. La arquitectura neuro simbólica que combina aprendizaje automático con reglas es la respuesta técnica para casos de uso que requieren tanto capacidad de aprendizaje como explicabilidad.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [conversacional] En el próximo tema del módulo veremos cómo la I A simbólica se integra con técnicas de aprendizaje automático en arquitecturas neuro simbólicas, que son la frontera actual de investigación y la apuesta de empresas como I B M, Microsoft y Siemens para sistemas de I A industriales.
+
+<break time="500ms"/>
+MARIA: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [pausa para validación del sistema]

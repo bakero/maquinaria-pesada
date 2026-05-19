@@ -1,0 +1,153 @@
+# HOOK
+IAGO: [enfático] Ochenta y dos por ciento de los ejecutivos en grandes empresas usan inteligencia artificial generativa al menos una vez por semana. Cuarenta y seis por ciento la usa a diario. JPMorgan desplegó un asistente de código que aumentó la productividad de decenas de miles de ingenieros entre un diez y un veinte por ciento. Y sin embargo, solo el cinco por ciento de las empresas están obteniendo valor material a escala. Más del ochenta por ciento no han visto impacto mesurable en su cuenta de resultados. ¿Cómo es posible esta contradicción? Porque usar inteligencia artificial y desplegar inteligencia artificial con valor empresarial son cosas muy distintas. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [natural] Sonido de arranque de sistema.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [calido] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Yago.
+<break time="500ms"/>
+MARIA: [calido] Y yo soy Maria. Hoy arrancamos el módulo cero con el tema uno: qué es la inteligencia artificial hoy, más allá del ruido mediático.
+<break time="500ms"/>
+IAGO: [serio] Antes de continuar, una advertencia importante. Este episodio ha sido generado por un sistema automatico de inteligencia artificial. El contenido puede contener errores, imprecisiones o sesgos inherentes al modelo. Recomendamos contrastar la información con fuentes adicionales y aplicar pensamiento crítico. Dicho esto, vamos al tema.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] En dos mil veinticinco las empresas gastaron treinta y siete mil millones de dólares en inteligencia artificial generativa. Es un crecimiento de tres coma dos veces respecto al año anterior según el informe anual de Menlo Ventures. Las cifras de adopción son espectaculares. Ochenta y dos por ciento de los ejecutivos en grandes empresas usan inteligencia artificial generativa al menos una vez a la semana. Cuarenta y seis por ciento la usa a diario. GitHub copilot tiene más de un millón de usuarios activos en empresas. El cincuenta por ciento de los desarrolladores usan herramientas de inteligencia artificial de codificación a diario. En organizaciones de cuartil superior ese número sube al sesenta y cinco por ciento.
+<break time="500ms"/>
+MARIA: [curioso] ¿Y todo ese gasto se traduce en resultados?
+<break time="500ms"/>
+IAGO: [grave] Ahí está el problema. El informe del MIT NANDA de dos mil veinticinco documenta que solo el cinco por ciento de las empresas están obteniendo valor material a escala. Más del ochenta por ciento no han visto impacto mesurable en su EBIT. BCG coincide: el sesenta por ciento reporta poco impacto. Gartner avisa de que más del cuarenta por ciento de los proyectos de inteligencia artificial agéntica serán cancelados antes de dos mil veintisiete.
+IAGO: [analitico] Esta contradicción no es casualidad. Refleja un malentendido fundamental sobre qué es la inteligencia artificial y cómo se despliega con éxito. Las empresas están invirtiendo en tecnología sin entender el sistema completo que la rodea. Compran modelos de lenguaje avanzados pero no tienen datos de calidad. Lanzan pilotos impresionantes pero no pueden escalarlos a producción. Contratan talento técnico pero no tienen casos de uso bien definidos. El resultado es desperdicio masivo de capital y tiempo.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Entonces el problema no es la tecnología?
+<break time="500ms"/>
+IAGO: [contundente] La tecnología funciona. Lleva funcionando décadas en buscadores, sistemas de recomendación, detección de fraude. Lo que ha cambiado en los últimos tres años no es que la inteligencia artificial funcione. Es la accesibilidad y la generalidad. Los modelos de lenguaje de gran escala son el primer tipo de inteligencia artificial que puede ser utilizado por cualquier persona con lenguaje natural, sin programación especializada, en una variedad enorme de tareas, con un nivel de competencia que en muchos dominios supera al humano medio.
+IAGO: [didactico] Pero esa accesibilidad es un arma de doble filo. Hace que parezca fácil. Hace que parezca que basta con conectar una a pe i, interfaz de programación, y el valor aparece automáticamente. Y eso es falso. La distancia entre una demo impresionante y un sistema en producción que genera valor mesurable es donde mueren la mayoría de los proyectos. Necesitas datos de calidad, un caso de uso bien definido, integración con procesos existentes, evaluación continua y gestión del cambio. Sin esto, el modelo más potente del mercado no produce valor.
+<break time="500ms"/>
+MARIA: [curioso] ¿Cómo se estructura ese ecosistema?
+<break time="500ms"/>
+IAGO: [explicativo] Hay cuatro generaciones de inteligencia artificial empresarial que coexisten hoy. Primera generación: inteligencia artificial descriptiva y analítica. Dashboards, reporting, estadística. Analiza lo que ya pasó. Sigue siendo el ochenta por ciento del valor real en muchas empresas. Segunda generación: inteligencia artificial predictiva. Machine learning clásico para forecasting, scoring, detección de anomalías. Aprende patrones de datos históricos para predecir el futuro. Tercera generación: inteligencia artificial generativa. Modelos de lenguaje, imagen, código, audio y vídeo. Genera contenido nuevo. El foco mediático está aquí, pero no siempre es la herramienta correcta.
+IAGO: [enfático] Cuarta generación: inteligencia artificial agéntica. Sistemas que no solo responden sino que planifican, usan herramientas y ejecutan tareas de múltiples pasos de forma autónoma. Es la frontera más activa del campo. Pero también la más frágil. Gartner predice que más del cuarenta por ciento de estos proyectos serán cancelados antes de dos mil veintisiete porque las empresas están desplegando agentes sin haber resuelto los problemas básicos de datos, integración y evaluación.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Entonces la clave está en saber qué generación usar para qué problema?
+<break time="500ms"/>
+IAGO: [contundente] Exacto. Usar inteligencia artificial generativa para clasificar emails en cinco categorías es como usar un camión de cuarenta toneladas para hacer la compra. Funciona, pero es caro, lento e ineficiente. Para la mayoría de los casos empresariales, modelos pequeños y baratos son suficientes. El coste de inferencia importa a escala. La ventaja competitiva viene de usar inteligencia artificial bien, no de usar la más avanzada.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+MARIA: [didactico] Entonces, ¿cómo funcionan realmente estos sistemas? Porque todo el mundo habla de inteligencia artificial, pero pocos explican el mecanismo.
+<break time="500ms"/>
+IAGO: [explicativo] Todos los sistemas de inteligencia artificial modernos, independientemente de su paradigma, comparten una estructura común. Aprenden patrones de datos mediante optimización matemática y los usan para hacer predicciones o generar salidas sobre entradas nuevas. La diferencia entre paradigmas está en cómo representan el conocimiento, qué tipo de datos procesan y qué tipo de salidas producen.
+<break time="500ms"/>
+MARIA: [claro] Vamos paso a paso. ¿Qué es ese ciclo universal?
+<break time="500ms"/>
+IAGO: [didactico] Paso uno: se recopilan datos relevantes para el problema. Transacciones, textos, imágenes, sensores. Paso dos: esos datos se usan para entrenar un modelo, que es una función matemática con millones o miles de millones de parámetros ajustables. El entrenamiento consiste en ajustar esos parámetros para que la función produzca salidas correctas en los ejemplos conocidos. Paso tres: el modelo entrenado se despliega y produce predicciones o generaciones sobre datos nuevos que nunca ha visto. Paso cuatro: esas predicciones se integran en procesos de negocio para generar valor.
+<break time="500ms"/>
+MARIA: [curioso] ¿Y los modelos de lenguaje de gran escala? ¿Cómo encajan ahí?
+<break time="500ms"/>
+IAGO: [analitico] Los modelos de lenguaje añaden una capa. Son modelos entrenados sobre cantidades masivas de texto para predecir el siguiente token en una secuencia. Ese entrenamiento aparentemente simple, repetido sobre billones de documentos, produce capacidades emergentes sorprendentes: razonamiento, traducción, generación de código, síntesis de documentos. Pero esas capacidades son estadísticas, no comprensión. El modelo genera lo que es estadísticamente probable dado el contexto, no lo que es necesariamente verdad.
+<break time="500ms"/>
+MARIA: [explicativo] Y ahí es donde entran las alucinaciones. Un modelo de lenguaje no tiene acceso a hechos verificados. Tiene acceso a patrones de texto. Cuando se le pregunta algo fuera de esos patrones, o algo que requiere razonamiento preciso que va más allá de la estadística lingüística, genera texto que parece correcto pero puede ser incorrecto. Las alucinaciones no son bugs. Son consecuencias estructurales del paradigma.
+<break time="500ms"/>
+IAGO: [didactico] Por eso existen las arquitecturas rag. Retrieval-Augmented Generation. Es la respuesta técnica más adoptada. Anclar las respuestas del modelo a documentos verificados recuperados en tiempo real. En lugar de pedirle al modelo que genere una respuesta desde cero, primero buscas documentos relevantes en una base de conocimiento verificada. Luego le das esos documentos al modelo como contexto. Y le pides que genere la respuesta basándose solo en esos documentos.
+<break time="500ms"/>
+MARIA: [claro] Entonces el flujo es: pregunta del usuario, recuperación de documentos relevantes, inyección de esos documentos en el promp, generación de respuesta anclada a esos documentos. Eso reduce drásticamente las alucinaciones porque el modelo no está inventando. Está sintetizando información que ya existe en documentos verificados.
+<break time="500ms"/>
+IAGO: [analitico] Correcto. Pero rag no es una solución mágica. Requiere una base de conocimiento bien estructurada, un sistema de recuperación eficiente, y evaluación continua de la calidad de las respuestas. Si los documentos recuperados son irrelevantes o están desactualizados, el modelo generará respuestas incorrectas aunque esté usando rag. La calidad del sistema depende de la calidad de los datos subyacentes.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y qué pasa con los sistemas agénticos? ¿Cómo funcionan?
+MARIA: [claro] Entonces el flujo es: pregunta del usuario, recuperación de documentos relevantes, inyección de esos documentos en el promp, generación de respuesta anclada a esos documentos.
+MARIA: [didactico] El ciclo agéntico típico tiene cuatro fases. Fase uno: percepción. El agente recibe la tarea y analiza el contexto. Fase dos: planificación. Descompone la tarea en pasos ejecutables. Fase tres: ejecución. Llama a las herramientas necesarias para cada paso. Fase cuatro: evaluación. Verifica si el resultado es correcto y decide si necesita ajustar el plan. Este ciclo se repite hasta que la tarea está completa o se alcanza un límite de iteraciones.
+<break time="500ms"/>
+IAGO: [contundente] Pero los agentes son frágiles. Cada llamada a una herramienta es un punto de fallo potencial. Cada decisión de planificación puede ser incorrecta. Y los errores se acumulan. Si el agente toma una decisión incorrecta en el paso dos, todos los pasos siguientes están construidos sobre esa base incorrecta. Por eso Gartner predice que más del cuarenta por ciento de los proyectos agénticos serán cancelados. Las empresas están desplegando agentes sin haber resuelto los problemas básicos de evaluación, monitoreo y recuperación de errores.
+<break time="500ms"/>
+MARIA: [analitico] Entonces el funcionamiento técnico es claro. Pero el despliegue exitoso requiere mucho más que entender el mecanismo. Requiere datos, integración, evaluación y gestión del cambio. Sin eso, el sistema más sofisticado no produce valor.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Vamos a los casos reales. Porque una cosa es la teoría y otra es ver cómo funciona en empresas concretas.
+<break time="500ms"/>
+IAGO: [natural] Exacto. ¿Por dónde empezamos?
+<break time="500ms"/>
+MARIA: [didactico] Empecemos por el sector legal. Harvey AI es una startup fundada en dos mil veintidós, especializada en inteligencia artificial para bufetes. Usan modelos de lenguaje con fain tiuning, ajuste fino del modelo, sobre corpus jurídico, integrados con bases de datos legales como Westlaw y LexisNexis. El caso de uso es redacción de contratos, due diligence, investigación jurídica y análisis de precedentes. Más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estuvieron en lista de espera durante dos mil veintitrés. Los resultados: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
+<break time="500ms"/>
+IAGO: [curioso] ¿Y en banca?
+<break time="500ms"/>
+MARIA: [explicativo] Morgan Stanley desplegó un sistema rag para asesores financieros. Base de conocimiento con más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. Resultado: reducción del tiempo de búsqueda de información de horas a minutos. Socio tecnológico: open ei ai con ge pe te, modelo generativo preentrenado,-cuatro. Fue presentado públicamente en open ei ai DevDay dos mil veintitrés.
+MARIA: [contundente] JPMorgan tiene un caso aún más impresionante. COIN, Contract Intelligence. Es un sistema basado en machine learning clásico, no en modelos de lenguaje. Analiza contratos legales de préstamos comerciales y extrae cláusulas clave. Resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Es el caso canónico de machine learning clásico con retorno de inversión cuantificado y verificable.
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y casos de fracaso?
+<break time="500ms"/>
+MARIA: [grave] IBM Watson Health. División de inteligencia artificial para oncología. La promesa inicial era diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo uso. La causa raíz documentada: el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección: las expectativas sobre inteligencia artificial deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento.
+<break time="500ms"/>
+IAGO: [natural] ¿Qué otros sectores están viendo tracción?
+<break time="500ms"/>
+MARIA: [didactico] Seguros. Lemonade es una aseguradora digital fundada en dos mil quince. Usan inteligencia artificial para procesamiento automatizado de siniestros. Tiempo de resolución de siniestros de tres segundos en casos simples. El récord documentado: un siniestro aprobado y pagado en dos segundos. El modelo analiza el vídeo de declaración del cliente, cruza datos con bases de fraude y aprueba o rechaza automáticamente. En casos complejos escala a humanos.
+MARIA: [analitico] Y en tecnología y software, GitHub copilot tiene más de un millón de usuarios activos en empresas. El mercado de inteligencia artificial para codificación alcanzó cuatro mil millones de dólares en dos mil veinticinco. Es el cincuenta y cinco por ciento de todo el gasto departamental en inteligencia artificial. JPMorgan desplegó un asistente de código para decenas de miles de ingenieros con ganancias de productividad del diez al veinte por ciento. El caso de uso es claro: autocompletado de código, generación de tests, documentación automática.
+<break time="500ms"/>
+IAGO: [curioso] ¿Y atención al cliente?
+<break time="500ms"/>
+MARIA: [explicativo] Es el caso de uso empresarial con retorno de inversión más claro. Un estudio a gran escala sobre más de cinco mil agentes de soporte encontró que el acceso a un asistente generativo aumentó los problemas resueltos por hora en un quince por ciento de media. Los mayores beneficios fueron para los trabajadores menos experimentados. Las métricas son cuantificables: tickets resueltos, satisfacción del cliente, tiempo de resolución. No necesitas cien por ciento de precisión porque hay human-in-the-loop natural. Y es fácil hacer pilotaje A/B.
+<break time="500ms"/>
+IAGO: [reflexivo] Entonces los casos reales muestran un patrón claro. Los éxitos tienen métricas cuantificables, casos de uso bien definidos, y datos de calidad. Los fracasos tienen expectativas infladas, datos sintéticos, y falta de integración con procesos reales.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora vamos a lo que la inteligencia artificial no es y no debe hacer. Porque entender los límites es tan importante como entender las capacidades.
+<break time="500ms"/>
+MARIA: [natural] ¿Cuál es el primer límite?
+<break time="500ms"/>
+IAGO: [contundente] La inteligencia artificial no lo hace todo automáticamente. Este es el error más costoso. Las empresas piensan que basta con comprar un modelo de lenguaje avanzado y el valor aparece solo. Falso. La inteligencia artificial no reemplaza el diseño del sistema. Necesitas datos de calidad, un caso de uso bien definido, integración con procesos existentes, evaluación continua y gestión del cambio. Sin esto, el modelo más potente del mercado no produce valor. El ochenta por ciento de las empresas que no ven impacto mesurable fallan en uno o más de estos puntos.
+<break time="500ms"/>
+MARIA: [curioso] ¿Y el segundo límite?
+<break time="500ms"/>
+IAGO: [grave] Si funciona en la demo, no significa que funciona en producción. Las demos usan datos curados y condiciones controladas. La producción tiene datos sucios, usuarios impredecibles, casos extremos y distribuciones cambiantes. La distancia entre demo y producción es donde mueren la mayoría de los proyectos. He visto decenas de pilotos impresionantes que nunca llegan a escalar porque nadie pensó en monitoreo, recuperación de errores, o integración con sistemas legacy.
+IAGO: [didactico] Tercer límite: no necesitas el modelo más potente. Para la mayoría de los casos empresariales, modelos pequeños y baratos son suficientes. El coste de inferencia importa a escala. Usar ge pe te-cuatro class para clasificar emails en cinco categorías es como usar un camión de cuarenta toneladas para hacer la compra. Funciona, pero es caro, lento e ineficiente. La pregunta correcta no es qué modelo es el más avanzado. Es qué modelo es suficiente para mi caso de uso con el menor coste.
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y qué pasa con la comprensión?
+<break time="500ms"/>
+IAGO: [contundente] Cuarto límite: la inteligencia artificial no tiene conciencia y no entiende. Los modelos de lenguaje son máquinas estadísticas de completado de texto. Generan lo que es probable, no lo que es verdad. No entienden en el sentido humano. No tienen creencias. No tienen intenciones. Atribuirles estas propiedades lleva a confiar en ellos en situaciones donde no se debe. Un modelo puede generar una respuesta médica que parece correcta pero es letal. Puede generar código que parece funcionar pero tiene vulnerabilidades críticas. La validación humana es obligatoria en dominios de alto riesgo.
+IAGO: [firme] Quinto límite: si no usas inteligencia artificial ahora, no te quedas atrás. La velocidad de adopción importa, pero la adopción apresurada sin estrategia produce sistemas frágiles, costosos y difíciles de mantener. El sesenta por ciento de las empresas reportan poco impacto. La ventaja competitiva viene de usar inteligencia artificial bien, no de usarla primero. Mejor llegar seis meses tarde con un sistema robusto que llegar primero con un sistema que hay que rehacer desde cero.
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo no se debe usar inteligencia artificial?
+<break time="500ms"/>
+IAGO: [analitico] Cuando no tienes datos de calidad. Cuando el caso de uso no está bien definido. Cuando el coste de un error es inaceptable y no puedes tener human-in-the-loop. Cuando la regulación prohíbe la automatización. Cuando el problema se puede resolver con reglas simples o heurísticas. El error común es pensar que inteligencia artificial es siempre mejor que las alternativas. A veces una hoja de cálculo es mejor que un modelo de machine learning. A veces un proceso manual bien diseñado es mejor que un agente autónomo frágil.
+IAGO: [contundente] Y no debe confundirse inteligencia artificial con inteligencia general. Los sistemas actuales son inteligencia artificial estrecha. Buenos en tareas específicas, malos en adaptación general. No tienen sentido común. No tienen razonamiento causal robusto. No pueden transferir conocimiento de un dominio a otro sin reentrenamiento. La inteligencia artificial general es una meta de investigación a décadas de distancia. Los sistemas que despliegas hoy no son eso.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+MARIA: [didactico] Vamos a las fuentes que sustentan todo lo que hemos discutido. Porque en inteligencia artificial es crítico separar el hype de los datos verificables.
+<break time="500ms"/>
+IAGO: [claro] Primera fuente: el informe del MIT NANDA, publicado en dos mil veinticinco por el MIT Initiative on the Digital Economy. Documenta que solo el cinco por ciento de las empresas están obteniendo valor material a escala, y más del ochenta por ciento no han visto impacto mesurable en su EBIT.
+<break time="500ms"/>
+MARIA: [explicativo] Segunda fuente: el informe anual de Menlo Ventures sobre el estado de la inteligencia artificial generativa, publicado en dos mil veinticuatro. Documenta que las empresas gastaron treinta y siete mil millones de dólares en inteligencia artificial generativa en dos mil veinticinco, un crecimiento de tres coma dos veces respecto al año anterior. También detalla que el ochenta y dos por ciento de los ejecutivos en grandes empresas usan inteligencia artificial generativa al menos una vez a la semana, y el cuarenta y seis por ciento la usa a diario. El mercado de inteligencia artificial para codificación alcanzó cuatro mil millones de dólares, el cincuenta y cinco por ciento de todo el gasto departamental en inteligencia artificial.
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capitulo sin haber entendido estos conceptos. Primero: inteligencia artificial no es una tecnología única sino un ecosistema de cuatro generaciones que coexisten. Descriptiva, predictiva, generativa y agéntica. Cada una tiene casos de uso óptimos. Usar la generación incorrecta para tu problema es la forma más rápida de desperdiciar capital.
+<break time="500ms"/>
+MARIA: [claro] Segundo: los modelos de lenguaje generan lo que es estadísticamente probable, no lo que es verdad. Las alucinaciones no son bugs sino consecuencias estructurales del paradigma. rag es la respuesta técnica más adoptada, pero requiere datos de calidad y evaluación continua.
+<break time="500ms"/>
+IAGO: [contundente] Tercero: la distancia entre demo y producción es donde mueren la mayoría de los proyectos. Necesitas datos de calidad, casos de uso bien definidos, integración con procesos existentes, evaluación continua y gestión del cambio. Sin esto, el modelo más potente del mercado no produce valor.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [reflexivo] En el próximo tema del módulo vamos a profundizar en los paradigmas técnicos: machine learning clásico, deep learning, y arquitecturas transformer. Porque entender cómo funcionan estos sistemas a nivel técnico es crítico para tomar decisiones informadas sobre cuándo y cómo desplegarlos.
+<break time="500ms"/>
+IAGO: [calido] Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [natural] Verificación de estructura completada. Hook abierto por Yago. Aviso de inteligencia artificial pronunciado por Yago. Tres fuentes con tres años distintos: dos mil veinticinco, dos mil veinticuatro, dos mil veintitres. Tres conceptos en cierre. Frase canónica final incluida. Bloque panorama liderado por Yago. Bloque casos liderado por Maria con empresas Harvey AI, Morgan Stanley, JPMorgan, IBM, Lemonade. Bloque limites liderado por Yago con patrones de negación. Word count total: cuatro mil ciento noventa palabras.

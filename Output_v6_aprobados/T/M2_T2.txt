@@ -1,0 +1,153 @@
+# HOOK
+MARIA: [enfático] Un modelo de lenguaje con ciento setenta y cinco mil millones de parámetros. Cada uno debe encontrar su valor óptimo entre infinitas posibilidades. ¿Cómo se entrena algo así sin que el proceso explote o se quede congelado? La respuesta está en el cálculo diferencial y en un algoritmo que lleva décadas entre nosotros: el descenso de gradiente. Hoy desciframos por qué algunos entrenamientos convergen en horas y otros divergen en minutos. Por qué una tasa de aprendizaje incorrecta puede arruinar meses de trabajo. Y por qué sin back propa gation no existiría el deep learning tal como lo conocemos. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+MARIA: [natural] Sonido de arranque.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial. Soy Maria.
+
+<break time="500ms"/>
+IAGO: [conversacional] Y yo soy Yago. Hoy abordamos uno de los pilares matemáticos que sostiene todo el deep learning moderno.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de continuar, una advertencia importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque trabajamos para ofrecer información precisa y actualizada, el contenido puede contener errores o imprecisiones. Te recomendamos contrastar la información crítica con fuentes adicionales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Empecemos por el problema fundamental. Tienes una red neuronal con millones de parámetros. Cada parámetro es un número que debe ajustarse para que la red haga predicciones correctas. La pregunta es: ¿cómo encuentras los valores correctos? No puedes probar todas las combinaciones posibles. Eso llevaría más tiempo que la edad del universo. Necesitas un método sistemático que te diga en qué dirección mover cada parámetro para reducir el error. Ese método es el descenso de gradiente, y su fundamento matemático es el cálculo diferencial.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué tiene de especial el cálculo diferencial para este problema?
+
+<break time="500ms"/>
+IAGO: [explicativo] El cálculo diferencial estudia cómo cambian las funciones. Una derivada te dice cuánto cambia una función cuando modificas ligeramente su entrada. En el contexto de redes neuronales, si tienes una función de pérdida que mide cuánto se equivoca tu modelo, la derivada de esa pérdida respecto a un parámetro te dice cuánto aumenta o disminuye el error si modificas ese parámetro. Si la derivada es positiva, reducir el parámetro reduce el error. Si es negativa, aumentarlo reduce el error. Esa información direccional es oro puro para el entrenamiento.
+
+IAGO: [analítico] Ahora escalemos esto. Una red neuronal no tiene un solo parámetro, tiene millones. La función de pérdida depende de todos ellos simultáneamente. Aquí es donde entra el concepto de gradiente. El gradiente es un vector que contiene todas las derivadas parciales de la pérdida respecto a cada parámetro. Geométricamente, el gradiente apunta en la dirección de máximo crecimiento de la función. Si quieres minimizar la pérdida, te mueves en la dirección opuesta al gradiente. Ese movimiento es el descenso de gradiente.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Suena directo en teoría.
+
+<break time="500ms"/>
+IAGO: [serio] En teoría lo es. En la práctica, calcular el gradiente para una red profunda con cien capas y mil millones de parámetros es un desafío computacional enorme. Aquí es donde back propa gation cambia todo. Backpropagation es un algoritmo que usa la regla de la cadena del cálculo para calcular el gradiente de forma eficiente. En lugar de recalcular derivadas redundantemente, propaga los gradientes desde la última capa hacia las primeras, reutilizando cálculos intermedios. Sin back propa gation, entrenar una red profunda sería computacionalmente inviable.
+
+IAGO: [enfático] Y aquí está el punto crítico: back propa gation no es magia. Es cálculo diferencial aplicado con inteligencia. La regla de la cadena dice que si tienes una composición de funciones, la derivada de la composición es el producto de las derivadas de cada función. En una red neuronal profunda, la salida final es una composición de muchas capas. Backpropagation aplica la regla de la cadena de forma recursiva, calculando el gradiente de cada capa multiplicando los gradientes de las capas posteriores. Esto reduce el coste computacional de exponencial a lineal respecto al número de capas.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué pasa cuando ese proceso falla?
+
+<break time="500ms"/>
+IAGO: [grave] Ahí entran los problemas del gradiente. En redes muy profundas, al propagar los gradientes hacia atrás, cada capa multiplica el gradiente por su derivada. Si esas derivadas son menores de uno, el gradiente se hace exponencialmente pequeño en las capas iniciales. Eso es el gradiente desvaneciente. Las primeras capas prácticamente no aprenden porque sus gradientes son casi cero. El problema opuesto también existe: si las derivadas son mayores de uno, el gradiente explota. Las actualizaciones se vuelven gigantescas y el entrenamiento diverge.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+MARIA: [didáctico] Ahora veamos cómo funciona el descenso de gradiente en la práctica. La forma más básica es el descenso de gradiente en batch. Calculas el gradiente de la función de pérdida sobre todo el conjunto de entrenamiento. Luego actualizas cada parámetro restándole el gradiente multiplicado por una tasa de aprendizaje. La fórmula es: parámetro nuevo igual a parámetro viejo menos tasa de aprendizaje por gradiente. Repites este proceso hasta que la pérdida deje de bajar.
+MARIA: [reflexivo] ¿Y por qué no se usa siempre esa forma básica?
+<break time="500ms"/>
+IAGO: [explicativo] Porque es extremadamente lenta para deitasets grandes. Imagina que tienes mil millones de ejemplos de entrenamiento. Calcular el gradiente sobre todos ellos antes de hacer una sola actualización de parámetros puede llevar horas o días. Mientras tanto, no estás aprendiendo nada. Por eso en la práctica se usa el descenso de gradiente estocástico, o SGD. En lugar de calcular el gradiente sobre todos los datos, lo calculas sobre un solo ejemplo o sobre un pequeño lote de ejemplos. Eso introduce ruido, pero acelera el proceso enormemente.
+<break time="500ms"/>
+MARIA: [analítico] El mini-batch SGD es el punto medio, ¿verdad? Calculas el gradiente sobre lotes pequeños, típicamente entre treinta y dos y quinientos doce ejemplos. Eso equilibra velocidad y estabilidad. El gradiente de un mini-batch es una estimación ruidosa del gradiente verdadero, pero en promedio apunta en la dirección correcta. Y como haces muchas actualizaciones por época, el entrenamiento avanza mucho más rápido que con batch puro.
+<break time="500ms"/>
+IAGO: [claro] Exacto. Y aquí es donde entran los optimizadores modernos. SGD básico tiene un problema: trata todos los parámetros igual. Pero en una red neuronal, algunos parámetros reciben gradientes grandes y otros pequeños. Si usas la misma tasa de aprendizaje para todos, los parámetros con gradientes grandes pueden oscilar descontroladamente, mientras que los de gradientes pequeños apenas se mueven.
+<break time="500ms"/>
+MARIA: [didáctico] Adam resuelve esto con adaptación por parámetro. Adam mantiene dos estimaciones para cada parámetro. La primera es la media móvil de los gradientes pasados, que se llama momento. La segunda es la media móvil de los cuadrados de los gradientes, que captura la varianza. La actualización de Adam divide el momento por la raíz cuadrada de la varianza. Eso significa que parámetros con gradientes grandes reciben actualizaciones más pequeñas, y parámetros con gradientes pequeños reciben actualizaciones más grandes. El resultado es convergencia más rápida y más estable.
+<break time="500ms"/>
+IAGO: [reflexivo] Adam fue publicado por Kingma y Ba en dos mil catorce. Desde entonces se ha convertido en el optimizador estándar para el entrenamiento de modelos de lenguaje grandes. ge pe te, modelo generativo preentrenado, bert, yama, todos usan variantes de Adam. La versión más común hoy es AdamW, que añade weight decay explícito para mejorar la regularización.
+<break time="500ms"/>
+MARIA: [analítico] Pero incluso con Adam, hay un hiperparámetro que puede arruinar todo: la tasa de aprendizaje. Si la tasa de aprendizaje es demasiado alta, los pasos son tan grandes que el optimizador salta sobre los mínimos. La pérdida sube en lugar de bajar. El entrenamiento diverge. Si la tasa de aprendizaje es demasiado baja, la convergencia es dolorosamente lenta. Puedes estar entrenando durante días sin llegar a un buen resultado.
+<break time="500ms"/>
+IAGO: [explicativo] Por eso los schedulers de learning rate son críticos. El patrón más común en el entrenamiento de ele ele emes es warmup seguido de cosine decay. Durante el warmup, empiezas con una tasa de aprendizaje muy pequeña y la aumentas linealmente durante los primeros cientos o miles de pasos. Eso evita inestabilidad al inicio, cuando los parámetros están lejos del óptimo y los gradientes pueden ser erráticos. Después del warmup, aplicas cosine decay: reduces la tasa de aprendizaje gradualmente siguiendo una curva coseno. Al final del entrenamiento, la tasa es muy pequeña, lo que permite refinamiento fino sin sobrepasar el mínimo.
+<break time="500ms"/>
+MARIA: [claro] Y luego están las técnicas para manejar los problemas del gradiente. El gradient clipping limita la norma del vector de gradiente a un valor máximo, típicamente uno. Si el gradiente es más grande, se escala proporcionalmente. Eso previene que spikes ocasionales en los gradientes produzcan actualizaciones desestabilizadoras. Es práctica estándar en el entrenamiento de ele ele emes.
+<break time="500ms"/>
+IAGO: [didáctico] Las residual connections, introducidas por ResNet en dos mil quince, resuelven el gradiente desvaneciente de forma arquitectónica. En lugar de que cada capa transforme completamente su entrada, la capa añade su transformación a la entrada original. Eso crea un camino directo para el gradiente desde la última capa hasta las primeras, sin pasar por multiplicaciones saturadas. Los Transformers usan residual connections en cada bloque de atención y feed-forward precisamente por esta razón.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [conversacional] Ahora veamos esto en acción. Un caso clásico es el fain tiuning, ajuste fino del modelo, de modelos de lenguaje. Imagina que un equipo descarga Llama tres de ocho mil millones de parámetros y quiere hacer fain tiuning para una tarea específica. Usan una tasa de aprendizaje de cinco por diez elevado a menos cuatro, que es razonable para entrenamiento desde cero. Pero para fain tiuning es demasiado alta. Después de unos pocos pasos, la pérdida empieza a subir en lugar de bajar. El modelo diverge.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Qué hicieron?
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [explicativo] Redujeron la tasa de aprendizaje a dos por diez elevado a menos cinco, añadieron warmup de cien pasos y aplicaron cosine decay. El entrenamiento convergió en tres épocas. La lección es que el fain tiuning requiere tasas de aprendizaje mucho menores que el entrenamiento desde cero, porque el modelo ya está cerca de un buen mínimo. Pasos grandes lo desestabilizan.
+
+<break time="quinientosms"/>
+MARIA: [analítico] Otro caso documentado es el entrenamiento de ge pe te cuatro por open ei ai. Aunque los detalles exactos son propietarios, la documentación técnica menciona el uso de AdamW con cosine annealing y warmup. Ese patrón es estándar en la industria para modelos de lenguaje grandes. La tasa de aprendizaje típica está entre uno por diez elevado a menos cuatro y tres por diez elevado a menos cuatro, con warmup de varios miles de pasos. El entrenamiento de ge pe te cuatro llevó meses en miles de ge pe us, pero el proceso de optimización subyacente es el mismo descenso de gradiente con back propa gation que usas en un modelo pequeño.
+
+<break time="quinientosms"/>
+MARIA: [claro] Morgan Stanley implementó un sistema rag, generación aumentada por recuperación, para sus asesores financieros usando ge pe te cuatro. La base de conocimiento tiene más de cien mil documentos internos. Durante el fain tiuning del modelo para adaptarlo al dominio financiero, monitorizaron la curva de pérdida con Weights and Biases. Detectaron que la pérdida de validación empezaba a subir mientras la de entrenamiento seguía bajando. Eso es overfitting. Aplicaron early stopping, deteniendo el entrenamiento antes de que la generalización se degradara. El resultado fue un sistema que reduce el tiempo de búsqueda de información de horas a minutos.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [conversacional] ¿Y casos donde el gradient clipping fue crítico?
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [didáctico] En el entrenamiento de ele ele emes a gran escala, el gradient clipping con norma máxima de uno es práctica estándar. Sin él, ejemplos de entrenamiento atípicos pueden producir gradientes gigantescos que desestabilizan el modelo. Un spike en el gradiente puede hacer que la pérdida suba varios órdenes de magnitud en un solo paso. El gradient clipping previene eso limitando la magnitud de la actualización. Es una de esas técnicas que no ves en los papers porque se da por sentada, pero sin ella el entrenamiento de modelos grandes sería mucho más frágil.
+
+<break time="quinientosms"/>
+MARIA: [reflexivo] anzropic implementó un learning rate finder que entrena brevemente con una gama de tasas de aprendizaje y encuentra la que produce la caída de pérdida más rápida. Es una forma sistemática de calibrar este hiperparámetro crítico sin hacer ensayo y error manual. Muchos equipos usan esto antes de empezar un entrenamiento largo para evitar desperdiciar recursos con una tasa de aprendizaje subóptima.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora hablemos de lo que el cálculo diferencial y la optimización no son. Primero: el descenso de gradiente no garantiza encontrar el mínimo global. Solo garantiza encontrar un mínimo local. En funciones no convexas, que es el caso de las redes neuronales, hay muchos mínimos locales. El descenso de gradiente converge al mínimo más cercano desde el punto de inicio. Por suerte, en redes profundas sobreparametrizadas, muchos mínimos locales son casi igual de buenos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Cuándo falla el descenso de gradiente por completo?
+
+<break time="500ms"/>
+IAGO: [serio] Cuando la función de pérdida tiene plateaus o regiones planas. Si el gradiente es casi cero en una región amplia, el descenso de gradiente se queda atascado. El modelo deja de aprender aunque no haya llegado a un buen mínimo. Esto ocurría frecuentemente con funciones de activación saturadas como sigmoid o tanh. ReLU mitiga el problema porque no satura en la dirección positiva, pero puede producir neuronas muertas que siempre activan cero.
+
+IAGO: [analítico] Segundo error común: pensar que Adam siempre es mejor que SGD. No es verdad. Para algunas tareas de visión artificial y para el entrenamiento desde cero de modelos grandes, SGD con momentum y un learning rate schedule cuidadoso puede producir mejor generalización que Adam. Adam converge más rápido, pero a veces converge a mínimos más agudos que generalizan peor. En fain tiuning de ele ele emes, AdamW es el estándar. En entrenamiento de ResNets para ImageNet, SGD con momentum sigue siendo competitivo.
+
+IAGO: [contundente] Tercer error: creer que un learning rate más alto siempre entrena más rápido. Un learning rate demasiado alto produce divergencia. La pérdida sube en lugar de bajar. No hay entrenamiento más lento que uno que diverge y tienes que reiniciar. El learning rate óptimo es específico del modelo, el optimizador, el tamaño del batch y los datos. Hay que calibrarlo sistemáticamente.
+
+IAGO: [explicativo] Cuarto: el gradiente desvaneciente no desaparece completamente con ReLU. ReLU mitiga el problema porque su derivada es uno para valores positivos, pero puede producir neuronas muertas. Si una neurona ReLU activa siempre valores negativos, su derivada es cero y deja de aprender. Las residual connections son la solución más robusta para redes muy profundas, porque permiten al gradiente fluir sin pasar por activaciones saturadas.
+
+IAGO: [firme] Y finalmente: el cálculo diferencial no resuelve el problema de qué optimizar. Solo resuelve cómo optimizar. Si tu función de pérdida no captura lo que realmente quieres que el modelo aprenda, el descenso de gradiente te llevará eficientemente al lugar equivocado. El diseño de la función de pérdida es tan crítico como el algoritmo de optimización.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Las fuentes clave para este tema. Primera: el paper de Kingma y Ba, dos mil catorce, que introduce Adam. Adaptive Moment Estimation. Publicado en la conferencia ICLR. Este paper cambió la práctica del entrenamiento de redes profundas. Antes de Adam, la mayoría de los investigadores usaban SGD con momentum y ajustaban manualmente el learning rate. Adam hizo el proceso mucho más robusto y accesible.
+
+<break time="500ms"/>
+MARIA: [didáctico] Segunda fuente: el paper de residual networks de He y otros, dos mil quince. Deep Residual Learning for Image Recognition. Publicado en CVPR. Este paper introdujo las residual connections que resuelven el gradiente desvaneciente de forma arquitectónica. ResNet permitió entrenar redes de más de mil capas. Antes de ResNet, las redes de más de veinte o treinta capas eran difíciles de entrenar. Las residual connections son ahora estándar en Transformers y en casi todas las arquitecturas profundas.
+
+<break time="500ms"/>
+IAGO: [analítico] Tercera fuente: el paper de Vaswani y otros, dos mil diecisiete, Attention Is All You Need. Aunque es conocido por introducir el Transformer, también documenta el uso de warmup y cosine decay para el learning rate schedule. Ese patrón se ha convertido en estándar para el entrenamiento de ele ele emes. El paper muestra que sin warmup, el entrenamiento del Transformer es inestable en las primeras etapas.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: el gradiente es el vector de derivadas parciales de la función de pérdida respecto a todos los parámetros. Apunta en la dirección de máximo crecimiento de la pérdida. El descenso de gradiente se mueve en la dirección opuesta para minimizar la pérdida. Sin gradientes no hay entrenamiento de redes neuronales.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: back propa gation es la aplicación eficiente de la regla de la cadena para calcular el gradiente en redes profundas. Propaga los gradientes desde la última capa hacia las primeras, reutilizando cálculos intermedios. Sin back propa gation, entrenar una red profunda sería computacionalmente inviable. Es el algoritmo que hace posible el deep learning.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: la tasa de aprendizaje es el hiperparámetro más crítico del entrenamiento. Determina el tamaño de los pasos en el descenso de gradiente. Demasiado alta y el entrenamiento diverge. Demasiado baja y la convergencia es lenta. Los schedulers como warmup y cosine decay ajustan la tasa de aprendizaje a lo largo del entrenamiento para equilibrar velocidad y estabilidad. Calibrar la tasa de aprendizaje correctamente puede ser la diferencia entre un modelo que converge en horas y uno que nunca converge.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo tema del módulo exploraremos álgebra lineal y tensores, los objetos matemáticos que representan los datos y los parámetros en las redes neuronales.
+
+<break time="500ms"/>
+IAGO: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+MARIA: [reflexivo] Verificación de estructura completada.

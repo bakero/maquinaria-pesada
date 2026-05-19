@@ -36,26 +36,45 @@ _T_AUDIO = re.compile(r"^M(\d+)_T(\d+)\.mp3$", re.IGNORECASE)
 _M_AUDIO = re.compile(r"^M(\d+)\.mp3$", re.IGNORECASE)
 
 CONTENT_TYPES = ("pdf", "guion", "escaleta", "audio")
-"""Tipos de contenido que un episodio puede tener producidos."""
+"""Tipos de contenido que cuentan para "complete".  El vídeo se considera
+un slot extra (no obligatorio) y se contabiliza aparte en el frontend."""
 
-# Metadatos estáticos por módulo (nombre + descripción corta). Los porcentajes
-# y estados NO van aquí: se calculan escaneando episodios reales del repo.
+# Metadatos estáticos por módulo (nombre + descripción corta) extraídos del
+# currículum real del Master IA (ver PDFs/auxiliares/master IA.pdf y los
+# PDFs maestros de módulo en PDFs/Mn_T_*.pdf).  Los porcentajes y estados
+# se calculan dinámicamente escaneando los episodios reales del repo.
 MODULES_META: list[dict[str, str]] = [
-    {"id": "M0",  "name": "Cimientos",               "short": "Qué es la IA, historia, panorámica"},
-    {"id": "M1",  "name": "Datos & ML clásico",      "short": "Datasets, regresión, árboles, métricas"},
-    {"id": "M2",  "name": "Redes neuronales",        "short": "Perceptrón, backprop, optimización"},
-    {"id": "M3",  "name": "Transformers",            "short": "Atención, encoder/decoder, escalado"},
-    {"id": "M4",  "name": "LLMs y emergencia",       "short": "Pretraining, leyes de escala, capacidades"},
-    {"id": "M5",  "name": "Fine-tuning & RLHF",      "short": "SFT, DPO, RLHF, constitutional AI"},
-    {"id": "M6",  "name": "Prompting avanzado",      "short": "CoT, few-shot, role, system design"},
-    {"id": "M7",  "name": "RAG & memoria",           "short": "Embeddings, vector DBs, retrieval"},
-    {"id": "M8",  "name": "Agentes & herramientas",  "short": "Tool use, ReAct, planning, loops"},
-    {"id": "M9",  "name": "Evaluación",              "short": "Benchmarks, evals, MMLU, humaneval"},
-    {"id": "M10", "name": "Alineamiento",            "short": "Safety, interpretabilidad, riesgos"},
-    {"id": "M11", "name": "Multimodalidad",          "short": "Vision, audio, video, generación"},
-    {"id": "M12", "name": "Inferencia y eficiencia", "short": "Quantization, KV-cache, batching"},
-    {"id": "M13", "name": "Despliegue & MLOps",      "short": "Serving, monitoring, drift"},
-    {"id": "M14", "name": "Estado del arte",         "short": "Frontier models, AGI debate, futuro"},
+    # 'short' ≤ 50 caracteres: cabe en las cards del master sin truncar.
+    {"id": "M0",  "name": "Introducción Estratégica",
+     "short": "Qué es la IA, tipos, capacidades, adopción"},
+    {"id": "M1",  "name": "Fundamentos y Razonamiento",
+     "short": "Paradigmas, atención, razonamiento, tokens"},
+    {"id": "M2",  "name": "Matemáticas para IA",
+     "short": "Álgebra, cálculo, probabilidad, embeddings"},
+    {"id": "M3",  "name": "Machine Learning Clásico",
+     "short": "Aprendizaje, modelos, features, evaluación"},
+    {"id": "M4",  "name": "Deep Learning",
+     "short": "Redes profundas, CNN, RNN, transfer learning"},
+    {"id": "M5",  "name": "NLP y LLMs",
+     "short": "PLN, BERT vs GPT, in-context, alucinaciones"},
+    {"id": "M6",  "name": "Ingeniería de Prompts",
+     "short": "CoT, ToT, ReAct, evaluación de prompts"},
+    {"id": "M7",  "name": "Sistemas RAG",
+     "short": "Embeddings, vector DB, búsqueda híbrida"},
+    {"id": "M8",  "name": "Ingeniería LLMOps",
+     "short": "Fine-tuning, PEFT/LoRA, CI/CD para IA"},
+    {"id": "M9",  "name": "Infraestructura y Despliegue",
+     "short": "Cloud, APIs, escalabilidad, edge AI, IaC"},
+    {"id": "M10", "name": "Sistemas de Agentes",
+     "short": "Planificación, memoria, tool use, MCP/A2A"},
+    {"id": "M11", "name": "Automatización con IA",
+     "short": "RPA inteligente, workflows, autónomos"},
+    {"id": "M12", "name": "Seguridad de IA",
+     "short": "OWASP, prompt injection, jailbreak, red team"},
+    {"id": "M13", "name": "Gobernanza y Ética",
+     "short": "EU AI Act, NIST RMF, ISO 42001, fairness"},
+    {"id": "M14", "name": "Estrategia para Empresa",
+     "short": "Oportunidades, ROI, roadmap, gestión cambio"},
 ]
 
 
@@ -153,6 +172,33 @@ def _index_audios() -> tuple[dict[str, Path], dict[tuple[str, int], Path]]:
     return m_out, t_out
 
 
+# Patrón: PDFs/temas/Mn_Tk_<slug>.pdf  (acepta también Mn_TX_Tk_<slug>.pdf)
+_T_PDF_NAME = re.compile(r"^M(\d+)_(?:TX_)?T(\d+)_(.+)\.pdf$", re.IGNORECASE)
+
+
+def _index_pdfs_temas() -> dict[tuple[str, int], tuple[str, Path]]:
+    """Escanea PDFs/temas/ y devuelve (module, num) → (slug, path).
+
+    Permite descubrir todos los temas planeados aunque aún no tengan guion
+    ni audio — el PDF es el "blueprint" del tema.
+    """
+    out: dict[tuple[str, int], tuple[str, Path]] = {}
+    sub = paths.pdfs_dir() / "temas"
+    if not sub.exists():
+        return out
+    for p in sub.iterdir():
+        if not p.is_file() or p.suffix.lower() != ".pdf":
+            continue
+        m = _T_PDF_NAME.match(p.name)
+        if not m:
+            continue
+        mod = f"M{int(m.group(1))}"
+        num = int(m.group(2))
+        # Si hay duplicados, conservamos el primero ordenado por nombre.
+        out.setdefault((mod, num), (m.group(3), p))
+    return out
+
+
 def _find_pdf(module: str, kind: str, number: int | None) -> Path | None:
     pdir = paths.pdfs_dir()
     if not pdir.exists():
@@ -164,13 +210,16 @@ def _find_pdf(module: str, kind: str, number: int | None) -> Path | None:
             if re.match(rf"^M0*{digits}_T_.+\.pdf$", p.name, re.IGNORECASE):
                 return p
         return None
-    # T: busca en PDFs/temas/ algo que contenga Mn_TX_T{number} o Tk
+    # T: busca en PDFs/temas/ algo como M{n}_T{k}_<slug>.pdf (o legacy
+    # M{n}_TX_T{k}_…). Usamos (?<![A-Za-z0-9]) en vez de \b porque '_'
+    # es word-char en regex y rompe la transición.
     sub = pdir / "temas"
     if sub.exists():
         for p in sub.glob("*.pdf"):
             if re.search(
-                rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE
-            ) or re.search(rf"\bT0*{number}_", p.name, re.IGNORECASE):
+                rf"(?<![A-Za-z0-9])M0*{digits}_(?:TX_)?T0*{number}(?![A-Za-z0-9])",
+                p.name, re.IGNORECASE,
+            ):
                 return p
     return None
 
@@ -187,11 +236,17 @@ def _find_escaleta(module: str, kind: str, number: int | None) -> Path | None:
                 return p
         # fallback: cualquier escaleta MODxxx con el dígito
         for p in edir.glob("*.md"):
-            if re.search(rf"\bMOD0*{digits}\b", p.name, re.IGNORECASE):
+            if re.search(
+                rf"(?<![A-Za-z0-9])MOD0*{digits}(?![A-Za-z0-9])",
+                p.name, re.IGNORECASE,
+            ):
                 return p
         return None
     for p in edir.glob("*.md"):
-        if re.search(rf"\bM0*{digits}_(?:TX_)?T0*{number}\b", p.name, re.IGNORECASE):
+        if re.search(
+            rf"(?<![A-Za-z0-9])M0*{digits}_(?:TX_)?T0*{number}(?![A-Za-z0-9])",
+            p.name, re.IGNORECASE,
+        ):
             return p
     return None
 
@@ -237,9 +292,18 @@ def _find_video(module: str, kind: str, number: int | None) -> Path | None:
 
 
 def scan_all() -> list[Episode]:
-    """Escanea el repo y devuelve TODOS los episodios detectados."""
+    """Escanea el repo y devuelve TODOS los episodios detectados.
+
+    Fuentes de descubrimiento:
+      * `Guiones/` para guiones (.txt) — M y T
+      * `episodios/` para audios (.mp3) — M y T
+      * `PDFs/temas/` para PDFs de tema — descubre temas planeados aunque
+        aún no tengan guion ni audio
+      * `paths.MODULES` (M0..M14) garantiza que todo módulo aparezca
+    """
     m_guiones, t_guiones = _index_guiones()
     m_audios, t_audios = _index_audios()
+    pdfs_t = _index_pdfs_temas()
 
     keys: set[tuple[str, str, int | None]] = set()
     for mod in m_guiones:
@@ -249,6 +313,9 @@ def scan_all() -> list[Episode]:
     for (mod, num) in t_guiones:
         keys.add((mod, "T", num))
     for (mod, num) in t_audios:
+        keys.add((mod, "T", num))
+    # Temas descubiertos vía PDF (planeados aunque sin guion/audio aún)
+    for (mod, num) in pdfs_t:
         keys.add((mod, "T", num))
 
     # Garantizar episodio M para cada módulo conocido (M0..M14)
@@ -269,6 +336,11 @@ def scan_all() -> list[Episode]:
             )
         else:
             slug, gpath = t_guiones.get((mod, num), ("", None))
+            # Si el tema solo vive en PDFs/temas/ (sin guion), tomamos el
+            # slug humano del nombre del PDF.
+            if not slug:
+                pdf_slug, _ = pdfs_t.get((mod, num), ("", None))
+                slug = pdf_slug
             ep = Episode(
                 id=f"{mod}_T{num}",
                 module=mod,

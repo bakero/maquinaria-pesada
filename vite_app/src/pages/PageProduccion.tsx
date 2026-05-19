@@ -4,7 +4,7 @@
 
 import * as React from "react";
 import { Icon } from "../components";
-import { FIXTURE_EPISODES, FIXTURE_MODULES } from "../data";
+import { cleanEpisodeTitle, getEpisodes, getModules, getShorts } from "../data";
 
 const SLOT_KINDS = ["pdf", "guion", "escaleta", "audio", "video"] as const;
 
@@ -14,8 +14,12 @@ export interface PageProduccionProps {
 }
 
 export function PageProduccion({ onNav, onOpenPalette }: PageProduccionProps) {
-  const modules = FIXTURE_MODULES;
-  const allEps = FIXTURE_EPISODES;
+  // getModules/getEpisodes leen el estado mutable de data.ts que
+  // applyBootstrap() rellena con la respuesta real de /api/bootstrap.
+  // Sin servidor, devuelven los fixtures como fallback.
+  const modules = getModules();
+  const allEps = getEpisodes();
+  const shorts = getShorts();
 
   // KPIs reales: progreso global, módulos terminados, episodios completos,
   // contenidos producidos, en alerta, sin empezar.
@@ -183,12 +187,11 @@ export function PageProduccion({ onNav, onOpenPalette }: PageProduccionProps) {
           const prog = moduleProgress(m.id);
           return (
             <div key={m.id} className="v3-mod" onClick={() => onNav("modulo", m.id)}>
-              <span className="v3-mod-pct">{prog.pct}%</span>
               <div className="v3-mod-row">
                 <span className="v3-mod-id">{m.id}</span>
                 <span className={`v3-mod-state-dot ${m.status}`}/>
                 <span className="v3-mod-meta">
-                  {prog.done}/{prog.total}
+                  {prog.done}/{prog.total} · {prog.pct}%
                   {prog.alert > 0 && <span style={{ color: "var(--alert)" }}> · {prog.alert}f</span>}
                   {prog.warn > 0  && <span style={{ color: "var(--warn)" }}> · {prog.warn}w</span>}
                 </span>
@@ -206,6 +209,61 @@ export function PageProduccion({ onNav, onOpenPalette }: PageProduccionProps) {
           );
         })}
       </div>
+
+      {/* Sección Shorts · píldoras de glosario, independientes de los módulos */}
+      {shorts.length > 0 && (
+        <>
+          <header className="v3-hd" style={{ marginTop: 32 }}>
+            <div className="v3-hd-left">
+              <span className="v3-hd-eyebrow">Shorts</span>
+              <h2 className="v3-hd-title">
+                {shorts.length} píldora{shorts.length !== 1 ? "s" : ""} de glosario · 60-90 s
+              </h2>
+            </div>
+            <div className="v3-hd-meta">
+              {shorts.filter((s) =>
+                SLOT_KINDS.every((k) => s.state[k] === "ok" || k === "pdf" || k === "escaleta"),
+              ).length} / {shorts.length} completos
+            </div>
+          </header>
+          <div className="v3-mods">
+            {shorts.map((s) => {
+              // Shorts solo tienen 3 slots aplicables: guion / audio / video
+              const slots: ("guion" | "audio" | "video")[] = ["guion", "audio", "video"];
+              const done = slots.filter((k) => s.state[k] === "ok").length;
+              const total = slots.length;
+              const pct = Math.round((done / total) * 100);
+              const status: "ok" | "warn" | "empty" =
+                done === total ? "ok" : done > 0 ? "warn" : "empty";
+              return (
+                <div key={s.id} className="v3-mod" onClick={() => onNav("short", s.id)}>
+                  <div className="v3-mod-row">
+                    <span className="v3-mod-id">{s.id}</span>
+                    <span className={`v3-mod-state-dot ${status}`}/>
+                    <span className="v3-mod-meta">{done}/{total} · {pct}%</span>
+                  </div>
+                  <div className="v3-mod-name">{s.term || cleanEpisodeTitle(s.title, "T")}</div>
+                  <div style={{
+                    fontSize: 11, color: "var(--text-mute)",
+                    fontFamily: "var(--f-mono)", marginTop: 2,
+                  }}>
+                    píldora · sin módulo
+                  </div>
+                  <div className="v3-mod-children">
+                    {slots.map((k) => (
+                      <span key={k} className={`v3-mod-child ${
+                        s.state[k] === "ok"   ? "ok"
+                      : s.state[k] === "warn" ? "warn"
+                      : s.state[k] === "alert"? "alert" : ""
+                      }`} title={`${k} · ${s.state[k]}`}/>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

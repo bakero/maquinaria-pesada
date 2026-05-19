@@ -6,6 +6,7 @@ from pathlib import Path
 
 from generadores import base_generator as bg
 from generadores.shared import pdf_reader, pre_writing
+from generadores.shared.anthropic_client import CacheableBlock
 from validators import t_validator
 from validators.result import ValidationResult
 
@@ -110,6 +111,34 @@ Reglas duras de formato v6:
     ("ochenta y ocho por ciento", "dos mil veintitres"). Excepción: años
     de papers acompañados de autor.
 24. NO incluyas APLICACION_PRACTICA — eso es exclusivo del M.
+
+24.1 ⚠️ ANTI-UNDERSHOOT WORD COUNT — APLICAR SIEMPRE:
+    Tras escribir el guion completo, CUENTA las palabras totales del diálogo.
+    Si el total <3700 (estás CORTO):
+    - AÑADE un cuarto caso de empresa en BLOQUE_CASOS de 200-300 palabras
+      con cifra concreta documentada. Ejemplo de plantilla a copiar:
+      "MARIA: [didactico] El caso de [Empresa] es especialmente revelador.
+      [Empresa] implementó [técnica] en [contexto/año en palabras] y
+      [verbo] [cifra concreta en palabras]. [Detalle del proceso, 2-3
+      frases adicionales]. El resultado: [métrica final en palabras]."
+    - Empresas válidas adicionales (catálogo extendido): Morgan Stanley,
+      JPMorgan, Harvey AI, Lemonade, OpenAI, Anthropic, Google, Microsoft,
+      IBM, BBVA, Santander, Zara, Netflix, Spotify, Meta, NVIDIA, GitHub,
+      Stripe, Walmart, Amazon, Pfizer, Roche, Cognition AI, Zendesk,
+      Weights & Biases, DataRobot.
+    - Si tras añadir el caso sigues <3700, AMPLIA BLOQUE_COMO con UN
+      sub-mecanismo adicional explicado por Maria (150-200 palabras).
+    - NO ENTREGUES guion T con word_count <3700. El validador es estricto.
+
+24.2 ⚠️ ANTI-DESBALANCE BLOQUE_COMO:
+    BLOQUE_COMO requiere que tanto Yago como Maria queden entre 35% y 65%
+    de las palabras del bloque. Si Maria <35%:
+    - AÑADE un sub-mecanismo completo explicado por Maria de 150-200
+      palabras (4-6 frases técnicas, mismo nivel que Yago).
+    - Maria NO puede limitarse a preguntas cortas en COMO — debe explicar
+      pasos del mecanismo (forward pass, backpropagation, embeddings,
+      attention, etc. — depende del tema).
+    Si Yago <35%: lo contrario, dale a Yago otro turno de desarrollo.
 
 25. EXPANSIÓN CASTELLANA DE SIGLAS AL PRIMER USO (regla §13.1 v6.1):
     Toda sigla canónica del glosario (LLM, RAG, GPT, MLOps, CoT, RLHF, RPA,
@@ -248,9 +277,13 @@ def build_user_prompt(*, episode_id: str, repo_root: Path) -> str:
         "   entendido estos conceptos\" + \"Primero: [concepto 1]\" — EN UN ÚNICO\n"
         "   BLOQUE del opener. Bloque 2: \"Segundo: [concepto 2]\" (otro speaker).\n"
         "   Bloque 3: \"Tercero: [concepto 3]\" (opener).\n"
-        "4. CIERRE_FINAL: incluye palabra-por-palabra la frase canónica:\n"
-        "   \"Y hasta aqui ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
-        "   \"Siguenos para nuevos capitulos donde la I.A. crea contenido sobre I.A.\"\n"
+        "4. CIERRE_FINAL: incluye la frase canónica de cierre.\n"
+        "   ⚠️ CRÍTICO: escribe 'I.A.' con PUNTOS (NO expandas a 'inteligencia\n"
+        "   artificial'). El TTS lo pronunciará 'i-a' como marca, coherente\n"
+        "   con 'MaquinarIA'. Las tildes son válidas y se aceptan.\n"
+        "   Frase exacta a incluir literal:\n"
+        "   \"Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. \"\n"
+        "   \"Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.\"\n"
         "5. BLOQUE_PANORAMA: Yago lidera con ≥65% de palabras. Maria solo\n"
         "   1 pregunta por cada 3 turnos de Yago (≤15 palabras cada pregunta).\n"
         "6. BLOQUE_COMO: COMPARTIDO. Yago entre 40% y 60%. Si Maria queda <40%,\n"
@@ -285,13 +318,19 @@ def _validate_fn(text: str, episode_id: str) -> list[ValidationResult]:
 def generate(episode_id: str, repo_root: Path | None = None) -> bg.PipelineResult:
     repo_root = (repo_root or Path(__file__).resolve().parents[1]).resolve()
     user_prompt = build_user_prompt(episode_id=episode_id, repo_root=repo_root)
+    # SYSTEM_PROMPT cacheado con TTL 1h (estable entre TODOS los episodios).
+    # El user_prompt v6 con checklist completo va sin cache para preservar
+    # el efecto enforcement (word_count, leader_balance, casos_company).
     request = bg.PipelineRequest(
         episode_id=episode_id, kind="T",
-        system_prompt=SYSTEM_PROMPT, user_prompt=user_prompt,
+        system_blocks=[CacheableBlock(text=SYSTEM_PROMPT, ttl="1h")],
+        user_prompt=user_prompt,
         model=MODEL, repo_root=repo_root,
         max_output_tokens=12000, temperature=0.7,
         validate_fn=_validate_fn,
-        max_retries=5,
+        # T necesita 5 retries del v6 — el word_count enforcement requiere
+        # iteraciones para subir de ~3300 al target 3700-4200.
+        max_retries=bg.env_max_retries("T", 5),
         # T exige EXACTAMENTE 3 fuentes con años distintos. Si el modelo se
         # pasa, recortamos a 3. El undershoot (<3) sigue dependiendo del
         # retry con feedback.
