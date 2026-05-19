@@ -127,11 +127,28 @@ def improve_with_claude_stream(
 
     client = anthropic.Anthropic(api_key=api_key)
 
+    try:
+        from cockpit.core.log_helpers import get_run_logger as _glog
+        _logger = _glog(source.replace(".py", "").replace("/", "."))
+    except Exception:  # noqa: BLE001
+        _logger = None
+
     last_error: Exception | None = None
     for attempt in range(max_retries + 1):
+        if attempt > 0 and _logger is not None:
+            _logger.retry(
+                attempt=attempt,
+                reason=f"{type(last_error).__name__ if last_error else 'unknown'}",
+                source=source,
+            )
         t0 = time.monotonic()
         try:
             chunks: list[str] = []
+            if _logger is not None:
+                _logger.info(
+                    f"AI call → {kind}",
+                    model=model, purpose=kind, source=source, attempt=attempt + 1,
+                )
             with client.messages.stream(
                 model=model,
                 max_tokens=max_tokens,
@@ -155,6 +172,13 @@ def improve_with_claude_stream(
                 ok=True,
             )
             _record(usage, kind=kind, source=source)
+            if _logger is not None:
+                _logger.ok(
+                    f"AI call ok → {kind}",
+                    model=model, purpose=kind, source=source,
+                    ms=latency_ms, tokens_in=in_tok, tokens_out=out_tok,
+                    cost_usd=round(usage.cost_usd, 4),
+                )
             yield "usage", usage
             return
 
@@ -173,6 +197,12 @@ def improve_with_claude_stream(
                     error=f"{type(e).__name__}: {str(e)[:200]}",
                 )
                 _record(usage, kind=kind, source=source)
+                if _logger is not None:
+                    _logger.error(
+                        f"AI call error → {kind}",
+                        model=model, purpose=kind, source=source,
+                        ms=latency_ms, exc_type=type(e).__name__,
+                    )
                 raise AIClientError(usage.error) from e
             time.sleep(RETRY_BACKOFF_S[min(attempt, len(RETRY_BACKOFF_S) - 1)])
 

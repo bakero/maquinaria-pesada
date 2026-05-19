@@ -467,6 +467,9 @@ def infer_topic_display(pdf_path: Path) -> str:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("generar_guion")
+
     parser = argparse.ArgumentParser(description="Generador de guiones M — MaquinarIA Pesada")
     parser.add_argument("--modulo",  type=int,  required=True,  help="Número de módulo (0-14)")
     parser.add_argument("--pdf",     required=True, help="Ruta al PDF RESUMEN del módulo")
@@ -476,6 +479,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # ── Cargar spec ─────────────────────────────────────────────────────────
+    log.step("load_spec", spec=args.spec)
     spec          = load_spec(args.spec)
     spec_markdown = read_text(Path(args.spec))
 
@@ -507,6 +511,7 @@ def main() -> None:
     usage  = TokenUsage()
 
     # ── Extracción de conceptos ──────────────────────────────────────────────
+    log.step("extract_concepts", pdf=str(pdf_path), topic=topic, modulo=modulo_n)
     print("  [1/4] Extrayendo conceptos del PDF...")
     concept_list, hard_audio = extract_concepts_with_claude(client, spec, pdf_text, topic, usage)
     if not concept_list:
@@ -531,11 +536,15 @@ def main() -> None:
         print(f"         Glosario ({source_code}): {len(glossary_concepts)} conceptos")
 
     # ── Documentos vivos ─────────────────────────────────────────────────────
+    log.step("load_live_docs")
     print("  [2/4] Cargando documentos vivos y extrayendo APLICACION_PRACTICA...")
     live_docs = load_live_docs(BASE_DIR)
     ficha     = extract_aplicacion_material(live_docs, modulo_n, concept_list, spec)
     artifact  = save_aplicacion_artifact(ficha, modulo_n, BASE_DIR)
     print(f"         Párrafos encontrados: {ficha['paragraphs_found']} | Artifact: {artifact.name}")
+    log.info("APLICACION_PRACTICA material",
+             paragraphs=ficha["paragraphs_found"],
+             sufficient=ficha["paragraphs_sufficient"])
 
     if not ficha["paragraphs_sufficient"]:
         print(
@@ -564,7 +573,11 @@ def main() -> None:
     best_issues: list[str] = []
     best_score: tuple[int, int, int] = (999, 999, 999)  # (hard_count, word_deficit, soft_count)
 
+    log.step("generate", model=gen_model, max_intentos=args.max_intentos)
     for attempt in range(1, args.max_intentos + 1):
+        if attempt > 1:
+            log.retry(attempt=attempt, reason="hard_fails",
+                      previous_hard=len([i for i in best_issues if not i.startswith("[WARN]")]))
         print(f"\n  [3/4] Generando guion (intento {attempt}/{args.max_intentos})...")
 
         # Use best_issues for feedback (not necessarily last attempt's issues)
@@ -688,6 +701,8 @@ def main() -> None:
             hard_issues = hard_issues + promoted
 
         print(f"         Issues hard: {len(hard_issues)} | soft: {len(soft_issues)}")
+        log.info("validate · intento", attempt=attempt,
+                 hard=len(hard_issues), soft=len(soft_issues))
         for issue in hard_issues:
             print(f"         [HARD] {issue}")
         for issue in soft_issues:
@@ -715,10 +730,22 @@ def main() -> None:
             print(f"\n  [WARN] Superado máximo de intentos. Guardando mejor intento ({best_score[0]} hard, {best_score[2]} soft).")
             draft = best_draft
 
-    # ── Guardar ──────────────────────────────────────────────────────────────
+    # ── Validate (last) + Guardar ───────────────────────────────────────────
+    log.step("validate")
+    final_hard = [i for i in local_issues if not i.startswith("[WARN]")]
+    final_soft = [i for i in local_issues if i.startswith("[WARN]")]
+    log.info("validación final", hard=len(final_hard), soft=len(final_soft))
+
+    log.step("save", path=str(guion_path))
     print("\n  [4/4] Guardando guion...")
     guion_path.parent.mkdir(parents=True, exist_ok=True)
     guion_path.write_text(draft.rstrip() + "\n", encoding="utf-8")
+    if final_hard:
+        log.warn("guion guardado con hard-fails", path=str(guion_path),
+                 hard=len(final_hard), tokens_total=usage.total)
+    else:
+        log.ok("guion guardado", path=str(guion_path),
+               tokens_total=usage.total)
 
     print(f"\n{'='*60}")
     print(f"  GUION GENERADO : {guion_path}")

@@ -39,15 +39,19 @@ tokens = {"gpt": {"input": 0, "output": 0}}
 
 def comprimir(texto: str) -> str:
     import time as _t
+    from cockpit.core.log_helpers import get_run_logger
+    _log = get_run_logger("dual_debate")
     _t0 = _t.monotonic()
-    r = gpt_client.chat.completions.create(
-        model=GPT_FAST,
-        max_tokens=MAX_TOKENS_COMPRESS,
-        messages=[
-            {"role": "system", "content": SYSTEM_COMPRESSOR},
-            {"role": "user",   "content": texto}
-        ]
-    )
+    with _log.ai_call(model=GPT_FAST, purpose="comprimir", source="dual_debate.py") as _call:
+        r = gpt_client.chat.completions.create(
+            model=GPT_FAST,
+            max_tokens=MAX_TOKENS_COMPRESS,
+            messages=[
+                {"role": "system", "content": SYSTEM_COMPRESSOR},
+                {"role": "user",   "content": texto}
+            ]
+        )
+        _call.set_tokens(in_=r.usage.prompt_tokens, out_=r.usage.completion_tokens)
     tokens["gpt"]["input"]  += r.usage.prompt_tokens
     tokens["gpt"]["output"] += r.usage.completion_tokens
     try:
@@ -67,15 +71,19 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion: str,
     prompt += f"\n\nINSTRUCCION:\n{instruccion}"
 
     import time as _t
+    from cockpit.core.log_helpers import get_run_logger
+    _log = get_run_logger("dual_debate")
     _t0 = _t.monotonic()
-    r = gpt_client.chat.completions.create(
-        model=modelo,
-        max_tokens=max_tokens,
-        messages=[
-            {"role": "system", "content": SYSTEM_EXPERTO},
-            {"role": "user",   "content": prompt}
-        ]
-    )
+    with _log.ai_call(model=modelo, purpose="ronda_gpt", source="dual_debate.py") as _call:
+        r = gpt_client.chat.completions.create(
+            model=modelo,
+            max_tokens=max_tokens,
+            messages=[
+                {"role": "system", "content": SYSTEM_EXPERTO},
+                {"role": "user",   "content": prompt}
+            ]
+        )
+        _call.set_tokens(in_=r.usage.prompt_tokens, out_=r.usage.completion_tokens)
     tokens["gpt"]["input"]  += r.usage.prompt_tokens
     tokens["gpt"]["output"] += r.usage.completion_tokens
     try:
@@ -88,6 +96,9 @@ def ronda_gpt(problema: str, contexto_previo: str, instruccion: str,
 
 
 def debate(problema: str, r1_claude: str, r3_claude_fn) -> str:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("dual_debate")
+    log.step("debate")
     sep = "-" * 60
 
     # RONDA 1 — Claude (ya generada inline)
@@ -95,12 +106,14 @@ def debate(problema: str, r1_claude: str, r3_claude_fn) -> str:
     print("RONDA 1 — Claude (Sonnet): Primera aproximacion")
     print(sep)
     print(r1_claude)
+    log.info("ronda 1 · Claude (inline)")
     r1c = comprimir(r1_claude)
 
     # RONDA 2 — GPT-4o-mini: critica
     print(f"\n{sep}")
     print("RONDA 2 — ChatGPT (gpt-4o-mini): Ajuste critico")
     print(sep)
+    log.info("ronda 2 · GPT-4o-mini")
     r2 = ronda_gpt(
         problema, r1c,
         "Identifica puntos debiles de la propuesta anterior. "
@@ -113,6 +126,7 @@ def debate(problema: str, r1_claude: str, r3_claude_fn) -> str:
     print(f"\n{sep}")
     print("RONDA 3 — Claude (Sonnet): Validacion + creatividad")
     print(sep)
+    log.info("ronda 3 · Claude (inline)")
     r3 = r3_claude_fn(r1c, r2c)
     print(r3)
     r3c = comprimir(r3)
@@ -121,6 +135,7 @@ def debate(problema: str, r1_claude: str, r3_claude_fn) -> str:
     print(f"\n{sep}")
     print("RONDA 4 — ChatGPT (gpt-4o): Sintesis final")
     print(sep)
+    log.info("ronda 4 · GPT-4o sintesis")
     r4 = ronda_gpt(
         problema,
         f"Claude ronda 1:\n{r1c}\n\nGPT ajuste:\n{r2c}\n\nClaude validacion:\n{r3c}",
@@ -165,6 +180,10 @@ def debate(problema: str, r1_claude: str, r3_claude_fn) -> str:
     print(f"  TOTAL:           ${coste_claude + coste_gpt:.5f}")
     print(sep)
 
+    log.ok("debate terminado",
+           tokens_gpt_in=tokens["gpt"]["input"],
+           tokens_gpt_out=tokens["gpt"]["output"],
+           coste_total_usd=round(coste_claude + coste_gpt, 5))
     return r4
 
 

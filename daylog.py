@@ -311,6 +311,38 @@ class RunLog:
                 )
         finally:
             _ACTIVE_RUN = None
+            # Auto-validación de la propia bitácora del run que acaba de cerrarse.
+            # Si detecta inconsistencias, deja un WARN en el mismo día-log pero no
+            # propaga errores (el contrato del logging es no-romper-al-caller).
+            self._post_validate()
+
+    def _post_validate(self) -> None:
+        """Lanza `log_validator.validate_after_run` y registra el resultado.
+
+        Opt-out vía env `DAYLOG_NO_AUTOVALIDATE=1` (útil en tests muy ajustados).
+        """
+        if os.environ.get("DAYLOG_NO_AUTOVALIDATE") == "1":
+            return
+        try:
+            from cockpit.core.log_validator import validate_after_run
+
+            report = validate_after_run(self.run_id)
+            if report is None or report.ok and not report.warnings:
+                return
+            if report.issues:
+                _write_line(
+                    "WARN", self.run_id, self.script, self.pid,
+                    "auto-validate: issues",
+                    {"issues": "|".join(report.issues)[:300]},
+                )
+            if report.warnings:
+                _write_line(
+                    "INFO", self.run_id, self.script, self.pid,
+                    "auto-validate: warnings",
+                    {"warnings": "|".join(report.warnings)[:300]},
+                )
+        except Exception:  # noqa: BLE001 - jamás propagar
+            pass
 
     # ---- API pública -----------------------------------------------------
 

@@ -426,6 +426,9 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("validar_episodio")
+
     args = parse_args()
 
     out = Path("episodios")
@@ -434,6 +437,7 @@ def main() -> int:
     guion_path = Path(args.guion)
 
     print_header(args.ep, mp3_path, log_path, guion_path)
+    log.step("load_script", ep=args.ep, guion=str(guion_path), mp3=str(mp3_path))
 
     # Leer guion
     guion_text: Optional[str] = None
@@ -452,6 +456,7 @@ def main() -> int:
     print()
 
     # Ejecutar checks
+    log.step("validate", ep=args.ep)
     results: List[CheckResult] = []
 
     r_size = check_mp3_exists_and_size(mp3_path)
@@ -496,6 +501,15 @@ def main() -> int:
 
     verdict, severity = summarize(results)
     print_verdict(verdict, severity)
+    n_ok = sum(1 for r in results if r.status == "OK")
+    n_warn = sum(1 for r in results if r.status == "WARN")
+    n_err = sum(1 for r in results if r.status == "ERROR")
+    if verdict.startswith("RECHAZADO"):
+        log.error("episodio rechazado", ep=args.ep, verdict=verdict,
+                  ok=n_ok, warn=n_warn, error=n_err)
+    else:
+        log.ok("episodio aceptado", ep=args.ep, verdict=verdict,
+               ok=n_ok, warn=n_warn, error=n_err)
     return 0 if not verdict.startswith("RECHAZADO") else 1
 
 

@@ -111,8 +111,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--quiet", action="store_true", help="No emitir informe a stdout"
     )
+    parser.add_argument(
+        "--check-run-log",
+        metavar="DATE",
+        nargs="?",
+        const="today",
+        help=(
+            "Valida el día-log indicado (YYYY-MM-DD; 'today' = hoy) y "
+            "reporta inconsistencias. Salida en stdout; exit 1 si hay issues."
+        ),
+    )
 
     args = parser.parse_args(argv)
+
+    # ── Modo alterno: validar el día-log ──────────────────────────────────
+    if args.check_run_log is not None:
+        return _run_log_check(args.check_run_log)
+
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("evaluador")
+    log.step("discover", directory=args.dir, only_kind=args.only_kind or "")
 
     if args.file:
         path = Path(args.file)
@@ -129,6 +147,7 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         scripts = discover_scripts(d_path, only_kind=args.only_kind)
         results = [evaluate_one(p) for p in scripts]
+    log.step("evaluate", files=len(results))
 
     if not args.quiet:
         print(render_terminal(results, directory, args.mode))
@@ -157,11 +176,72 @@ def main(argv: list[str] | None = None) -> int:
         for r in results
     )
 
+    n_hard = sum(
+        sum(1 for f in r.get("findings", []) if f["severity"] == "hard")
+        for r in results
+    )
+    n_soft = sum(
+        sum(1 for f in r.get("findings", []) if f["severity"] == "soft")
+        for r in results
+    )
     if has_hard:
+        log.warn("evaluación con hard-fails", files=len(results),
+                 hard=n_hard, soft=n_soft)
         return 1
     if args.strict and has_soft:
+        log.warn("evaluación con soft-warns en modo strict",
+                 files=len(results), soft=n_soft)
         return 1
+    log.ok("evaluación limpia", files=len(results), soft=n_soft)
     return 0
+
+
+def _run_log_check(date_arg: str) -> int:
+    """Implementación de `--check-run-log`: valida el día-log y reporta."""
+    from datetime import date as _date
+
+    from cockpit.core import log_validator
+
+    if date_arg in ("today", "hoy", "*"):
+        target_date = None
+    else:
+        try:
+            y, m, d = [int(x) for x in date_arg.split("-")]
+            target_date = _date(y, m, d)
+        except (ValueError, AttributeError):
+            print(
+                f"ERROR: fecha inválida '{date_arg}' (esperado YYYY-MM-DD o 'today')",
+                file=sys.stderr,
+            )
+            return 2
+
+    reports = log_validator.validate_day(target_date)
+    if not reports:
+        target_label = date_arg if date_arg not in ("today", "hoy", "*") else "hoy"
+        print(f"(no hay runs registrados en el día-log de {target_label})")
+        return 0
+
+    print(f"# Validación de día-log · {len(reports)} ejecuciones\n")
+    has_issues = False
+    for rid, rep in sorted(reports.items()):
+        sev = "OK" if rep.ok else "ISSUE"
+        bits = [f"run={rid}", f"script={rep.run.script}", f"status={rep.run.status}"]
+        if rep.run.elapsed_s is not None:
+            bits.append(f"elapsed={rep.run.elapsed_s}s")
+        if rep.run.ai_calls_started:
+            bits.append(
+                f"ai={rep.run.ai_calls_ok}/{rep.run.ai_calls_started}"
+                + (f"(err={rep.run.ai_calls_error})" if rep.run.ai_calls_error else "")
+            )
+        if rep.run.retries:
+            bits.append(f"retries={rep.run.retries}")
+        print(f"[{sev}] {' '.join(bits)}")
+        for issue in rep.issues:
+            print(f"   - issue: {issue}")
+            has_issues = True
+        for warn in rep.warnings:
+            print(f"   - warn:  {warn}")
+    return 1 if has_issues else 0
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -727,6 +727,9 @@ def canonical_speaker_arg(raw: str) -> str:
 
 
 def main() -> None:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("generar_episodio_v2")
+
     parser = argparse.ArgumentParser(description="Generador de episodios de MaquinarIA Pesada")
     parser.add_argument("--guion", required=True, help="Ruta al guion con etiquetas")
     parser.add_argument("--ep", required=True, help="Codigo del episodio, por ejemplo EP001")
@@ -746,10 +749,12 @@ def main() -> None:
     if not api_key:
         raise SystemExit("Falta ELEVENLABS_API_KEY en el entorno.")
 
+    log.step("load_script", ep=args.ep, guion=args.guion, spec=args.spec)
     spec, output_dir, temp_dir, generated_music_path, background_bed_path, intro_theme_path = load_runtime(args.spec)
 
     print(f"\nLeyendo guion: {args.guion}")
     bloques = parsear_guion(args.guion, args.ep, spec)
+    log.info("guion parseado", ep=args.ep, bloques=len(bloques))
     print(f"   {len(bloques)} bloques encontrados")
     print("   Tokens audio: no aplica (ElevenLabs usa creditos/caracteres)")
 
@@ -832,11 +837,14 @@ def main() -> None:
         if track_state else None
     )
 
+    log.step("audio", model=spec["audio_rules"]["model"],
+             bloques=len(bloques_a_generar), workers=args.workers)
     archivos_generados = generar_bloques(
         client, bloques_a_generar, args.ep, temp_dir, spec, workers=args.workers,
     )
     archivos_ok = sum(1 for ruta, _ in archivos_generados.values() if ruta)
     archivos_fallidos = len(archivos_generados) - archivos_ok
+    log.info("bloques de audio", ok=archivos_ok, fallidos=archivos_fallidos)
 
     elapsed = time.time() - start_time
 
@@ -868,10 +876,13 @@ def main() -> None:
                 block_meta = bloque
             archivos_montar.append((ruta, block_meta))
 
+    log.step("render", ep=args.ep)
     ruta_final = output_dir / f"{args.ep}.mp3"
     duracion, escaleta = montar_audio(archivos_montar, ruta_final, spec, active_background_path, intro_theme_path)
     after_snapshot = get_subscription_snapshot(api_key)
     print_credit_summary("Despues de generar", after_snapshot)
+    log.info("audio montado", ruta=str(ruta_final),
+             duracion_min=round(duracion / 60, 1))
 
     verification_issues = verify_audio_output(
         ruta_final,
@@ -908,8 +919,14 @@ def main() -> None:
             error=None if audio_ok else "la validación final del audio falló",
         )
     if not audio_ok:
+        log.error("validación final del audio falló",
+                  verification=len(verification_issues),
+                  asset=len(asset_issues))
         raise SystemExit("La validacion final del audio ha fallado. Revisa el log.")
 
+    log.ok("episodio completado", ep=args.ep, ruta=str(ruta_final),
+           duracion_min=round(duracion / 60, 1),
+           bloques_ok=archivos_ok, bloques_fallidos=archivos_fallidos)
     print(f"\nAudio final: {ruta_final}")
     print(f"   Duracion: {duracion / 60:.1f} minutos")
 

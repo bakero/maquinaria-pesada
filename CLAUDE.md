@@ -73,6 +73,11 @@ no debería auto-modificarse vía su propio chat.
 - Streaming de IA preferido sobre llamadas bloqueantes (verbose en UI).
 - Cada llamada IA debe pasar por `cockpit/core/ai_client.improve_with_claude*`
   para tener retry + tracking automático en `logs/ai_usage.jsonl`.
+- **Toda función de generación queda trazada en el día-log central**
+  (`logs/run/maquinaria_*.log`) vía `daylog.RunLog` +
+  `cockpit.core.log_helpers.get_run_logger`. Contrato completo, formato,
+  niveles, rotación, validador (`--check-run-log`) y guía para añadir
+  logs en un generador nuevo: ver **`docs/logging.md`**.
 - Frontend: TypeScript estricto (`tsc --noEmit` en el build), Inter +
   JetBrains Mono, sin emojis decorativos en JSX.
 

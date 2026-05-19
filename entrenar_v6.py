@@ -47,6 +47,9 @@ def _run_one(kind: str, ep: str, term: str | None):
 
 
 def main() -> int:
+    from cockpit.core.log_helpers import get_run_logger
+    log = get_run_logger("entrenar_v6")
+
     ap = argparse.ArgumentParser()
     ap.add_argument("--iter", type=int, required=True)
     args = ap.parse_args()
@@ -63,12 +66,15 @@ def main() -> int:
         "totals": {},
     }
     print(f"\n>>> ITERACIÓN {args.iter} — {len(JOBS)} guiones\n")
+    log.step("iterate", iter_n=args.iter, jobs=len(JOBS))
 
     hard_counter: Counter[str] = Counter()
     soft_counter: Counter[str] = Counter()
 
     for idx, (kind, ep, term) in enumerate(JOBS, start=1):
         t0 = datetime.now()
+        log.info("job inicio", idx=idx, total=len(JOBS), kind=kind, ep=ep,
+                 term=(term or ""))
         print(f"[{idx:>2}/{len(JOBS)}] {kind} {ep}"
               + (f" term={term!r}" if term else ""), flush=True)
         entry: dict = {"kind": kind, "ep": ep, "term": term,
@@ -77,6 +83,8 @@ def main() -> int:
             result = _run_one(kind, ep, term)
         except Exception as exc:  # noqa: BLE001
             print(f"   EXCEPTION: {exc}\n{traceback.format_exc()}", flush=True)
+            log.error("job excepción", ep=ep, exc_type=type(exc).__name__,
+                      msg=str(exc)[:200])
             entry["error"] = f"{type(exc).__name__}: {exc}"
             entry["elapsed_s"] = (datetime.now() - t0).total_seconds()
             report["jobs"].append(entry)
@@ -98,6 +106,7 @@ def main() -> int:
         if result.used_retry and result.retry_generation:
             entry["retry_cost_usd"] = round(
                 result.retry_generation.cost_usd, 4)
+            log.retry(attempt=2, reason="validation_hard_fail", ep=ep)
 
         # Guardar guion.
         out = iter_dir / f"{ep}_v6.md"
@@ -112,6 +121,10 @@ def main() -> int:
         print(f"   ok={gen.ok}  retry={result.used_retry}  "
               f"hard={summary['hard_failed']}  soft={summary['soft_failed']}  "
               f"out={out.name}  ({elapsed:.0f}s)", flush=True)
+        log.ok("job completado", ep=ep, hard=summary["hard_failed"],
+               soft=summary["soft_failed"], elapsed_s=round(elapsed, 1),
+               tokens_in=gen.input_tokens, tokens_out=gen.output_tokens,
+               cost_usd=round(gen.cost_usd, 4))
 
         report["jobs"].append(entry)
 
