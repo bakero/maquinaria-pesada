@@ -683,17 +683,26 @@ function shortenPath(p: string): string {
 
 function EpisodeRunsPanel({ entityId }: { entityId: string }) {
   const { data, loading, refresh } = useEntityRuns(entityId, 14, 20);
+  // Fallback: si no hay runs estructurados (porque el daylog solo tiene
+  // líneas `run=-` con `ep=Mx`, p.ej. lanzar_produccion_v6 escribe así),
+  // mostramos las líneas raw del daylog para que el usuario vea ALGO.
+  const { data: logData, loading: logLoading } = useEntityLogLines(entityId, 14, 30);
+
   const runs = data.runs || [];
+  const rawLines = logData.entries || [];
+  const hasRuns = runs.length > 0;
+  const hasRaw = rawLines.length > 0;
 
   return (
     <div className="v3-live" style={{ marginTop: 16 }}>
       <div className="v3-live-hd">
         <span className={`v3-live-dot${runs.some((r) => r.status === "running") ? " running" : ""}`}/>
-        Ejecuciones
+        Logs de generación
         <span className="v3-live-meta">
-          {loading ? "cargando…"
-            : runs.length === 0 ? "sin actividad"
-            : `${runs.length} run${runs.length !== 1 ? "s" : ""}`}
+          {loading || logLoading ? "cargando…"
+            : hasRuns ? `${runs.length} run${runs.length !== 1 ? "s" : ""}`
+            : hasRaw ? `${rawLines.length} línea${rawLines.length !== 1 ? "s" : ""}`
+            : "sin actividad"}
         </span>
         <button
           className="v3-btn xs ghost"
@@ -705,16 +714,42 @@ function EpisodeRunsPanel({ entityId }: { entityId: string }) {
         </button>
       </div>
       <div className="v3-live-body">
-        {!loading && runs.length === 0 && (
+        {!loading && !logLoading && !hasRuns && !hasRaw && (
           <div className="v3-live-empty">
-            Sin runs registrados en los últimos 14 días.<br/>
-            Cuando lances el pipeline (Regenerar guion / audio / vídeo)
-            aparecerá aquí.
+            Sin actividad de generación en los últimos 14 días.<br/><br/>
+            Pulsa el botón <strong>Regenerar</strong> de cualquier slot (guion,
+            audio, vídeo) para lanzar el pipeline. Aparecerá aquí con su
+            estado, pasos completados, llamadas IA y posibles errores.
           </div>
         )}
-        {runs.map((r) => (
+
+        {hasRuns && runs.map((r) => (
           <RunCard key={r.run_id} run={r}/>
         ))}
+
+        {/* Si no hay runs estructurados pero sí líneas raw asociadas, las
+            mostramos: típicamente son ejecuciones lanzadas desde
+            `lanzar_produccion_v6` (que escribe con run=-) o pasos
+            estructurados sueltos. */}
+        {!hasRuns && hasRaw && (
+          <>
+            <div style={{
+              fontFamily: "var(--f-mono)", fontSize: 10,
+              color: "var(--text-mute)", letterSpacing: "0.1em",
+              textTransform: "uppercase", marginBottom: 6,
+            }}>
+              Líneas del día-log
+            </div>
+            <pre style={{
+              margin: 0,
+              fontFamily: "var(--f-mono)", fontSize: 10.5,
+              color: "var(--text-dim)", whiteSpace: "pre-wrap",
+              wordBreak: "break-all", lineHeight: 1.5,
+            }}>
+              {rawLines.slice(-12).map((e) => `[${e.day}] ${e.line}`).join("\n")}
+            </pre>
+          </>
+        )}
       </div>
     </div>
   );

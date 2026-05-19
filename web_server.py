@@ -1426,6 +1426,7 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
             tokens.add(f"{mod}_TX_T{num}")
             tokens.add(f"{mod}_TX_E_T{num}")
             tokens.add(f"--ep {eid}")
+            tokens.add(f"ep={eid}")        # logs estructurados de v6
         except ValueError:
             pass
 
@@ -1437,10 +1438,12 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
         tokens.add(f"--modulo {n:02d}")
         tokens.add(f"RESUMEN_M{n}_")
         tokens.add(f"{eid}_")          # M3_, M3_Machine_…, M3.mp3 etc.
+        tokens.add(f"ep={eid}")        # estructurados (paso → kind=M ep=M3)
 
     # Short · S{N} → flag `--ep S{N}` o paths con prefijo `S{N}_`
     elif eid.startswith("S") and eid[1:].isdigit():
         tokens.add(f"--ep {eid}")
+        tokens.add(f"ep={eid}")        # estructurados (paso → kind=S ep=S1)
         tokens.add(f"{eid}_")
         # Su guion canónico vive en Guiones/S{N}_<slug>_v6.md
         tokens.add(f"/{eid}_")
@@ -1523,6 +1526,7 @@ def load_entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> dict:
             tokens.add(f"{mod}_T{num:02d}")
             tokens.add(f"{mod}_TX_T{num}")
             tokens.add(f"--ep {eid}")
+            tokens.add(f"ep={eid}")
         except ValueError:
             pass
     elif eid.startswith("M") and eid[1:].isdigit():
@@ -1531,8 +1535,10 @@ def load_entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> dict:
         tokens.add(f"--modulo {n:02d}")
         tokens.add(f"RESUMEN_M{n}_")
         tokens.add(f"{eid}_")
+        tokens.add(f"ep={eid}")
     elif eid.startswith("S") and eid[1:].isdigit():
         tokens.add(f"--ep {eid}")
+        tokens.add(f"ep={eid}")
         tokens.add(f"{eid}_")
 
     pat = _re.compile(
