@@ -81,6 +81,45 @@ no debería auto-modificarse vía su propio chat.
 - Frontend: TypeScript estricto (`tsc --noEmit` en el build), Inter +
   JetBrains Mono, sin emojis decorativos en JSX.
 
+## Sincronización generador ↔ validador (regla bidireccional)
+
+**Toda regla HARD que añadas o modifiques en `validators/*.py` tiene que
+reflejarse en el SYSTEM_PROMPT del generador correspondiente.** Y al
+revés: toda restricción nueva que metas en un SYSTEM_PROMPT tiene que
+tener su check en `validators/`. No hay "el prompt lo pide pero nadie
+lo valida" ni "el validador lo bloquea pero el prompt no lo sabe" —
+las dos cosas se cambian en el mismo PR.
+
+Por qué importa:
+- Si el validador exige algo que el prompt no menciona, el modelo entra
+  en retry-loop sin saber qué corregir → desperdicio de tokens y
+  fallos repetidos.
+- Si el prompt pide algo que el validador no comprueba, la regla queda
+  en intención: pasará el filtro técnico aunque se infrinja.
+
+Cómo se garantiza:
+- `tests/validators/test_generator_parity.py` mantiene un mapping
+  `RULE_NAME → (kinds aplicables, keywords que deben aparecer en el
+  prompt)`. Si añades una regla nueva sin tocar el prompt, el test te
+  bloquea con un mensaje accionable.
+- Cuando añadas / renombres / elimines una regla, en el mismo PR:
+  1. Edita el `validator` (HARD/SOFT, función, lista negra, etc.).
+  2. Edita el `SYSTEM_PROMPT` del generador (M, T, S o varios) con la
+     descripción humana de la nueva exigencia.
+  3. Añade el `_RULE_ACTION_HINTS` correspondiente en
+     `generadores/base_generator.py` para que el retry sepa pedir la
+     corrección concreta.
+  4. Añade o actualiza la entrada en `RULE_PROMPT_PARITY` del test.
+- Documenta el cambio en `PODCAST_MASTER_SPEC.md` (spec normativa). Si
+  afecta a la capa editorial v6.1, también en
+  `EVALUADOR_EDITORIAL_GUIONES.md` y en
+  `docs/architecture/EVALUACION_EDITORIAL.md`.
+
+La capa editorial v6.1 promovió cuatro reglas a HARD-FAIL técnico
+(`glossary_term_first_use_expanded`, `blacklist_ai_bro`,
+`blacklist_coach`, `blacklist_cliffhanger`) y las cuatro siguen el
+contrato bidireccional. Usa esa misma forma cuando añadas la siguiente.
+
 ## Modelos por defecto
 
 - Sonnet 4.6 para generación equilibrada.
