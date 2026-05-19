@@ -15,8 +15,8 @@ import { FIXTURE_EPISODES, FIXTURE_MODULES, cleanEpisodeTitle, getShorts } from 
 import type { Episode } from "../types";
 import {
   generateSlot,
-  useEntity, useEntityLogLines, useLiveStream, useModule,
-  type EpisodeDetail, type LiveProcess, type SlotMeta, type StreamSnapshot,
+  useEntity, useEntityLogLines, useEntityRuns, useLiveStream, useModule,
+  type EpisodeDetail, type LiveProcess, type RunSummary, type SlotMeta, type StreamSnapshot,
 } from "../lib/useEntity";
 
 const SLOT_KINDS = ["pdf", "guion", "escaleta", "audio", "video"] as const;
@@ -330,6 +330,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
 
         <aside>
           <LivePanel entityId={ent.id} snapshot={snapshot} />
+          <EpisodeRunsPanel entityId={ent.id} />
         </aside>
       </div>
     </div>
@@ -664,6 +665,146 @@ function shortenPath(p: string): string {
   const parts = p.split("/");
   if (parts.length <= 2) return p;
   return parts.slice(-2).join("/");
+}
+
+// ════════════════════════ Episode Runs Panel ═════════════════════════
+//
+// Timeline de las ejecuciones reales (runs) del día-log asociadas a este
+// episodio. Lee /api/entity/<id>/runs (parseado por
+// cockpit.core.log_validator.parse_log) y pinta una card por run con:
+//   · estado (ok / error / running) + script + tiempo transcurrido
+//   · pasos completados (load_spec ✓ generate ✓ validate ✓ save ✓)
+//   · llamadas IA (intentadas / OK / error)
+//   · retries · último error si lo hay
+//
+// Es la pieza que conecta la página del episodio con el sistema de logs
+// nuevo (docs/logging.md): cada vez que el operador ejecuta un pipeline
+// (M, T o S), aquí aparece en tiempo real el detalle de lo que pasó.
+
+function EpisodeRunsPanel({ entityId }: { entityId: string }) {
+  const { data, loading, refresh } = useEntityRuns(entityId, 14, 20);
+  const runs = data.runs || [];
+
+  return (
+    <div className="v3-live" style={{ marginTop: 16 }}>
+      <div className="v3-live-hd">
+        <span className={`v3-live-dot${runs.some((r) => r.status === "running") ? " running" : ""}`}/>
+        Ejecuciones
+        <span className="v3-live-meta">
+          {loading ? "cargando…"
+            : runs.length === 0 ? "sin actividad"
+            : `${runs.length} run${runs.length !== 1 ? "s" : ""}`}
+        </span>
+        <button
+          className="v3-btn xs ghost"
+          style={{ marginLeft: "auto" }}
+          onClick={refresh}
+          title="Recargar el día-log"
+        >
+          <Icon name="check" size={10}/>
+        </button>
+      </div>
+      <div className="v3-live-body">
+        {!loading && runs.length === 0 && (
+          <div className="v3-live-empty">
+            Sin runs registrados en los últimos 14 días.<br/>
+            Cuando lances el pipeline (Regenerar guion / audio / vídeo)
+            aparecerá aquí.
+          </div>
+        )}
+        {runs.map((r) => (
+          <RunCard key={r.run_id} run={r}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RunCard({ run }: { run: RunSummary }) {
+  const status = run.status;
+  const pillCls = status === "ok"      ? "ok"
+                : status === "error"   ? "alert"
+                : status === "running" ? "y"
+                : "dim";
+  const elapsed = run.elapsed_s != null ? `${run.elapsed_s.toFixed(1)}s` : "—";
+  const started = run.started_at ? new Date(run.started_at) : null;
+  const startedHuman = started
+    ? started.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })
+        + " · " + started.toLocaleDateString("es-ES", { day: "2-digit", month: "short" })
+    : "—";
+  const scriptShort = run.script.replace(/\.py$/, "");
+  const aiSummary = (() => {
+    const { started: s, ok, error } = run.ai_calls;
+    if (s === 0 && ok === 0 && error === 0) return null;
+    const parts: string[] = [];
+    if (ok > 0) parts.push(`${ok} ok`);
+    if (error > 0) parts.push(`${error} fail`);
+    if (s !== ok + error) parts.push(`${s - ok - error} sin cerrar`);
+    return parts.join(" · ");
+  })();
+
+  return (
+    <div className="v3-live-card" style={{ borderLeft: `3px solid ${
+      status === "ok"    ? "var(--ok)"
+    : status === "error" ? "var(--alert)"
+    : status === "running" ? "var(--y)"
+    : "var(--border-2)"
+    }` }}>
+      <div className="v3-live-card-head" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <span className={`v3-pill ${pillCls}`}>
+          <span className="v3-pill-dot"/>{status}
+        </span>
+        <span className="v3-live-card-elapsed">{elapsed}</span>
+        <span style={{
+          marginLeft: "auto",
+          fontFamily: "var(--f-mono)", fontSize: 10,
+          color: "var(--text-mute)",
+        }}>
+          {startedHuman}
+        </span>
+      </div>
+      <div className="v3-live-card-script" style={{ marginTop: 4 }}>{scriptShort}</div>
+      {run.steps.length > 0 && (
+        <div style={{
+          marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4,
+          fontFamily: "var(--f-mono)", fontSize: 10,
+        }}>
+          {run.steps.map((s, i) => (
+            <span key={i} style={{
+              color: "var(--ok)", padding: "2px 6px",
+              border: "1px solid var(--border-2)",
+            }}>
+              ✓ {s}
+            </span>
+          ))}
+        </div>
+      )}
+      {(aiSummary || run.retries > 0) && (
+        <div style={{
+          marginTop: 6,
+          fontFamily: "var(--f-mono)", fontSize: 10, color: "var(--text-mute)",
+        }}>
+          {aiSummary && <span>IA · {aiSummary}</span>}
+          {run.retries > 0 && (
+            <span style={{ marginLeft: 10, color: "var(--warn)" }}>
+              retries · {run.retries}
+            </span>
+          )}
+          <span style={{ marginLeft: 10 }}>run {run.run_id}</span>
+        </div>
+      )}
+      {run.last_error && (
+        <div style={{
+          marginTop: 6,
+          fontFamily: "var(--f-mono)", fontSize: 10, color: "var(--alert)",
+          padding: "4px 6px", background: "var(--bg)",
+          whiteSpace: "pre-wrap", wordBreak: "break-all",
+        }}>
+          {run.last_error}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ────────────────── helpers ──────────────────

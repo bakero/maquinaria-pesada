@@ -1487,6 +1487,126 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
     }
 
 
+def load_entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> dict:
+    """Devuelve las EJECUCIONES (runs) del día-log asociadas a `entity_id`.
+
+    A diferencia de `load_entity_log_lines` (que devuelve líneas raw), aquí
+    parseamos el daylog con `cockpit.core.log_validator.parse_log()` y
+    asociamos cada run completo a la entidad si CUALQUIERA de sus líneas
+    contiene un token que la identifica (los mismos tokens que usa
+    `load_entity_log_lines`: --modulo N, --ep X, RESUMEN_Mn_…, etc.).
+
+    Para cada run devolvemos un resumen estructurado (status, elapsed, pasos
+    completados, AI calls, retries, último error), pensado para pintarse en
+    la página del episodio como timeline de actividad.
+    """
+    import datetime as _dt
+    import re as _re
+    from pathlib import Path as _P
+
+    try:
+        from cockpit.core import log_validator, paths
+        root = paths.repo_root().resolve()
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "error": str(exc), "runs": []}
+
+    log_dir = root / "logs" / "run"
+    if not log_dir.exists():
+        return {"ok": True, "runs": [], "days_scanned": 0}
+
+    eid = entity_id.strip()
+    tokens: set[str] = {eid}
+    if "_T" in eid:
+        mod, suf = eid.split("_T", 1)
+        try:
+            num = int(suf)
+            tokens.add(f"{mod}_T{num:02d}")
+            tokens.add(f"{mod}_TX_T{num}")
+            tokens.add(f"--ep {eid}")
+        except ValueError:
+            pass
+    elif eid.startswith("M") and eid[1:].isdigit():
+        n = int(eid[1:])
+        tokens.add(f"--modulo {n}")
+        tokens.add(f"--modulo {n:02d}")
+        tokens.add(f"RESUMEN_M{n}_")
+        tokens.add(f"{eid}_")
+    elif eid.startswith("S") and eid[1:].isdigit():
+        tokens.add(f"--ep {eid}")
+        tokens.add(f"{eid}_")
+
+    pat = _re.compile(
+        r"(?<![A-Za-z0-9_])(" + "|".join(_re.escape(t) for t in tokens) + r")(?![A-Za-z0-9])",
+        _re.IGNORECASE,
+    )
+
+    today = _dt.date.today()
+    runs_out: list[dict] = []
+    days_scanned = 0
+    for delta in range(days):
+        day = today - _dt.timedelta(days=delta)
+        p: _P = log_dir / f"maquinaria_{day.isoformat()}.log"
+        if not p.exists():
+            continue
+        days_scanned += 1
+
+        # Parseo completo del día con el validador (resumen por run).
+        try:
+            records = log_validator.parse_log(p)
+        except Exception:
+            records = {}
+
+        # Identifica qué run_ids del día tocan a la entidad (alguna línea
+        # menciona algún token). Recorremos el fichero una sola vez.
+        run_ids_match: set[str] = set()
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if not pat.search(line):
+                        continue
+                    m = log_validator.LINE_REGEX.match(line)
+                    if m:
+                        run_ids_match.add(m["run"])
+        except OSError:
+            continue
+
+        for rid in run_ids_match:
+            rec = records.get(rid)
+            if rec is None:
+                continue
+            runs_out.append({
+                "run_id":   rec.run_id,
+                "day":      day.isoformat(),
+                "script":   rec.script,
+                "pid":      rec.pid,
+                "status":   rec.status or ("ok" if rec.ended_at else "running"),
+                "started_at": rec.started_at.isoformat() if rec.started_at else None,
+                "ended_at":   rec.ended_at.isoformat()   if rec.ended_at   else None,
+                "elapsed_s":  rec.elapsed_s,
+                "out_lines":  rec.out_lines,
+                "err_lines":  rec.err_lines,
+                "steps":      list(rec.steps),
+                "retries":    rec.retries,
+                "ai_calls": {
+                    "started": rec.ai_calls_started,
+                    "ok":      rec.ai_calls_ok,
+                    "error":   rec.ai_calls_error,
+                },
+                "last_error": rec.errors[-1] if rec.errors else None,
+            })
+
+    runs_out.sort(key=lambda r: (r.get("started_at") or ""), reverse=True)
+    if len(runs_out) > limit:
+        runs_out = runs_out[:limit]
+    return {
+        "ok": True,
+        "entity_id": entity_id,
+        "days_scanned": days_scanned,
+        "count": len(runs_out),
+        "runs": runs_out,
+    }
+
+
 def _api_json(payload, status: int = 200) -> Response:
     """Respuesta JSON con Cache-Control: no-store. Usa `default=str` para
     serializar Paths/dataclasses igual que el server anterior."""
@@ -1561,6 +1681,13 @@ def create_app() -> FastAPI:
     @app.get("/api/entity/{entity_id}/log-lines")
     def entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> Response:
         return _api_json(load_entity_log_lines(entity_id, days=days, limit=limit))
+
+    @app.get("/api/entity/{entity_id}/runs")
+    def entity_runs(entity_id: str, days: int = 14, limit: int = 30) -> Response:
+        """Ejecuciones (runs) del día-log asociadas al episodio. Devuelve un
+        resumen estructurado por run (status, pasos, AI calls, retries) para
+        pintarlo como timeline en la página del episodio."""
+        return _api_json(load_entity_runs(entity_id, days=days, limit=limit))
 
     @app.get("/api/stream")
     def stream(request: Request) -> StreamingResponse:
