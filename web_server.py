@@ -505,12 +505,25 @@ def load_connectors() -> dict:
 
 
 def load_episode_detail(ep_id: str) -> dict | None:
-    """Metadatos + rutas reales (relativas al repo) de un episodio."""
+    """Metadatos + rutas reales (relativas al repo) de un episodio.
+
+    Acepta ids de Shorts (S1, S2, …): los resuelve vía cockpit.core.shorts
+    en lugar de cockpit.core.episodes y devuelve el mismo shape. Esto permite
+    al front (PageModuloTema) usar el mismo endpoint y los mismos slots."""
     try:
         from cockpit.core import episodes, paths
     except Exception:
         return None
-    ep = episodes.get_episode(ep_id)
+
+    if ep_id.startswith("S") and ep_id[1:].isdigit():
+        try:
+            from cockpit.core import shorts
+        except Exception:
+            return None
+        ep = shorts.get_short(ep_id)
+    else:
+        ep = episodes.get_episode(ep_id)
+
     if ep is None:
         return None
     root = paths.repo_root().resolve()
@@ -974,15 +987,65 @@ def load_live_procs() -> list[dict]:
     return out[:5]
 
 
+def scan_shorts_payload() -> list[dict]:
+    """Lista de Shorts (kind=S) con su estado. Forma intencionalmente
+    similar a la de EPISODES (mismo shape de slots) para que el front
+    pueda reutilizar PageModuloTema sin caminos especiales."""
+    try:
+        from cockpit.core import shorts
+    except Exception:
+        return []
+    try:
+        items = shorts.list_shorts()
+    except Exception:
+        items = []
+    out: list[dict] = []
+    for sh in items:
+        out.append({
+            "id": sh.id,
+            "mod": "",                     # los Shorts no tienen módulo padre
+            "kind": "S",
+            "title": sh.label,
+            "term": sh.term,
+            "dur": "—",
+            "state": _state_for_episode(sh),
+        })
+    return out
+
+
+def load_version_info() -> dict:
+    """Lee branch + sha del repo. Si git no está disponible, devuelve
+    valores '—' sin romper. Usado por el header del cockpit y la página
+    Ajustes en lugar de los valores hardcoded antiguos."""
+    import subprocess
+    try:
+        from cockpit.core import paths
+        root = str(paths.repo_root())
+    except Exception:
+        root = None
+    def _run(args: list[str]) -> str:
+        try:
+            r = subprocess.run(args, cwd=root, capture_output=True,
+                               text=True, timeout=2)
+            return r.stdout.strip() if r.returncode == 0 else ""
+        except Exception:
+            return ""
+    branch = _run(["git", "rev-parse", "--abbrev-ref", "HEAD"]) or "—"
+    sha = _run(["git", "rev-parse", "--short", "HEAD"]) or "—"
+    return {"branch": branch, "sha": sha}
+
+
 def bootstrap_payload() -> dict:
     modules, episodes_ = scan_modules_and_episodes()
     return {
         "MODULES": modules,
         "EPISODES": episodes_,
+        "SHORTS": scan_shorts_payload(),
         "LIVE_PROC": load_live_procs(),
         "RECENT_FILES": load_recent_files(),
         "TOKEN_DATA": load_ai_usage(),
         "ECONOMICS": load_economics(),
+        "VERSION": load_version_info(),
     }
 
 
@@ -1348,9 +1411,13 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
         return {"ok": True, "entries": [], "days_scanned": 0}
 
     # Construye un set de tokens que identifican al episodio.
+    # Los daylog NO contienen siempre el id literal — frecuentemente la línea
+    # es del tipo `script=generar_guion.py | --modulo 3 --pdf PDFs/resumenes/RESUMEN_M3_…pdf`.
+    # Añadimos todas las formas plausibles que pueden aparecer:
     eid = entity_id.strip()
     tokens: set[str] = {eid}
-    # M3_T1 → también token M3_T01, M3_TX_T1, y matchea audio M3_T1.mp3
+
+    # Tema · M{N}_T{K} → también M{N}_T{K:02d}, M{N}_TX_T{K}, …
     if "_T" in eid:
         mod, suf = eid.split("_T", 1)
         try:
@@ -1358,8 +1425,25 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
             tokens.add(f"{mod}_T{num:02d}")
             tokens.add(f"{mod}_TX_T{num}")
             tokens.add(f"{mod}_TX_E_T{num}")
+            tokens.add(f"--ep {eid}")
         except ValueError:
             pass
+
+    # Módulo paraguas · M{N} → la flag típica del pipeline es `--modulo N`
+    # (con N sin padding). Y los PDF de resumen llevan `RESUMEN_M{N}_`.
+    elif eid.startswith("M") and eid[1:].isdigit():
+        n = int(eid[1:])
+        tokens.add(f"--modulo {n}")
+        tokens.add(f"--modulo {n:02d}")
+        tokens.add(f"RESUMEN_M{n}_")
+        tokens.add(f"{eid}_")          # M3_, M3_Machine_…, M3.mp3 etc.
+
+    # Short · S{N} → flag `--ep S{N}` o paths con prefijo `S{N}_`
+    elif eid.startswith("S") and eid[1:].isdigit():
+        tokens.add(f"--ep {eid}")
+        tokens.add(f"{eid}_")
+        # Su guion canónico vive en Guiones/S{N}_<slug>_v6.md
+        tokens.add(f"/{eid}_")
 
     # Patrón regex con word-boundary para evitar M3 → M30.
     import re as _re
@@ -1434,7 +1518,15 @@ def create_app() -> FastAPI:
     @app.get("/api/episodes")
     def episodes() -> Response:
         _, eps = scan_modules_and_episodes()
-        return _api_json(eps)
+        # Incluye Shorts (kind=S) en la misma lista para que el frontend
+        # pueda iterar sobre todo el catálogo sin endpoints especiales.
+        return _api_json(eps + scan_shorts_payload())
+
+    @app.get("/api/shorts")
+    def api_shorts() -> Response:
+        """Lista solo los Shorts (kind=S). Útil para PageProduccion que
+        los pinta en una sección dedicada."""
+        return _api_json(scan_shorts_payload())
 
     @app.get("/api/episode/{ep_id}/gen-log")
     def episode_gen_log(ep_id: str) -> Response:

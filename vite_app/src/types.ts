@@ -23,10 +23,13 @@ export interface EpisodeState {
 export interface Episode {
   id: string;
   mod: string;
-  kind: "M" | "T";
+  // M = episodio de módulo paraguas; T = tema; S = Short (píldora de glosario,
+  // sin módulo padre, formato corto 60-90 s para Reels/Shorts/TikTok).
+  kind: "M" | "T" | "S";
   title: string;
   dur: string;
   state: EpisodeState;
+  term?: string;            // solo para Shorts: el término del glosario
 }
 
 export interface LiveProc {
@@ -72,13 +75,17 @@ export interface TokenData {
   log: UsageLogRow[];
 }
 
+export interface VersionInfo { branch: string; sha: string; }
+
 export interface BootstrapPayload {
   MODULES: Module[];
   EPISODES: Episode[];
+  SHORTS: Episode[];        // kind="S", sin módulo padre
   LIVE_PROC: LiveProc[];
   RECENT_FILES: RecentFile[];
   TOKEN_DATA: TokenData;
   ECONOMICS: unknown;
+  VERSION?: VersionInfo;
 }
 
 export interface AIUsage {

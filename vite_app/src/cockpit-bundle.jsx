@@ -137,12 +137,13 @@ function App() {
     const { base } = parseHash();
     return WIRED.has(base) ? base : "produccion";
   });
-  // Selección activa: qué módulo / tema/episodio se está viendo.
+  // Selección activa: qué módulo / tema/episodio / short se está viendo.
   const [sel, setSel] = React.useState(() => {
     const { base, payload } = parseHash();
     return {
       modulo:   base === "modulo"   ? payload : null,
       episodio: (base === "tema" || base === "episodio") ? payload : null,
+      short:    base === "short"    ? payload : null,
     };
   });
   const [aiDrawer, setAIDrawer] = React.useState({ open: false, mode: "improve", context: null });
@@ -192,6 +193,8 @@ function App() {
           setSel((s) => ({ ...s, modulo: payload }));
         } else if (next === "tema" || next === "episodio") {
           setSel((s) => ({ ...s, episodio: payload, modulo: payload.split("_")[0] }));
+        } else if (next === "short") {
+          setSel((s) => ({ ...s, short: payload }));
         }
       }
     }
@@ -213,8 +216,10 @@ function App() {
         episodio: payload || s.episodio,
         modulo: payload ? payload.split("_")[0] : s.modulo,
       }));
+    } else if (id === "short") {
+      setSel((s) => ({ ...s, short: payload || s.short }));
     }
-    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio");
+    const hasSel = payload && (id === "modulo" || id === "tema" || id === "episodio" || id === "short");
     window.location.hash = hasSel ? `${id}/${encodeURIComponent(payload)}` : id;
     window.scrollTo(0, 0);
   };
@@ -380,6 +385,7 @@ function App() {
         {page === "produccion" && <PageProduccion onNav={nav} onOpenPalette={openPalette}/>}
         {page === "modulo"     && <PageModuloTema entityId={sel.modulo || "M3"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
         {page === "tema"       && <PageModuloTema entityId={sel.episodio || "M3_T1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
+        {page === "short"      && <PageModuloTema entityId={sel.short || "S1"} onNav={nav} onOpenAI={openAI} onOpenFix={openFix}/>}
 
         {/* Datos · acepta page === "datos" o cualquier subtab (consumo/metricas/optimizar/logs) */}
         {["datos","consumo","metricas","optimizar","logs"].includes(page) && (
@@ -398,7 +404,7 @@ function App() {
         )}
 
         {/* Fallback · página desconocida → Producción para no dejar pantalla vacía */}
-        {!["produccion","modulo","tema",
+        {!["produccion","modulo","tema","short",
            "datos","consumo","metricas","optimizar","logs",
            "sistema","conectores","lanzador","fuentes","mapa","ajustes"].includes(page) && (
           <PageProduccion onNav={nav} onOpenPalette={openPalette}/>

@@ -11,7 +11,7 @@
 
 import * as React from "react";
 import { Icon } from "../components";
-import { FIXTURE_EPISODES, FIXTURE_MODULES, cleanEpisodeTitle } from "../data";
+import { FIXTURE_EPISODES, FIXTURE_MODULES, cleanEpisodeTitle, getShorts } from "../data";
 import type { Episode } from "../types";
 import {
   generateSlot,
@@ -58,8 +58,16 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
     || FIXTURE_EPISODES.find((e) => e.id === "M3")!;
   const ent: Episode = entityReal ? episodeFromDetail(entityReal) : fallbackEp;
   const isModule = ent.kind === "M";
+  const isShort = ent.kind === "S";
   const modId = ent.mod;
   const moduleMeta = FIXTURE_MODULES.find((m) => m.id === modId);
+
+  // Los Shorts no tienen PDF ni escaleta — la "fuente" es el propio prompt
+  // del generador. Filtramos los slots visibles para evitar pintar bloques
+  // vacíos sin uso.
+  const visibleSlots: readonly SlotKind[] = isShort
+    ? (["guion", "audio", "video"] as const)
+    : SLOT_KINDS;
 
   // Children: del backend si disponibles, si no del fixture.
   const childrenReal = moduleReal?.children ?? [];
@@ -85,6 +93,8 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
     ? Math.round((temas.reduce((acc, t) => acc + SLOT_KINDS.filter((k) => slotState(t, k) === "ok").length, 0)
        + (moduleEpisode ? SLOT_KINDS.filter((k) => slotState(moduleEpisode, k) === "ok").length : 0))
        / ((temas.length + 1) * SLOT_KINDS.length) * 100)
+    : isShort
+    ? Math.round(visibleSlots.filter((k) => slotState(ent, k) === "ok").length / visibleSlots.length * 100)
     : pctOfChild(ent);
 
   const [expanded, setExpanded] = React.useState<SlotKind | null>(null);
@@ -116,7 +126,9 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
           <nav className="v3-mt-crumbs">
             <a onClick={() => onNav("produccion")}>Master</a>
             <span className="sep">/</span>
-            {isModule ? (
+            {isShort ? (
+              <span className="cur">Shorts · {ent.id}</span>
+            ) : isModule ? (
               <span className="cur">{modId}</span>
             ) : (
               <>
@@ -131,7 +143,9 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
             <h1 className="v3-mt-name">{cleanEpisodeTitle(ent.title, ent.kind)}</h1>
           </div>
           <div className="v3-mt-sub">
-            {isModule
+            {isShort
+              ? `Short · píldora de glosario · 60-90 s${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`
+              : isModule
               ? `${moduleReal?.name || moduleMeta?.name || ""} · módulo principal · ${temas.length} tema${temas.length !== 1 ? "s" : ""}${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`
               : `tema corto · ${moduleReal?.name || moduleMeta?.name || modId}${ent.dur && ent.dur !== "—" ? ` · ${ent.dur}` : ""}`}
           </div>
@@ -144,8 +158,49 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
         </div>
       </header>
 
+      {/* Sibling rail entre Shorts (S1..S5) cuando estamos en uno */}
+      {isShort && (() => {
+        const allShorts = getShorts();
+        if (allShorts.length === 0) return null;
+        const completados = allShorts.filter(
+          (s) => ["guion","audio","video"].every((k) => s.state[k as SlotKind] === "ok"),
+        ).length;
+        return (
+          <div className="v3-mt-rail-wrap">
+            <div className="v3-mt-rail-meta">
+              <span className="v3-mt-rail-meta-label">Navegación · Shorts</span>
+              <span className="v3-mt-rail-meta-count">
+                <strong>{completados}</strong>
+                <span style={{ color: "var(--text-mute)" }}> completos · </span>
+                <strong>{allShorts.length}</strong>
+                <span style={{ color: "var(--text-mute)" }}> shorts</span>
+              </span>
+            </div>
+            <div className="v3-mt-rail">
+              {allShorts.map((s) => {
+                const active = s.id === ent.id;
+                const done = (["guion","audio","video"] as SlotKind[])
+                  .filter((k) => s.state[k] === "ok").length;
+                const dot = done === 3 ? "ok" : done >= 1 ? "warn" : "alert";
+                return (
+                  <div
+                    key={s.id}
+                    className={`v3-mt-rail-cell${active ? " active" : ""}`}
+                    onClick={() => onNav("short", s.id)}
+                    title={s.title}
+                  >
+                    <span>{s.id} · {s.term}</span>
+                    <span className={`v3-mt-rail-cell-dot ${dot}`}/>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Sibling rail · navegación rápida entre módulo paraguas y sus temas */}
-      {(isModule || temas.length > 0) && (() => {
+      {!isShort && (isModule || temas.length > 0) && (() => {
         const temasCompletos = temas.filter(
           (t) => SLOT_KINDS.every((k) => slotState(t, k) === "ok"),
         ).length;
@@ -201,7 +256,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
       })()}
 
       {/* Sub-temas · grid prominente justo debajo del rail cuando hay temas */}
-      {isModule && temas.length > 0 && (
+      {!isShort && isModule && temas.length > 0 && (
         <section className="v3-mt-subtemas">
           <header className="v3-hd">
             <div className="v3-hd-left">
@@ -225,7 +280,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
       )}
 
       {/* Aviso si esperamos temas pero el backend no los devolvió todavía */}
-      {isModule && temas.length === 0 && (
+      {!isShort && isModule && temas.length === 0 && (
         <section className="v3-mt-subtemas">
           <header className="v3-hd">
             <div className="v3-hd-left">
@@ -256,7 +311,7 @@ export function PageModuloTema({ entityId, onNav, onOpenAI }: PageModuloTemaProp
       {/* Two-column body */}
       <div className="v3-mt">
         <div>
-          {SLOT_KINDS.map((kind) => (
+          {visibleSlots.map((kind) => (
             <Slot
               key={kind}
               kind={kind}
@@ -369,7 +424,7 @@ function Slot({ kind, entity, detail, expanded, busy, onToggle, onGenerate, onGe
       )}
 
       {expanded && (
-        <div className="v3-slot-body">
+        <div className={`v3-slot-body kind-${kind}`}>
           <SlotViewer kind={kind} entity={entity} slotMeta={slotMeta} />
           <SlotLogFull kind={kind} entity={entity} slotMeta={slotMeta} onOpenAI={onOpenAI} />
         </div>
