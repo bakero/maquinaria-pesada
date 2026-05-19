@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
+# ruff: noqa
 """
 generar_guion_t.py — Generador de guiones T (Tema) para MaquinarIA Pesada.
 
-Genera guiones de episodios T usando:
-  - PDF del tema específico en PDFs/temas/M{n}_T{k}_*.pdf
-  - claude-sonnet-4-5 para generación, claude-haiku para conceptos
-  - Estructura: BLOQUE_PANORAMA / BLOQUE_COMO / BLOQUE_REALIDAD (v5)
-
-Nomenclatura de salida (igual que el PDF fuente):
-  Guiones/M{n}_T{k}_{slug}.txt
-  (ej: M1_T11_limitaciones_llms.txt)
-
-Uso:
-  python generar_guion_t.py --pdf PDFs/temas/M1_T11_limitaciones_llms.pdf
-  python generar_guion_t.py --pdf PDFs/temas/M7_T1_que_es_rag.pdf
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   Reemplazado por `lanzar_produccion_v6.py --tipo T` que usa el paquete
+   `generadores/t_generator.py` + `validators/t_validator.py`. Ver
+   `GENERACION.md` para el mapa canónico.
 """
 from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ generar_guion_t.py está retirado (era v5).\n"
+        "   Usa el pipeline canónico:\n"
+        "       python lanzar_produccion_v6.py --kind T --ep M<N>_T<K>\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
+# Se elimina entero en un PR de limpieza dedicado.
+# --------------------------------------------------------------------------
 
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -565,15 +572,5 @@ def main() -> None:
         )
 
 
-if __name__ == "__main__":
-    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el pipeline
-    # sigue igual gracias al nullcontext de respaldo.
-    import sys as _sys
-    try:
-        from daylog import RunLog as _RunLog
-        _run_ctx = _RunLog(script="generar_guion_t.py", params=_sys.argv[1:])
-    except Exception:  # noqa: BLE001
-        from contextlib import nullcontext as _nullcontext
-        _run_ctx = _nullcontext()
-    with _run_ctx:
-        main()
+# El bloque `if __name__ == "__main__"` original se ha movido al inicio del
+# archivo (ver guard arriba). No se ejecutará por debajo del SystemExit.

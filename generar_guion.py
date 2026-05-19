@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
+# ruff: noqa
 """
 generar_guion.py — Generador de guiones M (Módulo) para MaquinarIA Pesada.
 
-Genera guiones de episodios M usando:
-  - PDF RESUMEN del módulo como fuente conceptual
-  - 4 documentos vivos del proyecto (BIBLIA_SISTEMA, PRIMERPODCAST, VIDEOPODCAST, PODCAST)
-    como fuente de APLICACION_PRACTICA
-  - Claude Sonnet 4.5 para generación y Claude Haiku para extracción de conceptos
-
-Nomenclatura de salida:
-  Guiones/M{n}_Nombre_del_Modulo.txt
-
-Uso:
-  python generar_guion.py --modulo 0 --pdf PDFs/resumenes/RESUMEN_M0_Introduccion_Estrategica.pdf
-  python generar_guion.py --modulo 6 --pdf PDFs/resumenes/RESUMEN_M6_Ingenieria_Prompts.pdf --nombre "Ingenieria de Prompts"
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   Reemplazado por `lanzar_produccion_v6.py --tipo M` que usa el paquete
+   `generadores/m_generator.py` + `validators/m_validator.py`. Ver
+   `GENERACION.md` para el mapa canónico.
 """
 from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ generar_guion.py está retirado (era v5).\n"
+        "   Usa el pipeline canónico:\n"
+        "       python lanzar_produccion_v6.py --kind M --ep M<N>\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
+# Mantenido temporalmente para que `import generar_guion` siga resolviendo
+# en docs/auditorías legacy. Se elimina entero en un PR de limpieza dedicado.
+# --------------------------------------------------------------------------
 
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -777,14 +785,5 @@ def main() -> None:
         )
 
 
-if __name__ == "__main__":
-    # Bitácora diaria centralizada: traza START (con parámetros), END (ok/error)
-    # y cualquier excepción en logs/run/maquinaria_AAAA-MM-DD.log. Capa nueva,
-    # independiente de runlog.py; un fallo de logging nunca rompe la ejecución.
-    try:
-        from daylog import RunLog
-    except Exception:  # noqa: BLE001 - sin daylog, el pipeline sigue funcionando
-        main()
-    else:
-        with RunLog(script="generar_guion.py", params=sys.argv[1:]):
-            main()
+# El bloque `if __name__ == "__main__"` original se ha movido al inicio del
+# archivo (ver guard arriba). No se ejecutará por debajo del SystemExit.

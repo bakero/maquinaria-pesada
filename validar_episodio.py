@@ -1,32 +1,33 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+# ruff: noqa
 """
 Validador de episodios - MaquinarIa Pesada
 
-Uso:
-  python validar_episodio.py --ep EP001_promo --guion "Guiones/EP001_guion_etiquetas (1).txt"
-
-Checks:
-  1) MP3 existe y > 1 MB
-  2) Duracion entre 8 y 60 min
-  3) Log existe y contiene "Produccion completada"
-  4) Log no contiene errores criticos: ERROR / FAILED / Exception
-  5) Todos los bloques del guion fueron procesados (count log vs guion)
-  6) Audio reproducible (pydub lo carga sin excepcion)
-
-Extras (10% creatividad):
-  - Estimacion creditos ElevenLabs (chars del guion)
-  - Barra de progreso ASCII de bloques procesados
-  - Salida visual atractiva (stdlib + pydub)
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   El validador vigente es `validar_episodio_v6.py` que ejecuta los 54+
+   checks de `validators/{base,m,t,s}_validator.py` más la capa editorial
+   v6.1. Ver `GENERACION.md`.
 """
-
 from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ validar_episodio.py está retirado (era v5).\n"
+        "   Usa el validador canónico:\n"
+        "       python validar_episodio_v6.py --kind M --ep M3 --guion Guiones/M3_v6.md\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
+# Se elimina entero en un PR de limpieza dedicado.
+# --------------------------------------------------------------------------
 
 import argparse
 import os
 import re
-import sys
 
 # Forzar UTF-8 en consola Windows
 if hasattr(sys.stdout, "reconfigure"):
@@ -513,13 +514,12 @@ def main() -> int:
     return 0 if not verdict.startswith("RECHAZADO") else 1
 
 
-if __name__ == "__main__":
-    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el pipeline
-    # sigue igual gracias al nullcontext de respaldo.
-    import sys as _sys
+# El bloque `if __name__ == "__main__"` original se ha movido al inicio del
+# archivo (ver guard arriba). No se ejecutará por debajo del SystemExit.
+if False:  # pragma: no cover - histórico inaccesible
     try:
         from daylog import RunLog as _RunLog
-        _run_ctx = _RunLog(script="validar_episodio.py", params=_sys.argv[1:])
+        _run_ctx = _RunLog(script="validar_episodio.py", params=sys.argv[1:])
     except Exception:  # noqa: BLE001
         from contextlib import nullcontext as _nullcontext
         _run_ctx = _nullcontext()

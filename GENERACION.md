@@ -1,67 +1,281 @@
 # GENERACION.md — Desde dónde se generan los episodios
 
-Mapa único y canónico del pipeline de generación de **guiones** de MaquinarIA
-Pesada. Si tienes que tocar la generación, empieza aquí.
+Mapa único y canónico de generación de guiones de MaquinarIA Pesada. Si
+tienes que tocar la generación, empieza aquí.
 
-## Entry points (los únicos que generan episodios)
+> **Versiones**: este documento describe la única versión vigente del
+> pipeline. No hay "v5/v6/v7" en lo que se ejecuta hoy. Los scripts top-level
+> con sufijo numérico (`lanzar_produccion_v6.py`, `validar_episodio_v6.py`)
+> son nombres heredados a la espera de un rename mecánico; el código que
+> ejecutan ya es el único pipeline activo.
 
-| Tipo | Script | Spec | Salida |
-|---|---|---|---|
-| **T** — Tema individual | `generar_guion_t.py` | `PODCAST_T_SPEC.md` | `Guiones/M{n}_T{k}_{slug}.txt` (mismo stem que el PDF) |
-| **M** — Resumen de módulo | `generar_guion.py` | `PODCAST_M_SPEC.md` | `Guiones/M{n}_{Nombre}.txt` |
+---
 
-Ambos usan la **API de Anthropic Claude** (Sonnet 4.5 para generación, Haiku
-para extracción de conceptos). No usan OpenAI. Codex/Claude Code se usan como
-*ejecutores* que lanzan estos scripts; no escriben el guion a mano.
+## 1. Entry points canónicos
+
+Toda generación de episodios pasa por estos dos scripts:
+
+| Acción | Script | Flags clave |
+|---|---|---|
+| Generar guion | `lanzar_produccion_v6.py` | `--kind {M,T,S} --ep <id> [--term <slug> para S]` |
+| Validar guion | `validar_episodio_v6.py` | `--kind {M,T,S} --ep <id> --guion Guiones/<id>_v6.md` |
 
 ```bash
-python generar_guion_t.py --pdf PDFs/temas/M7_T1_que_es_rag.pdf
-python generar_guion.py --modulo 6 --pdf PDFs/resumenes/RESUMEN_M6_Ingenieria_Prompts.pdf
+# Episodio de módulo
+python lanzar_produccion_v6.py --kind M --ep M3
+python validar_episodio_v6.py  --kind M --ep M3 --guion Guiones/M3_v6.md
+
+# Episodio de tema
+python lanzar_produccion_v6.py --kind T --ep M3_T2
+python validar_episodio_v6.py  --kind T --ep M3_T2 --guion Guiones/M3_T2_v6.md
+
+# Short
+python lanzar_produccion_v6.py --kind S --ep S1_RAG --term RAG
+python validar_episodio_v6.py  --kind S --ep S1_RAG --guion Guiones/S1_RAG_v6.md
 ```
 
-## Arquitectura
+`lanzar_produccion_v6.py` delega cada `--kind` en el generador especialista
+del paquete `generadores/` (ver §3). Cada llamada:
+
+1. Lee las fuentes (PDF resumen/tema, glosario, fuentes-marco).
+2. Construye el prompt con la pre-escritura inyectada.
+3. Llama al LLM (Sonnet para M/T, Haiku para S).
+4. Aplica post-process: `num2words` + `pronunciation_overrides` + SSML pauses.
+5. Valida con el validador del formato.
+6. Si hay HARD-FAIL, reintenta con feedback explícito desde
+   `_RULE_ACTION_HINTS` en `generadores/base_generator.py`.
+7. Registra la corrida en `costes_generacion.log`.
+8. Guarda el guion final en `Guiones/<ep>_v6.md`.
+
+---
+
+## 2. Paquetes principales
 
 ```
-generar_guion.py (M) ─┐
-                      ├─→ guion_common.py  ← núcleo compartido
-generar_guion_t.py(T)─┘        │
-                               ├─ cliente Anthropic, lectura de PDF
-                               ├─ normalize_generated_script, enforce_fixed_phrases
-                               └─ post-proceso: anti-pingpong, rebalanceo,
-                                  split de bloques largos, números→palabras
-                               │
-                      podcast_spec.py  ← parsing + validación (validate_script_text)
-                               │
-                      PODCAST_T_SPEC.md / PODCAST_M_SPEC.md  ← las reglas (JSON)
+generadores/                  # generación con LLM (M, T, S)
+  base_generator.py             # pipeline común: prompt → LLM → post → validate → retry
+  m_generator.py                # MODEL=claude-sonnet-4-5, prompt M con 26+ reglas
+  t_generator.py                # MODEL=claude-sonnet-4-5, prompt T con 27+ reglas
+  s_generator.py                # MODEL=claude-haiku-4-5,  prompt S anti-meta-texto
+  shared/
+    fuentes_loader.py             # glosario unificado (con campo **ES:**)
+    anthropic_client.py           # cliente API + tracking de coste
+    ...
+
+validators/                   # validación técnica HARD/SOFT
+  base_validator.py             # reglas comunes M/T/S
+  m_validator.py                # exactas de M (concepts, leader shares, fuentes...)
+  t_validator.py                # exactas de T (concepts=3, casos, limites...)
+  s_validator.py                # exactas de S (no diálogo, hook, word count...)
+  shared/
+    blacklist.py                  # 5 listas (interjecciones, placeholder + 3 editoriales)
+    glossary_expansion.py         # expansión castellana de siglas al primer uso (HARD)
+    pedagogy_check.py             # expansión de términos al primer uso (SOFT)
+    canonical_phrases.py          # frases canónicas literales
+    audio_rules.py                # invariantes TTS (frases largas, números en cifra...)
+    ...
+
+evaluador/                    # auditor mecánico de specs (lectura de guion)
+  cli.py                        # CLI: python -m evaluador --kind M --files Guiones/...
+  rules/                        # reglas reutilizables (estructura, cast, pedagogy...)
+  renderers/                    # markdown / json / terminal
+
+editorial/                    # panel editorial multi-perspectiva (LLM)
+  perspectives.py               # 5 voces: productor, marca, oyente, experto, SEO
+  benchmark.py                  # mapa de referentes (Lex Fridman, Dot CSV, etc.)
+  scoring.py                    # score ponderado + veredicto + asimetría de marca
+  ...
+                              # CLI: python evaluador_editorial.py --file Guiones/M3_v6.md
 ```
 
-Cada generador conserva solo lo que es **específico de su tipo**:
-`build_generation_prompt` (el prompt con las reglas operativas) y
-`build_verification_section`.
+---
 
-## Fuente única de verdad
+## 3. Diferencias por tipo (M / T / S)
 
-| Qué | Dónde |
+### 3.1 M — Episodio de módulo (~20 min)
+
+- **Spec**: [`PODCAST_M_SPEC.md`](PODCAST_M_SPEC.md)
+- **Generador**: `generadores/m_generator.py` (Sonnet 4.5)
+- **Fuente PDF**: `PDFs/resumenes/RESUMEN_M{n}_*.pdf` + 4 docs vivos.
+- **Estructura**: HOOK → INTRO_SONIDO → SALUDO_Y_PRESENTACION →
+  BLOQUE_PANORAMA → BLOQUE_DESTACADO → APLICACION_PRACTICA →
+  BLOQUE_FUENTES → CIERRE_CONCEPTOS → CIERRE_FINAL → VERIFICACIONES.
+- **Word count**: 2700-3300 (rango duro 2400-3680).
+- **Reparto**:
+  - PANORAMA → Yago lidera ≥60%.
+  - DESTACADO → balance 35-65%.
+  - APLICACION_PRACTICA → Maria 25-45%.
+- **Salida**: `Guiones/M{n}_v6.md`.
+
+### 3.2 T — Episodio de tema (~25-28 min)
+
+- **Spec**: [`PODCAST_T_SPEC.md`](PODCAST_T_SPEC.md)
+- **Generador**: `generadores/t_generator.py` (Sonnet 4.5)
+- **Fuente PDF**: `PDFs/temas/M{n}_T{k}_*.pdf`.
+- **Estructura**: HOOK → INTRO_SONIDO → SALUDO → BLOQUE_PANORAMA →
+  BLOQUE_COMO → BLOQUE_CASOS → BLOQUE_LIMITES → BLOQUE_FUENTES →
+  CIERRE_CONCEPTOS → CIERRE_FINAL → VERIFICACIONES.
+- **Word count**: 3700-4500 (rango duro 2925-4485).
+- **Reparto**:
+  - PANORAMA → Yago ≥60%, LIMITES → Yago ≥50%.
+  - COMO → balance 35-65%.
+  - CASOS → Maria ≥55% con ≥2 empresas con nombre propio.
+- **Salida**: `Guiones/M{n}_T{k}_v6.md`.
+
+### 3.3 S — Short de 60-90s
+
+- **Spec**: [`PODCAST_S_SPEC.md`](PODCAST_S_SPEC.md)
+- **Generador**: `generadores/s_generator.py` (Haiku 4.5 — más rápido y
+  barato para texto corto con plantilla rígida).
+- **Fuente**: una entrada del glosario unificado
+  (`PDFs/auxiliares/glosario_unificado.md`) seleccionada por `--term`.
+- **Estructura interna** (sin cabeceras): HOOK 5-7s → DEFINICIÓN 18-22s
+  → EJEMPLO 28-35s → APLICACIÓN/GANCHO 12-18s.
+- **Word count**: 157-198 palabras (~75s a 1.10× TTS).
+- **Voz única** (no diálogo): la paridad alterna Yago/Maria por
+  `s_number`. Sin cabeceras de sección, sin tags TTS, sin URLs, sin
+  citas de papers.
+- **Hook**: una de las plantillas H1 (contradicción) / H2 (número) /
+  H3 (pregunta) — HARD-FAIL si no encaja.
+- **Cierre**: frase canónica literal:
+  > *"Más sobre [tema] en el episodio T de MaquinarIA Pesada."*
+- **Salida**: `Guiones/S{n}_{term}_v6.md`.
+
+> Los tres tipos comparten arquitectura, fuentes y validador-pipeline. Lo
+> que cambia es la spec y el prompt del generador. No hay un
+> `GENERACION_S.md` separado por diseño: fragmentar este doc duplicaría
+> la parte común y derivaría con el tiempo.
+
+---
+
+## 4. Modelos por defecto
+
+| Tipo | Modelo | Motivo |
+|---|---|---|
+| M (generador) | `claude-sonnet-4-5` | Equilibrio coste/calidad para narrativa larga con criterio |
+| T (generador) | `claude-sonnet-4-5` | Igual: T tiene más palabras pero misma complejidad cualitativa |
+| S (generador) | `claude-haiku-4-5` | Texto corto + plantilla rígida → Haiku rinde igual al 5% del coste |
+| Evaluador editorial | `claude-sonnet-4-6` | Panel multi-perspectiva con criterio editorial |
+| Conceptos / extracción | `claude-haiku-4-5` | Tareas mecánicas reutilizables |
+
+`CLAUDE.md §"Modelos por defecto"` es la guía vinculante. Nunca usar Opus
+para tareas que Sonnet resuelve (~5× más caro).
+
+---
+
+## 5. Validación: dos capas obligatorias + una editorial
+
+```
+guion .txt o .md
+      │
+      ▼
+┌────────────────────────────────────────────────────────────┐
+│ CAPA 1 — Validación técnica (HARD-FAIL bloquea)            │
+│ validar_episodio_v6.py + validators/                        │
+│ ~54 reglas:                                                 │
+│  · estructura, secciones, word count, frases canónicas      │
+│  · reparto Yago/Maria por bloque                            │
+│  · blacklists (interjecciones, AI-bro, coach, cliffhanger)  │
+│  · expansión castellana de siglas al primer uso             │
+│  · invariantes TTS (frases >32 palabras, números en cifra)  │
+└────────────────────────────────────────────────────────────┘
+      │ (pasa todos los HARD)
+      ▼
+┌────────────────────────────────────────────────────────────┐
+│ CAPA 2 — Auditor mecánico opcional                          │
+│ python -m evaluador --kind M --files Guiones/M3_v6.md       │
+│ Reportes en markdown / JSON / terminal. Mismas reglas       │
+│ técnicas que la capa 1 pero formato batch + rendering.      │
+└────────────────────────────────────────────────────────────┘
+      │
+      ▼
+┌────────────────────────────────────────────────────────────┐
+│ CAPA 3 — Panel editorial (no técnico)                       │
+│ python evaluador_editorial.py --file Guiones/M3_v6.md       │
+│ 5 perspectivas: productor, marca, oyente, experto, SEO.     │
+│ Score 1-10 + veredicto PUBLICAR/REVISAR/BLOQUEAR.           │
+│ Asimetría: 1 crítico en MARCA = BLOQUEAR.                   │
+│ Ver EVALUADOR_EDITORIAL_GUIONES.md.                         │
+└────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 6. Contrato bidireccional generador ↔ validador
+
+**Toda regla HARD del validador tiene que estar en el SYSTEM_PROMPT del
+generador correspondiente.** Y al revés. Es un contrato del PR, no algo
+"a posteriori".
+
+Cuando añadas, renombres o quites una regla:
+
+1. Edita el validator (función, lista negra, severidad).
+2. Edita el SYSTEM_PROMPT del generador con descripción humana.
+3. Añade el `_RULE_ACTION_HINTS` en `generadores/base_generator.py` para
+   que el retry sepa pedir la corrección concreta.
+4. Añade/actualiza `RULE_PROMPT_PARITY` en
+   `tests/validators/test_generator_parity.py`.
+5. Documenta en `PODCAST_MASTER_SPEC.md §13` (spec normativa).
+
+El test de paridad bloquea el PR si te olvidas de algún paso. Detalle
+completo en `docs/architecture/EVALUACION_EDITORIAL.md §Sincronización`
+y `CLAUDE.md §"Sincronización generador ↔ validador"`.
+
+---
+
+## 7. Glosario unificado (fuente de verdad)
+
+`PDFs/auxiliares/glosario_unificado.md` es la fuente canónica de
+definiciones técnicas. Cada entrada admite estas líneas estructuradas:
+
+| Campo | Obligatorio | Función |
+|---|---|---|
+| `**Fuentes:**` | sí | PDFs donde aparece el concepto (M3_T1, M5_RESUMEN...) |
+| `**S:**` | no | Número de orden del Short asociado al término |
+| `**ES:**` | no (gradual) | Expansión castellana exigida en aposición con comas al primer uso |
+
+Mientras el campo `**ES:**` no esté en una entrada, su sigla NO se valida
+contra la regla `glossary_term_first_use_expanded`. Rollout permisivo
+intencional. Ver `PODCAST_MASTER_SPEC.md §13.1`.
+
+---
+
+## 8. Scripts legacy retirados
+
+Los siguientes scripts top-level **están retirados** y disparan
+`SystemExit(2)` con un mensaje de redirección. No los uses:
+
+| Legacy | Reemplazo |
 |---|---|
-| Reglas (estructura, word count, blacklist, frases fijas, marcadores temporales) | `PODCAST_T_SPEC.md` / `PODCAST_M_SPEC.md` (bloque JSON) |
-| Parsing de bloques + validación (`validate_script_text`) | `podcast_spec.py` |
-| Post-proceso mecánico del guion | `guion_common.py` |
-| Prompt de generación (instrucciones al modelo) | `build_generation_prompt` en cada generador |
+| `generar_guion.py` | `python lanzar_produccion_v6.py --kind M --ep M<N>` |
+| `generar_guion_t.py` | `python lanzar_produccion_v6.py --kind T --ep M<N>_T<K>` |
+| `lanzar_produccion.py` | `python lanzar_produccion_v6.py` |
+| `validar_episodio.py` | `python validar_episodio_v6.py --kind ... --ep ... --guion ...` |
 
-No dupliques estas listas en otros ficheros: cárgalas vía `load_spec()`.
+También son legacy (utilidades manuales sobre guiones ya escritos, no
+parte del pipeline activo): `fix_guiones_v4.py`, `rebalance_blocks.py`,
+`normalizar_guiones.py`. ⚠️ `normalizar_guiones.py` genera estructura
+**pre-v5** (`BLOQUE_1..4`, `INSERCION`) incompatible con los validadores
+actuales. No usar sobre guiones vigentes.
 
-## Utilidades LEGACY (NO generan episodios)
+> Próximo PR de limpieza: renombrar `lanzar_produccion_v6.py` →
+> `lanzar_produccion.py` y `validar_episodio_v6.py` → `validar_episodio.py`
+> tras eliminar los scripts legacy y actualizar las 29 referencias en
+> `cockpit/connectors/pipelines/`, docs y daylog. Mantener el sufijo
+> `_v6` hasta entonces evita rupturas.
 
-Scripts standalone que se ejecutan a mano sobre guiones `.txt` ya escritos.
-No forman parte del pipeline y nada los importa:
+---
 
-- `fix_guiones_v4.py` — corrige hard-fails mecánicos en guiones existentes.
-- `rebalance_blocks.py` — rebalanceo manual de palabras por bloque/speaker.
-- `normalizar_guiones.py` — conversor de formato B (codex antiguo) → A.
-  ⚠️ Genera estructura **pre-v5** (`BLOQUE_1..4`, `INSERCION`) incompatible con
-  el validador actual. No usar sobre guiones v5.
+## 9. Documentación relacionada
 
-## Validación del producto final
-
-- `validar_episodio.py` — valida el **MP3 + log** (duración, tamaño, bloques).
-- `cockpit/core/verifications.py` — checks ligeros desde la cockpit.
+- `PODCAST_MASTER_SPEC.md` — spec normativa común (incluye §13 reglas
+  editoriales v6.1).
+- `PODCAST_M_SPEC.md`, `PODCAST_T_SPEC.md`, `PODCAST_S_SPEC.md` — specs
+  por formato.
+- `EVALUADOR_EDITORIAL_GUIONES.md` — documento normativo del panel
+  editorial (5 perspectivas, pesos, veredicto).
+- `docs/architecture/EVALUACION_EDITORIAL.md` — arquitectura de las 3
+  capas de evaluación y contrato bidireccional generador ↔ validador.
+- `BIBLIA_SISTEMA.md` — biografía y posicionamiento de marca.
+- `CLAUDE.md` — reglas para trabajar en el repo (tests obligatorios,
+  sincronización, no commit sin OK, etc.).

@@ -1,29 +1,36 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# ruff: noqa
 """
 lanzar_produccion.py
 --------------------
-Ejecuta todos los episodios pendientes de audio (M y T).
-Captura stdout+stderr en episodios/{ep}_cmd.log.
-Acumula log maestro en episodios/produccion_runs.log.
 
-Nomenclatura:
-  Guion M:   M0_Nombre.txt       →  ep_code: M0_E_Nombre
-  Guion T:   M0_TX_Nombre.txt    →  ep_code: M0_TX_E_Nombre
-
-Uso:
-  python lanzar_produccion.py              # todos los pendientes
-  python lanzar_produccion.py --ep M3_E_Machine_Learning_Clasico
-  python lanzar_produccion.py --dry-run    # muestra comandos sin ejecutar
-  python lanzar_produccion.py --tipo M     # solo episodios M
-  python lanzar_produccion.py --tipo T     # solo episodios T
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   Encadenaba `generar_guion.py` (v5). Reemplazado por
+   `lanzar_produccion_v6.py` que delega en el paquete `generadores/`.
+   Ver `GENERACION.md` para el mapa canónico.
 """
 from __future__ import annotations
+
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ lanzar_produccion.py está retirado (era v5).\n"
+        "   Usa el pipeline canónico:\n"
+        "       python lanzar_produccion_v6.py --kind M --ep M<N>\n"
+        "       python lanzar_produccion_v6.py --kind T --ep M<N>_T<K>\n"
+        "       python lanzar_produccion_v6.py --kind S --ep S<N>_<term> --term <term>\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
+# Se elimina entero en un PR de limpieza dedicado.
+# --------------------------------------------------------------------------
 
 import argparse
 import re
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -288,13 +295,12 @@ def main() -> None:
     )
 
 
-if __name__ == "__main__":
-    # Bitácora diaria centralizada (logs/run/). Si daylog fallara, el pipeline
-    # sigue igual gracias al nullcontext de respaldo.
-    import sys as _sys
+# El bloque `if __name__ == "__main__"` original se ha movido al inicio del
+# archivo (ver guard arriba). No se ejecutará por debajo del SystemExit.
+if False:  # pragma: no cover - histórico inaccesible
     try:
         from daylog import RunLog as _RunLog
-        _run_ctx = _RunLog(script="lanzar_produccion.py", params=_sys.argv[1:])
+        _run_ctx = _RunLog(script="lanzar_produccion.py", params=sys.argv[1:])
     except Exception:  # noqa: BLE001
         from contextlib import nullcontext as _nullcontext
         _run_ctx = _nullcontext()
