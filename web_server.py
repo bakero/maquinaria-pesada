@@ -1230,7 +1230,7 @@ def _validate_flags(flags: list) -> str | None:
 def launch_pipeline(script: str, flags: list) -> dict:
     """Lanza un script python (de la whitelist) en background sin bloquear el server."""
     try:
-        from cockpit.core import paths, runner
+        from cockpit.core import paths
     except Exception as exc:
         _log.error(f"launch_pipeline: runner no disponible: {exc!r}")
         return {"ok": False, "error": f"runner no disponible: {exc}"}
@@ -1252,7 +1252,10 @@ def launch_pipeline(script: str, flags: list) -> dict:
         _log.warning(f"launch_pipeline: script no existe: {script_name}")
         return {"ok": False, "error": f"script no existe: {script_name}"}
 
-    argv = runner.build_argv(str(script_path), flags)
+    # `flags` viene del front como lista plana shell-ready (["--ep", "M3"]).
+    # `runner.build_argv` espera tuplas [(flag, value), ...]; lo evitamos
+    # construyendo el argv directamente, igual que en generate_episode_guion.
+    argv = [sys.executable, str(script_path), *flags]
     log_dir = paths.logs_dir()
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"web_run_{int(time.time())}.log"

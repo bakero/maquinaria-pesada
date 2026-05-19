@@ -94,6 +94,26 @@ def source_for(ep_id: str) -> EpisodeSource | None:
     Devuelve None si el episodio no está configurado."""
     ep_id = (ep_id or "").strip()
 
+    # Short S → "S1" (píldora de glosario, formato v6, sin PDF fuente)
+    if re.fullmatch(r"S(\d+)", ep_id, re.IGNORECASE):
+        # Necesitamos el `--term` (RAG, Fine-tuning, …). Lo leemos del
+        # registro de Shorts mantenido por cockpit.core.shorts.
+        try:
+            from cockpit.core import shorts as _shorts
+            sh = _shorts.get_short(ep_id.upper())
+        except Exception:
+            sh = None
+        if sh is None:
+            return None
+        return EpisodeSource(
+            ep_id=ep_id.upper(),
+            kind="S",
+            module="",
+            script="lanzar_produccion_v6.py",
+            pdf="",                         # los Shorts no usan PDF fuente
+            flags=["--kind", "S", "--ep", ep_id.upper(), "--term", sh.term],
+        )
+
     # Tema T → "M7_T1"
     if "_T" in ep_id:
         pdf = T_PDFS.get(ep_id)
