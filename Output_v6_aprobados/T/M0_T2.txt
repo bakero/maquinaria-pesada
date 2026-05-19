@@ -1,0 +1,180 @@
+# HOOK
+MARIA: [enfático] Imagina que entras a una reunión y alguien dice: necesitamos inteligencia artificial. Parece una frase simple. Pero en realidad está pidiendo cuatro cosas completamente distintas al mismo tiempo. Podría necesitar un sistema de reglas que audite cada decisión. Podría necesitar un modelo que prediga comportamientos futuros. Podría necesitar un asistente que genere texto como un humano. O podría necesitar un agente que ejecute tareas complejas de forma autónoma. Confundir estos cuatro paradigmas es la razón principal por la que tantos proyectos de inteligencia artificial fracasan antes de empezar. Hoy vamos a desmontar esa confusión. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+[Ráfaga de introducción característica del podcast]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [cálido] Bienvenidos a un nuevo episodio de MaquinarIA Pesada. Soy Maria.
+
+<break time="500ms"/>
+IAGO: [cálido] Y yo soy Iago. Hoy hablamos de los cuatro tipos de inteligencia artificial que existen en producción real.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de continuar, un aviso importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. El contenido está basado en fuentes verificadas, pero puede contener errores. Te recomendamos contrastar la información crítica antes de tomar decisiones empresariales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Vamos directo al grano. Cuando alguien en una empresa dice necesitamos inteligencia artificial, casi nunca sabe que existen cuatro paradigmas completamente distintos. Cada uno resuelve problemas diferentes. Cada uno tiene arquitecturas distintas. Y cada uno tiene limitaciones propias que no se pueden ignorar. El primer paradigma es la inteligencia artificial simbólica. Esta es la más antigua. Representa el conocimiento como reglas explícitas escritas por humanos. Un sistema experto que diagnostica enfermedades siguiendo árboles de decisión clínicos. Un motor de reglas bancario que evalúa solicitudes de crédito según políticas definidas por expertos. Una ontología que mapea las relaciones entre conceptos de un dominio legal o médico. Todo esto es inteligencia artificial simbólica.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y por qué sigue siendo relevante si es la más antigua?
+
+<break time="500ms"/>
+IAGO: [contundente] Porque es auditable al cien por cien. Cada decisión que toma el sistema se puede rastrear hasta la regla exacta que la produjo. En sectores regulados como banca, seguros o salud, eso no es una ventaja. Es un requisito legal. Si un banco rechaza un crédito, debe poder explicar exactamente por qué. Un sistema de reglas te da esa trazabilidad de forma nativa. Los modelos de aprendizaje automático, especialmente los grandes modelos de lenguaje, no te dan eso por defecto. Puedes intentar explicarlos con técnicas como SHAP o LIME, pero nunca tendrás la certeza absoluta de una regla explícita.
+
+IAGO: [analítico] El segundo paradigma es la inteligencia artificial estadística, también llamada aprendizaje automático clásico. Aquí el sistema aprende patrones directamente de los datos sin que un programador codifique las reglas. Un modelo de gradient boosting que predice qué clientes van a abandonar tu servicio. Un clasificador que detecta fraude en transacciones bancarias. Un sistema de recomendación que sugiere productos en función del historial de compras. Todos estos son aprendizaje automático estadístico. La fortaleza de este paradigma es la escala y la capacidad de capturar relaciones complejas que serían imposibles de codificar manualmente.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y cuándo usas este paradigma en lugar de los otros?
+
+<break time="500ms"/>
+IAGO: [explicativo] Cuando tienes datos estructurados históricos y un problema de predicción. Si tienes una tabla con cincuenta variables sobre clientes y quieres predecir quién va a comprar el próximo mes, gradient boosting o redes neuronales tradicionales son tu mejor opción. Son más precisos, más baratos y más interpretables que un modelo de lenguaje grande para este tipo de problema. Los modelos de lenguaje no están optimizados para datos tabulares. Están optimizados para secuencias de texto.
+
+IAGO: [didáctico] El tercer paradigma es la inteligencia artificial generativa. Estos modelos aprenden la distribución estadística de los datos y pueden generar nuevas muestras de esa distribución. Los grandes modelos de lenguaje aprenden la distribución del lenguaje humano y generan texto nuevo. Los modelos de difusión aprenden la distribución de las imágenes y generan imágenes nuevas. Esta capacidad de generación es lo que hace a estos modelos útiles para redacción de contenido, resumen de documentos, traducción, generación de código, síntesis de informes y respuesta a preguntas en lenguaje natural.
+
+<break time="500ms"/>
+MARIA: [escéptico] Pero generan también errores, ¿verdad?
+
+<break time="500ms"/>
+IAGO: [serio] Así es. La limitación estructural clave es que los modelos generativos producen lo que es estadísticamente probable, no lo que es verificablemente verdad. Esto produce alucinaciones. Texto fluido y convincente que es factualmente incorrecto. Las arquitecturas rag, generación aumentada por recuperación, que estudiaremos en el módulo siete, son la respuesta técnica más efectiva para reducir este riesgo en entornos empresariales. Pero nunca lo eliminan por completo.
+
+IAGO: [firme] Y el cuarto paradigma es la inteligencia artificial agéntica. Aquí el sistema no solo responde preguntas. Ejecuta tareas de múltiples pasos de forma autónoma. Un agente de inteligencia artificial puede buscar información en bases de datos, redactar documentos, enviar notificaciones, ejecutar código y tomar decisiones en función de los resultados intermedios. La diferencia con la automatización robótica de procesos tradicional es la capacidad de adaptación. Los agentes manejan variabilidad y casos no previstos. El RPA sigue flujos predefinidos y se rompe cuando algo cambia.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y cuándo necesitas realmente un agente?
+
+<break time="500ms"/>
+IAGO: [contundente] Cuando el problema requiere múltiples pasos con herramientas externas y no puedes predefinir todos los caminos posibles. Pero cuidado. La inteligencia artificial agéntica amplía la superficie de riesgo, el coste y la complejidad. Para muchos problemas que se presentan como necesitamos un agente, basta con un flujo determinista con un modelo de lenguaje en un paso específico. No saltes a agentes sin necesidad real.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+MARIA: [didáctico] Ahora vamos al mecanismo técnico. ¿Cómo funciona realmente cada paradigma por dentro? Empecemos por la inteligencia artificial simbólica. En este paradigma, el conocimiento se representa como una base de conocimiento explícita. Esto puede ser un conjunto de reglas if-then, una ontología con relaciones semánticas, o un grafo de conocimiento. El motor de inferencia aplica esas reglas sobre los datos de entrada para derivar conclusiones. Por ejemplo, en un sistema experto médico, tienes reglas como: si el paciente tiene fiebre mayor de treinta y ocho grados y tos seca y dificultad respiratoria, entonces evaluar neumonía. El sistema aplica esas reglas en cadena hasta llegar a un diagnóstico.
+
+<break time="500ms"/>
+IAGO: [explicativo] Y lo importante aquí es que todo el razonamiento es explícito. Puedes auditar cada paso. Puedes ver qué regla se activó, qué datos la activaron y qué conclusión produjo. Esto es lo que hace a la inteligencia artificial simbólica ideal para entornos regulados. El problema es la escala. Escribir y mantener miles de reglas manualmente es caro y frágil. Cuando el entorno cambia, las reglas deben actualizarse manualmente. No hay aprendizaje automático aquí.
+
+<break time="500ms"/>
+MARIA: [analítico] En el aprendizaje automático estadístico, el mecanismo es completamente distinto. Aquí tienes un conjunto de datos de entrenamiento con ejemplos etiquetados. Por ejemplo, una tabla con datos de clientes y una columna que indica si abandonaron el servicio o no. El algoritmo de aprendizaje busca patrones en esas variables que se correlacionan con el abandono. Un árbol de decisión aprende umbrales: si el cliente tiene menos de tres compras en los últimos seis meses y no ha contactado con soporte, entonces alta probabilidad de abandono. Un modelo de gradient boosting combina cientos de árboles pequeños para capturar relaciones más complejas. Una red neuronal aprende representaciones no lineales mediante capas de transformación.
+
+<break time="500ms"/>
+IAGO: [claro] Y lo crítico es que estas relaciones no están codificadas por un humano. El modelo las descubre automáticamente a partir de los datos. Esto le da una capacidad de escala que la inteligencia artificial simbólica no tiene. Pero también introduce opacidad. Un modelo de gradient boosting con quinientos árboles es difícil de interpretar. Puedes usar técnicas como SHAP para aproximar la importancia de cada variable, pero no tienes la trazabilidad exacta de una regla simbólica.
+
+<break time="500ms"/>
+MARIA: [didáctico] En los modelos generativos, el mecanismo es aún más complejo. Tomemos un gran modelo de lenguaje como ejemplo. El modelo se entrena con billones de palabras de texto. Durante el entrenamiento, aprende a predecir la siguiente palabra en una secuencia dado el contexto anterior. Esto se hace mediante una arquitectura transformer con capas de atención que permiten al modelo capturar relaciones a larga distancia en el texto. Después del entrenamiento, el modelo ha internalizado patrones estadísticos del lenguaje: qué palabras suelen seguir a otras, qué estructuras gramaticales son comunes, qué tipo de razonamiento es típico en diferentes contextos.
+
+<break time="500ms"/>
+IAGO: [explicativo] Y cuando le das un promp, el modelo genera texto palabra por palabra, eligiendo en cada paso la palabra más probable dado el contexto. Esto es lo que hace al texto fluido y coherente. Pero también es lo que produce alucinaciones. El modelo no tiene una representación interna de la verdad. Solo tiene una representación de lo que es estadísticamente probable en el lenguaje humano. Si los datos de entrenamiento contienen información incorrecta, o si el contexto del promp es ambiguo, el modelo puede generar texto convincente que es factualmente falso.
+
+<break time="500ms"/>
+MARIA: [analítico] Para mitigar esto, las arquitecturas rag combinan el modelo generativo con una base de datos de documentos verificados. Cuando el usuario hace una pregunta, el sistema primero busca los documentos más relevantes en la base de datos. Luego pasa esos documentos al modelo de lenguaje como contexto adicional. El modelo genera la respuesta basándose en esos documentos específicos, no solo en su conocimiento general. Esto reduce drásticamente las alucinaciones porque anclas la generación a fuentes verificadas. Morgan Stanley usa esta arquitectura para que sus asesores financieros consulten más de cien mil documentos internos en lenguaje natural.
+
+<break time="500ms"/>
+IAGO: [firme] Y en los sistemas agénticos, el mecanismo añade una capa más. Aquí el modelo de lenguaje actúa como un motor de razonamiento que decide qué herramientas usar en cada paso. El agente tiene acceso a un conjunto de herramientas externas: una a pe i, interfaz de programación, para buscar en una base de datos, una función para enviar correos, un intérprete de código para ejecutar cálculos. En cada turno, el modelo decide qué herramienta usar, ejecuta esa herramienta, observa el resultado y decide el siguiente paso. Esto le da autonomía. Pero también introduce riesgos. Si el modelo toma una decisión incorrecta en un paso intermedio, puede propagar el error a través de toda la cadena de acciones.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Por eso los sistemas agénticos en producción suelen tener capas de validación. Límites de gasto, aprobaciones humanas para acciones críticas, rollback automático si se detecta un error. La autonomía es poderosa, pero debe estar acotada.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didáctico] Vamos a casos reales documentados. Empecemos por Harvey AI en el sector legal. Harvey es una startup fundada en dos mil veintidós que construye asistentes de inteligencia artificial para bufetes de abogados. La tecnología base es un gran modelo de lenguaje con ajuste fino sobre corpus jurídico, integrado con bases de datos legales como Westlaw y LexisNexis. Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera para probar el sistema. El caso de uso principal es redacción de contratos, due diligence, investigación jurídica y análisis de precedentes. Los resultados documentados muestran una reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y qué paradigma están usando exactamente?
+
+<break time="500ms"/>
+MARIA: [explicativo] Es un híbrido. El núcleo es inteligencia artificial generativa: el modelo de lenguaje genera borradores de contratos, resúmenes de casos y análisis de cláusulas. Pero también integra componentes de recuperación de información, que es aprendizaje automático estadístico, para buscar precedentes relevantes en bases de datos masivas. Y en algunos flujos, aplican reglas simbólicas para validar que los contratos cumplen requisitos legales específicos. Es un buen ejemplo de arquitectura híbrida en producción.
+
+MARIA: [didáctico] Otro caso es Morgan Stanley. Este es un banco de inversión con más de doscientos años de historia. En dos mil veintitrés implementaron un sistema rag para sus asesores financieros. La base de conocimiento contiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado es una reducción del tiempo de búsqueda de información de horas a minutos. El socio tecnológico es open ei ai con ge pe te, modelo generativo preentrenado, cuatro. Este caso fue presentado públicamente en el open ei ai DevDay de dos mil veintitrés.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y por qué no usan simplemente el modelo de lenguaje sin rag?
+
+<break time="500ms"/>
+MARIA: [contundente] Porque el modelo de lenguaje solo no puede acceder a documentos internos confidenciales. Y si intentas hacer fain tiuning, ajuste fino del modelo, con esos documentos, el coste es prohibitivo y el riesgo de filtración es alto. rag te permite mantener los documentos en una base de datos segura y solo pasarle al modelo los fragmentos relevantes en tiempo de consulta. Es más seguro, más barato y más actualizable.
+
+MARIA: [analítico] Un tercer caso es JPMorgan con su sistema COIN. COIN significa Contract Intelligence. Es un sistema de aprendizaje automático clásico que analiza contratos legales de préstamos comerciales y extrae cláusulas clave. El resultado documentado es que ahorra trescientas sesenta mil horas de trabajo de abogados y analistas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Este es un caso canónico de aprendizaje automático estadístico con retorno de inversión cuantificado y verificable.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y qué técnicas específicas usan en COIN?
+
+<break time="500ms"/>
+MARIA: [explicativo] Principalmente procesamiento de lenguaje natural clásico y clasificadores. El sistema tokeniza el texto del contrato, identifica entidades como nombres de partes, fechas y montos, y clasifica cláusulas según categorías predefinidas: garantías, indemnizaciones, condiciones de pago. No es un modelo generativo. No genera texto nuevo. Solo extrae y clasifica información estructurada de texto no estructurado. Y lo hace con una precisión altísima porque el dominio es muy específico y los datos de entrenamiento son de alta calidad.
+
+MARIA: [serio] Y también tenemos casos de fracaso. IBM Watson Health es el ejemplo más documentado. IBM prometió que Watson podría diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. El MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo su uso. La causa raíz documentada es que el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección es clara: las expectativas sobre inteligencia artificial deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Ese caso es importante porque muestra que la inteligencia artificial no es magia. Si los datos son malos, el sistema será malo. Y en medicina, los datos reales de pacientes son complejos, ruidosos y difíciles de obtener por razones de privacidad.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora hablemos de lo que estos paradigmas no son y cuándo no debes usarlos. Primer error común: usar un gran modelo de lenguaje para datos estructurados. Si tu problema es predecir el abandono de clientes con una tabla de cincuenta variables, gradient boosting es más preciso, más barato y más interpretable que cualquier modelo de lenguaje. Los modelos de lenguaje no están optimizados para datos tabulares. Están optimizados para secuencias de texto. Usarlos para predicción sobre tablas es como usar un martillo para atornillar. Funciona mal y es caro.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y al revés? ¿Usar aprendizaje automático clásico para texto libre?
+
+<break time="500ms"/>
+IAGO: [contundente] Ese es el segundo error. Si el problema implica comprender o generar texto en lenguaje natural, los modelos de lenguaje grandes son cualitativamente superiores a los clasificadores de texto clásicos para la mayoría de los casos de uso actuales. Un clasificador de sentimiento basado en regresión logística puede decirte si un comentario es positivo o negativo. Pero no puede resumir un documento de cincuenta páginas, no puede responder preguntas complejas sobre su contenido y no puede generar un informe ejecutivo. Los modelos de lenguaje sí pueden. La brecha de capacidad es enorme.
+
+IAGO: [serio] Tercer error: descartar la inteligencia artificial simbólica como anticuada. En sectores regulados con requisitos estrictos de explicabilidad, las reglas auditables son un requisito, no una opción. Un banco no puede decirle a un regulador que rechazó un crédito porque un modelo de caja negra dijo que no. Necesita decir: rechazamos el crédito porque el ratio de endeudamiento supera el sesenta por ciento y el historial crediticio tiene dos impagos en los últimos tres años. Eso es una regla simbólica. Los sistemas neuro-simbólicos que combinan aprendizaje automático con reglas explícitas son la arquitectura correcta para estos casos.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y el error de saltar directamente a agentes sin necesidad?
+
+<break time="500ms"/>
+IAGO: [grave] Ese es el cuarto error. La inteligencia artificial agéntica amplía la superficie de riesgo, el coste y la complejidad. Un agente puede tomar acciones en sistemas externos. Si toma una decisión incorrecta, puede causar daño real. Puede enviar correos incorrectos, puede borrar datos, puede ejecutar transacciones financieras erróneas. Para muchos problemas que se presentan como necesitamos un agente, basta con un flujo determinista con un modelo de lenguaje en un paso específico. Pregúntate siempre: ¿realmente necesito autonomía aquí? ¿O solo necesito una herramienta que haga una tarea específica bien?
+
+IAGO: [analítico] Y un límite fundamental que aplica a todos los paradigmas: la inteligencia artificial no razona como un humano. Los modelos de lenguaje no tienen comprensión semántica profunda. Los modelos de aprendizaje automático no entienden causalidad. Los sistemas simbólicos no aprenden de la experiencia. Cada paradigma tiene fortalezas específicas y limitaciones estructurales. La clave es no pedirle a un paradigma que haga algo para lo que no está diseñado. No le pidas a un modelo generativo que sea determinista. No le pidas a un sistema simbólico que generalice más allá de sus reglas. No le pidas a un modelo de aprendizaje automático que explique causalidad cuando solo aprendió correlación.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Vamos a las fuentes clave que fundamentan este tema. Primera fuente: el marco de gestión de riesgos de inteligencia artificial del NIST. El Instituto Nacional de Estándares y Tecnología de Estados Unidos publicó el NIST AI cien guion uno en enero de dos mil veintitrés. Este marco define cuatro funciones principales para gestionar riesgos de inteligencia artificial en organizaciones: gobernar, mapear, medir y gestionar. Es un estándar de facto en empresas Fortune quinientas que operan en Estados Unidos y está diseñado para complementar el AI Act europeo y la norma ISO cuarenta y dos cero cero uno.
+
+<break time="500ms"/>
+MARIA: [explicativo] Segunda fuente: el artículo seminal sobre arquitecturas transformer. Vaswani y otros publicaron en dos mil diecisiete el paper Attention Is All You Need, que introdujo la arquitectura transformer. Esta arquitectura es la base de todos los grandes modelos de lenguaje actuales: ge pe te, bert, clod, Gemini. El mecanismo de atención permite al modelo capturar relaciones a larga distancia en secuencias de texto, lo que fue un salto cualitativo respecto a las redes recurrentes anteriores. Este paper tiene más de cien mil citas y es la referencia técnica fundamental para entender cómo funcionan los modelos generativos modernos.
+
+<break time="500ms"/>
+IAGO: [claro] Tercera fuente: el AI Act de la Unión Europea. Esta regulación entró en vigor en dos mil veinticinco y es la primera legislación integral sobre inteligencia artificial a nivel mundial. Clasifica los sistemas de inteligencia artificial según su nivel de riesgo: prácticas prohibidas, alto riesgo, riesgo limitado y riesgo mínimo. Los sistemas de alto riesgo, que incluyen aplicaciones en recursos humanos, crédito, sanidad e infraestructura crítica, están sujetos a evaluación de conformidad obligatoria. Las multas por incumplimiento pueden alcanzar treinta millones de euros o el seis por ciento de la facturación global anual, lo que sea mayor. Esta regulación está forzando a todas las empresas que operan en Europa a revisar sus sistemas de inteligencia artificial y documentar su gobernanza.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: los cuatro paradigmas de inteligencia artificial, simbólica, estadística, generativa y agéntica, no son intercambiables. Cada uno resuelve problemas distintos y tiene limitaciones estructurales propias. Elegir el paradigma correcto es la decisión arquitectónica más importante en cualquier proyecto de inteligencia artificial.
+
+<break time="500ms"/>
+IAGO: [contundente] Segundo: las arquitecturas híbridas que combinan varios paradigmas son la norma en sistemas empresariales maduros. Un sistema neuro-simbólico que usa aprendizaje automático para extraer información y reglas explícitas para validar decisiones. Una arquitectura rag que combina generación de lenguaje con recuperación de documentos verificados. Estos híbridos capturan las fortalezas de cada paradigma y mitigan sus debilidades.
+
+<break time="500ms"/>
+MARIA: [claro] Tercero: la auditabilidad y la explicabilidad no son lujos. Son requisitos legales en sectores regulados. Si no puedes explicar por qué tu sistema tomó una decisión, no puedes desplegarlo en banca, seguros o salud. Los sistemas simbólicos y las capas de validación explícitas son herramientas necesarias, no opcionales.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [cálido] En el próximo capítulo del módulo cero vamos a hablar de redes neuronales y deep learning. Vamos a entrar en la arquitectura técnica que hace posible el aprendizaje profundo y vamos a ver por qué las redes neuronales son tan efectivas para ciertos problemas y tan limitadas para otros.
+
+<break time="500ms"/>
+MARIA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+[Checklist de validación interna]
+- HOOK abierto por MARIA: ✓
+- Aviso de IA pronunciado por MARIA: ✓
+- Word count total estimado: cuatro punto uno cinco cero palabras
+- BLOQUE_PANORAMA: Yago lidera ≥sesenta y cinco por ciento: ✓
+- BLOQUE_COMO: ambos speakers entre cuarenta-sesenta por ciento: ✓
+- BLOQUE_CASOS: Maria lidera ≥sesenta por ciento, menciona Harvey AI, Morgan Stanley, JPMorgan, IBM: ✓
+- BLOQUE_LIMITES: Yago lidera ≥cincuenta y cinco por ciento, usa "no es", "error común": ✓
+- BLOQUE_FUENTES: tres fuentes, tres años distintos (dos mil veintitrés, dos mil diecisiete, dos mil veinticinco): ✓
+- CIERRE_CONCEPTOS: tres intervenciones exactas: ✓
+- CIERRE_FINAL: frase canónica incluida: ✓

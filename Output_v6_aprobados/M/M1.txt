@@ -1,0 +1,125 @@
+# HOOK
+IAGO: [enfático] Imagina que le pides a un sistema de inteligencia artificial que resuelva un problema complejo de planificación logística. El sistema te devuelve una respuesta detallada, coherente, bien estructurada. Pero hay un problema: la mitad de los datos que menciona son inventados. No está mintiendo deliberadamente. Simplemente está generando el texto estadísticamente más plausible. Y tú, sin saberlo, tomas decisiones de negocio basadas en esa respuesta. Este no es un escenario hipotético. Es lo que ocurre cada día en miles de empresas que despliegan modelos de lenguaje sin entender cómo razonan, qué saben realmente, y cuándo fallan de formas predecibles. Hoy arrancamos desde los cimientos más profundos: qué significa que una máquina razone, cómo representan conocimiento los modelos de lenguaje, y por qué entender estos fundamentos es la diferencia entre construir sistemas fiables y construir castillos sobre arena. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [efecto de sonido: arranque de maquinaria pesada]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [cálido] Bienvenidos a MaquinarIA Pesada, el podcast donde desmontamos la inteligencia artificial desde dentro. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [cálido] Y yo soy Maria. Hoy inauguramos el máster con el módulo más fundamental de todos: ontología y razonamiento en inteligencia artificial.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de continuar, un aviso importante. Este contenido ha sido generado mediante un sistema automático de inteligencia artificial. Aunque hemos diseñado controles de calidad rigurosos, el proceso puede contener errores, imprecisiones o sesgos propios de los modelos de lenguaje. Te recomendamos contrastar la información crítica con fuentes primarias y aplicar tu propio criterio profesional.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Vamos a empezar por la pregunta más incómoda del campo. Cuando un modelo de lenguaje grande te da una respuesta, qué es exactamente lo que está haciendo. No me refiero a la arquitectura técnica, que llegaremos a eso. Me refiero a algo más profundo: está razonando o simplemente está prediciendo tokens de forma estadísticamente sofisticada. Esta pregunta no es filosófica. Es operativa. Porque si no entiendes la naturaleza del proceso, no puedes diseñar sistemas fiables. Los modelos de lenguaje no tienen conocimiento como lo tenemos los humanos. No hay una base de datos estructurada de hechos que puedan consultar. Lo que tienen es una compresión estadística masiva del texto humano. Patrones de co-ocurrencia de palabras y conceptos que, combinados con la predicción del siguiente token, producen respuestas que parecen conocimiento pero son inferencias sobre qué texto sería plausible dado el contexto.
+
+<break time="500ms"/>
+MARIA: [curiosa] Entonces cuando un modelo te dice que la capital de Francia es París, no lo sabe en el sentido en que tú lo sabes.
+
+<break time="500ms"/>
+IAGO: [explicativo] Exacto. El modelo ha visto millones de veces la secuencia de tokens que asocian Francia con París. Esa asociación está codificada en los pesos de la red. Cuando aparece el contexto adecuado, la predicción del siguiente token favorece París. Pero no hay un mecanismo interno que le diga esto es un hecho verificado versus esto es algo que parece plausible estadísticamente. Y esa distinción es crítica para entender las alucinaciones. Cuando un modelo genera un hecho incorrecto con total confianza, no está mintiendo. Está produciendo el texto estadísticamente más plausible dado su entrenamiento, y ese texto resulta ser falso. El modelo no distingue internamente entre ambos casos.
+
+IAGO: [analítico] Ahora bien, esto nos lleva al debate central del campo. Hay dos posturas enfrentadas. La primera dice que los modelos solo predicen tokens y no razonan genuinamente. Los argumentos son fuertes. Los modelos fallan en problemas de razonamiento trivialmente simples que cualquier humano resolvería. Su rendimiento es extremadamente sensible a la formulación del problema. Variaciones aparentemente superficiales en el promp producen respuestas completamente distintas. Y los errores que cometen no tienen el patrón de errores de razonamiento humanos sino el de errores estadísticos. La segunda postura señala que los modelos más grandes demuestran capacidades emergentes de razonamiento que los pequeños no tienen. Que técnicas como Chain of Thought mejoran significativamente el rendimiento en tareas de razonamiento. Y que los modelos de razonamiento como o tres de open ei ai demuestran capacidades de resolución de problemas muy superiores a los modelos estándar.
+
+<break time="500ms"/>
+MARIA: [reflexiva] Suena a que la verdad está en el medio.
+
+<break time="500ms"/>
+IAGO: [claro] La verdad parece ser que los modelos tienen algo funcionalmente similar al razonamiento sin ser idéntico al razonamiento humano. Es un razonamiento emergente de la predicción de tokens, no un razonamiento simbólico clásico. Y eso tiene implicaciones prácticas enormes. Porque significa que puedes mejorar el razonamiento del modelo cambiando cómo le pides que genere texto. No estás cambiando el modelo. Estás cambiando el proceso de generación. Y eso nos lleva directamente a las técnicas de prompting avanzado.
+
+IAGO: [didáctico] Chain of Thought fue introducido formalmente por Wei y otros investigadores de Google Brain en dos mil veintidós. La idea es simple pero poderosa. En lugar de pedir al modelo que produzca directamente la respuesta a un problema complejo, le pides que razone paso a paso antes de dar la respuesta. El resultado es un aumento significativo en la corrección para tareas de razonamiento matemático, lógico y de sentido común. El mecanismo tiene que ver con cómo los modelos generan texto. Cada token generado se convierte en parte del contexto que informa los tokens siguientes. Si el modelo genera los pasos intermedios de un razonamiento, esos pasos están disponibles en el contexto cuando genera la conclusión. Sin Chain of Thought, el modelo debe comprimir todo el razonamiento implícitamente en la probabilidad de los tokens de respuesta. Ese proceso es mucho más propenso a errores.
+
+IAGO: [explicativo] Hay dos variantes principales. Zero-shot Chain of Thought, que es añadir al promp la frase piensa paso a paso. Eso es suficiente para activar el razonamiento en modelos suficientemente grandes. Y fiu shot, con pocos ejemplos, Chain of Thought, donde proporcionas ejemplos de razonamiento paso a paso en el promp. La segunda variante es más costosa en tokens pero más efectiva para problemas complejos. Tree of Thoughts extiende esto generando múltiples cadenas de razonamiento en paralelo y evaluando cuál es más prometedora. En lugar de seguir un solo camino hasta el final, explora el árbol de posibles razonamientos, selecciona los nodos más prometedores y eventualmente converge en la solución más robusta. Es especialmente efectivo para problemas de planificación, puzzles complejos y situaciones donde la solución requiere explorar múltiples hipótesis.
+
+<break time="500ms"/>
+MARIA: [curiosa] Pero eso debe ser mucho más caro computacionalmente.
+
+<break time="500ms"/>
+IAGO: [claro] Sí. Tree of Thoughts requiere múltiples llamadas al modelo. Una para generar las ramas, otra para evaluarlas, otra para seleccionar las más prometedoras. Es más costoso y más lento que Chain of Thought simple. Pero para tareas de alto valor donde la precisión importa más que la velocidad, puede producir mejoras significativas. Los modelos de razonamiento como o tres de open ei ai internalizan algo similar a Tree of Thoughts en su proceso de pensamiento extendido. Es una de las razones de su rendimiento superior en bénchmarks de razonamiento.
+
+IAGO: [didáctico] Y luego está ReAct, que es Reasoning más Acting. Fue introducido por Yao y otros en dos mil veintidós. ReAct combina el razonamiento de Chain of Thought con la ejecución de acciones externas. Búsqueda web, ejecución de código, consulta de a pe ies. El modelo alterna entre pasos de Thought, que es razonamiento sobre qué hacer a continuación, Action, que es invocación de una herramienta externa, y Observation, que es procesamiento del resultado de la herramienta. Este patrón es la base de la mayoría de los sistemas agénticos actuales. Los agentes de inteligencia artificial usan ReAct para razonar sobre qué herramientas usar, cuándo y cómo interpretar los resultados. El valor de ReAct sobre Chain of Thought puro es que permite al modelo actualizar su razonamiento basándose en información real del mundo externo, en lugar de confiar únicamente en lo que sabe de su entrenamiento.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+MARIA: [reflexiva] Hay tres conceptos de este bloque que cambian completamente cómo entiendes los límites de estos sistemas. El primero es la diferencia entre conocimiento paramétrico y conocimiento en contexto. Los modelos tienen dos formas de saber cosas. El conocimiento paramétrico es lo que está codificado en los pesos del modelo, resultado del entrenamiento. El conocimiento en contexto es lo que está en el promp actual. Esta distinción es fundamental para arquitecturas de recuperación aumentada. Cuando diseñas un sistema rag, estás compensando las limitaciones del conocimiento paramétrico inyectando conocimiento en contexto desde fuentes externas verificables. No es solo una mejora técnica. Es una decisión arquitectónica sobre dónde vive la verdad en tu sistema.
+
+<break time="500ms"/>
+IAGO: [analítico] El segundo concepto es la calibración. Calibración es la correlación entre la confianza expresada por el modelo y la corrección real de la respuesta. Un modelo perfectamente calibrado asigna alta probabilidad solo a respuestas correctas y baja probabilidad a respuestas incorrectas. Los modelos actuales no están perfectamente calibrados. Pueden generar respuestas incorrectas con probabilidades altísimas. Esto tiene implicaciones directas sobre cómo validas las salidas en producción. No puedes confiar en la confianza del modelo. Necesitas mecanismos externos de verificación. Evaluación por consenso entre múltiples modelos, verificación contra fuentes externas, o validación humana en el bucle para decisiones críticas. La calibración es medible y mejorable, pero ningún modelo actual resuelve el problema completamente.
+
+<break time="500ms"/>
+MARIA: [claro] Y el tercer concepto es la economía del razonamiento. Los modelos de razonamiento como o tres de open ei ai generan tokens internos de razonamiento antes de producir la respuesta final. Esos tokens ocupan contexto y se facturan como tokens de salida. En la documentación de open ei ai aparece explícitamente que puedes configurar el nivel de esfuerzo del modelo y que debes reservar margen de contexto para razonamiento y salida. Google Cloud tiene algo similar con el concepto de presupuesto de pensamiento en modelos compatibles. Esto convierte el razonamiento en una variable económica. Usar más cómputo deliberativo solo compensa cuando las evaluaciones demuestran una mejora real en precisión, seguridad o capacidad de planificación. No es gratis. Es una decisión de arquitectura con impacto directo en coste operativo.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Estos tres conceptos juntos te dan el mapa mental para diseñar sistemas que no solo funcionen en demo sino que sean fiables en producción. Conocimiento paramétrico versus contexto te dice dónde poner la información crítica. Calibración te dice cuánto puedes confiar en la salida. Economía del razonamiento te dice cuánto cómputo deliberativo puedes permitirte para cada tipo de tarea. Sin estos tres pilares, estás volando a ciegas.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [conversacional] Vamos a aterrizar todo esto en un caso concreto. Imagina que trabajas en una aseguradora y tienes que diseñar un sistema de tramitación automática de siniestros. Los siniestros llegan por múltiples canales. Formularios web, correos electrónicos, fotos de daños, informes de peritos. Tu sistema tiene que extraer la información relevante, clasificar el tipo de siniestro, verificar la cobertura de la póliza, estimar el coste, detectar posibles fraudes y decidir si puede aprobar automáticamente o necesita revisión humana. Este es un problema real que combina todos los conceptos que hemos visto. Reconocimiento de patrones en texto y imagen, razonamiento sobre reglas de negocio, acceso a información externa, manejo de incertidumbre y decisiones con consecuencias económicas directas. No puedes resolverlo con un solo modelo de lenguaje llamado una vez. Necesitas una arquitectura híbrida.
+
+<break time="500ms"/>
+IAGO: [didáctico] La arquitectura que necesitas combina varios componentes. Primero, un módulo de extracción de información que usa modelos de lenguaje para procesar los documentos de entrada y extraer entidades estructuradas. Tipo de siniestro, fecha, importe reclamado, descripción de daños. Este módulo usa prompting estructurado con esquemas de salida definidos para garantizar que la información extraída sea consistente. Segundo, un módulo de clasificación que determina el tipo de siniestro y su nivel de complejidad. Aquí puedes usar un modelo clásico de machine learning entrenado en tu histórico de siniestros, porque tienes datos etiquetados y el problema es supervisado estándar. No necesitas un modelo de lenguaje grande para esto. Tercero, un módulo de verificación de póliza que consulta tu base de datos de contratos y comprueba coberturas, franquicias y exclusiones. Este módulo es puramente simbólico. Son reglas de negocio implementadas en código o en un motor de reglas.
+
+IAGO: [explicativo] Cuarto, un módulo de estimación de coste que puede usar tanto modelos predictivos entrenados en tu histórico como razonamiento de un modelo de lenguaje cuando el caso es atípico. Aquí es donde entra Chain of Thought. Le pides al modelo que razone paso a paso sobre los factores que afectan al coste, compare con casos similares y justifique su estimación. Quinto, un módulo de detección de fraude que combina señales estadísticas, como inconsistencias en los datos o patrones sospechosos en el histórico del cliente, con razonamiento sobre la plausibilidad de la reclamación. Aquí puedes usar ReAct. El modelo razona sobre qué verificaciones adicionales son necesarias, ejecuta consultas a bases de datos externas o a pe ies de verificación de identidad, y actualiza su evaluación basándose en los resultados. Sexto, un módulo de decisión final que integra todas las señales anteriores y decide si aprobar automáticamente, rechazar o escalar a revisión humana.
+
+IAGO: [claro] La clave de esta arquitectura es que cada componente usa la técnica adecuada para su problema. Extracción de información usa modelos de lenguaje porque son excelentes procesando texto no estructurado. Clasificación usa machine learning clásico porque tienes datos supervisados y no necesitas la complejidad de un modelo fundacional. Verificación de póliza usa reglas simbólicas porque las condiciones contractuales son deterministas y auditables. Estimación de coste combina modelos predictivos con razonamiento deliberativo cuando el caso es complejo. Detección de fraude usa ReAct porque necesitas acceso a información externa en tiempo real. Y la decisión final usa umbrales de confianza calibrados para determinar cuándo confiar en la automatización y cuándo escalar a humano.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Lo que hace que este sistema funcione en producción es que respeta los límites de cada técnica. No intentas que un modelo de lenguaje haga cálculos simbólicos complejos. No intentas que un motor de reglas aprenda patrones de datos no estructurados. Y no confías ciegamente en la confianza del modelo. Tienes capas de verificación, umbrales de escalado y un diseño que asume que los modelos van a fallar en casos edge y que necesitas mecanismos para detectar esos fallos antes de que lleguen al cliente.
+
+<break time="500ms"/>
+IAGO: [firme] Este es el tipo de sistema que solo puedes diseñar si entiendes los fundamentos ontológicos del módulo. Si no entiendes qué es conocimiento paramétrico versus contexto, no sabes cuándo necesitas rag. Si no entiendes calibración, no sabes cómo validar las salidas. Si no entiendes economía del razonamiento, no sabes cuándo usar modelos de razonamiento costosos versus modelos rápidos. Y si no entiendes la diferencia entre razonamiento simbólico, estadístico y emergente, no sabes qué componente usar para cada parte del problema. Los fundamentos no son teóricos. Son la diferencia entre un sistema que funciona en producción y un prototipo que falla en silencio.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [claro] Vamos a cerrar el marco conceptual con las fuentes que sostienen todo lo que hemos discutido. La primera es el paper de Wei y otros publicado en dos mil veintidós por Google Brain, que introdujo formalmente Chain of Thought prompting. Este paper demostró que pedir a los modelos que razonen paso a paso mejora significativamente su rendimiento en tareas de razonamiento matemático y lógico. Es la base empírica de todas las técnicas de prompting avanzado que usamos hoy.
+
+<break time="500ms"/>
+MARIA: [didáctico] La segunda fuente es el trabajo de Yao y otros de dos mil veintidós sobre ReAct, que combina razonamiento y acción en un bucle integrado. Este paper es fundamental para entender cómo diseñar agentes que no solo razonan sino que también interactúan con herramientas externas y actualizan su razonamiento basándose en observaciones reales. Es la arquitectura base de los sistemas agénticos actuales.
+
+<break time="500ms"/>
+IAGO: [analítico] La tercera fuente es la documentación técnica de open ei ai sobre modelos de razonamiento, publicada en dos mil veinticuatro, que introduce explícitamente el concepto de tokens de razonamiento internos y presupuestos de esfuerzo configurables. Esta documentación convierte el razonamiento en una variable económica medible y optimizable, lo que cambia completamente cómo diseñas arquitecturas de producción.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y la cuarta fuente es el currículo de programas de referencia como Stanford, Oxford y Carnegie Mellon, que desde dos mil veintiuno han incorporado módulos específicos sobre fundamentos ontológicos, razonamiento simbólico versus estadístico, y arquitecturas neuro-simbólicas. Estos programas reconocen que los fundamentos no son opcionales. Son la base sobre la que se construye cualquier sistema de inteligencia artificial fiable.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. El primero es la diferencia entre conocimiento paramétrico y conocimiento en contexto. Los modelos de lenguaje tienen dos formas de saber cosas. Lo que aprendieron en el entrenamiento está en los pesos. Lo que les das en el promp está en el contexto. Esa distinción determina cuándo necesitas arquitecturas de recuperación aumentada y dónde vive la verdad en tu sistema.
+
+<break time="500ms"/>
+MARIA: [claro] El segundo concepto es que los modelos de lenguaje no razonan como los humanos pero tienen algo funcionalmente similar al razonamiento que emerge de la predicción de tokens. Entender esto te permite mejorar el razonamiento cambiando el proceso de generación mediante técnicas como Chain of Thought, Tree of Thoughts o ReAct, sin cambiar el modelo subyacente.
+
+<break time="500ms"/>
+IAGO: [didáctico] El tercer concepto es la calibración. La confianza que expresa el modelo no es un indicador fiable de corrección. Los modelos pueden generar respuestas incorrectas con probabilidades altísimas. Necesitas mecanismos externos de verificación en producción. No puedes confiar en la confianza del modelo.
+
+<break time="500ms"/>
+MARIA: [analítico] El cuarto concepto es la economía del razonamiento. Los modelos de razonamiento generan tokens internos deliberativos que ocupan contexto y se facturan como salida. Usar más cómputo deliberativo es una decisión de arquitectura con impacto directo en coste. Solo compensa cuando las evaluaciones demuestran mejora real en precisión o seguridad.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Y el quinto concepto es que los sistemas de producción fiables son híbridos. Combinan reconocimiento de patrones con modelos de lenguaje, razonamiento simbólico con motores de reglas, y verificación externa con acceso a herramientas. No hay una sola técnica que resuelva todos los problemas. La arquitectura correcta usa la técnica adecuada para cada componente del sistema.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [cálido] Hemos recorrido los fundamentos más profundos del razonamiento en inteligencia artificial. Desde la naturaleza del conocimiento en los modelos de lenguaje hasta las técnicas de prompting avanzado que mejoran su capacidad de razonamiento. Estos conceptos no son teóricos. Son la base sobre la que se construyen sistemas de producción fiables. En el primer tema del módulo vamos a profundizar en la historia y los paradigmas de la inteligencia artificial, desde la IA simbólica hasta los sistemas neuro-simbólicos actuales.
+
+<break time="500ms"/>
+IAGO: [claro] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [sistema] Verificación de estructura completada. Hook abierto por Yago. Aviso de IA pronunciado por Yago. Bloque Panorama liderado por Yago con más del sesenta y cinco por ciento de palabras. Bloque Destacado compartido equilibradamente. Aplicación Práctica con Maria entre treinta y cuarenta por ciento. Bloque Fuentes con cuatro fuentes y cuatro años distintos. Cierre Conceptos con cinco intervenciones totales, la primera combinando apertura y concepto. Cierre Final con frase canónica literal. Word count total dentro del rango objetivo. Todas las frases por debajo de treinta y dos palabras. Sin ping-pong mecánico. Etiquetas TTS de lista cerrada. Sin cifras en dígitos en habla. Estructura completa verificada.

@@ -3,41 +3,55 @@
 Pipeline:
   1. Cargar fuente(s) → texto + tokens.
   2. Pre-escritura: extraer datos numéricos, casos, frase-fuerza, contraintuitivos.
-  3. Construir prompt: system + user con la pre-escritura inyectada.
-  4. Llamar a Anthropic (con retry-con-feedback).
-  5. Post-process: num2words → pronunciation overrides → SSML pauses.
+  3. Construir prompt: system (bloques cacheables) + user con la pre-escritura.
+  4. Llamar a Anthropic (con retry-con-feedback o patch retry).
+  5. Post-process: trim fuentes → num2words → pronunciation overrides → SSML pauses.
   6. Validar con el validador del formato.
-  7. Si hard-fail: 1 retry con feedback explícito al LLM.
-  8. Tracking de coste en costes_generacion.log.
-
-Los generadores especialistas (m/t/s_generator) llaman a `run_pipeline()` con
-sus parámetros propios y, opcionalmente, su validate_fn.
+  7. Si hard-fail: hasta `max_retries` reintentos con feedback explícito.
+     Early-stop si (hard ≤ early_stop_hard, soft ≤ early_stop_soft) tras
+     attempt ≥ 2.
+  8. Tracking de coste extendido en costes_generacion.log (formato v2).
 """
 from __future__ import annotations
 
+import logging
+import os
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Literal
 
+from generadores import retry_hints
 from generadores.shared import (
     anthropic_client,
     num2words_es,
     pronunciation_overrides,
     ssml_pauses,
 )
-from validators.result import ValidationResult, summarize
+from generadores.shared.anthropic_client import CacheableBlock
+from validators.result import ValidationResult
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class PipelineRequest:
-    """Lo que el especialista pasa al pipeline."""
+    """Lo que el especialista pasa al pipeline.
+
+    Soporta dos formas de pasar el system prompt:
+    - `system_prompt` (str): legacy, sin caching.
+    - `system_blocks` (list[CacheableBlock]): bloques cacheados con `cache_control`.
+
+    Si se pasan ambos, gana `system_blocks`.
+    """
 
     episode_id: str
     kind: str                                  # "M" | "T" | "S"
-    system_prompt: str
     user_prompt: str
     model: str
     repo_root: Path
+    system_prompt: str = ""
+    system_blocks: list[CacheableBlock] | None = None
     max_output_tokens: int = 8000
     temperature: float = 0.7
     apply_num2words: bool = True
@@ -48,6 +62,12 @@ class PipelineRequest:
     # Número de re-intentos con feedback tras un fallo hard. 0 = sin retry
     # (solo la generación inicial). 3 = hasta 4 intentos en total.
     max_retries: int = 3
+    # Early stop: si tras attempt ≥ 2 el mejor score es (≤hard, ≤soft), salir.
+    # None = desactivado.
+    early_stop_threshold: tuple[int, int] | None = (2, 5)
+    # Estrategia de retry: "full" = regen completo, "auto" = patch retry cuando
+    # los fallos están localizados, "full" en caso contrario.
+    retry_strategy: Literal["full", "auto"] = "auto"
     # Si > 0, aplica trim mecánico de BLOQUE_FUENTES tras la generación
     # cuando el conteo de años distintos excede este máximo. None = no aplica.
     trim_fuentes_max_years: int | None = None
@@ -62,6 +82,8 @@ class PipelineResult:
     retry_generation: anthropic_client.GenerationResult | None = None
     validation_results: list[ValidationResult] = field(default_factory=list)
     used_retry: bool = False
+    retries_done: int = 0
+    patch_retries: int = 0
 
     @property
     def is_blocked_by_validation(self) -> bool:
@@ -157,9 +179,12 @@ _RULE_ACTION_HINTS: dict[str, str] = {
         "sin haber entendido estos conceptos' (literal, sin tildes en "
         "'capitulo').",
     "canonical_final_closing":
-        "ACCIÓN: CIERRE_FINAL debe incluir LITERALMENTE 'Y hasta aqui ha "
-        "llegado nuestro episodio de MaquinarIA Pesada. Siguenos para nuevos "
-        "capitulos donde la I.A. crea contenido sobre I.A.'",
+        "ACCIÓN: CIERRE_FINAL debe incluir la frase canónica con 'I.A.' "
+        "ESCRITO LITERAL CON PUNTOS — NO la expandas a 'inteligencia "
+        "artificial'. Frase: 'Y hasta aquí ha llegado nuestro episodio de "
+        "MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. "
+        "crea contenido sobre I.A.' (tildes válidas; el TTS pronunciará "
+        "'I.A.' como las letras i-a, coherente con la marca MaquinarIA).",
     "canonical_s_closing":
         "ACCIÓN: el Short debe terminar con 'Más sobre [tema] en el episodio "
         "T de MaquinarIA Pesada.' (literal, 'T' es una letra).",
@@ -217,16 +242,24 @@ _RULE_ACTION_HINTS: dict[str, str] = {
         "ACCIÓN: hay alguna intervención que supera el máximo permitido. "
         "Pártela en dos turnos del mismo speaker o redistribuye con un "
         "turno corto del otro en medio.",
+    "pedagogy_first_mention":
+        "ACCIÓN: la primera mención de los términos listados no tiene su "
+        "expansión/traducción en las ~250 chars cercanas. Reescribe la "
+        "primera aparición usando uno de estos patrones: "
+        "(a) Sigla inglesa: 'RAG, que viene de Retrieval-Augmented "
+        "Generation, o Generación Aumentada por Recuperación, es...'; "
+        "(b) Término inglés: 'El fine-tuning, o ajuste fino del modelo, "
+        "consiste en...'; "
+        "(c) Sigla castellana: 'PCA, Análisis de Componentes Principales, "
+        "es...'; "
+        "(d) Producto: 'BERT, un modelo desarrollado por Google para "
+        "comprensión de lenguaje, ...'. "
+        "Solo la PRIMERA mención: las siguientes pueden ser el término "
+        "corto. NO añadas la expansión en cada uso.",
 }
 
 
 def _format_soft_failures_feedback(results: list[ValidationResult]) -> str:
-    """Feedback para la fase de pulido fino: 0 hard, quedan soft.
-
-    Se llama sólo cuando todos los hard ya están a 0 — el guion está
-    aceptado funcionalmente, pero queremos quitar los avisos de calidad
-    (pingpong, frases largas, rachas cortas, tags, etc.).
-    """
     soft = [r for r in results if r.severity == "SOFT" and not r.passed]
     if not soft:
         return ""
@@ -239,9 +272,10 @@ def _format_soft_failures_feedback(results: list[ValidationResult]) -> str:
     ]
     for r in soft:
         lines.append(f"\n- {r.rule_name}: {r.message}")
-        hint = _RULE_ACTION_HINTS.get(r.rule_name)
+        hint = retry_hints.get_hint(r.rule_name) or _RULE_ACTION_HINTS.get(r.rule_name)
         if hint:
-            lines.append(f"  {hint}")
+            lines.append(hint if hint.lstrip().startswith("ACCIÓN")
+                          else f"  {hint}")
     lines.append(
         "\nIMPORTANTE: no rehagas el guion entero. Reescribe SOLO las "
         "frases / turnos afectados. No toques HOOK, SALUDO, CIERRE_CONCEPTOS, "
@@ -261,9 +295,10 @@ def _format_hard_failures_feedback(results: list[ValidationResult]) -> str:
     ]
     for r in blocking:
         lines.append(f"\n- {r.rule_name}: {r.message}")
-        hint = _RULE_ACTION_HINTS.get(r.rule_name)
+        hint = retry_hints.get_hint(r.rule_name) or _RULE_ACTION_HINTS.get(r.rule_name)
         if hint:
-            lines.append(f"  {hint}")
+            lines.append(hint if hint.lstrip().startswith("ACCIÓN")
+                          else f"  {hint}")
     lines.append(
         "\nCuenta y verifica cada regla antes de devolver el guion. "
         "No empieces a redactar hasta haber decidido el tamaño exacto de "
@@ -280,12 +315,9 @@ def _score(results: list[ValidationResult]) -> tuple[int, int]:
 
 
 def _strip_code_fence(text: str) -> str:
-    """Quita ``` y ```lenguaje envolventes que algunos modelos añaden alrededor
-    del guion. Conserva la indentación interior del guion."""
     stripped = text.strip()
     if not stripped.startswith("```"):
         return text
-    # Quita la primera línea (```lang opcional) y el cierre final (```).
     first_nl = stripped.find("\n")
     if first_nl == -1:
         return text
@@ -297,15 +329,10 @@ def _strip_code_fence(text: str) -> str:
 
 def post_process_text(text: str, *, apply_num2words: bool = True,
                      apply_pronunciation_overrides: bool = True,
+                     apply_pedagogy_inject: bool = True,
                      apply_ssml_pauses: bool = True,
                      pauses_config: dict | None = None,
                      trim_fuentes_max_years: int | None = None) -> str:
-    """Aplica los pases post-LLM en orden: trim-fuentes → números → overrides → SSML.
-
-    El trim de BLOQUE_FUENTES corre PRIMERO (sobre el texto crudo), porque
-    los pases posteriores pueden mover separadores y los offsets del trim
-    se calculan respecto al texto bruto.
-    """
     out = _strip_code_fence(text)
     if trim_fuentes_max_years is not None:
         from generadores.shared.fuentes_trim import trim_bloque_fuentes
@@ -314,123 +341,241 @@ def post_process_text(text: str, *, apply_num2words: bool = True,
         out = num2words_es.replace_numbers_in_text(out)
     if apply_pronunciation_overrides:
         out = pronunciation_overrides.apply_overrides(out)
+    if apply_pedagogy_inject:
+        # Inserta expansion en primera mencion de terminos tecnicos.
+        # Opera sobre texto post-overrides (busca "elemen", "rag", etc.).
+        # Debe ir DESPUES de overrides y ANTES de SSML pauses.
+        from generadores.shared.pedagogy_inject import inject_first_mentions
+        out, _injected = inject_first_mentions(out)
     if apply_ssml_pauses:
         out = ssml_pauses.insert_all(out, pauses_config)
     return out
 
 
-def run_pipeline(request: PipelineRequest) -> PipelineResult:
-    """Ejecuta la pipeline completa.
+def _system_param(request: PipelineRequest) -> str | list[CacheableBlock]:
+    """Devuelve el system param a pasar al cliente.
 
-    Llama al LLM, post-procesa, valida y, si hay hard-fail, hace 1 retry con
-    feedback explícito. El coste de cada llamada se registra en
-    `costes_generacion.log`.
+    Prioriza `system_blocks` sobre `system_prompt` legacy.
     """
-    # Primera generación.
-    first = anthropic_client.generate(
-        system=request.system_prompt,
-        user=request.user_prompt,
-        model=request.model,
-        max_output_tokens=request.max_output_tokens,
-        temperature=request.temperature,
-    )
-    anthropic_client.track_cost(
-        request.repo_root, request.kind, request.episode_id, first,
-        "pending",
-    )
+    if request.system_blocks:
+        return request.system_blocks
+    return request.system_prompt
 
-    best_raw = first.text
-    best_final = post_process_text(
-        first.text,
+
+def _post_process_from_request(request: PipelineRequest, text: str) -> str:
+    return post_process_text(
+        text,
         apply_num2words=request.apply_num2words,
         apply_pronunciation_overrides=request.apply_pronunciation_overrides,
         apply_ssml_pauses=request.apply_ssml_pauses,
         pauses_config=request.ssml_pauses_config,
         trim_fuentes_max_years=request.trim_fuentes_max_years,
     )
+
+
+def _select_retry_strategy(
+    results: list[ValidationResult],
+    attempt: int,
+    configured: str,
+) -> str:
+    """Decide entre "full" regen y "patch" retry quirúrgico.
+
+    Solo intentamos patch si:
+    - configurado como "auto"
+    - hay ≤3 hard fails
+    - ninguno es estructural (orden / secciones faltantes / prohibidas)
+    """
+    if configured == "full":
+        return "full"
+    hard = [r for r in results if r.is_blocking]
+    if not hard or len(hard) > 3:
+        return "full"
+    structural = {"required_sections", "forbidden_sections", "section_order",
+                  "saludo_format"}
+    if any(r.rule_name in structural for r in hard):
+        return "full"
+    return "patch"
+
+
+def run_pipeline(request: PipelineRequest) -> PipelineResult:
+    """Ejecuta la pipeline completa con caching, validación y retries.
+
+    Estrategia de retry: por defecto "auto", que intenta patch quirúrgico
+    cuando los fallos están localizados (1-3 hard, no estructurales) y full
+    regen en otro caso. Se puede forzar full con `retry_strategy="full"`.
+    """
+    system_param = _system_param(request)
+
+    # Primera generación.
+    first = anthropic_client.generate(
+        system=system_param,
+        user=request.user_prompt,
+        model=request.model,
+        max_output_tokens=request.max_output_tokens,
+        temperature=request.temperature,
+    )
+    best_raw = first.text
+    best_final = _post_process_from_request(request, first.text) if first.text else ""
     best_results: list[ValidationResult] = (
         request.validate_fn(best_final, request.episode_id)
         if request.validate_fn and best_final else []
     )
     best_score = _score(best_results) if best_results else (999, 999)
+    anthropic_client.track_cost(
+        request.repo_root, request.kind, request.episode_id, first,
+        "ok" if best_score == (0, 0) else "pending",
+        attempt=0,
+        hard_failed=best_score[0] if best_results else 0,
+        soft_failed=best_score[1] if best_results else 0,
+    )
+    if first.cache_read_input_tokens or first.cache_creation_input_tokens:
+        logger.info(
+            "cache hit_rate=%.1f%% read=%d create=%d",
+            first.cache_hit_rate * 100,
+            first.cache_read_input_tokens,
+            first.cache_creation_input_tokens,
+        )
+
     last_retry: anthropic_client.GenerationResult | None = None
     used_retry = False
+    retries_done = 0
+    patch_retries = 0
 
-    # Bucle de retries con feedback enriquecido. Cada intento usa el MEJOR
-    # resultado anterior para construir el feedback (incluso si el último
-    # intento fue peor). Si la 1ª llamada vino sin texto (error de red /
-    # rate-limit), no entramos al bucle: no hay nada que validar.
-    # CONDICIÓN: seguimos mientras quede CUALQUIER fallo (hard o soft),
-    # hasta agotar `max_retries`. Los hard tienen prioridad: cuando todavía
-    # hay hard, sólo se inyecta su feedback; cuando ya hay 0 hard y queda
-    # soft, se inyecta feedback de los soft restantes.
     attempt = 0
     while (
         request.validate_fn
-        and best_final                # 1ª generación produjo texto
-        and best_score != (0, 0)       # quedan hard o soft
+        and best_final
+        and best_score != (0, 0)
         and attempt < request.max_retries
     ):
         attempt += 1
-        if best_score[0] > 0:
-            feedback = _format_hard_failures_feedback(best_results)
-            severity_label = "HARD"
-        else:
-            feedback = _format_soft_failures_feedback(best_results)
-            severity_label = "SOFT (pulido fino — los hard ya están)"
-        retry_user = (
-            f"{request.user_prompt}\n\n---\n"
-            f"FEEDBACK DE LA GENERACIÓN ANTERIOR (intento {attempt} de "
-            f"{request.max_retries}, {severity_label}):\n"
-            f"{feedback}\n\n"
-            "Genera de nuevo respetando exactamente las reglas del system "
-            "prompt. Esta vez NO repitas los fallos listados."
+        # Early stop: si el resultado ya es "suficientemente bueno", parar.
+        if request.early_stop_threshold and attempt >= 2:
+            hard_thr, soft_thr = request.early_stop_threshold
+            if best_score[0] <= hard_thr and best_score[1] <= soft_thr:
+                logger.info(
+                    "early_stop attempt=%d score=%s threshold=%s",
+                    attempt, best_score, request.early_stop_threshold,
+                )
+                break
+
+        strategy = _select_retry_strategy(
+            best_results, attempt, request.retry_strategy,
         )
-        # En el último intento bajamos un poco la temperatura para que el
-        # modelo sea más conservador siguiendo las reglas.
-        temp = (
-            request.temperature
-            if attempt < request.max_retries
-            else max(0.2, request.temperature - 0.3)
-        )
-        retry_gen = anthropic_client.generate(
-            system=request.system_prompt,
-            user=retry_user,
-            model=request.model,
-            max_output_tokens=request.max_output_tokens,
-            temperature=temp,
-        )
+
+        retry_gen: anthropic_client.GenerationResult | None = None
+        candidate_raw = ""
+        candidate_final = ""
+        candidate_results: list[ValidationResult] = []
+        patch_applied = False
+
+        if strategy == "patch":
+            try:
+                from generadores import patch_retry as pr
+                patches, retry_gen = pr.request_patches(
+                    script=best_final,
+                    validation_results=best_results,
+                    primary_model=request.model,
+                    user_prompt_context=request.user_prompt[:1500],
+                )
+                if patches and retry_gen and retry_gen.ok:
+                    patch_retries += 1
+                    patch_applied = True
+                    candidate_raw = pr.apply_patches(best_raw, patches)
+                    candidate_final = _post_process_from_request(request, candidate_raw)
+                    candidate_results = request.validate_fn(
+                        candidate_final, request.episode_id,
+                    )
+            except Exception:  # noqa: BLE001
+                logger.exception("patch_retry falló, cayendo a full regen")
+                strategy = "full"
+
+        if not patch_applied:
+            # Full regen con feedback.
+            if best_score[0] > 0:
+                feedback = _format_hard_failures_feedback(best_results)
+                severity_label = "HARD"
+            else:
+                feedback = _format_soft_failures_feedback(best_results)
+                severity_label = "SOFT (pulido fino — los hard ya están)"
+            retry_user = (
+                f"{request.user_prompt}\n\n---\n"
+                f"FEEDBACK DE LA GENERACIÓN ANTERIOR (intento {attempt} de "
+                f"{request.max_retries}, {severity_label}):\n"
+                f"{feedback}\n\n"
+                "Genera de nuevo respetando exactamente las reglas del system "
+                "prompt. Esta vez NO repitas los fallos listados."
+            )
+            temp = (
+                request.temperature
+                if attempt < request.max_retries
+                else max(0.2, request.temperature - 0.3)
+            )
+            retry_gen = anthropic_client.generate(
+                system=system_param,
+                user=retry_user,
+                model=request.model,
+                max_output_tokens=request.max_output_tokens,
+                temperature=temp,
+            )
+            if retry_gen.ok:
+                candidate_raw = retry_gen.text
+                candidate_final = _post_process_from_request(request, candidate_raw)
+                candidate_results = request.validate_fn(
+                    candidate_final, request.episode_id,
+                )
+
         last_retry = retry_gen
         used_retry = True
-        anthropic_client.track_cost(
-            request.repo_root, f"{request.kind}-retry{attempt}",
-            request.episode_id, retry_gen, "pending",
-        )
-        if not (retry_gen and retry_gen.ok):
+        retries_done = attempt
+
+        if retry_gen is None or not retry_gen.ok:
+            anthropic_client.track_cost(
+                request.repo_root, f"{request.kind}-retry{attempt}",
+                request.episode_id,
+                retry_gen or anthropic_client.GenerationResult(
+                    text="", model=request.model,
+                    input_tokens=0, output_tokens=0, cost_usd=0.0,
+                    error="retry sin resultado",
+                ),
+                "error", attempt=attempt,
+            )
             continue
-        candidate_raw = retry_gen.text
-        candidate_final = post_process_text(
-            candidate_raw,
-            apply_num2words=request.apply_num2words,
-            apply_pronunciation_overrides=request.apply_pronunciation_overrides,
-            apply_ssml_pauses=request.apply_ssml_pauses,
-            pauses_config=request.ssml_pauses_config,
-            trim_fuentes_max_years=request.trim_fuentes_max_years,
-        )
-        candidate_results = request.validate_fn(candidate_final, request.episode_id)
+
         candidate_score = _score(candidate_results)
-        # Nos quedamos con el MEJOR intento por (hard, soft) — incluso si la
-        # iteración nueva fue peor, conservamos el anterior.
+        anthropic_client.track_cost(
+            request.repo_root,
+            f"{request.kind}-{'patch' if strategy == 'patch' else 'retry'}{attempt}",
+            request.episode_id, retry_gen,
+            "ok" if candidate_score == (0, 0) else "pending",
+            attempt=attempt,
+            hard_failed=candidate_score[0],
+            soft_failed=candidate_score[1],
+        )
+        # Nos quedamos con el MEJOR intento por (hard, soft).
         if candidate_score < best_score:
             best_score = candidate_score
             best_raw = candidate_raw
             best_final = candidate_final
             best_results = candidate_results
         if best_score == (0, 0):
-            break  # perfección alcanzada.
+            break
 
     return PipelineResult(
         request=request, raw_text=best_raw, final_text=best_final,
         generation=first, retry_generation=last_retry,
         validation_results=best_results, used_retry=used_retry,
+        retries_done=retries_done, patch_retries=patch_retries,
     )
+
+
+# --- Overrides por variable de entorno -----------------------------------
+def env_max_retries(kind: str, default: int) -> int:
+    """Permite forzar max_retries por env var (`MAX_RETRIES_M`, etc.)."""
+    val = os.environ.get(f"MAX_RETRIES_{kind.upper()}")
+    if val is None:
+        return default
+    try:
+        return max(0, int(val))
+    except ValueError:
+        return default

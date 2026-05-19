@@ -1,0 +1,9 @@
+No es lo mismo ajustar un modelo que entrenarlo desde cero. Fine-tuning es tomar un modelo ya entrenado, con millones de parámetros aprendidos, y especializarlo en tus datos específicos. Es como un cirujano que ya domina su oficio aprendiendo una técnica nueva en tres semanas en lugar de estudiar medicina de nuevo.
+
+El proceso es simple: congelas la mayoría de capas y reentrenas solo las últimas con tu deitaset, conjunto de datos. Esto reduce tiempo y costo radicalmente. Un modelo general se vuelve experto en tu dominio con una fracción del esfuerzo.
+
+open ei ai implementó fain tiuning, ajuste fino del modelo, en ge pe te, modelo generativo preentrenado,-tres punto cinco para clientes empresariales y consiguió reducir el tiempo de adaptación de tres meses a dos semanas, mejorando precisión en tareas especializadas hasta un noventa y cinco por ciento. Bancos como Morgan Stanley ahora usan modelos ajustados para análisis de riesgos crediticios, acelerando evaluaciones de semanas a días.
+
+El impacto es exponencial: startups sin presupuesto de investigación compiten con laboratorios. Fine-tuning democratiza la IA avanzada. Ya no necesitas entrenar desde cero; necesitas datos relevantes y paciencia.
+
+Más sobre fain tiuning en el episodio T de MaquinarIA Pesada.

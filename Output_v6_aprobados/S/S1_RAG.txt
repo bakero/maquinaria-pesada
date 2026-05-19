@@ -1,0 +1,9 @@
+Los modelos de lenguaje no pueden acceder a información en tiempo real. Pero rag, generación aumentada por recuperación, lo resuelve: recupera documentos relevantes de una base de conocimiento externa justo cuando el modelo genera la respuesta. Es como darle al ele ele eme, grandes modelos de lenguaje, una biblioteca privada que consulta al instante.
+
+Imagina un chatbot de atención al cliente que necesita responder sobre políticas específicas de tu empresa. Sin rag, el modelo alucinará o dará información genérica. Con rag, busca automáticamente el documento correcto en tus bases de datos internas y genera una respuesta precisa basada en esos hechos reales.
+
+Morgan Stanley implementó rag para sus asesores financieros; en seis meses, la búsqueda de información regulatoria pasó de horas a minutos. El sector legal también se transformó: abogados usan rag para recuperar jurisprudencia relevante mientras redactan argumentos. La precisión aumenta drásticamente porque el modelo no inventa, sino que cita fuentes verificables.
+
+rag es la diferencia entre un ele ele eme creativo pero poco confiable y un asistente experto y grounded en realidad.
+
+Más sobre rag en el episodio T de MaquinarIA Pesada.

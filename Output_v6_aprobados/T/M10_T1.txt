@@ -1,0 +1,148 @@
+# HOOK
+IAGO: [enfático] Un modelo de lenguaje recibe una pregunta y responde. Un agente de lenguaje recibe un objetivo y no para hasta conseguirlo. La diferencia no está en la inteligencia del modelo, está en la arquitectura que lo rodea. Cuando un sistema puede decidir qué herramientas usar, ejecutarlas, observar el resultado, cambiar de plan y volver a intentarlo, hemos pasado de la computación reactiva a la navegación autónoma. En dos mil veinticinco, el setenta y dos por ciento de los proyectos empresariales de inteligencia artificial ya usan arquitecturas agénticas. Hace solo un año, esa cifra era del veintitrés por ciento. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [pausa de tres segundos para cortinilla]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [cálido] Soy María, y junto a Yago exploramos hoy el concepto que está redefiniendo la automatización empresarial: los agentes de modelos de lenguaje.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de continuar, un aviso importante. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Aunque hemos validado el contenido técnico con fuentes académicas y casos empresariales verificados, puede contener errores o imprecisiones. Te recomendamos contrastar la información crítica antes de tomar decisiones basadas en lo que escuches aquí.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Empecemos por el cambio de paradigma. Un modelo de lenguaje estándar es una función: entrada, salida, fin del proceso. Le das un promp, te devuelve una respuesta, y el ciclo termina. Un agente de modelo de lenguaje es un sistema de control: recibe un objetivo, mantiene un estado, ejecuta acciones en el mundo real, observa los resultados, ajusta su plan, y repite el ciclo hasta completar la misión o agotar sus intentos. La arquitectura es fundamentalmente distinta.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y eso qué implica en la práctica?
+
+<break time="500ms"/>
+IAGO: [explicativo] Implica que el agente no sigue un flujo predeterminado. Si le pides analizar una empresa para una posible adquisición, el agente decide por sí mismo la secuencia de acciones: buscar noticias recientes, consultar bases de datos financieras, recuperar informes de auditoría, cruzar información, detectar inconsistencias, volver a buscar si algo no cuadra, y finalmente generar el informe. Cada paso depende del resultado del paso anterior. No hay un script fijo.
+
+IAGO: [analítico] En dos mil veinticinco hemos visto una explosión de fréimuorks empresariales para agentes. anzropic lanzó su ese de ka con capacidades de sub-agentes en enero. open ei ai publicó su Agents ese de ka en marzo. Google presentó el Agent Development Kit en abril. Microsoft cerró el año con su Agent Framework en octubre. Todos los grandes proveedores han apostado por la misma arquitectura: el modelo de lenguaje como cerebro de un sistema que puede actuar sobre el mundo.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Qué ha cambiado para que esto sea posible ahora?
+
+<break time="500ms"/>
+IAGO: [directo] Tres cosas. Primero, los modelos tienen ahora ventanas de contexto suficientemente grandes para mantener el historial completo de un proceso de múltiples pasos. ge pe te, modelo generativo preentrenado, cuatro turbo maneja ciento veintiocho mil tokens. clod tres punto cinco Sonnet llega a doscientos mil. Eso permite al agente recordar todo lo que ha hecho sin perder coherencia. Segundo, el function calling se ha estandarizado. Todos los proveedores ahora ofrecen a pe ies donde el modelo puede decidir qué función externa llamar y con qué argumentos, de forma estructurada y fiable. Tercero, la capacidad de razonamiento ha mejorado drásticamente. Los modelos de la serie o de open ei ai pueden generar cadenas de pensamiento internas antes de actuar, lo que reduce errores en la toma de decisiones del agente.
+
+IAGO: [contundente] El mercado de agentes de inteligencia artificial se proyecta desde cinco punto cuatro billones de dólares en dos mil veinticuatro hasta cincuenta punto tres billones en dos mil treinta. No estamos hablando de una tecnología experimental. Estamos hablando del próximo paradigma de automatización empresarial. La pregunta ya no es si adoptar agentes, sino cómo hacerlo sin romper los sistemas existentes.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] Un agente de modelo de lenguaje tiene cuatro componentes arquitectónicos. Primero, la percepción. El agente necesita leer el estado del entorno: el objetivo del usuario, el historial de acciones previas, los resultados de las herramientas que ha ejecutado, y cualquier fídbac externo. A diferencia de un modelo estándar que solo recibe un promp aislado, el agente mantiene un estado acumulativo. Cada iteración añade información al contexto.
+
+<break time="500ms"/>
+MARIA: [explicativo] La percepción no se limita a texto. Los agentes multimodales pueden percibir imágenes, audio, datos estructurados en tablas, y hasta streams de vídeo en tiempo real. Un agente de atención al cliente puede analizar una captura de pantalla que le envía el usuario, extraer el código de error visible en la interfaz, y buscar en la base de conocimiento la solución específica para ese código. Todo sin que el usuario tenga que transcribir manualmente el mensaje de error.
+
+<break time="500ms"/>
+IAGO: [analítico] Segundo componente: razonamiento y planificación. El modelo de lenguaje actúa como el cerebro del agente. Dada la percepción del estado actual y el objetivo final, el modelo razona sobre qué acción es más apropiada para avanzar. Este razonamiento puede ser explícito, como en el patrón ReAct donde el agente genera pensamientos visibles antes de actuar. O puede ser implícito, como en los modelos de razonamiento de open ei ai que piensan internamente sin exponer la cadena completa.
+
+<break time="500ms"/>
+MARIA: [claro] La clave aquí es que el agente no sigue un árbol de decisión predefinido. No hay un diagrama de flujo que diga: si esto, entonces aquello. El modelo genera su propio plan de acción dinámicamente basándose en el estado actual. Si la primera búsqueda no devuelve información suficiente, el agente decide hacer una segunda búsqueda con términos distintos. Si detecta que necesita datos numéricos precisos, decide ejecutar código Python para calcularlos. Cada decisión es contextual.
+
+<break time="500ms"/>
+IAGO: [firme] Tercer componente: acción y uso de herramientas. El agente ejecuta acciones a través de funciones externas que puede llamar con los argumentos correctos. Las herramientas típicas incluyen búsqueda web, ejecución de código, consulta a bases de datos SQL, envío de correos electrónicos, llamadas a a pe ies externas, lectura y escritura de archivos, y comunicación con otros agentes. La calidad del conjunto de herramientas disponibles determina qué objetivos puede alcanzar el agente.
+
+<break time="500ms"/>
+MARIA: [didáctico] El mecanismo técnico del tool calling funciona así. El modelo recibe la lista de herramientas disponibles en formato jota ese o ene Schema, que describe el nombre de cada función, sus parámetros obligatorios y opcionales, y qué devuelve. Cuando el modelo decide que necesita usar una herramienta, genera un bloque estructurado con el nombre de la función y los valores de los argumentos. El sistema orquestador captura ese bloque, ejecuta la función real en Python o en el lenguaje que corresponda, y devuelve el resultado al modelo como una nueva observación en el contexto. El modelo lee esa observación y decide si continuar con otra acción o si ya tiene suficiente información para responder al usuario.
+
+<break time="500ms"/>
+IAGO: [explicativo] Cuarto componente: memoria. La memoria del agente es lo que le permite mantener coherencia a lo largo de tareas de múltiples pasos y aprender de experiencias pasadas. Hay varios tipos de memoria. La memoria de trabajo es la ventana de contexto actual, donde el agente mantiene el estado de la sesión en curso. La memoria episódica a corto plazo es el historial completo de la sesión actual, que puede extenderse más allá de la ventana de contexto usando técnicas de compresión o resumen. La memoria a largo plazo es información persistente entre sesiones, almacenada en bases de datos externas. Y la memoria semántica es el conocimiento del dominio, típicamente implementado con recuperación aumentada.
+
+<break time="500ms"/>
+MARIA: [analítico] La gestión de la memoria es uno de los desafíos técnicos más importantes en producción. Si el agente necesita recordar cien interacciones previas pero la ventana de contexto solo admite cincuenta, hay que decidir qué olvidar. Las estrategias incluyen resumir las interacciones más antiguas, priorizar las más relevantes para el objetivo actual usando embedins de similitud, o externalizar la memoria completa a una base de datos vectorial y recuperar solo lo necesario en cada iteración. Cada estrategia tiene trade-offs en latencia, costo y precisión.
+
+<break time="500ms"/>
+IAGO: [contundente] El ciclo de vida del agente es: percibir el estado, razonar sobre qué hacer, seleccionar y ejecutar una acción, observar el resultado, actualizar el estado, decidir si continuar o terminar. Este ciclo se repite hasta que el agente determina que ha completado el objetivo o alcanza el límite máximo de iteraciones. Ese límite es crítico. Sin un max iterations definido, un agente puede entrar en bucles infinitos o consumir cientos de llamadas al a pe i, interfaz de programación, antes de detectar que no puede completar la tarea. El límite estándar en producción es entre diez y veinticinco iteraciones.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y aquí surge una pregunta estratégica importante. ¿Cuándo usar un agente y cuándo usar un paiplain predeterminado? Un paiplain es una secuencia fija de pasos: recuperar documentos, resumir, clasificar. El flujo es determinista. Un agente determina su propio flujo basándose en el estado actual. Puede hacer más recuperaciones si la primera no fue suficiente, puede decidir no clasificar si el texto no requiere clasificación, puede detectar que necesita información adicional antes de continuar. Los paiplains son más eficientes y predecibles. Los agentes son más flexibles pero más costosos y difíciles de depurar. anzropic lo resume en una frase: si los paiplains son suficientes para el caso de uso, úsalos.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didáctico] Veamos cómo esto se traduce en casos reales de empresas que ya están usando agentes en producción. El primero es Harvey AI, una startup fundada en dos mil veintidós especializada en inteligencia artificial para bufetes de abogados. Harvey construyó un agente basado en modelos de lenguaje con fain tiuning, ajuste fino del modelo, sobre corpus jurídico, integrado con bases de datos legales como Westlaw y LexisNexis. El agente puede redactar contratos, realizar due diligence, investigar precedentes judiciales, y analizar documentos legales complejos.
+
+MARIA: [enfático] El dato de adopción es revelador. Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estuvieron en lista de espera para acceder al sistema. Los resultados reportados por usuarios piloto indican una reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental. No estamos hablando de automatizar formularios simples. Estamos hablando de analizar contratos de cientos de páginas, identificar cláusulas problemáticas, cruzar referencias con legislación vigente, y generar resúmenes ejecutivos. El agente decide por sí mismo qué secciones del contrato requieren más atención y qué bases de datos consultar para validar cada cláusula.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y en sectores más tradicionales como la banca?
+
+<break time="500ms"/>
+MARIA: [explicativo] Morgan Stanley implementó un sistema de recuperación aumentada para sus asesores financieros. La base de conocimiento contiene más de cien mil documentos internos: informes de análisis, presentaciones de producto, políticas de compliance, notas de investigación propietaria. El agente permite a los asesores hacer preguntas en lenguaje natural y recibe respuestas contextualizadas con las fuentes exactas. Antes, un asesor podía tardar horas en localizar un informe específico sobre un sector o una recomendación histórica sobre un activo. Ahora tarda minutos. El sistema fue desarrollado en colaboración con open ei ai usando ge pe te cuatro.
+
+MARIA: [analítico] Otro caso del sector financiero es JPMorgan con su sistema COIN, que significa Contract Intelligence. Aunque COIN usa machine learning clásico y no modelos de lenguaje grandes, ilustra perfectamente el valor de la automatización agéntica. COIN analiza contratos legales de préstamos comerciales y extrae cláusulas clave. El resultado documentado: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba exactamente esas trescientas sesenta mil horas anuales. Ahora tarda segundos. Es uno de los casos con ROI más cuantificado y verificable en la industria.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Y casos donde la tecnología no cumplió las expectativas?
+
+<break time="500ms"/>
+MARIA: [serio] IBM Watson Health es el caso de fracaso más documentado. IBM prometió que Watson podía diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos humanos. El MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo drásticamente su uso. La causa raíz fue que el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección es clara: las expectativas sobre inteligencia artificial deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento.
+
+MARIA: [claro] Un último caso, del sector seguros. Lemonade, una aseguradora digital fundada en dos mil quince, usa inteligencia artificial para procesamiento automatizado de siniestros. El tiempo de resolución en casos simples es de tres segundos. El récord documentado: un siniestro aprobado y pagado en dos segundos. La inteligencia artificial analiza el vídeo de declaración del cliente, cruza información con la póliza, detecta patrones de fraude, y aprueba o rechaza el pago automáticamente. En casos complejos o ambiguos, el sistema escala a un agente humano. Pero la mayoría de siniestros rutinarios se resuelven sin intervención humana.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Ahora hablemos de los límites y de cuándo un agente no es la solución correcta. Primer error común: usar un agente cuando un paiplain sería suficiente. Los agentes son más costosos porque requieren múltiples llamadas al modelo de lenguaje en cada iteración. Son más difíciles de depurar porque el flujo no es determinista: el agente puede tomar caminos distintos en cada ejecución. Y son más propensos a fallos en cascada: un error en la iteración tres puede arrastrar errores en las iteraciones cuatro, cinco y seis.
+
+IAGO: [contundente] Si el flujo de trabajo es predecible y los pasos son bien conocidos, un paiplain predeterminado es más fiable y económico. Ejemplo: si siempre necesitas recuperar documentos, luego resumirlos, y luego clasificar el resumen, no necesitas un agente. Necesitas tres funciones encadenadas. El agente es apropiado cuando el flujo depende de los resultados intermedios y no puedes predecir de antemano qué camino seguirá el proceso.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Qué pasa con la seguridad?
+
+<break time="500ms"/>
+IAGO: [grave] Segundo error: dar al agente acceso a herramientas de alto impacto sin human-in-the-loop. Un agente con acceso a enviar correos electrónicos, modificar bases de datos de producción, o hacer transferencias bancarias puede hacer daño irreversible si falla. El principio de mínimo privilegio es imprescindible: el agente solo debe tener acceso a las herramientas estrictamente necesarias para su objetivo. Y las herramientas destructivas o de alto impacto deben requerir confirmación humana antes de ejecutarse.
+
+IAGO: [analítico] Tercer error: no limitar las iteraciones. Sin un max iterations definido, un agente puede entrar en un bucle de cincuenta llamadas al a pe i intentando resolver una tarea que no puede completar. He visto casos en producción donde un agente consumió doscientas llamadas porque no detectó que la información que buscaba no existía en ninguna de las fuentes disponibles. Define siempre un límite máximo de iteraciones y un comportamiento de fallback cuando se alcanza. El fallback puede ser escalar a un humano, devolver un mensaje de error claro, o intentar una estrategia alternativa más simple.
+
+IAGO: [serio] Cuarto límite: los agentes no deben confundirse con inteligencia artificial general. Un agente es tan capaz como las herramientas que tiene disponibles y el modelo de lenguaje que lo controla. Si el modelo no entiende el dominio, el agente tomará decisiones incorrectas. Si las herramientas son limitadas, el agente no podrá completar objetivos complejos. Un agente de atención al cliente no puede resolver un problema técnico que requiere acceso a los servidores si no tiene una herramienta para consultar logs de servidor. Parece obvio, pero el error común es asumir que el agente inventará soluciones fuera de su conjunto de herramientas.
+
+IAGO: [directo] Quinto límite: cuando el costo de un error es inaceptable, el agente no debe operar sin supervisión. En diagnóstico médico, en decisiones de crédito con impacto legal, en control de infraestructura crítica, un error del agente puede tener consecuencias graves. En esos contextos, el agente debe actuar como asistente del humano, no como reemplazo. El humano toma la decisión final. El agente aporta información, análisis, y recomendaciones, pero no ejecuta acciones irreversibles.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Las bases teóricas de los agentes de modelo de lenguaje provienen de tres líneas de investigación. La primera es el paper de Yao y otros, dos mil veintidós, que introdujo el patrón ReAct. ReAct combina razonamiento y acción en un bucle iterativo: el modelo genera un pensamiento, luego una acción, observa el resultado, y repite. Ese paper demostró que los modelos de lenguaje pueden actuar como controladores de sistemas externos si se les da la estructura adecuada para razonar sobre qué herramienta usar en cada paso.
+
+<break time="500ms"/>
+MARIA: [explicativo] La segunda fuente clave es el paper de Schick y otros, dos mil veinticuatro, sobre Toolformer. Toolformer enseñó a los modelos de lenguaje a decidir por sí mismos cuándo llamar a herramientas externas, sin necesidad de fain tiuning específico para cada herramienta. El modelo aprende a generar llamadas a a pe ies en el momento adecuado del proceso de generación. Eso sentó las bases del function calling que hoy usan todos los proveedores comerciales.
+
+<break time="500ms"/>
+IAGO: [analítico] La tercera fuente es el fréimuork, marco de trabajo, de anzropic publicado en dos mil veinticinco sobre building effective agents. anzropic documentó los patrones de diseño que funcionan en producción: cuándo usar agentes versus paiplains, cómo estructurar el promp del agente para maximizar la tasa de éxito, cómo gestionar la memoria a largo plazo, y cómo implementar human-in-the-loop sin degradar la experiencia de usuario. Ese fréimuork es hoy referencia de facto para equipos que construyen sistemas agénticos empresariales.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: un agente de modelo de lenguaje tiene cuatro componentes arquitectónicos. Percepción para leer el estado del entorno. Razonamiento y planificación donde el modelo decide qué hacer. Acción a través de herramientas externas. Y memoria para mantener coherencia a lo largo del tiempo. Estos cuatro componentes trabajan en un ciclo iterativo hasta completar el objetivo.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: el ciclo de vida del agente es percibir, razonar, actuar, observar, y repetir. Cada iteración añade información al contexto. El agente no sigue un script predeterminado. Genera su propio plan de acción dinámicamente basándose en los resultados de cada paso. Y el límite máximo de iteraciones es crítico para evitar bucles infinitos y consumo descontrolado de recursos.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: usa agentes cuando el flujo de trabajo no es determinístico y necesitas que el sistema adapte su plan basándose en resultados intermedios. Usa paiplains cuando el flujo es predecible y los pasos son conocidos de antemano. Los agentes son más flexibles pero más costosos y difíciles de depurar. El principio es: empieza simple, escala inteligente. No añadas complejidad agéntica hasta que tengas evidencia clara de que es necesaria.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo capítulo profundizaremos en la arquitectura interna del agente: cómo se estructura el promp del sistema, cómo se gestionan los errores de herramientas, y cómo se implementa la memoria persistente entre sesiones.
+
+<break time="500ms"/>
+IAGO: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [pausa de dos segundos para música de cierre]

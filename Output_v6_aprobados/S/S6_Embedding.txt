@@ -1,0 +1,9 @@
+No es lo mismo una palabra que un vector. Un embedin es una representación numérica densa que convierte texto en coordenadas en un espacio de alta dimensión. Cada palabra, frase o documento se transforma en números que capturan su significado semántico.
+
+La magia ocurre cuando mides distancias entre vectores. Dos palabras cercanas en ese espacio comparten contexto y sentido. Lejos significa desconexión semántica. Sin embedins, los modelos de IA no entenderían que "gato" y "felino" hablan de lo mismo.
+
+open ei ai usa embedins en ge pe te, modelo generativo preentrenado, para búsqueda semántica. Usuarios consultan documentos internos en lenguaje natural, y el sistema encuentra fragmentos relevantes por similitud vectorial, no por coincidencia de palabras clave. Spotify aplica embedins a canciones y usuarios: recomienda temas basándose en proximidad en ese espacio invisible de gustos. Morgan Stanley implementó búsqueda semántica en bases de datos legales; antes tardaban horas en hallazgos, ahora segundos.
+
+El sector financiero y legal ha reducido tiempo de análisis en un setenta por ciento. Cualquier industria con grandes volúmenes de texto se beneficia. Los embedins son el puente entre lenguaje humano e inteligencia artificial.
+
+Más sobre embedin en el episodio T de MaquinarIA Pesada.

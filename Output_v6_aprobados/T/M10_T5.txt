@@ -1,0 +1,165 @@
+# HOOK
+IAGO: [enfático] Un modelo de lenguaje sin herramientas es como un cerebro sin manos. Puede pensar, razonar, analizar, pero no puede actuar. No puede buscar información actualizada, no puede ejecutar código, no puede enviar un email ni consultar una base de datos. Las herramientas son el puente entre el razonamiento del modelo y el mundo real. Y el mecanismo que hace posible ese puente se llama function calling. Hoy desentrañamos cómo los modelos modernos invocan funciones de forma estructurada, cómo diseñar herramientas que realmente funcionen, y por qué un agente con cincuenta herramientas mal definidas es peor que uno con diez bien diseñadas. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [pausa de tres segundos]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a un nuevo capítulo de MaquinarIA Pesada, el podcast donde la inteligencia artificial crea contenido sobre inteligencia artificial.
+
+<break time="500ms"/>
+MARIA: [cálido] Soy Maria, tu copiloto técnico en este viaje por los sistemas agénticos.
+
+<break time="500ms"/>
+IAGO: [claro] Y yo soy Yago. Antes de continuar, una advertencia obligatoria: este episodio ha sido generado por un sistema automático de inteligencia artificial. El contenido puede contener errores, imprecisiones técnicas o simplificaciones excesivas. Contrasta siempre la información con fuentes oficiales antes de tomar decisiones técnicas o empresariales.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] Tool use y function calling son dos caras de la misma moneda. Tool use es el concepto: la capacidad de un agente de usar herramientas externas para completar tareas. Function calling es el mecanismo técnico concreto que hace posible ese uso. Sin herramientas, un modelo de lenguaje solo puede razonar sobre información que ya conoce de su entrenamiento. Con herramientas, puede buscar en la web, consultar bases de datos en tiempo real, ejecutar código Python para analizar datos, enviar notificaciones, crear registros en sistemas empresariales, y completar tareas complejas que requieren interacción con el mundo externo. La diferencia es radical.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y por qué se llama function calling específicamente?
+
+<break time="500ms"/>
+IAGO: [explicativo] Porque el modelo no genera texto libre diciendo "ahora voy a buscar en Google". Genera un bloque estructurado en formato jota ese o ene con el nombre exacto de la función que quiere ejecutar y los argumentos necesarios. Ese jota ese o ene sigue un schema predefinido por el desarrollador. El modelo dice literalmente: ejecuta la función search underscore web con el argumento query igual a "últimas noticias sobre inteligencia artificial" y num underscore results igual a cinco. Eso es una llamada a función. Estructurada, parseable, verificable.
+
+IAGO: [analítico] El ciclo completo tiene cuatro pasos críticos. Primero: el desarrollador define las herramientas disponibles con sus schemas jota ese o ene. Cada herramienta tiene un nombre, una descripción de qué hace y cuándo usarla, y un input schema que especifica los parámetros requeridos y opcionales con sus tipos. Segundo: el modelo recibe el mensaje del usuario más la lista de herramientas disponibles y decide si necesita usar alguna. Tercero: si el modelo decide usar una herramienta, devuelve un mensaje especial con el nombre de la función y los argumentos. En anzropic se llama tool underscore use block, en open ei ai se llama function underscore call. Cuarto: el desarrollador ejecuta la función real con esos argumentos, captura el resultado, y lo devuelve al modelo como tool underscore result. El modelo procesa ese resultado y decide si continuar con otra herramienta o producir la respuesta final al usuario.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Cuántas iteraciones puede hacer ese ciclo?
+
+<break time="500ms"/>
+IAGO: [directo] Las que sean necesarias. Un agente complejo puede hacer diez o quince llamadas a herramientas en una sola conversación. Busca información, analiza los resultados, decide que necesita más contexto, busca otra vez, ejecuta código para procesar los datos, y finalmente genera la respuesta. El límite práctico lo pone el presupuesto de tokens y la latencia acumulada. Cada llamada a herramienta añade latencia porque tienes que esperar la respuesta del modelo, ejecutar la función, y volver a llamar al modelo con el resultado.
+
+IAGO: [contundente] Pero aquí viene el cambio de paradigma más importante: los modelos modernos soportan parallel tool calling. En lugar de llamar primero a search underscore web, esperar el resultado, y después llamar a get underscore financial underscore data, el modelo puede decidir llamar a ambas herramientas simultáneamente en un solo turno. Devuelve dos tool underscore use blocks en la misma respuesta. El desarrollador ejecuta ambas funciones en paralelo con asyncio o threading, y devuelve ambos resultados juntos. La latencia total es igual a la de la llamada más lenta, no a la suma de las dos. En un agente que hace cinco búsquedas independientes, la diferencia puede ser de treinta segundos a seis segundos. Eso es crítico para experiencia de usuario.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Todos los modelos lo soportan?
+
+<break time="500ms"/>
+IAGO: [claro] ge pe te, modelo generativo preentrenado, cuatro y clod tres punto cinco en adelante sí. Los modelos anteriores no. Y no todos los tipos de llamadas se pueden paralelizar: si la segunda herramienta depende del resultado de la primera, tienes que ejecutarlas secuencialmente. Pero cuando las llamadas son independientes, el parallel calling es una optimización brutal.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [didáctico] Vamos al mecanismo técnico de cómo el modelo decide qué herramienta usar. El proceso empieza con el schema de la herramienta. Un schema jota ese o ene completo incluye el nombre de la función, una descripción textual de qué hace, y el input underscore schema con los parámetros. Cada parámetro tiene un tipo: string, integer, boolean, array, object. Puede ser required u optional. Puede tener restricciones adicionales: un enum de valores permitidos, un minimum y maximum para números, un pattern regex para strings. El modelo ve ese schema y entiende qué argumentos puede pasar y cuáles no.
+
+<break time="500ms"/>
+MARIA: [explicativo] Y la descripción de la herramienta es donde realmente se juega la partida. Una herramienta llamada fetch underscore data con la descripción "obtiene datos" es inútil. El modelo no sabe cuándo usarla, qué tipo de datos obtiene, ni qué argumentos son relevantes. Una buena descripción dice: "Busca noticias recientes sobre una empresa específica usando su nombre o ticker. Úsala cuando necesites información actualizada sobre eventos recientes de una empresa: adquisiciones, resultados financieros, cambios de liderazgo. No usar para información histórica anterior a dos mil veinte. Devuelve una lista de artículos con título, fecha, fuente y resumen". Eso es una descripción que el modelo puede usar para tomar decisiones correctas.
+
+<break time="500ms"/>
+IAGO: [analítico] Cuando el modelo recibe el mensaje del usuario y la lista de herramientas, hace un razonamiento interno sobre qué herramientas son relevantes. Ese razonamiento no es explícito en la a pe i, interfaz de programación, pero sabemos por los papers de open ei ai y anzropic que el modelo genera tokens internos evaluando cada herramienta contra la query del usuario. Si el usuario pregunta "¿cuál es el precio de las acciones de Tesla?", el modelo identifica que necesita información actualizada, descarta herramientas de cálculo o de envío de emails, y selecciona get underscore stock underscore price. Después genera el jota ese o ene con los argumentos: ticker igual a "TSLA".
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y cómo maneja el modelo los errores en los argumentos? Si el schema dice que el parámetro num underscore results debe ser un entero entre uno y veinte, pero el modelo intenta pasar veinticinco, ¿qué pasa?
+
+<break time="500ms"/>
+IAGO: [directo] Depende de la implementación. En structured output mode, el modelo está forzado a generar jota ese o ene que cumpla el schema. Si el schema dice que num underscore results es un entero con maximum veinte, el modelo no puede generar veinticinco. El decoder del modelo solo considera tokens que produzcan jota ese o ene válido según el schema. Eso elimina el tool hallucination por argumentos mal tipados. Pero si no usas structured output, el modelo puede generar jota ese o ene inválido y tienes que validarlo tú en el cliente. Si la validación falla, devuelves un error al modelo diciéndole qué argumento es incorrecto y por qué, y el modelo lo reintenta.
+
+<break time="500ms"/>
+MARIA: [explicativo] El concepto de tool hallucination es crítico aquí. Ocurre cuando el modelo invoca una herramienta que no existe en el set disponible. Por ejemplo, el desarrollador definió search underscore web y get underscore weather, pero el modelo intenta llamar a search underscore news porque confunde nombres similares. También ocurre cuando el modelo genera resultados inventados para una herramienta sin haberla ejecutado realmente. El modelo dice "ejecuté la búsqueda y encontré que la empresa X tiene ingresos de mil millones", pero nunca llamó a la herramienta. Simplemente alucinó el resultado basándose en su conocimiento de entrenamiento.
+
+<break time="500ms"/>
+IAGO: [contundente] Las mitigaciones son tres. Primera: schemas jota ese o ene estrictos con structured output. El modelo no puede generar nombres de herramientas fuera del set disponible porque el decoder solo permite los nombres definidos. Segunda: validación exhaustiva de argumentos en el cliente antes de ejecutar la herramienta. Si el argumento es inválido, devuelves un error claro al modelo. Tercera: logging completo de todas las llamadas a herramientas con sus argumentos y resultados. Eso te permite auditar después si el modelo usó las herramientas correctamente o si hubo alucinaciones.
+
+<break time="500ms"/>
+MARIA: [didáctico] Ahora el tema de herramientas con estado versus sin estado. Las herramientas sin estado, o stateless, producen siempre el mismo resultado con los mismos argumentos. Una búsqueda web con la query "precio del oro" devuelve resultados consistentes en un momento dado. Una consulta a base de datos con un ID específico devuelve siempre el mismo registro. Son las más simples de usar y de testear porque no tienen efectos secundarios. Puedes llamarlas múltiples veces sin riesgo.
+
+<break time="500ms"/>
+IAGO: [serio] Las herramientas con estado, o stateful, modifican el estado del sistema externo. Enviar un email, crear un registro en la base de datos, publicar un mensaje en Slack, hacer una transferencia bancaria. Estas herramientas tienen efectos secundarios permanentes. Si el agente llama a send underscore email dos veces con los mismos argumentos, envías dos emails duplicados. Eso es un problema. Las herramientas stateful requieren mayor cuidado: el agente debe trackear qué acciones ya ejecutó para no repetirlas, y deben tener mecanismos de rollback para los casos donde la acción fue incorrecta. Si el agente creó un registro por error, necesitas una herramienta delete underscore record para deshacerlo.
+
+<break time="500ms"/>
+MARIA: [explicativo] Y el caso más peligroso de herramienta stateful es la ejecución de código arbitrario. Permitir que un agente ejecute código Python sin restricciones es un riesgo de seguridad crítico. El código generado por el modelo puede hacer rm menos rf barra, puede exfiltrar datos sensibles, puede hacer llamadas de red no autorizadas, puede consumir todos los recursos del sistema hasta colapsarlo. Por eso la ejecución de código siempre debe hacerse en un sandbox aislado.
+
+<break time="500ms"/>
+IAGO: [firme] Las opciones de sandbox son varias. Contenedores Docker efímeros: creas un contenedor limpio, ejecutas el código dentro, capturas el output, y destruyes el contenedor. Latencia de dos a cinco segundos por ejecución. MicroVMs con Firecracker: más rápidas que Docker, latencia de milisegundos, pero más complejas de configurar. Servicios de ejecución de código en la nube como E2B o Modal: te abstraen toda la infraestructura del sandbox, pagas por ejecución. O el intérprete de código integrado de la a pe i de open ei ai: el modelo puede escribir y ejecutar código Python directamente en un entorno controlado por open ei ai, sin que tú gestiones el sandbox. Esa es la opción más simple para prototipos.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didáctico] Vamos a casos reales de empresas que han implementado function calling en producción. El primero es Harvey AI, una startup fundada en dos mil veintidós especializada en inteligencia artificial para bufetes de abogados. Harvey usa un modelo de lenguaje con fain tiuning, ajuste fino del modelo, sobre corpus jurídico integrado con bases de datos legales como Westlaw y LexisNexis. El modelo tiene herramientas para buscar precedentes judiciales, analizar contratos, y redactar cláusulas específicas. Durante dos mil veintitrés, más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera para acceder al sistema. Los casos de uso principales son redacción de contratos, due diligence, investigación jurídica, y análisis de precedentes. El resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Qué herramientas específicas tiene Harvey?
+
+<break time="500ms"/>
+MARIA: [explicativo] Las herramientas críticas son search underscore case underscore law para buscar jurisprudencia relevante, analyze underscore contract para extraer cláusulas clave de un contrato, y generate underscore clause para redactar cláusulas específicas según el contexto del caso. Cada herramienta tiene un schema jota ese o ene estricto. Por ejemplo, search underscore case underscore law requiere los parámetros jurisdiction, legal underscore issue, y date underscore range. El modelo no puede buscar sin especificar la jurisdicción porque los precedentes varían entre estados y países. Eso evita que el modelo genere respuestas genéricas sin contexto legal válido.
+
+MARIA: [analítico] El segundo caso es Morgan Stanley con su sistema de retrieval augmented generation para asesores financieros. Morgan Stanley es un banco de inversión con más de doscientos años de historia. Implementaron un sistema rag en dos mil veintitres con ge pe te cuatro como modelo base. La base de conocimiento contiene más de cien mil documentos internos: informes de análisis de mercado, presentaciones de productos financieros, políticas de compliance, manuales de procedimientos. Los asesores financieros hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. Antes, un asesor podía tardar dos o tres horas buscando en SharePoint y bases de datos internas para responder una consulta compleja de un cliente. Ahora tarda cinco minutos.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Qué herramientas usa ese sistema?
+
+<break time="500ms"/>
+MARIA: [claro] La herramienta principal es search underscore knowledge underscore base, que toma una query en lenguaje natural y devuelve los documentos más relevantes con sus embedins. Pero también tiene herramientas secundarias como get underscore compliance underscore policy para verificar si una recomendación cumple con las políticas internas, y get underscore product underscore details para obtener información actualizada sobre productos financieros específicos. El parallel tool calling es crítico aquí: el modelo puede buscar simultáneamente en la base de conocimiento y verificar compliance en el mismo turno, reduciendo la latencia total.
+
+MARIA: [contundente] El tercer caso es Zendesk con su agente de soporte técnico. Zendesk implementó un sistema agéntico que tiene herramientas para buscar tickets similares en su base de datos histórica, consultar el historial de incidentes en Jira, crear un ticket nuevo, asignarlo al equipo correcto según el tipo de problema, y notificar al usuario por email. Cada herramienta tiene un schema jota ese o ene estricto. Por ejemplo, create underscore ticket requiere los parámetros title, description, priority que debe ser un enum de low, medium, high, y assigned underscore team. Si el modelo intenta pasar una prioridad de "urgent" que no está en el enum, la validación falla y el modelo recibe un error explicando que los valores permitidos son low, medium, high. El modelo reintenta con un valor válido.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Y cómo manejan las herramientas stateful ahí?
+
+<break time="500ms"/>
+MARIA: [explicativo] Create underscore ticket es stateful: crea un registro permanente en la base de datos. Para evitar duplicados, el sistema trackea qué tickets ya creó el agente en esa conversación. Si el usuario repite la misma consulta, el agente no crea un segundo ticket, sino que devuelve el ID del ticket ya creado. Y tienen una herramienta de rollback llamada delete underscore ticket que solo puede usarse en los primeros cinco minutos después de la creación, para los casos donde el agente creó un ticket por error. Después de cinco minutos, el ticket solo puede cerrarse, no eliminarse. Eso es un control de seguridad para evitar que el agente borre tickets legítimos.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [firme] Vamos a los límites y errores comunes de function calling. El primer error es definir demasiadas herramientas. Un agente con cincuenta herramientas disponibles tiene dificultades para seleccionar la correcta. El modelo puede confundir herramientas con nombres similares, puede elegir la menos adecuada, o puede tardar más en razonar sobre qué herramienta usar. La regla práctica documentada en los papers de anzropic y open ei ai es: cinco a quince herramientas por agente bien definidas son más efectivas que cincuenta herramientas ambiguamente definidas. Si necesitas más funcionalidad, agrupa herramientas relacionadas en una sola con parámetros que especifiquen la acción concreta.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Eso significa que los sistemas complejos no pueden tener muchas herramientas?
+
+<break time="500ms"/>
+IAGO: [explicativo] No. Significa que un solo agente no debe tener acceso a cincuenta herramientas simultáneamente. En sistemas multi agente, cada agente especializado tiene su propio set reducido de herramientas. El agente de análisis financiero tiene herramientas de búsqueda de datos financieros y de cálculo. El agente de envío de notificaciones tiene herramientas de email y Slack. El orquestador decide qué agente activar según la tarea. Eso mantiene el set de herramientas por agente manejable.
+
+IAGO: [contundente] El segundo error común es descripciones de herramientas demasiado vagas. Una herramienta llamada fetch underscore data con la descripción "obtiene datos" es inutilizable. El modelo no sabe cuándo usarla, qué tipo de datos obtiene, ni cómo interpretar los resultados. Las descripciones deben incluir cuatro elementos: qué hace exactamente la herramienta, cuándo usarla versus cuándo no usarla, qué devuelve con ejemplos del formato de salida, y los casos edge importantes. Por ejemplo: "Esta herramienta no debe usarse para información histórica anterior a dos mil veinte porque la base de datos solo contiene datos recientes". Eso evita que el modelo use la herramienta incorrectamente.
+
+IAGO: [serio] El tercer error es no validar los argumentos antes de ejecutar la herramienta. Confiar ciegamente en que el modelo siempre generará argumentos válidos es un error. Incluso con structured output, pueden ocurrir casos edge donde el argumento es técnicamente válido según el schema pero semánticamente incorrecto. Por ejemplo, el schema dice que company underscore name es un string, y el modelo pasa "XYZ123". Técnicamente es un string válido, pero no es un nombre de empresa real. La validación en el cliente debe verificar que el argumento tiene sentido antes de ejecutar la función. Si no, devuelves un error al modelo explicando qué está mal.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y qué pasa si el modelo insiste en usar una herramienta incorrecta?
+
+<break time="500ms"/>
+IAGO: [directo] Eso es tool hallucination persistente. Ocurre cuando el modelo tiene un sesgo fuerte hacia una herramienta específica por cómo está descrita o por patrones en los datos de entrenamiento. La solución es rediseñar la descripción de la herramienta para ser más específica sobre cuándo no usarla, o dividir la herramienta en dos más especializadas. Si tienes una herramienta search underscore data que el modelo usa para todo, divídela en search underscore financial underscore data y search underscore news underscore data. Eso fuerza al modelo a ser más preciso en su selección.
+
+IAGO: [grave] Y el error más peligroso: permitir ejecución de código sin sandbox. Dar al agente una herramienta exec código sin aislamiento es un riesgo de seguridad crítico. El código generado por el modelo puede hacer rm menos rf barra y borrar todo el sistema. Puede exfiltrar datos sensibles haciendo una llamada hache te te pe a un servidor externo. Puede consumir todos los recursos de CPU y memoria hasta colapsar el host. Puede abrir un reverse shell y dar acceso remoto a un atacante. Siempre, siempre, usa un sandbox para ejecución de código arbitrario. No hay excepciones a esta regla.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Vamos a las fuentes académicas y técnicas que sustentan function calling. La primera es el paper de Schick y otros, dos mil veintitrés, titulado "Toolformer: Language Models Can Teach Themselves to Use Tools". Publicado por investigadores de Meta AI. Este paper introduce el concepto de que los modelos de lenguaje pueden aprender a usar herramientas externas sin necesidad de fain tiuning específico. El modelo aprende a generar llamadas a a pe ies en formato estructurado durante el entrenamiento, usando ejemplos sintéticos generados por el propio modelo. El resultado: un modelo que puede decidir cuándo necesita una herramienta y cómo invocarla correctamente.
+
+<break time="500ms"/>
+MARIA: [reflexivo] La segunda fuente es el paper de Qin y otros, dos mil veinticuatro, "Tool Learning with Large Language Models: A Survey". Este es un survey comprehensivo que revisa más de cien papers sobre tool use en modelos de lenguaje. Cubre los métodos de entrenamiento para enseñar a los modelos a usar herramientas, los bénchmarks para evaluar la capacidad de tool use, y los casos de uso en diferentes dominios. El paper identifica tres desafíos principales: la selección correcta de herramientas cuando hay muchas disponibles, la generación de argumentos válidos según schemas complejos, y el manejo de errores cuando la herramienta falla o devuelve resultados inesperados.
+
+<break time="500ms"/>
+IAGO: [claro] Y la tercera fuente es la documentación técnica de anzropic sobre function calling con clod, publicada en dos mil veinticinco. anzropic introdujo el concepto de tool underscore use blocks como formato estándar para que el modelo exprese que quiere usar una herramienta. El formato incluye el tool underscore use underscore id para trackear múltiples llamadas en paralelo, el name de la herramienta, y el input con los argumentos en jota ese o ene. La documentación también describe el mecanismo de tool underscore result para devolver los resultados al modelo y el manejo de errores cuando la herramienta falla. Este es el estándar de facto que usan la mayoría de implementaciones actuales de function calling.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [didáctico] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: function calling es el mecanismo técnico que permite a los modelos invocar funciones externas de forma estructurada. El modelo genera jota ese o ene con el nombre de la función y los argumentos según un schema predefinido. El desarrollador ejecuta la función real y devuelve el resultado al modelo. Ese ciclo se repite hasta que el modelo produce la respuesta final. El parallel tool calling permite ejecutar múltiples herramientas simultáneamente, reduciendo la latencia total.
+
+<break time="500ms"/>
+MARIA: [claro] Segundo: el diseño de herramientas determina la efectividad del agente. Nombres descriptivos, descripciones claras con cuándo usar y qué devuelve, schemas jota ese o ene estrictos, y un set reducido de cinco a quince herramientas por agente. Demasiadas herramientas confunden al modelo. Descripciones vagas hacen que el modelo use la herramienta incorrectamente. Y la validación de argumentos en el cliente es obligatoria para evitar errores.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: las herramientas stateful requieren cuidado extremo. Modifican el estado del sistema externo y tienen efectos secundarios permanentes. El agente debe trackear qué acciones ya ejecutó para no repetirlas. Y la ejecución de código arbitrario siempre debe hacerse en un sandbox aislado. Docker, microVMs, servicios en la nube, o el intérprete integrado de open ei ai. Nunca ejecutes código generado por el modelo directamente en el host sin aislamiento.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [cálido] En el próximo capítulo del módulo diez exploramos los patrones de orquestación de agentes: cómo coordinar múltiples agentes especializados para resolver tareas complejas.
+
+<break time="500ms"/>
+IAGO: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [pausa de dos segundos]

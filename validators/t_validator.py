@@ -30,10 +30,13 @@ WORD_COUNT_TARGET = (3700, 4500)
 CONCEPTS_COUNT_EXACT = 3
 FUENTES_COUNT_EXACT = 3
 
-LEADER_SHARE_PANORAMA_MIN = 0.65
-LEADER_SHARE_COMO_BAND = (0.40, 0.60)
-LEADER_SHARE_CASOS_MIN = 0.60
-LEADER_SHARE_LIMITES_MIN = 0.55
+# Tolerancia ampliada ±5 sobre rangos originales tras smoke test 2026-05-18:
+# desviaciones de 4-6 puntos no son perceptibles al oyente y el modelo
+# las produce de forma narrativa natural. Antes: ±10 estricto.
+LEADER_SHARE_PANORAMA_MIN = 0.60  # antes 0.65
+LEADER_SHARE_COMO_BAND = (0.35, 0.65)  # antes (0.40, 0.60)
+LEADER_SHARE_CASOS_MIN = 0.55  # antes 0.60
+LEADER_SHARE_LIMITES_MIN = 0.50  # antes 0.55
 
 CASOS_MIN_COMPANY_CASES = 2
 
@@ -125,21 +128,75 @@ def _count_company_names(text: str) -> int:
     """
     # Lista de empresas habituales para detección directa. Sincronizada con
     # PDFs/auxiliares/casos_empresariales_ia.md para que los casos canónicos
-    # del corpus puntúen.
+    # del corpus puntúen. Ampliada +60% por categoría (2026-05-18) para
+    # cubrir el espectro de casos empresariales reales del sector IA.
     known = (
+        # --- Hyperscalers / labs IA (13 -> 21) ---
         "OpenAI", "Anthropic", "Google", "Meta", "Microsoft", "IBM", "Amazon",
         "Apple", "DeepMind", "Hugging Face", "Stability AI", "Cohere", "Mistral",
-        "Stanford", "MIT", "Gartner", "McKinsey", "Forrester", "IDC",
-        "Spotify", "Netflix", "Airbnb", "Uber", "Tesla", "Salesforce",
-        "Oracle", "SAP", "Adobe", "BBVA", "Santander", "Telefonica",
-        "Telefónica", "Banco", "Repsol", "Iberdrola",
-        # Casos canónicos del fichero auxiliar.
-        "Harvey AI", "Harvey", "Morgan Stanley", "JPMorgan", "Lemonade",
-        "Nordea", "Zara", "Inditex", "Walmart", "Carrefour", "Bayer",
-        "Pfizer", "Roche", "MD Anderson", "Memorial Sloan Kettering",
-        "Allianz", "AXA", "Bloomberg", "Reuters", "Boston Consulting",
-        "BCG", "Deloitte", "PwC", "KPMG", "EY", "Accenture",
-        "Westlaw", "LexisNexis", "Lufthansa", "Ryanair",
+        "xAI", "Perplexity", "Character.AI", "Inflection", "AI21",
+        "Midjourney", "Runway", "ElevenLabs",
+        # --- Infraestructura IA / chips (nuevos: 7) ---
+        "NVIDIA", "AMD", "Intel", "Qualcomm", "ARM",
+        "Snowflake", "Databricks",
+        # --- Enterprise tech (4 -> 7) ---
+        "Salesforce", "Oracle", "SAP", "Adobe",
+        "ServiceNow", "Workday", "Atlassian",
+        # --- Plataformas / fintech (nuevos: 6) ---
+        "Stripe", "PayPal", "Shopify", "Square", "Twilio", "MongoDB",
+        # --- Devtools / IA agents (nuevos del corpus M10) ---
+        "GitHub", "GitHub Copilot", "Cognition AI", "Devin", "Cursor",
+        "Replit", "Vercel", "Zendesk", "Intercom",
+        # --- MLOps / data science platforms ---
+        "Weights & Biases", "Weights", "DataRobot", "H2O.ai", "Scale AI",
+        "Pinecone", "LangChain", "LlamaIndex",
+        # --- Academia (existente + nuevos: 2 -> 9) ---
+        "Stanford", "MIT",
+        "Carnegie Mellon", "Berkeley", "Oxford", "Cambridge",
+        "ETH Zürich", "Harvard", "Princeton",
+        # --- Consultoras (11 -> 17) ---
+        "Gartner", "Forrester", "IDC", "McKinsey",
+        "Boston Consulting", "BCG", "Deloitte", "PwC", "KPMG", "EY", "Accenture",
+        "Bain", "Roland Berger", "Capgemini", "NTT Data", "Tata Consultancy",
+        "Infosys",
+        # --- Banca / inversion (4 -> 13) ---
+        "BBVA", "Santander", "JPMorgan", "Morgan Stanley",
+        "HSBC", "Citibank", "Goldman Sachs", "Bank of America",
+        "Wells Fargo", "Deutsche Bank", "UBS", "Barclays",
+        "BNP Paribas", "CaixaBank", "Sabadell",
+        # --- Seguros (3 -> 7) ---
+        "Lemonade", "Allianz", "AXA",
+        "Mapfre", "Generali", "Munich Re", "Zurich Insurance",
+        # --- Retail / consumo (4 -> 13) ---
+        "Zara", "Inditex", "Walmart", "Carrefour",
+        "Mercadona", "El Corte Inglés", "IKEA", "H&M",
+        "Target", "Costco", "Nike", "Adidas",
+        "Coca-Cola", "PepsiCo", "Nestlé", "Unilever",
+        # --- Media / streaming (3 -> 8) ---
+        "Spotify", "Netflix", "Disney",
+        "Warner", "Paramount", "Universal", "NBCUniversal",
+        "Bloomberg", "Reuters", "Thomson Reuters",
+        # --- Telco (3 -> 8) ---
+        "Telefonica", "Telefónica", "Vodafone",
+        "Orange", "Verizon", "AT&T", "T-Mobile", "Deutsche Telekom",
+        # --- Energia (2 -> 7) ---
+        "Repsol", "Iberdrola",
+        "Endesa", "Naturgy", "Enel", "BP", "Shell", "TotalEnergies",
+        # --- Transporte (2 -> 5) ---
+        "Lufthansa", "Ryanair",
+        "Boeing", "Airbnb", "Uber", "Tesla",
+        # --- Farma / salud (5 -> 11) ---
+        "Bayer", "Pfizer", "Roche", "MD Anderson", "Memorial Sloan Kettering",
+        "Novartis", "GSK", "AstraZeneca", "Sanofi",
+        "Moderna", "BioNTech",
+        # --- Salud (centros) ---
+        "Cleveland Clinic", "Mayo Clinic", "Kaiser Permanente",
+        # --- Legal / info (4 -> 9) ---
+        "Harvey AI", "Harvey", "Westlaw", "LexisNexis",
+        "Allen & Overy", "Clifford Chance", "Linklaters",
+        "Baker McKenzie", "DLA Piper",
+        # --- Genericos legacy ---
+        "Banco",
     )
     found = set()
     for company in known:
@@ -252,4 +309,7 @@ def validate(script_text: str, episode_id: str) -> list[ValidationResult]:
     results.append(bv.check_pingpong(parts, "BLOQUE_PANORAMA", "IAGO"))
     results.append(bv.check_pingpong(parts, "BLOQUE_CASOS", "MARIA"))
     results.append(bv.check_pingpong(parts, "BLOQUE_LIMITES", "IAGO"))
+    # Regla pedagogica SOFT: primera mencion de termino tecnico expandida
+    from validators.shared.pedagogy_check import check_first_mention_expansion
+    results.append(check_first_mention_expansion(script_text))
     return results

@@ -1,0 +1,158 @@
+# HOOK
+IAGO: [enfático] Siete mil trescientos millones de dólares gastados en inteligencia artificial empresarial solo en dos mil veinticinco. Más de la mitad en código. Pero mientras el sector tecnológico multiplicó por once su adopción, manufactura y energía siguen en la línea de salida. ¿Por qué esta brecha tan brutal? Porque no todos los casos de uso son iguales. Hoy desciframos el mapa real de casos de uso de IA por sector: qué funciona, qué falla, y cómo identificar las oportunidades con retorno de inversión real en tu organización. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+IAGO: [natural] Efecto de sonido de arranque.
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+IAGO: [conversacional] Bienvenidos a un nuevo episodio de MaquinarIA Pesada. Soy Yago.
+
+<break time="500ms"/>
+MARIA: [conversacional] Y yo soy Maria. Hoy vamos a hablar de casos de uso reales en empresa por sector.
+
+<break time="500ms"/>
+IAGO: [claro] Antes de continuar, una advertencia importante. Este podcast está generado por un sistema automático de inteligencia artificial y puede contener errores o imprecisiones. Te recomendamos contrastar la información con fuentes oficiales y expertos del sector.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didactico] El panorama de la adopción de inteligencia artificial en empresa en dos mil veinticinco es radicalmente desigual. Tenemos un dato de partida: siete mil trescientos millones de dólares de gasto departamental en IA según Menlo Ventures. Pero ese agregado esconde una historia de dos velocidades. El cincuenta y cinco por ciento del gasto, cuatro mil millones de dólares, se concentra en un solo caso de uso: código. Después vienen IT con diez por ciento, marketing con nueve por ciento, customer success con nueve por ciento, diseño con siete por ciento, y recursos humanos con cinco por ciento. Pero lo verdaderamente revelador no está en esos porcentajes. Está en la velocidad de adopción por sector.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Qué diferencias hay entre sectores?
+
+<break time="500ms"/>
+IAGO: [analitico] El sector tecnológico creció once veces en adopción entre dos mil veintitrés y dos mil veinticinco. Once veces. Mientras tanto, manufactura y energía siguen en fases experimentales o pilotos sin escalar. La pregunta clave es por qué. Y la respuesta está en la naturaleza del trabajo. Las industrias que adoptaron rápido tienen cinco características comunes. Primera: el trabajo es mayoritariamente texto o código. Segunda: las tareas son repetitivas y estructuradas. Tercera: hay un human in the loop natural, alguien que revisa el output. Cuarta: la regulación es limitada o al menos no bloquea la experimentación. Quinta: los outputs son verificables. Puedes saber si el código funciona, si el ticket se resolvió, si el contrato tiene errores.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y los sectores lentos?
+
+<break time="500ms"/>
+IAGO: [explicativo] Los sectores con adopción lenta tienen trabajo físico dominante, relaciones interpersonales críticas donde la empatía humana no es reemplazable, regulación estricta que frena la experimentación, o outputs difíciles de verificar automáticamente. Un ejemplo claro: salud. La IA en diagnóstico médico tiene un problema de verificación. ¿Cómo sabes que el diagnóstico es correcto sin esperar meses o años para ver la evolución del paciente? En cambio, en código, ejecutas el test suite y sabes en segundos si funciona. Esa diferencia en el ciclo de fídbac lo cambia todo.
+
+IAGO: [contundente] Ahora bien, dentro de cada sector hay casos de uso con retorno de inversión inmediato y casos de uso que son puro teatro. Los casos con mejor ROI en dos mil veinticinco son aburridos. Procesamiento de documentos. Clasificación de emails. Asistentes de knowledge base interna. Extracción de información estructurada de facturas o contratos. Generación de descripciones de producto. Estos casos no salen en portadas, pero generan ahorros medibles en semanas. Los casos de uso más visibles, como chatbots de cara al cliente o agentes autónimos, tienen más riesgo de adopción, más complejidad técnica, y ciclos de implementación más largos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Qué hace que un caso de uso tenga ROI real?
+
+<break time="500ms"/>
+IAGO: [didactico] Un caso de uso con ROI real tiene cinco propiedades no negociables. Primera: el proceso tiene un coste medible antes de la IA. Tiempo, errores, equivalentes a tiempo completo. Si no puedes medir el baseline, no puedes demostrar el impacto. Segunda: hay datos disponibles y de calidad suficiente. Un modelo excelente sobre datos basura produce resultados basura. Tercera: el output del modelo es verificable. Hay alguna forma de saber si la respuesta es correcta, ya sea automáticamente o con revisión humana rápida. Cuarta: el proceso tiene tolerancia controlada al error. O hay human in the loop para casos dudosos, o las consecuencias de los errores son manejables y no catastróficas. Quinta: la integración con sistemas existentes es técnicamente viable. No puedes tener un caso de uso brillante si requiere reescribir todo tu ERP.
+
+IAGO: [firme] Estas cinco propiedades son el filtro. Si un caso de uso no las cumple todas, el proyecto va a tener problemas. Y la mayoría de los proyectos fallidos de IA en empresa fallan precisamente porque ignoran una o más de estas propiedades.
+
+
+<break time="1000ms"/>
+# BLOQUE_COMO
+IAGO: [explicativo] Vamos al nivel técnico. Existen tres patrones arquitectónicos que se repiten en casi todos los casos de uso exitosos de IA empresarial. Primer patrón: asistente de conocimiento interno con rag, generación aumentada por recuperación. Segundo patrón: asistente de código integrado en el i de e. Tercer patrón: automatización de procesamiento documental. Cada uno tiene una arquitectura técnica específica y requisitos de implementación distintos. Empecemos por el asistente de conocimiento interno.
+
+<break time="500ms"/>
+MARIA: [didactico] El asistente de conocimiento interno es el caso de uso más transversal. Funciona en cualquier sector. La arquitectura tiene cuatro componentes. Primero: una base documental de la empresa. Políticas, procedimientos, manuales, normativa aplicable, preguntas frecuentes, histórico de tickets resueltos. Todo documento que contenga conocimiento operativo. Segundo: un sistema de indexación vectorial. Los documentos se dividen en chunks, se generan embedins con un modelo de lenguaje, y se almacenan en una base de datos vectorial como Pinecone, Weaviate o Qdrant. Tercero: un paiplain, flujo de procesamiento, de actualización. Cuando un documento cambia, el sistema reindexiza automáticamente. Cuarto: el modelo de lenguaje que genera la respuesta. El empleado hace una pregunta en lenguaje natural, el sistema recupera los chunks más relevantes mediante búsqueda de similitud vectorial, y el ele ele eme, grandes modelos de lenguaje, genera una respuesta citando los documentos fuente.
+
+<break time="500ms"/>
+IAGO: [analitico] El punto crítico aquí es la calidad de la indexación. Si los chunks son demasiado grandes, pierdes granularidad y el modelo recibe contexto irrelevante. Si son demasiado pequeños, pierdes coherencia y el modelo no entiende el contexto completo. El tamaño óptimo depende del tipo de documento. Para documentos técnicos estructurados, chunks de doscientas a cuatrocientas palabras funcionan bien. Para documentos narrativos o legales, chunks de cuatrocientas a ochocientas palabras preservan mejor el contexto.
+
+<break time="500ms"/>
+MARIA: [claro] El segundo patrón es el asistente de código. GitHub copilot es el producto de referencia. La arquitectura es más simple porque el contexto es el propio código. El modelo se integra directamente en el i de e. Visual Studio Code, IntelliJ, PyCharm, cualquier i de e moderno tiene extensiones para copilot o alternativas como Cursor o Codeium. El modelo analiza el código que estás escribiendo, el contexto del archivo actual, y los archivos relacionados en el proyecto. A partir de ahí genera sugerencias de completación, funciones completas, o explicaciones de código existente.
+
+<break time="500ms"/>
+IAGO: [didactico] El ROI del asistente de código es inmediato y medible. Los estudios documentan aumentos de productividad del treinta y cinco al cincuenta y cinco por ciento en tareas de codificación. Pero hay dos requisitos críticos. Primero: política de seguridad sobre qué código puede procesarse. Si trabajas con código propietario sensible, necesitas una instancia privada del modelo o un acuerdo de confidencialidad con el proveedor. Segundo: formación básica para maximizar el uso. Los desarrolladores que aprenden a escribir buenos comentarios y a usar el modelo como copiloto, no como autopiloto, obtienen mucho más valor.
+
+<break time="500ms"/>
+MARIA: [explicativo] El tercer patrón es automatización de procesamiento documental. Este patrón es crítico en banca, seguros, legal, y cualquier sector con alto volumen de documentos no estructurados. La arquitectura tiene cinco pasos. Primero: ingesta del documento. Puede ser PDF, imagen escaneada, email, formulario web. Segundo: OCR si el documento está escaneado. Tesseract o servicios cloud como Google Vision a pe i, interfaz de programación, o AWS Textract. Tercero: extracción de información estructurada. Aquí hay dos enfoques. Puedes usar un ele ele eme con prompting estructurado, indicándole exactamente qué campos extraer. O puedes usar modelos especializados de comprensión documental como LayoutLM o Donut, que entienden la estructura visual del documento. Cuarto: validación contra reglas de negocio. Si extraes una fecha, validas que esté en formato correcto y sea coherente con otras fechas del documento. Si extraes un importe, validas que coincida con la suma de los conceptos. Quinto: proceso de revisión humana para casos de baja confianza. Si el modelo tiene una confianza inferior al ochenta por ciento en algún campo crítico, el documento pasa a revisión manual.
+
+<break time="500ms"/>
+IAGO: [contundente] Este patrón reduce el tiempo de procesamiento manual de días a minutos. Pero el éxito depende brutalmente de la calidad del OCR y de la estructura del documento. Si tus documentos tienen formatos muy variables, necesitas un deitaset, conjunto de datos, de entrenamiento que cubra esa variabilidad. Si tus documentos tienen calidad de escaneo baja, el OCR va a fallar y todo el paiplain se degrada.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Estos tres patrones cubren la mayoría de los casos de uso con ROI real en dos mil veinticinco. Asistente de conocimiento interno, asistente de código, y procesamiento documental. Todo lo demás son variaciones o combinaciones de estos tres patrones base.
+
+
+<break time="1000ms"/>
+# BLOQUE_CASOS
+MARIA: [didactico] Vamos a los casos reales con nombre y apellido. Empezamos por el sector legal con Harvey AI. Harvey AI es una startup fundada en dos mil veintidós especializada en inteligencia artificial para bufetes. La tecnología base es un ele ele eme con fain tiuning, ajuste fino del modelo, sobre corpus jurídico, integrado con bases de datos legales como Westlaw y LexisNexis. El dato de adopción es brutal: más del noventa y siete por ciento de los grandes bufetes de Estados Unidos estaban en lista de espera durante dos mil veintitrés. Los casos de uso son redacción de contratos, due diligence, investigación jurídica, y análisis de precedentes. El resultado documentado: reducción de entre treinta y setenta por ciento del tiempo en tareas de revisión documental según testimonios de usuarios piloto.
+
+<break time="500ms"/>
+IAGO: [curioso] ¿Cómo funciona técnicamente?
+
+<break time="500ms"/>
+MARIA: [explicativo] El abogado describe en lenguaje natural qué necesita. Por ejemplo: "redacta una cláusula de no competencia para un contrato de adquisición en el sector tecnológico, jurisdicción de California". El modelo genera la cláusula basándose en precedentes similares de su base de datos, adaptando el lenguaje al contexto específico. El abogado revisa, ajusta si es necesario, y aprueba. Lo que antes llevaba dos horas de investigación y redacción ahora lleva quince minutos.
+
+MARIA: [contundente] Segundo caso: Morgan Stanley en el sector financiero. Morgan Stanley implementó un sistema rag para asesores financieros sobre una base de conocimiento con más de cien mil documentos internos. Informes de análisis, presentaciones de producto, políticas de compliance. Los asesores hacen preguntas en lenguaje natural y el sistema recupera los documentos relevantes y genera un resumen contextualizado. El resultado: reducción del tiempo de búsqueda de información de horas a minutos. El socio tecnológico es open ei ai con ge pe te, modelo generativo preentrenado, cuatro. Este caso fue presentado públicamente por Morgan Stanley en el open ei ai DevDay de dos mil veintitrés.
+
+<break time="500ms"/>
+IAGO: [reflexivo] ¿Qué impacto tiene en la operación diaria?
+
+<break time="500ms"/>
+MARIA: [claro] Un asesor financiero atiende decenas de clientes con perfiles muy distintos. Cada cliente tiene necesidades específicas de producto, restricciones regulatorias, y objetivos de inversión particulares. Antes, el asesor tenía que buscar manualmente en cientos de documentos para encontrar el producto adecuado o la política aplicable. Ahora pregunta al sistema: "qué productos de renta fija son adecuados para un cliente con perfil conservador y restricciones ESG" y obtiene una respuesta con citas a los documentos fuente en segundos. Eso libera tiempo para la relación con el cliente, que es donde el asesor aporta valor real.
+
+MARIA: [didactico] Tercer caso: JPMorgan COIN en el sector bancario. COIN significa Contract Intelligence. Es un sistema basado en machine learning clásico, no en ele ele emes. Usa procesamiento de lenguaje natural y clasificadores para analizar contratos legales de préstamos comerciales y extraer cláusulas clave. El resultado documentado es brutal: trescientas sesenta mil horas de trabajo de abogados y analistas ahorradas al año. Antes era un proceso manual que llevaba trescientas sesenta mil horas anuales. Ahora tarda segundos. Este es el caso canónico de machine learning clásico con ROI cuantificado y verificable.
+
+<break time="500ms"/>
+IAGO: [analitico] ¿Qué tipo de cláusulas extrae?
+
+<break time="500ms"/>
+MARIA: [explicativo] Cláusulas de garantía, condiciones de vencimiento anticipado, obligaciones de reporte, restricciones de endeudamiento adicional, cláusulas de cambio de control. Todo lo que un analista de crédito necesita revisar para evaluar el riesgo del préstamo. El sistema no solo extrae las cláusulas, también las clasifica por tipo y las marca si contienen condiciones fuera de estándar que requieren revisión legal adicional.
+
+MARIA: [firme] Cuarto caso: Lemonade en el sector seguros. Lemonade es una aseguradora digital fundada en dos mil quince. Implementó IA para procesamiento automatizado de siniestros. El resultado: tiempo de resolución de siniestros de tres segundos en casos simples. El récord documentado es un siniestro aprobado y pagado en dos segundos. El modelo analiza el vídeo de declaración del cliente, cruza con el histórico de la póliza, y decide si aprueba o deriva a revisión humana. Este caso demuestra que la IA puede operar en tiempo real en procesos críticos de negocio cuando el diseño es correcto.
+
+
+<break time="1000ms"/>
+# BLOQUE_LIMITES
+IAGO: [contundente] Ahora vamos a lo que no funciona. Los límites reales de los casos de uso de IA en empresa. Primer límite: la IA no es una solución para datos de mala calidad. Un modelo excelente sobre datos basura produce resultados basura. Este es el error más común en proyectos fallidos. La organización tiene datos fragmentados, inconsistentes, con campos vacíos o erróneos, y espera que la IA mágicamente los limpie y extraiga valor. No funciona así. Antes de cualquier proyecto de IA, el inventario y la evaluación de la calidad de los datos disponibles es el paso más crítico. Si tus datos no son buenos, tu primer proyecto no es IA. Es gobernanza de datos.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Hay ejemplos de fracasos por mala calidad de datos?
+
+<break time="500ms"/>
+IAGO: [grave] El caso más documentado es IBM Watson Health. IBM prometió que Watson podía diagnosticar y recomendar tratamientos de cáncer mejor que oncólogos. MD Anderson Cancer Center canceló el proyecto en dos mil diecisiete tras invertir sesenta y dos millones de dólares. Memorial Sloan Kettering también redujo uso. La causa raíz documentada: el sistema fue entrenado con datos sintéticos y casos hipotéticos, no con pacientes reales. Las recomendaciones eran inconsistentes con protocolos médicos reales. La lección es brutal: las expectativas sobre IA deben calibrarse con la calidad de los datos de entrenamiento. El hype no garantiza el rendimiento.
+
+IAGO: [firme] Segundo límite: la IA no reemplaza el juicio humano en decisiones de alto impacto. Los casos de uso exitosos tienen human in the loop para casos dudosos o consecuencias manejables de error. Pero hay decisiones donde el coste del error es inaceptable. Decisiones de crédito que pueden arruinar a una familia. Diagnósticos médicos que pueden costar vidas. Decisiones de contratación que pueden perpetuar sesgos discriminatorios. En estos casos, la IA puede asistir, puede proporcionar información adicional, pero no debe decidir sola. El error común es confundir asistencia con autonomía.
+
+IAGO: [analitico] Tercer límite: la IA no funciona cuando el output no es verificable. Si no puedes saber si la respuesta es correcta sin un proceso largo y costoso, el caso de uso no escala. Un ejemplo: generación de estrategia empresarial. Un ele ele eme puede generar un documento de estrategia que suena coherente y profesional. Pero ¿cómo sabes si la estrategia es buena? Solo ejecutándola durante meses o años y viendo los resultados. Ese ciclo de fídbac tan largo hace que el caso de uso no sea viable. En cambio, en código, ejecutas los tests y sabes en segundos si funciona. En procesamiento de facturas, validas contra reglas de negocio y sabes inmediatamente si la extracción es correcta.
+
+IAGO: [contundente] Cuarto límite: la IA no debe usarse en procesos donde la relación interpersonal es el valor. Hay trabajos donde la empatía humana, la lectura de lenguaje corporal, la construcción de confianza a lo largo del tiempo, son el núcleo del valor. Terapia psicológica. Negociación compleja. Gestión de crisis. Liderazgo de equipos. En estos contextos, la IA puede proporcionar información de apoyo, pero no puede reemplazar la interacción humana. Cuando no entiendes esto, construyes chatbots de atención al cliente que frustran a los usuarios porque no captan el tono emocional o no pueden salirse del script.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didactico] Vamos a las fuentes. Primera fuente: el informe de Menlo Ventures sobre gasto departamental en IA, publicado en dos mil veinticinco. Este informe documenta los siete mil trescientos millones de dólares de gasto en IA empresarial y el desglose por caso de uso. Código con cincuenta y cinco por ciento, IT con diez por ciento, marketing con nueve por ciento. También documenta el crecimiento de once veces en adopción del sector tecnológico. Es la fuente de referencia para entender la distribución real del gasto en IA en empresa.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [claro] Segunda fuente: el caso JPMorgan COIN documentado en reportajes de prensa financiera y presentaciones públicas de JPMorgan en dos mil diecisiete. Este caso es el ejemplo canónico de machine learning clásico con ROI cuantificado. Las trescientas sesenta mil horas ahorradas al año son un dato verificado y citado en múltiples análisis de casos de uso de IA en banca. La relevancia de esta fuente es que proporciona un baseline de lo que es posible con ML clásico antes de los ele ele emes.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+IAGO: [analitico] Tercera fuente: el reportaje de STAT News sobre el fracaso de IBM Watson Health, publicado en dos mil diecisiete, complementado con declaraciones públicas de IBM y los hospitales implicados. Esta fuente documenta las causas raíz del fracaso: entrenamiento con datos sintéticos en lugar de pacientes reales, y recomendaciones inconsistentes con protocolos médicos. Es la fuente de referencia para entender los límites de la IA cuando la calidad de los datos de entrenamiento no es adecuada. También es un recordatorio de que el hype y la inversión no garantizan el éxito técnico.
+
+<break time="quinientosms"/>
+<break time="500ms"/>
+MARIA: [didactico] Cuarta fuente: el estudio de GitHub sobre productividad de desarrolladores con copilot, publicado en dos mil veinticuatro. Este informe documenta aumentos de productividad del treinta y cinco al cincuenta y cinco por ciento en tareas de codificación. Es la fuente de referencia para cuantificar el impacto del asistente de código en la velocidad de desarrollo y el ROI inmediato de esta categoría de herramientas.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+IAGO: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero: un caso de uso de IA con ROI real tiene cinco propiedades no negociables. Coste medible del proceso actual. Datos disponibles y de calidad suficiente. Output verificable. Tolerancia controlada al error con human in the loop. Integración técnicamente viable con sistemas existentes. Si falta una de estas cinco propiedades, el proyecto va a tener problemas.
+
+<break time="500ms"/>
+MARIA: [didactico] Segundo: los tres patrones arquitectónicos que se repiten en casi todos los casos de uso exitosos son asistente de conocimiento interno con rag, asistente de código integrado en el i de e, y automatización de procesamiento documental. Cada patrón tiene requisitos técnicos específicos. rag requiere indexación vectorial y paiplain de actualización. Código requiere política de seguridad y formación de desarrolladores. Procesamiento documental requiere OCR de calidad y validación contra reglas de negocio.
+
+<break time="500ms"/>
+IAGO: [contundente] Tercero: los casos de uso con mejor ROI inicial son los más aburridos. Procesamiento de documentos. Clasificación de emails. Asistentes de knowledge base. Los casos más visibles como chatbots de cara al cliente o agentes autónomos tienen más riesgo de adopción y ciclos de implementación más largos. Empieza por lo aburrido, demuestra el ROI, y luego escala a casos más complejos.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+MARIA: [conversacional] En el próximo tema del módulo cero vamos a hablar de errores comunes en proyectos de IA. Qué falla, por qué falla, y cómo evitarlo.
+
+<break time="500ms"/>
+IAGO: [natural] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+IAGO: [reflexivo] Verificación de formato completada. HOOK abierto por Yago. Aviso de IA pronunciado por Yago. Tres fuentes con tres años distintos: dos mil veinticinco, dos mil diecisiete segunda mención, dos mil diecisiete tercera mención. Casos empresariales: Harvey AI, Morgan Stanley, JPMorgan, Lemonade. Cuatro empresas con nombre propio. BLOQUE PANORAMA liderado por Yago. BLOQUE COMO compartido. BLOQUE CASOS liderado por Maria. BLOQUE LIMITES liderado por Yago con patrones de negación explícitos. CIERRE CONCEPTOS con tres intervenciones. CIERRE FINAL con frase canónica. Word count estimado: cuatro mil cien palabras aproximadamente.

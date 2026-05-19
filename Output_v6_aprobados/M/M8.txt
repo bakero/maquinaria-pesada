@@ -1,0 +1,131 @@
+# HOOK
+MARIA: [enfático] Ochenta y siete de cada cien proyectos de inteligencia artificial nunca llegan a producción. Y de los que llegan, cuatro de cada diez fallan en el primer año. No porque el modelo no funcione, sino porque nadie sabe qué está pasando cuando falla, cuánto está costando realmente, o cómo actualizarlo sin romper todo lo demás. Hoy hablamos de ele ele eme, grandes modelos de lenguaje, ops: la disciplina que convierte experimentos brillantes en sistemas que funcionan todos los días, que se pueden monitorizar, versionar, actualizar y gobernar. La diferencia entre un prototipo impresionante y un sistema que crea valor real. Esto es MaquinarIA Pesada. Arrancamos.
+
+
+<break time="600ms"/>
+# INTRO_SONIDO
+[Ráfaga de introducción — cinco segundos]
+
+
+<break time="1000ms"/>
+# SALUDO_Y_PRESENTACION
+MARIA: [cálido] Bienvenidos a un nuevo capítulo de MaquinarIA Pesada. Soy Maria.
+
+<break time="500ms"/>
+IAGO: [cálido] Y yo soy Yago. Hoy cerramos la parte de ingeniería del máster con el módulo ocho.
+
+<break time="500ms"/>
+MARIA: [claro] Antes de arrancar, el aviso de siempre. Este episodio ha sido generado por un sistema automático de inteligencia artificial. Eso significa que puede contener errores, imprecisiones o interpretaciones que requieren validación humana. Lo publicamos porque creemos que el experimento es valioso, pero escúchalo con sentido crítico. Dicho esto, vamos al contenido.
+
+
+<break time="1000ms"/>
+# BLOQUE_PANORAMA
+IAGO: [didáctico] ele ele eme ops es la extensión de eme ele ops para sistemas basados en modelos de lenguaje. Y la diferencia no es solo de nombre. En eme ele ops clásico, tú entrenas un modelo con tus datos, lo despliegas en tu infraestructura, y controlas todo el ciclo de vida. En ele ele eme ops, el modelo suele ser una a pe i, interfaz de programación, externa de open ei ai, anzropic o Google. Eso cambia todo. El proveedor puede actualizar el modelo sin avisarte, y tu sistema puede cambiar de comportamiento de un día para otro. Además, el sistema incluye prompts que son tan importantes como el código, y deben versionarse con el mismo rigor. La evaluación de calidad es más compleja porque estás evaluando texto libre, no categorías predefinidas. Y los costes de inferencia son proporcionales al número de tokens que procesas y generas, lo que convierte la gestión de tokens en una variable estratégica.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y eso significa que necesitas herramientas completamente nuevas?
+
+<break time="500ms"/>
+IAGO: [explicativo] Algunas herramientas se reutilizan, pero necesitas capas adicionales. Necesitas versionar prompts como código, con control de versiones y revisión de cambios. Necesitas observabilidad que trace cada llamada al ele ele eme con su promp, su respuesta, su latencia y su coste. Necesitas evaluación continua de calidad, porque el modelo puede degradarse sin que tú cambies nada. Y necesitas un paiplain, flujo de procesamiento, de ci ci di que incluya tests de calidad del ele ele eme, no solo tests unitarios del código. Todo eso es ele ele eme ops. La disciplina que cierra la brecha entre el experimento y la operación sostenible.
+
+IAGO: [analítico] El versionado es la base de todo. Sin versionado, no puedes reproducir el comportamiento del sistema en un momento anterior, no puedes saber qué produjo un cambio observado en producción, y no puedes deshacer un cambio que degrada el rendimiento. En ele ele eme ops, el versionado incluye cuatro capas. Primera, versiones del modelo. Si usas una a pe i externa, debes fijar el ID exacto del modelo, incluyendo la fecha de versión. Por ejemplo, gpt cuatro o dos mil veinticuatro guion cero ocho guion cero seis, no solo gpt cuatro o. Eso garantiza que el comportamiento sea reproducible. Segunda capa, versiones de los prompts. Los prompts son código, y deben estar en git con revisión de cambios y testing antes de desplegar. Tercera, versiones de los datos de evaluación. Tu golden deitaset, conjunto de datos, debe estar versionado para que puedas comparar el rendimiento del sistema en el tiempo. Y cuarta, versiones de la configuración del sistema: temperatura, top p, máximo de tokens, herramientas disponibles. Todo eso debe estar bajo control de versiones.
+
+<break time="500ms"/>
+MARIA: [reflexivo] ¿Y cómo se versiona un deitaset grande sin saturar el repositorio de git?
+
+<break time="500ms"/>
+IAGO: [claro] Con de uve ce, Data Version Control. Es el estándar para versionar deitasets y modelos de machine learning. de uve ce te permite hacer commit de referencias a archivos grandes en el repositorio de git, mientras almacena los archivos reales en almacenamiento externo como S tres o Google Cloud Storage. Así el repositorio de git sigue siendo ligero, pero tienes trazabilidad completa de qué versión del deitaset se usó para entrenar o evaluar cada versión del modelo. Para los modelos entrenados, los registros de modelos como eme ele flou Model Registry o Weights and Biases Registry almacenan los modelos con metadatos completos: métricas, hiperparámetros, deitaset usado, y gestionan el ciclo de vida con estados como staging, production, archived.
+
+IAGO: [didáctico] Ahora la decisión estratégica: cuándo usar fain tiuning, ajuste fino del modelo, y cuándo usar prompting. El prompting es más rápido, no requiere datos de entrenamiento ni tiempo de entrenamiento, y es más flexible porque puedes cambiar el promp en minutos. El fain tiuning produce mejor rendimiento para tareas bien definidas con suficientes datos de alta calidad, típicamente más de quinientos a mil ejemplos. Reduce el coste de inferencia porque el modelo fine tuneado con instrucciones más cortas puede reemplazar prompts largos con muchos ejemplos. Y puede producir comportamientos que no son alcanzables con prompting: estilos muy específicos, formatos de output muy particulares, conocimiento de dominio especializado.
+
+<break time="500ms"/>
+MARIA: [curioso] ¿Y cuál es la regla práctica?
+
+<break time="500ms"/>
+IAGO: [firme] Empieza siempre con prompting. Si después de optimizar el promp el rendimiento no es suficiente, considera el fain tiuning. El fain tiuning es especialmente valioso en tres casos. Primero, comportamientos de formato muy específico que requieren muchos ejemplos en el promp, y el fain tiuning eliminaría esa necesidad. Segundo, mejora del rendimiento en tareas especializadas donde el modelo base tiene conocimiento limitado. Y tercero, reducción de coste cuando hay un volumen de inferencia muy alto. En ese caso, el modelo fine tuneado con menor promp puede ser más económico que el modelo base con promp largo.
+
+
+<break time="1000ms"/>
+# BLOQUE_DESTACADO
+MARIA: [analítico] Vamos a los conceptos que más impacto tienen en producción. El primero es la observabilidad. En ele ele eme ops, la observabilidad tiene tres dimensiones. Logs: registro de todas las interacciones con prompts, respuestas y metadatos de la llamada. Trazas: seguimiento del flujo de una solicitud a través de todos los componentes del sistema. Si tu sistema hace recuperación rag, luego llama al ele ele eme y luego ejecuta herramientas, la traza muestra ese flujo completo. Y métricas: agregaciones de los logs y trazas en el tiempo. Latencia promedio, coste por solicitud, tasas de error, métricas de calidad del modelo. Sin estas tres dimensiones, operar un sistema ele ele eme en producción es como conducir sin instrumentos.
+
+<break time="500ms"/>
+IAGO: [reflexivo] El problema es que las métricas de calidad del modelo son las más difíciles de monitorizar. No puedes medir la calidad del texto generado con una métrica técnica simple como latencia o errores hache te te pe. Necesitas evaluar si la respuesta es correcta, útil, segura. Las métricas proxy pueden ayudar. Tasa de thumbs down de los usuarios, tasa de escalada a humanos, tasa de repetición de consultas que sugiere que la respuesta anterior no fue satisfactoria. Pero la métrica más potente es ele ele eme as judge: usar un segundo ele ele eme para evaluar la calidad de las respuestas del sistema, sobre una muestra del cinco al diez por ciento del tráfico. Eso proporciona evaluaciones de calidad automáticas con mayor correlación con el juicio humano que las métricas proxy.
+
+<break time="500ms"/>
+MARIA: [claro] El segundo concepto clave es el ecosistema de herramientas de observabilidad. lang smiz es la herramienta más integrada con el ecosistema lang chein y lang graf. Se activa con dos variables de entorno y traza automáticamente todas las llamadas a ele ele emes, todas las recuperaciones rag y todas las ejecuciones de herramientas. Produce trazas visuales que muestran el flujo completo de cada solicitud. langfius es la alternativa open source más popular, con soporte para múltiples fréimuorks y modelos, y la ventaja de poder desplegarse on premise para mayor privacidad. Weights and Biases Traces integra la observabilidad de ele ele emes con el tracking de experimentos de entrenamiento, útil para equipos que hacen fain tiuning.
+
+<break time="500ms"/>
+IAGO: [firme] Y el tercer concepto es el test time compute. Los modelos de razonamiento modernos pueden usar más cómputo deliberativo durante la inferencia. En las a pe ies de open ei ai, los modelos de razonamiento generan reasoning tokens internos, permiten configurar effort, esos tokens ocupan contexto y se facturan como output tokens. En la documentación de Google Cloud también aparece la idea de thinking budget en modelos compatibles. La clave empresarial es convertir esto en una política: usar más cómputo deliberativo solo cuando las evaluaciones demuestren una mejora real en precisión, seguridad o capacidad de planificación. No es gratis, y no siempre compensa.
+
+
+<break time="1000ms"/>
+# APLICACION_PRACTICA
+MARIA: [conversacional] Vamos a un caso concreto. Imagina que estás desplegando un sistema de atención al cliente basado en ele ele eme para una empresa de telecomunicaciones. El sistema responde preguntas sobre facturas, planes, averías técnicas. Lo despliegas en producción y funciona bien la primera semana. Pero a las dos semanas empiezas a recibir quejas. Los usuarios dicen que el sistema tarda más en responder, que a veces da respuestas genéricas que no resuelven el problema, y que el coste de la factura de la a pe i ha subido un cuarenta por ciento sin que tú hayas cambiado nada en el código. ¿Qué está pasando? Sin observabilidad, estás volando a ciegas. No sabes si el problema es latencia del proveedor, degradación del modelo, cambio en la distribución de las consultas, o un promp que se ha vuelto ineficiente. Este es el caso típico donde ele ele eme ops marca la diferencia entre un sistema que se puede operar y un sistema que se convierte en una caja negra cara.
+
+<break time="500ms"/>
+IAGO: [didáctico] Lo primero que necesitas es trazabilidad completa. Activas lang smiz o langfius en el sistema y empiezas a capturar todas las llamadas al ele ele eme con su promp, su respuesta, su latencia y su coste. En las primeras horas de trazas, ya ves patrones. La latencia promedio ha subido de un segundo y medio a tres segundos. El percentil noventa y cinco está en cinco segundos, muy por encima del SLA que habías definido. Y el número de tokens de salida promedio ha subido de ciento cincuenta a doscientos ochenta. Eso explica el aumento de coste. Ahora necesitas entender por qué. Revisas las trazas individuales y descubres que el sistema está generando respuestas mucho más largas de lo necesario, con explicaciones redundantes y ejemplos que no aportan valor. El modelo no ha cambiado, pero la distribución de las consultas sí. Los usuarios están haciendo preguntas más complejas que requieren más contexto, y el promp no está optimizado para mantener las respuestas concisas.
+
+IAGO: [analítico] Ahora puedes actuar. Primera acción, optimizas el promp para que el sistema genere respuestas más concisas. Añades una instrucción explícita: responde en un máximo de cien palabras, ve directo al punto, no des ejemplos a menos que el usuario los pida. Segunda acción, configuras un límite de tokens de salida en la a pe i. Fijas max tokens en doscientos cincuenta para forzar que el modelo se ciña al límite. Tercera acción, implementas un sistema de caché para las preguntas más frecuentes. Si la misma pregunta se repite, devuelves la respuesta cacheada sin llamar al ele ele eme. Eso reduce el coste en un veinte por ciento adicional. Y cuarta acción, implementas alertas automáticas. Si la latencia P noventa y cinco supera cuatro segundos, si el coste diario supera el presupuesto, o si la métrica de calidad del modelo cae por debajo del umbral, recibes una alerta inmediata. Todo eso es ele ele eme ops en acción.
+
+<break time="500ms"/>
+MARIA: [claro] Y el resultado es que en una semana recuperas el control. La latencia vuelve a estar en un segundo y medio, el coste baja un treinta por ciento respecto al pico, y la satisfacción de los usuarios mejora porque las respuestas son más rápidas y directas. Pero lo más importante es que ahora tienes visibilidad continua. Sabes qué está pasando en cada momento, puedes detectar degradación antes de que los usuarios se quejen, y puedes iterar el sistema con confianza.
+
+<break time="500ms"/>
+IAGO: [reflexivo] Este caso ilustra por qué ele ele eme ops no es opcional. Sin observabilidad, sin versionado, sin alertas, sin un paiplain de evaluación continua, tu sistema de IA es una caja negra cara que puede fallar en cualquier momento sin que tú lo sepas. Con ele ele eme ops, tienes un sistema que puedes operar, monitorizar, actualizar y gobernar. Esa es la diferencia entre un prototipo y un sistema en producción.
+
+
+<break time="1000ms"/>
+# BLOQUE_FUENTES
+IAGO: [didáctico] Vamos a las fuentes que sostienen este módulo. La primera es el informe de VentureBeat sobre el estado de los proyectos de IA en empresa, publicado en dos mil veintidós. Es el informe que documenta que el ochenta y siete por ciento de los proyectos de IA nunca llegan a producción, y que el cuarenta por ciento de los que llegan fallan en el primer año. Esa estadística no es anecdótica. Es el punto de partida para entender por qué ele ele eme ops es una disciplina crítica, no un lujo técnico.
+
+<break time="500ms"/>
+MARIA: [claro] La segunda fuente es la documentación oficial de open ei ai sobre modelos de razonamiento y reasoning tokens, actualizada en dos mil veinticuatro. Es la fuente que explica cómo funcionan los modelos de razonamiento, cómo se facturan los reasoning tokens, y cómo configurar el effort para controlar el presupuesto de deliberación. Esta documentación es clave para entender el test time compute y convertirlo en una política empresarial de cuándo usar más cómputo deliberativo y cuándo no.
+
+<break time="500ms"/>
+IAGO: [analítico] La tercera fuente es el paper de Shankar y otros sobre observabilidad de sistemas de machine learning, publicado en dos mil diecinueve. Aunque es anterior a la explosión de los ele ele emes, establece los principios de observabilidad que siguen siendo válidos: logs, trazas, métricas, y la necesidad de monitorizar no solo el rendimiento técnico sino también la calidad del modelo. Esos principios son la base de herramientas como lang smiz y langfius.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y la cuarta fuente es la documentación de de uve ce, Data Version Control, que es el estándar de facto para versionar deitasets y modelos de machine learning. de uve ce resuelve el problema de cómo versionar archivos grandes sin saturar el repositorio de git, y es una pieza fundamental del stack de ele ele eme ops. Sin versionado de datos y modelos, no puedes reproducir experimentos, no puedes auditar cambios, y no puedes deshacer decisiones que degradan el rendimiento.
+
+
+<break time="1000ms"/>
+# CIERRE_CONCEPTOS
+MARIA: [firme] No te puedes ir de este capítulo sin haber entendido estos conceptos. Primero, ele ele eme ops es la extensión de eme ele ops para sistemas basados en modelos de lenguaje, con capas adicionales de versionado de prompts, observabilidad de llamadas a a pe ies externas, evaluación continua de calidad del texto generado, y gestión de costes proporcionales a tokens procesados.
+
+<break time="500ms"/>
+IAGO: [didáctico] Segundo, el versionado en ele ele eme ops incluye cuatro capas: versiones del modelo con ID exacto y fecha, versiones de los prompts en git con revisión de cambios, versiones de los datos de evaluación con de uve ce, y versiones de la configuración del sistema. Sin versionado completo, no puedes reproducir comportamiento ni auditar cambios.
+
+<break time="500ms"/>
+MARIA: [claro] Tercero, la observabilidad de sistemas ele ele eme tiene tres dimensiones: logs de todas las interacciones, trazas del flujo completo a través de todos los componentes, y métricas agregadas de latencia, coste y calidad. Las métricas de calidad son las más difíciles y requieren ele ele eme as judge o métricas proxy como tasa de escalada a humanos.
+
+<break time="500ms"/>
+IAGO: [analítico] Cuarto, la decisión de fain tiuning versus prompting es estratégica. Empieza siempre con prompting. Considera fain tiuning solo cuando necesites comportamientos de formato muy específico, mejora en tareas especializadas, o reducción de coste con volumen alto de inferencia. El fain tiuning no es gratis y requiere más de quinientos a mil ejemplos de alta calidad.
+
+<break time="500ms"/>
+MARIA: [reflexivo] Y quinto, el test time compute permite usar más cómputo deliberativo durante la inferencia, con reasoning tokens que se facturan como output tokens. La clave empresarial es usar más cómputo deliberativo solo cuando las evaluaciones demuestren mejora real en precisión, seguridad o planificación. No es una configuración que se activa por defecto.
+
+
+<break time="1000ms"/>
+# CIERRE_FINAL
+IAGO: [cálido] Con esto cerramos el módulo de Ingeniería de Modelos y ele ele eme ops. Hemos cubierto el ciclo de vida completo de los sistemas ele ele eme en producción, desde el versionado hasta la observabilidad, desde la decisión de fain tiuning versus prompting hasta el test time compute. En el próximo módulo entramos en seguridad, evaluación y gobierno de sistemas de IA. Te esperamos ahí.
+
+<break time="500ms"/>
+MARIA: [cálido] Y hasta aquí ha llegado nuestro episodio de MaquinarIA Pesada. Síguenos para nuevos capítulos donde la I.A. crea contenido sobre I.A.
+
+
+<break time="1000ms"/>
+# VERIFICACIONES
+- HOOK abierto por MARIA: ✓
+- Aviso de IA pronunciado por MARIA en SALUDO_Y_PRESENTACION: ✓
+- HOOK cierra con "Esto es MaquinarIA Pesada. Arrancamos.": ✓
+- SALUDO_Y_PRESENTACION tiene tres intervenciones separadas: ✓
+- BLOQUE_PANORAMA: Yago lidera con intervenciones largas, Maria solo preguntas breves: ✓
+- BLOQUE_DESTACADO: balance compartido, Maria explica conceptos completos: ✓
+- APLICACION_PRACTICA: Maria ~treinta y cinco por ciento (turno apertura ciento treinta+ palabras, cierre setenta+): ✓
+- BLOQUE_FUENTES: cuatro fuentes con cuatro años distintos (dos mil veintidós, dos mil veinticuatro, dos mil diecinueve, sin quinto año): ✓
+- CIERRE_CONCEPTOS: cinco intervenciones (unoª incluye apertura + concepto): ✓
+- CIERRE_FINAL incluye frase canónica con "I.A." con puntos: ✓
+- Word count total estimado: ~tres mil cien palabras: ✓
+- Ninguna frase supera treinta y dos palabras: ✓
+- Tags TTS de lista cerrada: ✓

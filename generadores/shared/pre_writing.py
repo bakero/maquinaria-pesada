@@ -9,8 +9,11 @@ y devolverlos en una estructura que el generador inyecta en el prompt.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
 
 _NUMERIC_RE = re.compile(
     r"(?:\d{1,3}(?:[.,]\d+)?\s*%"      # 3.7%, 80%
@@ -126,4 +129,33 @@ def extract_pre_writing(pdf_text: str) -> PreWriting:
             break
     pw.contraintuitivos = contras
 
+    return pw
+
+
+def extract_pre_writing_cached(pdf_text: str, cache_dir: Path) -> PreWriting:
+    """Versión cacheada en disco: hash(pdf_text) → JSON.
+
+    La extracción regex es barata, pero cacheamos para mantener determinismo
+    entre retries del mismo episodio (sin variación accidental) y para que
+    los logs sean reproducibles.
+    """
+    if not pdf_text:
+        return PreWriting()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    key = hashlib.sha256(pdf_text.encode("utf-8")).hexdigest()[:16]
+    cache_file = cache_dir / f"{key}.json"
+    if cache_file.exists():
+        try:
+            data = json.loads(cache_file.read_text(encoding="utf-8"))
+            return PreWriting(**data)
+        except (json.JSONDecodeError, TypeError, OSError):
+            pass  # cae al recálculo
+    pw = extract_pre_writing(pdf_text)
+    try:
+        cache_file.write_text(
+            json.dumps(asdict(pw), ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
     return pw
