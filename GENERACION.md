@@ -52,8 +52,8 @@ del paquete `generadores/` (ver §3). Cada llamada:
 ```
 generadores/                  # generación con LLM (M, T, S)
   base_generator.py             # pipeline común: prompt → LLM → post → validate → retry
-  m_generator.py                # MODEL=claude-sonnet-4-5, prompt M con 26+ reglas
-  t_generator.py                # MODEL=claude-sonnet-4-5, prompt T con 27+ reglas
+  m_generator.py                # MODEL=claude-sonnet-4-6, prompt M con 26+ reglas
+  t_generator.py                # MODEL=claude-sonnet-4-6, prompt T con 27+ reglas
   s_generator.py                # MODEL=claude-haiku-4-5,  prompt S anti-meta-texto
   shared/
     fuentes_loader.py             # glosario unificado (con campo **ES:**)
@@ -150,8 +150,8 @@ editorial/                    # panel editorial multi-perspectiva (LLM)
 
 | Tipo | Modelo | Motivo |
 |---|---|---|
-| M (generador) | `claude-sonnet-4-5` | Equilibrio coste/calidad para narrativa larga con criterio |
-| T (generador) | `claude-sonnet-4-5` | Igual: T tiene más palabras pero misma complejidad cualitativa |
+| M (generador) | `claude-sonnet-4-6` | Equilibrio coste/calidad para narrativa larga con criterio |
+| T (generador) | `claude-sonnet-4-6` | Igual: T tiene más palabras pero misma complejidad cualitativa |
 | S (generador) | `claude-haiku-4-5` | Texto corto + plantilla rígida → Haiku rinde igual al 5% del coste |
 | Evaluador editorial | `claude-sonnet-4-6` | Panel multi-perspectiva con criterio editorial |
 | Conceptos / extracción | `claude-haiku-4-5` | Tareas mecánicas reutilizables |

@@ -325,7 +325,7 @@ HARD_KEYWORDS = (
 | Artefacto de extracción | No | Sí — `episodios/temp/aplicacion_extraida_M{n}.md` |
 | Override manual | No | Sí — `PDFs/aplicacion_practica/M{n}.md` prioritario |
 | Reparto APLICACION_PRACTICA | No especificado | Maria 30-40% (abre+cierra), Yago 60-70% (detalla) |
-| Modelo generador | No especificado | `claude-sonnet-4-5` (Anthropic) |
+| Modelo generador | No especificado | `claude-sonnet-4-6` (Anthropic) |
 
 **Estructura requerida:**
 `HOOK` · `INTRO_SONIDO` · `SALUDO_Y_PRESENTACION` · `BLOQUE_PANORAMA` · `BLOQUE_TEMAS_CLAVE` · `BLOQUE_LIMITES` · `APLICACION_PRACTICA` · `CIERRE_CONCEPTOS` · `CIERRE_FINAL` · `VERIFICACIONES`
@@ -348,7 +348,7 @@ HARD_KEYWORDS = (
 |---------|-------------|-------------|
 | Duración objetivo | 15 min | 10 min (rango 9–12) |
 | Bloques de contenido | BLOQUE_1 a BLOQUE_4 + 3 INSERCIONES | BLOQUE_QUE + BLOQUE_COMO + BLOQUE_LIMITES |
-| Modelo generador | GPT-4.1 (OpenAI) | claude-sonnet-4-5 (Anthropic) |
+| Modelo generador | GPT-4.1 (OpenAI) | claude-sonnet-4-6 (Anthropic) |
 | Roles presentadores | Intercambiados | Asignados: Yago→QUÉ, compartido→CÓMO, María→LÍMITES |
 | Blacklist interjecciones | No | Sí — 8 frases bloqueantes (QA duro) |
 | Fuentes secundarias | Solo PDF módulo | Jerarquía: glosario, benchmarks, fuentes directas |

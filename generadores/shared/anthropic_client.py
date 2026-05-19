@@ -28,7 +28,8 @@ logger = logging.getLogger(__name__)
 
 # Precios por millón de tokens (orientativos a 2026-05).
 _PRICES_USD_PER_MTOK: dict[str, tuple[float, float]] = {
-    "claude-sonnet-4-5": (3.0, 15.0),
+    "claude-sonnet-4-6": (3.0, 15.0),
+    "claude-sonnet-4-5": (3.0, 15.0),   # se mantiene para parsing de logs históricos
     "claude-haiku-4-5-20251001": (0.8, 4.0),
     "claude-haiku-4-5": (0.8, 4.0),
 }

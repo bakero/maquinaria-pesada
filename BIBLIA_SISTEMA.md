@@ -138,7 +138,7 @@ observabilidad y orquestación.
 
 | Tarea | Modelo | Coste aprox./episodio |
 |---|---|---|
-| Generación guion | Claude Sonnet 4.5 (`claude-sonnet-4-5`) | ~$0.30 |
+| Generación guion | Claude Sonnet 4.6 (`claude-sonnet-4-6`) | ~$0.30 |
 | Generación escaleta | Claude Sonnet 4.5 (max 32k tokens, streaming) | ~$0.30 |
 | Extracción conceptos PDF | Claude Haiku 4.5 | ~$0.05 (todos los PDFs juntos) |
 | TTS dual | ElevenLabs `eleven_v3` (multi-speaker) | ~$0.50 (8-10 min audio) |

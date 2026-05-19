@@ -10,7 +10,7 @@ from generadores.shared.anthropic_client import CacheableBlock
 from validators import t_validator
 from validators.result import ValidationResult
 
-MODEL = "claude-sonnet-4-5"
+MODEL = "claude-sonnet-4-6"
 
 SYSTEM_PROMPT = """\
 Eres un guionista del podcast MaquinarIA Pesada generando un episodio T (Tema).

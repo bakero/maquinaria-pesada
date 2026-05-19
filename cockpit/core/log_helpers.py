@@ -107,7 +107,7 @@ class RunLogger:
         latencia en ms y, si se anotaron, `tokens_in`/`tokens_out`/`cost_usd`.
 
         Uso::
-            with log.ai_call(model="claude-sonnet-4-5",
+            with log.ai_call(model="claude-sonnet-4-6",
                              purpose="generate_block", source="lanzar_produccion.py") as call:
                 resp = client.messages.create(...)
                 call.set_tokens(in_=resp.usage.input_tokens,

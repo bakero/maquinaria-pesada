@@ -31,8 +31,8 @@ def test_cacheable_block_to_anthropic_block_ttl_1h():
 
 def test_meets_cache_threshold_sonnet():
     # 1024 tokens * 3.5 chars/tok ≈ 3584 chars
-    assert ac._meets_cache_threshold("x" * 4000, "claude-sonnet-4-5") is True
-    assert ac._meets_cache_threshold("x" * 1000, "claude-sonnet-4-5") is False
+    assert ac._meets_cache_threshold("x" * 4000, "claude-sonnet-4-6") is True
+    assert ac._meets_cache_threshold("x" * 1000, "claude-sonnet-4-6") is False
 
 
 def test_meets_cache_threshold_haiku_is_stricter():
@@ -42,7 +42,7 @@ def test_meets_cache_threshold_haiku_is_stricter():
 
 
 def test_build_system_param_str_passthrough():
-    assert ac._build_system_param("system plain", "claude-sonnet-4-5") == "system plain"
+    assert ac._build_system_param("system plain", "claude-sonnet-4-6") == "system plain"
 
 
 def test_build_system_param_blocks_adds_cache_control_when_long():
@@ -50,7 +50,7 @@ def test_build_system_param_blocks_adds_cache_control_when_long():
         ac.CacheableBlock(text="x" * 5000, ttl="1h"),
         ac.CacheableBlock(text="y" * 200, ttl="5m"),   # demasiado corto
     ]
-    out = ac._build_system_param(blocks, "claude-sonnet-4-5")
+    out = ac._build_system_param(blocks, "claude-sonnet-4-6")
     assert isinstance(out, list)
     assert len(out) == 2
     assert out[0]["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
@@ -60,27 +60,27 @@ def test_build_system_param_blocks_adds_cache_control_when_long():
 
 def test_build_system_param_caps_cache_blocks_at_4():
     blocks = [ac.CacheableBlock(text="x" * 5000, ttl="5m") for _ in range(6)]
-    out = ac._build_system_param(blocks, "claude-sonnet-4-5")
+    out = ac._build_system_param(blocks, "claude-sonnet-4-6")
     cached = [b for b in out if "cache_control" in b]
     assert len(cached) == 4
 
 
 def test_estimate_cost_includes_cache_create_premium():
-    base = ac._estimate_cost("claude-sonnet-4-5", 10000, 0)
+    base = ac._estimate_cost("claude-sonnet-4-6", 10000, 0)
     with_create_5m = ac._estimate_cost(
-        "claude-sonnet-4-5", 0, 0, cache_create_5m=10000)
+        "claude-sonnet-4-6", 0, 0, cache_create_5m=10000)
     # 1.25× input price for 5m cache writes
     assert with_create_5m > base
     with_create_1h = ac._estimate_cost(
-        "claude-sonnet-4-5", 0, 0, cache_create_1h=10000)
+        "claude-sonnet-4-6", 0, 0, cache_create_1h=10000)
     assert with_create_1h > with_create_5m
 
 
 def test_estimate_cost_cache_read_is_cheap():
     same_tokens = 10000
-    base = ac._estimate_cost("claude-sonnet-4-5", same_tokens, 0)
+    base = ac._estimate_cost("claude-sonnet-4-6", same_tokens, 0)
     with_read = ac._estimate_cost(
-        "claude-sonnet-4-5", 0, 0, cache_read=same_tokens)
+        "claude-sonnet-4-6", 0, 0, cache_read=same_tokens)
     # cache_read = 0.1× input price → debería ser muchísimo más barato.
     assert with_read < base / 5
 
@@ -114,11 +114,11 @@ def test_track_cost_migrates_legacy_csv(tmp_path):
     legacy = tmp_path / "costes_generacion.log"
     legacy.write_text(
         "timestamp,kind,episode_id,model,input_tokens,output_tokens,cost_usd,validation_result\n"
-        "2026-01-01T00:00:00,M,M0,claude-sonnet-4-5,100,50,0.001,ok\n",
+        "2026-01-01T00:00:00,M,M0,claude-sonnet-4-6,100,50,0.001,ok\n",
         encoding="utf-8",
     )
     r = ac.GenerationResult(
-        text="x", model="claude-sonnet-4-5",
+        text="x", model="claude-sonnet-4-6",
         input_tokens=10, output_tokens=5, cost_usd=0.0001)
     ac.track_cost(tmp_path, "M", "M1", r, "ok")
     # El antiguo se ha renombrado a v1.
@@ -181,7 +181,7 @@ def test_generate_passes_blocks_with_cache_control(monkeypatch):
 
     blocks = [ac.CacheableBlock(text="x" * 5000, ttl="1h")]
     r = ac.generate(
-        system=blocks, user="u", model="claude-sonnet-4-5",
+        system=blocks, user="u", model="claude-sonnet-4-6",
         max_output_tokens=100, temperature=0.0,
     )
     assert r.ok

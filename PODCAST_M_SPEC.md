@@ -490,7 +490,7 @@ El guion debe cumplirlas antes de enviarse a síntesis (ElevenLabs eleven_v3 a
     "live_docs_dir": "."
   },
   "anthropic": {
-    "default_generation_model": "claude-sonnet-4-5",
+    "default_generation_model": "claude-sonnet-4-6",
     "default_concept_model": "claude-haiku-4-5-20251001",
     "temperature": 0.7,
     "max_output_tokens": 10000,

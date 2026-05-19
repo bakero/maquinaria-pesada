@@ -155,7 +155,7 @@ def test_request_patches_uses_haiku_first(monkeypatch):
     patches, gen = pr.request_patches(
         script=SCRIPT_DEMO,
         validation_results=[fail("m_fuentes_count", "HARD", "msg")],
-        primary_model="claude-sonnet-4-5",
+        primary_model="claude-sonnet-4-6",
     )
     assert calls == ["claude-haiku-4-5-20251001"]
     assert len(patches) == 1
@@ -181,9 +181,9 @@ def test_request_patches_falls_back_to_sonnet_when_haiku_fails(monkeypatch):
     patches, _ = pr.request_patches(
         script=SCRIPT_DEMO,
         validation_results=[fail("m_fuentes_count", "HARD", "msg")],
-        primary_model="claude-sonnet-4-5",
+        primary_model="claude-sonnet-4-6",
     )
-    assert calls == ["claude-haiku-4-5-20251001", "claude-sonnet-4-5"]
+    assert calls == ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"]
     assert len(patches) == 1
 
 

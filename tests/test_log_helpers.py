@@ -79,7 +79,7 @@ def test_retry_emits_warn(tmp_daylog: Path):
 def test_ai_call_ok(tmp_daylog: Path):
     log = log_helpers.get_run_logger("genX")
     with log.ai_call(
-        model="claude-sonnet-4-5", purpose="extract", source="test.py"
+        model="claude-sonnet-4-6", purpose="extract", source="test.py"
     ) as call:
         call.set_tokens(in_=1234, out_=567)
         call.set_cost_usd(0.0042)

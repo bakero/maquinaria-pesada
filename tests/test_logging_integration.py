@@ -60,7 +60,7 @@ def test_generator_run_writes_full_trace(tmp_daylog: Path):
 
         text, resp = call_claude(
             fake_client,
-            model="claude-sonnet-4-5",
+            model="claude-sonnet-4-6",
             system="...",
             user="...",
             max_tokens=8000,
@@ -77,7 +77,7 @@ def test_generator_run_writes_full_trace(tmp_daylog: Path):
         # Segunda llamada IA con tokens diferentes
         call_claude(
             fake_client,
-            model="claude-sonnet-4-5",
+            model="claude-sonnet-4-6",
             system="...",
             user="...",
             max_tokens=8000,
@@ -107,7 +107,7 @@ def test_generator_run_writes_full_trace(tmp_daylog: Path):
     assert text.count("AI call → generate_block") == 1
     assert "tokens_in=1500" in text
     assert "tokens_out=800" in text
-    assert "model=claude-sonnet-4-5" in text
+    assert "model=claude-sonnet-4-6" in text
 
     # --- retry ---
     assert "retry" in text
