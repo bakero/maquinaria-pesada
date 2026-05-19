@@ -675,8 +675,13 @@ def save_pizarra(data: dict) -> dict:
         return {"ok": False, "error": str(exc)}
     try:
         pizarra.save_board(data or {})
+        # Mutación auditable: registra qué se guardó (nº nodos/edges).
+        nodes = len((data or {}).get("nodes") or [])
+        edges = len((data or {}).get("edges") or [])
+        _log.info(f"pizarra guardada nodes={nodes} edges={edges}")
         return {"ok": True}
     except Exception as exc:  # noqa: BLE001
+        _log.error(f"pizarra save falló: {exc!r}")
         return {"ok": False, "error": str(exc)}
 
 
@@ -1130,8 +1135,10 @@ def reveal_path(rel: str) -> dict:
         else:
             import subprocess
             subprocess.Popen(["xdg-open", str(target)])
+        _log.info(f"reveal abrió: {rel}")
         return {"ok": True, "opened": True, "path": str(target)}
     except Exception as exc:
+        _log.warning(f"reveal falló para {rel!r}: {exc!r}")
         return {"ok": False, "error": str(exc)}
 
 
@@ -1142,10 +1149,13 @@ def topup_economics(provider: str, amount: float, note: str = "") -> dict:
     except Exception as exc:
         return {"ok": False, "error": f"economics no disponible: {exc}"}
     if not provider or amount <= 0:
+        _log.warning(f"topup rechazado: provider={provider!r} amount={amount!r}")
         return {"ok": False, "error": "provider y amount>0 requeridos"}
     try:
         state = economics.add_topup(provider=provider, amount_usd=float(amount),
                                      note=note or "")
+        _log.info(f"topup registrado provider={provider} amount_usd={amount:.4f} "
+                  f"note={note!r} total_topups={len(state.topups)}")
         return {
             "ok": True,
             "topups": len(state.topups),
@@ -1156,6 +1166,7 @@ def topup_economics(provider: str, amount: float, note: str = "") -> dict:
             },
         }
     except Exception as exc:
+        _log.error(f"topup falló: provider={provider!r} amount={amount!r}: {exc!r}")
         return {"ok": False, "error": str(exc)}
 
 
@@ -1193,8 +1204,11 @@ def ping_api_key(provider: str) -> dict:
                         found.append({"name": n, "from": ".env"})
             except ImportError:
                 pass
+    result_ok = len(found) == len(names)
+    _log.info(f"api-key/ping provider={provider} ok={result_ok} "
+              f"found={[f['name'] for f in found]}")
     return {
-        "ok": len(found) == len(names),
+        "ok": result_ok,
         "provider": provider,
         "expected": names,
         "found": found,
@@ -1288,10 +1302,12 @@ def generate_episode_guion(ep_id: str) -> dict:
 
     src = episode_sources.source_for(ep_id)
     if src is None:
+        _log.warning(f"generate rechazado: episodio sin fuente: {ep_id!r}")
         return {"ok": False, "error": f"episodio sin fuente configurada: {ep_id}"}
 
     script_path = paths.repo_root() / src.script
     if not script_path.exists():
+        _log.error(f"generate {ep_id}: script no existe en disco: {src.script}")
         return {"ok": False, "error": f"script no existe: {src.script}"}
 
     # src.flags ya es una lista plana shell-ready (['--modulo', '0', '--pdf', '…']),
@@ -1310,6 +1326,8 @@ def generate_episode_guion(ep_id: str) -> dict:
         stderr=subprocess.STDOUT,
         env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
+    _log.info(f"generate lanzado: ep={src.ep_id} kind={src.kind} "
+              f"script={src.script} pid={proc.pid} log={log_path.name}")
     return {
         "ok": True,
         "ep_id": src.ep_id,
