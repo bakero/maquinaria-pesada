@@ -16,10 +16,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // Durante el dev (`npm run dev`) las llamadas a /api/* las atiende
-    // web_server.py en :8765
+    // Durante el dev (`npm run dev`) las rutas que sirve web_server.py
+    // las reenviamos a :8765. Si falta alguna entrada aquí, el dev server
+    // hace fallback al index.html (SPA) y produce el bug clásico de
+    // "el PDF/guion/audio devuelve <!doctype html>".
     proxy: {
-      "/api": "http://127.0.0.1:8765",
+      "/api":   "http://127.0.0.1:8765",   // JSON + SSE /api/stream
+      "/files": "http://127.0.0.1:8765",   // PDFs, guiones, audios, vídeos
     },
   },
 });
