@@ -268,9 +268,9 @@ def main() -> None:
         print(f"  Completos  ({len(completos)}): {', '.join(f'M{m}' for m in completos)}")
     print()
     if sin_audio:
-        print("  Para audio pendiente:  python lanzar_produccion.py")
+        print("  Para audio pendiente:  python generar_episodio_v2.py --ep <id>")
     if sin_guion:
-        print("  Para guiones M:        python generar_guion.py --modulo N --pdf PDFs/resumenes/RESUMEN_M{n}_*.pdf")
+        print("  Para guion (M/T/S):    python lanzar_produccion.py --kind {M|T|S} --ep <id>")
 
 
 if __name__ == "__main__":

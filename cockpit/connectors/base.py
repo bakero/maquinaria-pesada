@@ -83,7 +83,7 @@ class ServiceConnector(Connector):
 
 class PipelineConnector(Connector):
     category: Category = "pipeline"
-    script: str = ""              # e.g. "generar_guion.py"
+    script: str = ""              # e.g. "lanzar_produccion.py"
     fields: list[Field_] = []
 
     def status(self) -> Status:

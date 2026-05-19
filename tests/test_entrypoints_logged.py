@@ -19,16 +19,14 @@ _EXCLUDED_DIRS = {
     "vite_app", "web", "build", "dist", "__pycache__",
 }
 # daylog.py ES el sistema de logs: su `__main__` es el visor, no se auto-engancha.
-# Los scripts marcados como LEGACY (2026-05-19) disparan SystemExit antes de tocar
-# nada — no necesitan trazabilidad en daylog porque su `__main__` solo emite el
-# mensaje de redirección al pipeline canónico. Ver `GENERACION.md §8`.
+# Los scripts retirados (SystemExit en el preámbulo) no necesitan trazabilidad
+# en daylog porque su `__main__` solo emite el mensaje de redirección al
+# pipeline canónico. Ver `GENERACION.md §8`.
 _EXCLUDED_FILES = {
     "daylog.py",
-    # Legacy: SystemExit en el preámbulo, código histórico inaccesible.
-    "generar_guion.py",
-    "generar_guion_t.py",
-    "lanzar_produccion.py",
-    "validar_episodio.py",
+    # Retirados con SystemExit (Fase B 2026-05-19):
+    "producir_episodio.py",
+    "run_iteration.py",
 }
 
 _MAIN_GUARDS = ('if __name__ == "__main__"', "if __name__ == '__main__'")

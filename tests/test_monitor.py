@@ -12,7 +12,7 @@ from cockpit.core import monitor  # noqa: E402
 
 
 def test_match_script_detecta_pipelines_conocidos():
-    assert monitor._match_script(["python", "generar_guion.py"]) == "generar_guion.py"  # noqa: SLF001
+    assert monitor._match_script(["python", "lanzar_produccion.py"]) == "lanzar_produccion.py"  # noqa: SLF001
     assert monitor._match_script(["python", "/path/to/validar_episodio.py"]) == "validar_episodio.py"  # noqa: SLF001
     assert monitor._match_script(["python", "C:\\repo\\generar_episodio_v2.py"]) == "generar_episodio_v2.py"  # noqa: SLF001
 
@@ -24,9 +24,9 @@ def test_match_script_devuelve_none_si_no_hay_match():
 
 def test_pipeline_scripts_tiene_los_principales():
     must_have = {
-        "generar_guion.py",
-        "generar_episodio_v2.py",
+        "lanzar_produccion.py",
         "validar_episodio.py",
+        "generar_episodio_v2.py",
         "podcast_spec.py",
     }
     assert must_have.issubset(set(monitor.PIPELINE_SCRIPTS.keys()))

@@ -15,9 +15,9 @@ def test_source_for_modulo_m():
     assert src is not None
     assert src.kind == "M"
     assert src.module == "M3"
-    assert src.script == "generar_guion.py"
+    assert src.script == "lanzar_produccion.py"
     assert src.pdf.endswith(".pdf")
-    assert src.flags == ["--modulo", "3", "--pdf", src.pdf]
+    assert src.flags == ["--kind", "M", "--ep", "M3"]
 
 
 def test_source_for_tema_t():
@@ -25,8 +25,8 @@ def test_source_for_tema_t():
     assert src is not None
     assert src.kind == "T"
     assert src.module == "M7"
-    assert src.script == "generar_guion_t.py"
-    assert src.flags == ["--pdf", src.pdf]
+    assert src.script == "lanzar_produccion.py"
+    assert src.flags == ["--kind", "T", "--ep", "M7_T1"]
 
 
 def test_source_for_unknown_returns_none():

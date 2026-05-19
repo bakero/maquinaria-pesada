@@ -35,7 +35,7 @@ def test_categorias_esperadas_presentes():
 
 
 def test_pipelines_principales_registrados():
-    expected = {"generar_guion", "validar_episodio", "estado_proyecto"}
+    expected = {"validar_episodio", "estado_proyecto"}
     actual = {c.id for c in connectors.by_category("pipeline")}
     assert expected.issubset(actual)
 
@@ -47,8 +47,8 @@ def test_services_principales_registrados():
 
 
 def test_get_devuelve_el_correcto():
-    c = connectors.get("generar_guion")
-    assert c.id == "generar_guion"
+    c = connectors.get("validar_episodio")
+    assert c.id == "validar_episodio"
     assert isinstance(c, PipelineConnector)
 
 
@@ -59,7 +59,7 @@ def test_get_keyerror_si_no_existe():
 
 def test_register_rechaza_id_duplicado():
     class _Dup(PipelineConnector):
-        id = "generar_guion"  # ya existe
+        id = "validar_episodio"  # ya existe
         script = "x.py"
 
     with pytest.raises(ValueError, match="already registered"):

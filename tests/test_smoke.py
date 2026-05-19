@@ -21,12 +21,12 @@ def test_prompt_builder_emite_comando_python():
     from cockpit.core import prompt_builder
 
     cmd = prompt_builder.build(
-        script="generar_guion.py",
+        script="lanzar_produccion.py",
         flags=[("--ep", "EP001"), ("--dry-run", True), ("--skip", False), ("--note", None)],
         cwd="/tmp",
         header="test",
     )
-    assert "python generar_guion.py" in cmd
+    assert "python lanzar_produccion.py" in cmd
     assert "--ep EP001" in cmd
     assert "--dry-run" in cmd  # bool True → flag sin valor
     assert "--skip" not in cmd  # bool False → omitido

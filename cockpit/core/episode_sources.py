@@ -4,8 +4,9 @@ Lo consumen tanto `lanzar_guiones.py` (batch) como `web_server.py`
 (generación bajo demanda desde la app visual).
 
 Convención de ids de episodio (igual que `cockpit.core.episodes`):
-  * Módulo M:  "M3"          → generar_guion.py   --modulo 3 --pdf <resumen>
-  * Tema   T:  "M7_T1"       → generar_guion_t.py --pdf <tema>
+  * Módulo M:  "M3"     → lanzar_produccion.py --kind M --ep M3
+  * Tema   T:  "M7_T1"  → lanzar_produccion.py --kind T --ep M7_T1
+  * Short  S:  "S1"     → lanzar_produccion.py --kind S --ep S1 --term <term>
 """
 from __future__ import annotations
 
@@ -70,11 +71,11 @@ T_PDFS: dict[str, str] = {
 
 @dataclass
 class EpisodeSource:
-    ep_id: str          # "M3" | "M7_T1"
-    kind: str           # "M" | "T"
-    module: str         # "M3"
-    script: str         # "generar_guion.py" | "generar_guion_t.py"
-    pdf: str            # ruta relativa al repo
+    ep_id: str          # "M3" | "M7_T1" | "S1"
+    kind: str           # "M" | "T" | "S"
+    module: str         # "M3" (vacío para S)
+    script: str         # siempre "lanzar_produccion.py"
+    pdf: str            # ruta relativa al repo (vacío para S)
     flags: list[str]    # flags listos para pasar al script
 
     def as_dict(self) -> dict:
@@ -109,7 +110,7 @@ def source_for(ep_id: str) -> EpisodeSource | None:
             ep_id=ep_id.upper(),
             kind="S",
             module="",
-            script="lanzar_produccion_v6.py",
+            script="lanzar_produccion.py",
             pdf="",                         # los Shorts no usan PDF fuente
             flags=["--kind", "S", "--ep", ep_id.upper(), "--term", sh.term],
         )
@@ -123,9 +124,9 @@ def source_for(ep_id: str) -> EpisodeSource | None:
             ep_id=ep_id,
             kind="T",
             module=ep_id.split("_T")[0],
-            script="generar_guion_t.py",
+            script="lanzar_produccion.py",
             pdf=pdf,
-            flags=["--pdf", pdf],
+            flags=["--kind", "T", "--ep", ep_id],
         )
 
     # Módulo M → "M3"
@@ -136,13 +137,14 @@ def source_for(ep_id: str) -> EpisodeSource | None:
     pdf = M_PDFS.get(modulo_n)
     if not pdf:
         return None
+    ep_canonical = f"M{modulo_n}"
     return EpisodeSource(
-        ep_id=f"M{modulo_n}",
+        ep_id=ep_canonical,
         kind="M",
-        module=f"M{modulo_n}",
-        script="generar_guion.py",
+        module=ep_canonical,
+        script="lanzar_produccion.py",
         pdf=pdf,
-        flags=["--modulo", str(modulo_n), "--pdf", pdf],
+        flags=["--kind", "M", "--ep", ep_canonical],
     )
 
 

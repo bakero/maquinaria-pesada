@@ -31,15 +31,15 @@ def fake_repo(tmp_path, monkeypatch):
     log_path = tmp_path / "logs" / "run" / f"maquinaria_{today}.log"
 
     lines = [
-        f"{today}T08:00:00 [START] run=aaa111 script=generar_guion.py pid=10001 | --modulo 3 --pdf PDFs/resumenes/RESUMEN_M3_Machine_Learning_Clasico.pdf",
-        f"{today}T08:00:01 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | paso → load_spec step=load_spec",
-        f"{today}T08:00:02 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | paso → extract_concepts step=extract_concepts",
-        f"{today}T08:00:05 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | AI call → generate_block model=claude-sonnet-4-5 purpose=generate_block",
-        f"{today}T08:00:18 [OK   ] run=aaa111 script=generar_guion.py pid=10001 | AI call ok → generate_block model=claude-sonnet-4-5 ms=13200 tokens_in=1500 tokens_out=800",
-        f"{today}T08:00:19 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | paso → generate step=generate",
-        f"{today}T08:00:20 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | paso → validate step=validate",
-        f"{today}T08:00:21 [INFO ] run=aaa111 script=generar_guion.py pid=10001 | paso → save step=save",
-        f"{today}T08:00:21 [END  ] run=aaa111 script=generar_guion.py pid=10001 | ejecución completada status=ok elapsed_s=21.5 out_lines=12 err_lines=0",
+        f"{today}T08:00:00 [START] run=aaa111 script=lanzar_produccion.py pid=10001 | --modulo 3 --pdf PDFs/resumenes/RESUMEN_M3_Machine_Learning_Clasico.pdf",
+        f"{today}T08:00:01 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | paso → load_spec step=load_spec",
+        f"{today}T08:00:02 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | paso → extract_concepts step=extract_concepts",
+        f"{today}T08:00:05 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | AI call → generate_block model=claude-sonnet-4-5 purpose=generate_block",
+        f"{today}T08:00:18 [OK   ] run=aaa111 script=lanzar_produccion.py pid=10001 | AI call ok → generate_block model=claude-sonnet-4-5 ms=13200 tokens_in=1500 tokens_out=800",
+        f"{today}T08:00:19 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | paso → generate step=generate",
+        f"{today}T08:00:20 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | paso → validate step=validate",
+        f"{today}T08:00:21 [INFO ] run=aaa111 script=lanzar_produccion.py pid=10001 | paso → save step=save",
+        f"{today}T08:00:21 [END  ] run=aaa111 script=lanzar_produccion.py pid=10001 | ejecución completada status=ok elapsed_s=21.5 out_lines=12 err_lines=0",
         f"{today}T09:30:00 [START] run=bbb222 script=generar_episodio_v2.py pid=10100 | --ep M3",
         f"{today}T09:30:01 [INFO ] run=bbb222 script=generar_episodio_v2.py pid=10100 | paso → load_script step=load_script",
         f"{today}T09:30:02 [INFO ] run=bbb222 script=generar_episodio_v2.py pid=10100 | paso → audio step=audio",
@@ -84,8 +84,8 @@ def test_load_entity_runs_returns_structured_summary(fake_repo):
     ok_run = by_id["aaa111"]
     assert ok_run["status"] == "ok"
     assert ok_run["elapsed_s"] == 21.5
-    assert ok_run["script"] == "generar_guion.py"
-    # 5 pasos en EXPECTED_STEPS de generar_guion.py
+    assert ok_run["script"] == "lanzar_produccion.py"
+    # 5 pasos en EXPECTED_STEPS de lanzar_produccion.py
     for expected in ("load_spec", "extract_concepts", "generate", "validate", "save"):
         assert expected in ok_run["steps"]
     assert ok_run["ai_calls"]["ok"] == 1

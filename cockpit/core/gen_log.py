@@ -1,9 +1,9 @@
 """Traza de generación/validación de guiones por episodio.
 
-`generar_guion.py` / `generar_guion_t.py` imprimen a stdout su bucle de
-validación y regeneración. Cuando la generación se lanza desde la app
-(web_server) o desde `lanzar_guiones.py`, esa salida se redirige a una ruta
-determinista: `Guiones/logs/{ep_id}_gen.log`.
+`lanzar_produccion.py` imprime a stdout su bucle de validación y
+regeneración. Cuando la generación se lanza desde la app (web_server) o
+desde `lanzar_guiones.py`, esa salida se redirige a una ruta determinista:
+`Guiones/logs/{ep_id}_gen.log`.
 
 Este módulo centraliza dónde vive esa traza y cómo se parsea — para que
 `web_server.py` se quede como capa fina de routing.
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from . import paths
 
-# Marcadores que imprime el bucle de generación (ver generar_guion.py)
+# Marcadores que imprime el bucle de generación (ver lanzar_produccion.py)
 _ATTEMPT_RE = re.compile(r"Generando guion \(intento \d+/")
 _HARD_RE = re.compile(r"\[HARD\]\s*(.+)")
 _SOFT_RE = re.compile(r"\[WARN\]\s*(.+)")

@@ -177,9 +177,9 @@ def test_generator_with_ai_error_logs_correctly(tmp_daylog: Path):
 
 def test_auto_validate_runs_on_close(tmp_daylog: Path):
     """daylog.RunLog.__exit__ invoca al validador y deja warnings si faltan pasos."""
-    # Ejecución de generar_guion.py SIN ningún log.step() — el validador
+    # Ejecución de lanzar_produccion.py SIN ningún log.step() — el validador
     # debería avisar de que faltan pasos esperados.
-    with daylog.RunLog(script="generar_guion.py", capture_output=False):
+    with daylog.RunLog(script="lanzar_produccion.py", capture_output=False):
         pass
 
     text = _today_log_path(tmp_daylog).read_text(encoding="utf-8")

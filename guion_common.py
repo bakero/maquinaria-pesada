@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 """
-guion_common.py — Núcleo compartido de generación de guiones (M y T).
+guion_common.py — Núcleo histórico de generación de guiones (LEGACY).
 
-Los episodios se generan ÚNICAMENTE con dos entry points:
-  - generar_guion.py    → episodios M (módulos)   — PODCAST_M_SPEC.md
-  - generar_guion_t.py  → episodios T (temas)     — PODCAST_T_SPEC.md
-
-Ambos importan de aquí toda la lógica común: cliente Anthropic, extracción de
-PDF, normalización y post-procesado mecánico del guion (anti-pingpong, split de
-bloques largos, rebalanceo, frases fijas, números a palabras…).
-
-La validación vive en `podcast_spec.py`; las reglas (blacklist, frases fijas,
-marcadores temporales) viven en los SPEC JSON. Ver `GENERACION.md`.
+🚫 MÓDULO LEGACY — los entry points que lo importaban (`generar_guion.py`,
+`generar_guion_t.py`) están retirados. El pipeline vivo usa el paquete
+`generadores/` (base_generator + m/t/s_generator) que NO depende de este
+módulo. Se conserva temporalmente para tests de regresión y porque
+`podcast_spec.py` aún reexporta utilidades comunes. Ver `GENERACION.md`.
 """
 from __future__ import annotations
 
@@ -93,7 +88,7 @@ def make_anthropic_client():
 
 def call_claude(
     client, model: str, system: str, user: str,
-    max_tokens: int, temperature: float, source: str = "generar_guion.py",
+    max_tokens: int, temperature: float, source: str = "lanzar_produccion.py",
     purpose: str = "generation",
 ) -> tuple[str, object]:
     """Llama a Claude y devuelve (content_text, response).

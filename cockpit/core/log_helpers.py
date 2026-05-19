@@ -8,10 +8,10 @@ Uso típico desde un generador::
 
     from cockpit.core.log_helpers import get_run_logger
 
-    log = get_run_logger("generar_guion")
+    log = get_run_logger("lanzar_produccion")
     log.step("extract_concepts", pdf=str(pdf_path))
     with log.ai_call(model=gen_model, purpose="extract_concepts",
-                     source="generar_guion.py") as call:
+                     source="lanzar_produccion.py") as call:
         text, resp = client.messages.create(...)
         call.set_tokens(in_=resp.usage.input_tokens,
                         out_=resp.usage.output_tokens)
@@ -108,7 +108,7 @@ class RunLogger:
 
         Uso::
             with log.ai_call(model="claude-sonnet-4-5",
-                             purpose="generate_block", source="generar_guion.py") as call:
+                             purpose="generate_block", source="lanzar_produccion.py") as call:
                 resp = client.messages.create(...)
                 call.set_tokens(in_=resp.usage.input_tokens,
                                 out_=resp.usage.output_tokens)

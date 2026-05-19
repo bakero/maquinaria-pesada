@@ -5,7 +5,7 @@ Define el grafo conceptual del generador:
   Claude (esfera) ──> PDF (cuadrado)
                               │
                               ▼
-                  generar_guion.py (esfera)
+                  lanzar_produccion.py (esfera)
                               │
                               ▼
                          GUION (cuadrado)
@@ -76,11 +76,11 @@ def pipeline_default() -> tuple[list[Pieza], list[Flecha]]:
         ),
         Pieza(
             id="gen_guion",
-            label="generar_guion.py",
+            label="lanzar_produccion.py",
             kind="component",
             icon="📝",
-            code_path="generar_guion.py",
-            description="Pipeline CLI: PDF → guion .txt con diálogo Iago / María.",
+            code_path="lanzar_produccion.py",
+            description="Pipeline CLI canónico: PDF/glosario → guion .md (M/T/S) con generadores especialistas.",
         ),
         Pieza(
             id="guion",

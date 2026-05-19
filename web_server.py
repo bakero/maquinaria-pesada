@@ -114,16 +114,12 @@ MAX_REQUEST_BODY = 1 * 1024 * 1024
 # solo nombres de esta lista (sin componente de ruta). Esto evita que un POST
 # pueda ejecutar cualquier script del repo o del sistema.
 ALLOWED_SCRIPTS: frozenset[str] = frozenset({
-    "generar_guion.py",
-    "generar_guion_t.py",
+    "lanzar_produccion.py",  # pipeline canónico M/T/S
+    "validar_episodio.py",   # validador canónico M/T/S
     "generar_episodio_v2.py",
-    "validar_episodio.py",
-    "normalizar_guiones.py",
     "estado_proyecto.py",
     "lanzar_guiones.py",
-    "lanzar_produccion.py",
     "produce_pending.py",
-    "producir_episodio.py",
 })
 
 # Flags prohibidos: nunca deben llegar desde el front. --host/--port permitirían
@@ -1415,7 +1411,7 @@ def load_entity_log_lines(entity_id: str, days: int = 7, limit: int = 300) -> di
 
     # Construye un set de tokens que identifican al episodio.
     # Los daylog NO contienen siempre el id literal — frecuentemente la línea
-    # es del tipo `script=generar_guion.py | --modulo 3 --pdf PDFs/resumenes/RESUMEN_M3_…pdf`.
+    # es del tipo `script=lanzar_produccion.py | --kind M --ep M3`.
     # Añadimos todas las formas plausibles que pueden aparecer:
     eid = entity_id.strip()
     tokens: set[str] = {eid}

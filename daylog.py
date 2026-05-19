@@ -11,7 +11,7 @@ Uso típico (context manager, recomendado):
     import sys
     from daylog import RunLog
 
-    with RunLog(script="generar_guion.py", params=sys.argv[1:]) as log:
+    with RunLog(script="lanzar_produccion.py", params=sys.argv[1:]) as log:
         log.info("extrayendo conceptos", pdf="PDFs/M3.pdf")
         log.warn("reintento", intento=2)
         ...
@@ -19,7 +19,7 @@ Uso típico (context manager, recomendado):
 
 Formato de línea (texto plano, legible):
 
-    2026-05-14T10:30:00 [INFO ] run=a1b2c3 script=generar_guion.py | mensaje k=v
+    2026-05-14T10:30:00 [INFO ] run=a1b2c3 script=lanzar_produccion.py | mensaje k=v
 
 Trazado completo sin tocar los pipelines
 -----------------------------------------

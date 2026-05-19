@@ -2,9 +2,9 @@
 """
 lanzar_guiones.py — Lanzador batch de generación de guiones.
 
-Ejecuta generar_guion.py (M) y generar_guion_t.py (T) en secuencia.
-Cada guion tiene su propio log en Guiones/logs/{guion}_gen.log.
-Log maestro en Guiones/logs/guiones_runs.log.
+Ejecuta `lanzar_produccion.py --kind {M,T,S}` para cada episodio configurado
+en `cockpit.core.episode_sources`. Cada guion tiene su propio log en
+`Guiones/logs/{guion}_gen.log`. Log maestro en `Guiones/logs/guiones_runs.log`.
 
 Uso:
   python lanzar_guiones.py          # genera todos los configurados

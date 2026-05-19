@@ -28,7 +28,7 @@ def test_track_anthropic_records_event(tmp_path, monkeypatch):
 
     fake_response = SimpleNamespace(usage=SimpleNamespace(input_tokens=200, output_tokens=80))
     usage_tracker.track_anthropic(
-        fake_response, model="claude-sonnet-4-6", source="generar_guion.py",
+        fake_response, model="claude-sonnet-4-6", source="lanzar_produccion.py",
         kind="generation", latency_ms=1234,
     )
 
@@ -37,7 +37,7 @@ def test_track_anthropic_records_event(tmp_path, monkeypatch):
     ev = events[0]
     assert ev["provider"] == "anthropic"
     assert ev["model"] == "claude-sonnet-4-6"
-    assert ev["source"] == "generar_guion.py"
+    assert ev["source"] == "lanzar_produccion.py"
     assert ev["input_tokens"] == 200
     assert ev["output_tokens"] == 80
     assert ev["latency_ms"] == 1234
@@ -101,7 +101,7 @@ def test_pipelines_aggregate_in_tokens_page(tmp_path, monkeypatch):
     # Simulamos 2 llamadas del pipeline
     usage_tracker.track_anthropic(
         SimpleNamespace(usage=SimpleNamespace(input_tokens=1000, output_tokens=500)),
-        model="claude-sonnet-4-6", source="generar_guion.py",
+        model="claude-sonnet-4-6", source="lanzar_produccion.py",
     )
     usage_tracker.track_openai(
         SimpleNamespace(usage=SimpleNamespace(prompt_tokens=300, completion_tokens=150)),
@@ -115,5 +115,5 @@ def test_pipelines_aggregate_in_tokens_page(tmp_path, monkeypatch):
     assert agg["total_output_tokens"] == 650
     assert "claude-sonnet-4-6" in agg["by_model"]
     assert "gpt-4o-mini" in agg["by_model"]
-    assert "generar_guion.py" in agg["by_source"]
+    assert "lanzar_produccion.py" in agg["by_source"]
     assert "dual_debate.py" in agg["by_source"]

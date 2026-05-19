@@ -107,9 +107,9 @@ def _default_map() -> ComponentsMap:
         Node("ai-elevenlabs", "ElevenLabs", "generator", "TTS de podcasts"),
         Node("ai-kling", "Kling", "generator", "generación de vídeo"),
         # Sistemas/pipelines
-        Node("pipe-guion", "generar_guion.py", "system", "PDF → guion .txt"),
+        Node("pipe-guion", "lanzar_produccion.py", "system", "PDF → guion .md (M/T/S)"),
         Node("pipe-episodio", "generar_episodio_v2.py", "system", "guion → audio MP3"),
-        Node("pipe-validar", "validar_episodio.py", "system", "QA del episodio"),
+        Node("pipe-validar", "validar_episodio.py", "system", "QA del guion (M/T/S)"),
         Node("pipe-escaleta", "generate_escaleta.py", "system", "guion → escaleta de escenas"),
         Node("pipe-video", "video_compositor.py", "system", "ensambla vídeo final"),
         Node("cockpit", "Cockpit Streamlit", "system", "centro de control"),

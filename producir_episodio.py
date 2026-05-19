@@ -1,9 +1,30 @@
 #!/usr/bin/env python3
+# ruff: noqa
+"""producir_episodio.py — Pipeline guion+audio (LEGACY).
+
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   Encadenaba el legacy `generar_guion.py` + `generar_episodio_v2.py`. El
+   pipeline canónico de guiones vivo es `lanzar_produccion.py`. La síntesis
+   de audio sigue en `generar_episodio_v2.py` por ahora. Ver `GENERACION.md`.
+"""
 from __future__ import annotations
 
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ producir_episodio.py está retirado.\n"
+        "   El generador legacy del que dependía ya no existe.\n"
+        "   Usa el pipeline canónico:\n"
+        "       python lanzar_produccion.py --kind M --ep M<N>      # guion\n"
+        "       python generar_episodio_v2.py --ep <ep> ...          # audio\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
 import argparse
 import subprocess
-import sys
 from pathlib import Path
 
 from podcast_spec import DEFAULT_SPEC_PATH, load_master_spec, next_episode_code

@@ -371,9 +371,10 @@ def count_concept_mentions(script_text: str, concept: str) -> int:
 #     Definición en una o dos líneas.
 #
 # La línea `**Fuentes:**` es de lectura programática: indica en qué PDFs fuente
-# (formato MX_TY o MX_RESUMEN) aparece el concepto. `generar_guion.py` la usa
-# para alimentar conceptos del glosario al prompt y `validar_episodio.py` para
-# medir qué porcentaje de ellos aparece realmente en el guion generado.
+# (formato MX_TY o MX_RESUMEN) aparece el concepto. El paquete `generadores/`
+# la consume vía `generadores.shared.fuentes_loader` para inyectar conceptos
+# del glosario al prompt, y `validar_episodio.py` mide qué porcentaje aparece
+# realmente en el guion generado.
 
 DEFAULT_GLOSSARY_PATH = Path("PDFs/auxiliares/glosario_unificado.md")
 

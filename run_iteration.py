@@ -1,17 +1,30 @@
 #!/usr/bin/env python3
-"""
-run_iteration.py — Genera los 6 episodios objetivo y guarda logs + informes.
+# ruff: noqa
+"""run_iteration.py — Lanza una iteración de prueba de generación de guiones.
 
-Uso:
-  python run_iteration.py --iter 1
-  python run_iteration.py --iter 2 --delete-existing
+🚫 SCRIPT LEGACY — RETIRADO 2026-05-19.
+   Encadenaba el legacy `generar_guion.py` / `generar_guion_t.py`. El
+   pipeline canónico vivo es `lanzar_produccion.py`. Para iterar varios
+   episodios usa `lanzar_guiones.py`. Ver `GENERACION.md`.
 """
 from __future__ import annotations
 
+import sys
+
+if __name__ == "__main__":
+    sys.stderr.write(
+        "\n❌ run_iteration.py está retirado.\n"
+        "   Encadenaba scripts legacy ya eliminados.\n"
+        "   Para batch usa:\n"
+        "       python lanzar_guiones.py\n"
+        "   Ver GENERACION.md para el mapa completo.\n\n"
+    )
+    raise SystemExit(2)
+
+# ---- Código histórico inaccesible ----------------------------------------
 import argparse
 import json
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 

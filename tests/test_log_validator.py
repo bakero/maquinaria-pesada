@@ -21,19 +21,19 @@ def _today_log_path(daylog_dir: Path) -> Path:
 
 
 def test_parse_log_extracts_run_record(tmp_daylog: Path):
-    with daylog.RunLog(script="generar_guion.py", params=["--modulo", "3"], capture_output=False):
-        log = log_helpers.get_run_logger("generar_guion")
-        log.step("extract_concepts")
-        log.step("generate")
+    with daylog.RunLog(script="lanzar_produccion.py", params=["--kind", "M", "--ep", "M3"], capture_output=False):
+        log = log_helpers.get_run_logger("lanzar_produccion")
+        log.step("plan")
+        log.step("produce")
     path = _today_log_path(tmp_daylog)
     runs = log_validator.parse_log(path)
     assert len(runs) == 1
     rec = next(iter(runs.values()))
-    assert rec.script == "generar_guion.py"
+    assert rec.script == "lanzar_produccion.py"
     assert rec.status == "ok"
     assert rec.started_at is not None and rec.ended_at is not None
-    assert "extract_concepts" in rec.steps
-    assert "generate" in rec.steps
+    assert "plan" in rec.steps
+    assert "produce" in rec.steps
 
 
 def test_validate_run_clean(tmp_daylog: Path):
@@ -103,7 +103,7 @@ def test_retries_counted(tmp_daylog: Path):
 
 def test_expected_steps_warning(tmp_daylog: Path):
     """Si faltan pasos esperados, emite warning (no issue)."""
-    with daylog.RunLog(script="generar_guion.py", capture_output=False):
+    with daylog.RunLog(script="lanzar_produccion.py", capture_output=False):
         # No emitimos NINGUN paso de los esperados
         pass
     runs = log_validator.parse_log(_today_log_path(tmp_daylog))

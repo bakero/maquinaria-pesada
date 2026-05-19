@@ -21,14 +21,11 @@ except ImportError:
 
 # Map of script filename -> human label.
 PIPELINE_SCRIPTS: dict[str, str] = {
-    "generar_guion.py":            "📝 Generación de guion",
+    "lanzar_produccion.py":        "📝 Generación de guion (M/T/S)",
+    "validar_episodio.py":         "✅ Validación guion",
     "generar_episodio_v2.py":      "🎧 Síntesis de audio",
     "generar_episodio.py":         "🎧 Síntesis de audio (legacy)",
-    "producir_episodio.py":        "🚀 Pipeline guion+audio",
-    "validar_episodio.py":         "✅ Validación",
-    "lanzar_produccion.py":        "🔁 Batch runner",
     "estado_proyecto.py":          "📊 Estado proyecto",
-    "normalizar_guiones.py":       "🧹 Normalización guiones",
     "dual_debate.py":              "🤝 Debate dual",
     "dual_debate_maquinaria.py":   "🤝 Debate dual (maq)",
     "podcast_spec.py":             "📐 Spec validator",

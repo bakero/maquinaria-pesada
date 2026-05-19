@@ -117,14 +117,14 @@ def now_iso() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Helpers para instrumentar pipelines top-level (generar_guion.py, etc.).
+# Helpers para instrumentar pipelines top-level (lanzar_produccion.py, etc.).
 #
 # Uso típico:
 #
 #   from cockpit.core.usage_tracker import track_anthropic, track_openai
 #   t0 = time.monotonic()
 #   resp = client.messages.create(...)
-#   track_anthropic(resp, model=model, source="generar_guion.py", kind="generation",
+#   track_anthropic(resp, model=model, source="lanzar_produccion.py", kind="generation",
 #                   latency_ms=int((time.monotonic()-t0)*1000))
 #
 # Los helpers SON DEFENSIVOS: si algo falla extrayendo tokens o escribiendo el
