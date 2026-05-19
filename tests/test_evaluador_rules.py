@@ -193,13 +193,18 @@ MARIA: [conversacional] Esto no debe estar en T.
 
 
 def test_cli_runs_on_corpus():
-    """Smoke test: el CLI debe correr sobre Guiones/ sin crash."""
+    """Smoke test: el CLI debe correr sobre el corpus aprobado sin crash.
+
+    `Guiones/` puede estar vacío (sus contenidos se mueven a
+    `Guiones/entrenamiento v7/` o subdirectorios round*/iter_*), pero
+    `Output_v6_aprobados/` es el corpus canónico con guiones reales.
+    """
     from evaluador.cli import discover_scripts, evaluate_one
 
-    guiones = Path(__file__).resolve().parent.parent / "Guiones"
-    if not guiones.exists():
-        pytest.skip("Guiones/ no disponible")
-    scripts = discover_scripts(guiones)
+    corpus = Path(__file__).resolve().parent.parent / "Output_v6_aprobados" / "M"
+    if not corpus.exists():
+        pytest.skip("Output_v6_aprobados/M/ no disponible")
+    scripts = discover_scripts(corpus)
     assert len(scripts) > 0
     # Evaluar al menos uno
     result = evaluate_one(scripts[0])
