@@ -26,6 +26,37 @@ Sistema de produccion automatizada de un videopodcast sobre IA, generado **al 10
     └── templates/                     Overlays, fondos, stickers, prompt LLM
 ```
 
+## Arrancar la cabina web (cockpit)
+
+La cabina (`web_server.py` + `vite_app/`) se levanta con un único script:
+
+```bash
+bash start_cockpit.sh
+```
+
+Tras los pasos automáticos (deps Python, deps Node, build de Vite si está
+desactualizado) imprime:
+
+```
+  Cockpit listo · abre en el navegador:
+      http://localhost:8765/
+```
+
+Esa URL sirve todas las funcionalidades (Producción, Datos, Sistema,
+Shorts) — UI, API JSON, SSE y archivos del repo (`/files/...`).
+
+Banderas útiles:
+
+```bash
+bash start_cockpit.sh --dev         # además levanta vite dev (HMR) en :5173
+bash start_cockpit.sh --skip-build  # no rehace el build aunque src haya cambiado
+bash start_cockpit.sh --port 9000   # cambia el puerto del backend
+```
+
+El script es idempotente: relánzalo cuantas veces quieras, sólo (re)hace
+lo necesario y mata el `web_server` previo en el mismo puerto antes de
+arrancar el nuevo.
+
 ## Setup rapido
 
 ```bash
