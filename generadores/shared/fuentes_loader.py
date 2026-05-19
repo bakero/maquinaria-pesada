@@ -56,11 +56,14 @@ class GlosarioEntry:
 
     @property
     def bilingual_split(self) -> str | None:
-        """Si el heading tiene formato 'X / Y' devuelve Y (la traducción).
+        """Si el heading tiene formato 'X / Y' devuelve Y (alias castellano).
 
-        Permite usar el segundo segmento del heading bilingüe como expansión
-        castellana implícita cuando no hay campo `**ES:**` explícito.
-        Ej: 'Hallucination / Alucinación' → 'Alucinación'.
+        OJO: el alias castellano del heading bilingüe NO es lo mismo que una
+        expansión obligatoria al primer uso. Términos como `IA / Inteligencia
+        Artificial` o `Hallucination / Alucinación` tienen un alias en
+        castellano pero el podcast usa la versión corta canónicamente (IA,
+        Alucinación) sin obligación de aposición. Solo se considera expansión
+        obligatoria el campo `**ES:**` explícito (ver `expansion_castellana`).
         """
         parts = [p.strip() for p in self.name.split("/")]
         if len(parts) == 2 and parts[1]:
@@ -69,12 +72,15 @@ class GlosarioEntry:
 
     @property
     def expansion_castellana(self) -> str | None:
-        """Expansión castellana efectiva: campo `**ES:**` si existe, si no,
-        segundo segmento del heading bilingüe. None si nada disponible.
+        """Expansión castellana exigible al primer uso de la sigla.
+
+        Solo devuelve un valor si la entrada tiene un campo `**ES:**`
+        explícito en el glosario. El editor del glosario tiene que añadir
+        ese campo conscientemente para que el validador exija aposición con
+        comas en el primer uso. El heading bilingüe `X / Y` NO basta — eso
+        es un alias informativo, no una expansión obligatoria.
         """
-        if self.expansion_es:
-            return self.expansion_es
-        return self.bilingual_split
+        return self.expansion_es
 
     @property
     def needs_first_use_expansion(self) -> bool:
